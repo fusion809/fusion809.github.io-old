@@ -4,12 +4,4 @@ title: About
 permalink: /about/
 ---
 
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](http://jekyllrb.com/)
-
-You can find the source code for the Jekyll new theme at:
-{% include icon-github.html username="jglovier" %} /
-[jekyll-new](https://github.com/jglovier/jekyll-new)
-
-You can find the source code for Jekyll at
-{% include icon-github.html username="fusion809" %} /
-[jekyll](https://github.com/jekyll/jekyll)
+*Brenton's Tid-Bits* is a website where I, Brenton, store my ramblings about what I am up to with regard to my journal through the world of free and open-source and Linux, in particular. 
