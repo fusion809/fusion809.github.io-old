@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Installing Moksha on openSUSE 42.1"
-date:   2015-11-09 03:40:58 +1000
+date:   2015-11-10 +1000
 categories: opensuse, moksha, installation-guides
 ---
 
