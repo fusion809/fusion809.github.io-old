@@ -4,7 +4,7 @@ title:  "Installing Moksha on Fedora 23"
 date:   2015-11-09 03:40:58 +1000
 categories: fedora moksha installation-guides
 ---
-![Moksha running on Fedora 23 with the default F23 wallpaper](http://imgur.com/ocDoPvg.png)
+![Moksha running on Fedora 23 with the default F23 wallpaper](/images/Fedora-23-Moksha-desktop.png)
 
 **[Moksha](http://mokshadesktop.org/)**, the free Enlightenment 17 fork, is the default desktop environment of Bodhi Linux since the 3.10 release.
 
