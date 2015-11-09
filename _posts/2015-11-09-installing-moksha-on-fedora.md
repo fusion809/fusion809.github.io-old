@@ -28,13 +28,13 @@ pushd efl-1.15.2
   trin
 popd
 
-# Get e_dbus source
+# Get e_dbus
 wget -cqO- $REL/e_dbus-1.7.10.tar.bz2 | tar -xv
 pushd e_dbus-1.7.10
   atrin
 popd
 
-# Get evas_generic loaders
+# Get evas_generic_loaders
 wget -cqO- $ELIBS/$EVAS/$EVAS-1.15.0.tar.xz | tar -xJ
 pushd $EVAS-1.15.0
   atrin
