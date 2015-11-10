@@ -33,5 +33,4 @@ When I outgrew Ubuntu in mid 2015, I started to search for a new free operating 
 * [Sabayon Linux](https://www.sabayon.org/)
 * [Solus OS 1.0-RC1](https://solus-project.com/)
 * [Vector Linux 7.1](http://vectorlinux.com/)
-* [Zorin OS 7](http://zorinos.com/)"
-%}
+* [Zorin OS 7](http://zorinos.com/)" %}
