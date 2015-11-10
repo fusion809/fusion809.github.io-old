@@ -8,7 +8,7 @@ permalink: /about-me/
 My journey through the world of Linux began in mid 2012, when I first tried [Ubuntu](http://www.ubuntu.com) 12.04 as a dual-boot with Windows 7 on my Dell laptop. At first, I must admit I was not impressed, as it was like I had landed on an alien planet, as I had never had any need to use a terminal emulator (or command-prompt as it is called under Microsoft Windows) before. Fortunately, I persevered (although, I did return to Windows on-and-off) and after a while I became almost addicted to Linux. A couple of years later I decided to delete the Windows 7 partition on my Dell laptop and make the laptop 100% pure Linux. Since then, I have never regretted making the transition to Linux. Although, I eventually outgrew Ubuntu as it was essential preschool with so much hand-holding that I was left out of many of the important decisions about my own system.
 
 When I outgrew Ubuntu in mid 2015, I started to search for a new free operating systems to call "home", using [Oracle VM VirtualBox](https://www.virtualbox.org/) I tried a variety of operating systems, including:
-{% include.column content = "* [antiX 15](http://antix.mepis.org/index.php?title=Main_Page), a lightweight Debian derivative
+{% include column.html content = "* [antiX 15](http://antix.mepis.org/index.php?title=Main_Page), a lightweight Debian derivative
 * [Arch Linux](https://www.archlinux.org/)
 * [Bodhi Linux 3.10](http://www.bodhilinux.com/)
 * [CentOS 7](https://www.centos.org/)
