@@ -21,7 +21,7 @@ When I outgrew Ubuntu in mid 2015, I started to search for a new free operating 
 * [FreeBSD 10.2](https://www.freebsd.org/)
 * [Gentoo Linux](https://www.gentoo.org/)
 * [GhostBSD 10.1](http://ghostbsd.org/)
-* [Kali Linux](https://www.kali.org/)
+* [Kali Linux 2](https://www.kali.org/)
 * [Korora 21/22](https://kororaproject.org/)
 * [Linux Mint 17.2](http://linuxmint.com/)
 * [Mageia 5](http://www.mageia.org/en/)
@@ -34,3 +34,10 @@ When I outgrew Ubuntu in mid 2015, I started to search for a new free operating 
 * [Solus OS 1.0-RC1](https://solus-project.com/)
 * [Vector Linux 7.1](http://vectorlinux.com/)
 * [Zorin OS 7](http://zorinos.com/)
+
+of these operating systems my favourite were, in order:
+* Sabayon Linux, which is distribution I am currently using to write this blog post. It is a Gentoo derivative that has a beginner-friendly binary package manager, Entropy, alongside the complicated yet powerful package manager (oriented towards experienced Linux users) of Gentoo, Portage.
+* Arch Linux/Manjaro Linux. Manjaro Linux is a beginner-friendly derivative of Arch Linux, a Linux distribution based on the "Keep It Simple, Stupid" (KISS) principle, that is geared towards more experienced Linux users. The way it interprets the KISS principle, is that a fresh Arch install should be the barebones and that automation (e.g., there is no automated installer for Arch, by default) should be kept to a minimum. Arch Linux was previously out of my reach, until I found some scripts for automating its installation process.
+* Fedora. Fedora is interesting to me, in that installing software packages in its software repositories is usually at least as easy as it is on Ubuntu, but installing software manually from source code or setting up web applications (e.g., MediaWiki or WordPress) tends to be substantially more difficult than on other user-friendly distributions. It is also interesting to me in that its system software and desktop environment-related software is usually the most up-to-date of any distribution following a fixed-release cycle, yet the rest of its software tends to be at least two releases behind the latest available release, in my experience, anyway.
+* openSUSE. openSUSE uses RPM packages like Fedora, but unlike Fedora its system software and desktop environments are usually nowhere near as bleeding edge. This is likely because openSUSE is designed to be compatible with both servers and desktops/laptops, with the former usually valuing stability over being up-to-date, while Fedora is mostly geared towards desktops/laptops. I tend to find that installing programs on openSUSE is similar to installing them on Fedora, in terms of difficulty.
+* Debian. Debian is the parent of Ubuntu, that is, Ubuntu was originally based on Debian. The major difference between the two is their target audience: Debian is more geared towards intermediate-experienced Linux users, while Ubuntu is geared towards newcomers to Linux. Debian has five official repositories, each with varying levels of package stability. Most users, especially those using Debian on a server, will be using the stable repository which is the third-most up-to-date repository (with testing and unstable being more up-to-date but also more unstable)
