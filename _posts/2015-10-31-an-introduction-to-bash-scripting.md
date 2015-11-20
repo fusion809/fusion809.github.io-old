@@ -1,0 +1,520 @@
+{% include image.html image="optipng2.png" description="OptiPNG 0.7.5 running under Bash 4.3.39 in LXTerminal 0.2.0" width = "1300px" %}
+
+{% include note.html note1="Links to Wiki articles are provided in this post for those that wish to learn more, but it is important to note that I cannot guarantee their accuracy." %}
+**Bash**, also known as the **Bourne-again shell**, is a Unix shell and command language, that is developed as part of the GNU Project. Along with the Linux kernel and package management system, I would rank Bash as one of the three most important components of a Sabayon Linux system. Without it or some other Unix shell in its place, one's ability to interact one's system would be very limited and difficult.
+
+It was originally developed by [Brian J. Fox](https://en.wikipedia.org/wiki/Brian_Fox_(computer_programmer)) in 1989 and has since become the most-widely used [Unix shell](https://en.wikipedia.org/wiki/Unix_shell), with the vast majority of Linux distributions using it as their default command shell (only notable exception I have come across is Deepin, which uses Zsh) and since the release of 10.3 in October 2003 is has replaced tcsh as the default command shell for OS X.
+
+In this post I will give some necessary background on Bash and its predecessor, the Bourne shell, as well as some basic scripting in Bash, some applications, *etc.* It is important to remember I am not an expert at Bash or Bash scripting, I have even had doubts I could even write an entire post on Bash scripting. It is important to note too that this post is nowhere near *comprehensive* on this topic, as the only type of text I, or anyone, could write that would be comprehensive on this topic would be an entire several-hundred page book, not a dozen-or-so-page blog post. This post just gives you some of the tools to do many of the basic things a novice or intermediate user of Sabayon would like to be able to do with Bash.
+# Background
+{% include image.html url="images/BrianJFox.png" width="300" height="401" description="**Brian J. Fox (1959-), the original developer of Bash**" %}
+
+The development of Bash began in January 1988, when <a href="https://en.wikipedia.org/wiki/Richard_Stallman" target="_blank">Richard Stallman</a>, the founder of the <a href="http://www.gnu.org/" target="_blank">GNU Project</a> and the <a href="http://www.fsf.org/" target="_blank">Free Software Foundation</a> (FSF), became dissatisfied with the previous author of the GNU shell's failure to meet the required deadlines and decided, instead, to get FSF staff member, Brian J. Fox to write a free imitation of the Bourne Shell.[1. Source: <a href="https://groups.google.com/forum/#!original/comp.unix.questions/iNjWwkyroR8/yedr9yDWSuQJ">email from 1987</a>] Later in June 1989, the first public release of Bash was made, 0.99 (which was a beta release) and until mid 1992 (when Bash 1.12 was released), Fox remained the lead developer of Bash.[2. Source: <a href="http://www.scribd.com/doc/40556434/2010-10-31-Chet-Ramey-Early-Bash-Dates">Chet Ramey's Scribd document</a>] When Fox left the FSF in mid 1992, <a href="http://tiswww.case.edu/php/chet/" target="_blank">Chet Ramey</a> took over responsibility for Bash's development, which he has kept to this very day.[3. Source: <a href="https://www.gnu.org/software/bash/">Bash Webpage</a>]
+<h2>Other Unix Shells</h2>
+The Bourne Shell was one of the first official Unix shells to be developed and was first developed in 1977. I am using the phrasing "official Unix shells", to draw attention to the fact that the Bourne Shell was developed at Bell Labs for use by Research Unix, which was the original Unix system. The Bourne Shell is named after <a href="https://en.wikipedia.org/wiki/Stephen_R._Bourne" target="_blank">Stephen Bourne</a>, its original developer.
+
+While Bash was originally developed as a free "imitation" of the Bourne Shell, it also has features that it borrows from other Unix shells: including the C shell and the Korn shell. The <b><a href="https://en.wikipedia.org/wiki/C_shell">C shell</a></b> (<b>csh</b>) is a Unix shell that was originally developed by <a href="https://en.wikipedia.org/wiki/Bill_Joy">Bill Joy</a> — the author of the Vi text editor (which is a direct ancestor of Vim) and was first released in 1978 (and is still under active development today). Its chief distinguishing feature is that its syntax is similar to that of the <a href="https://en.wikipedia.org/wiki/C_(programming_language)" target="_blank">C programming language</a>. A notable descendent of C shell that is also widely used today, is <b><a href="https://en.wikipedia.org/wiki/Tcsh">tcsh</a></b> (the <b>TENEX C Shell</b>), which before release 10.3 was the default shell of OS X. The <b><a href="https://en.wikipedia.org/wiki/Korn_shell">Korn shell</a></b> (<b>ksh</b>) was one of the Unix shells developed at Bell Labs for Research Unix, although unlike most other of the original Unix shells it is still under active development today.
+
+Along with these shells, another free Unix shell that has gained notoriety, that I feel is worthwhile mentioning is the <b><a href="https://en.wikipedia.org/wiki/Z_shell">Z shell</a></b> (<b>Zsh</b>). Zsh was first released by Paul Falstad in 1990 and at the time Falstad was a student at Princeton University. Since then Zsh's development has become coordinated by Peter Stephenson. What is notable about Zsh, is how feature-packed it is. It has many of the same features as Bash, but it also has spelling-correction, easier customizability and a few other features that Bash lacks.
+
+All free Unix shells that are available for Gentoo or Sabayon systems are located in the category of app-shells within the <a href="https://packages.sabayon.org/quicksearch?q=app-shells&amp;filter=category_startswith&amp;filter_data=app-shells" target="_blank">Entropy Store</a>, <a href="https://packages.gentoo.org/categories/app-shells" target="_blank">Portage Tree</a> and <a href="http://gpo.zugaina.org/app-shells" target="_blank">Gentoo Portage Overlays</a>. To show them all from the command-line run:
+<div class = "code"><span class = "codeu">user $</span> &nbsp;eix -C -c "app-shells"</div>
+
+<h2>Changing Unix Shells</h2>
+On Unix/Unix-like platforms it is possible to change your login shell using the <code>chsh</code> command. For example, to change your login shell to Zsh (assuming it is installed), run:
+<div class = "code"><span class = "codeu">user $</span> &nbsp;chsh -s /bin/zsh</div>
+and then reboot.
+# Definitions
+A natural question, that is asked by everyone, that is introduced to Unix shells, is "What is a Unix shell, exactly?" While this question sounds simple and straightforward, the answer is difficult to put into words, without it being either too generalized and vague, or too focused on specific examples. So I am going to air on the side of generalization and say that a Unix shell, is a <b>command-line interpreter</b> (<b>CLI</b>) that provides a familiar interface by which users can interact with the Unix[4. Or Unix-like, in the case of Linux distributions such as Sabayon] system. Take the example of Bash, which is started whenever you open up a <b>terminal emulator</b> (<b>TEE</b>) or start <b>tty1</b> (with <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F1</kbd>) within most Linux systems, provided you have not set your default shell to something other than Bash. It interprets every command you type into the TEE or tty1 and can make changes to your system, accordingly. On most Linux systems, Unix shells are stored in the file directory <code>/bin</code>. You can list them all by issuing the command:
+<div class="code"><span class="coder">root #</span>  cat /etc/shells</div>
+for me, for example, on my Sabayon machine this gives the output:
+<pre>/bin/bash
+/bin/csh
+/bin/esh
+/bin/fish
+/bin/ksh
+/bin/sash
+/bin/sh
+/bin/tcsh
+/bin/zsh
+/bin/rcsh
+/bin/mksh
+</pre>
+Bash and other Unix shells, have their own unique syntax or language (that is, how commands are passed onto Bash and other Unix shells), although most text editors (TEs) group all shell scripting languages together and call their collective syntax or language, "Shell script" or even just "sh". Examples of such TEs include: Atom, gedit and SciTE. They can do this without a problem in most cases because Unix shells share quite a lot of their syntax with one another.
+
+Another important concept, for one to understand in order for the rest of this post to make any sort of sense, is that of a <b>script</b>. Scripts are programs that can be interpreted from within a **run-time environment** (**RTE**) and they automate the execution of tasks that would otherwise have to be performed manually, one-by-one, by a human operator. In the case of shell scripts, including Bash scripts, the RTE in which the script is interpreted is the Unix shell.
+
+# Bash and Files
+Bash scripts usually have the file extension of <code>.sh</code>, although some have no file extension. When Bash is started as an interactive, non-login shell (for example, from within a TEE) it first reads <code>~/.bashrc</code>. When it is started as an interactive, login shell (like when it is started within tty1) it first reads <code>/etc/profile</code>, <code>~/.bash_profile</code>, <code>~/.bash_login</code> and <code>~/.profile</code>. Commands executed in Bash are also recorded in <code>~/.bash_history</code>. Commands interpreted by Bash are case-sensitive.
+# Basic Syntax
+The Bash syntax has several distinct components, which can be classed as <a href = "#Keywords_and_Special_Characters">keywords and special characters</a>, <a href = "#Bulletins">bulletins</a>, <a href = "#Variables">variables</a>, <a href = "#Functions">functions</a>, <a href = "#Tests">tests</a> and <a href = "#Conditionals">conditionals</a>.
+<h2>Keywords and Special Characters</h2>
+<b>Keywords and special characters</b> (<b>KSCs</b>) are an important concept to understand, they are words, or symbols, that have a special, set meaning when scripting in Bash. Examples are listed in <b>Table 1</b>.
+<table style="width: 100%;"><caption>Table 1: Some Keywords and Special Characters Permitted in Bash</caption>
+<tbody>
+<tr>
+<td class="title" style="width: 10%;"><abbr title = "Keywords/Special Character">KSC</abbr></td>
+<td class="title" style="width: 40%;">Meaning, or usage</td>
+<td class="title" style="width: 50%;">Example(s)</td>
+</tr>
+<tr>
+<td><code>{...}</code><br/> <code>function</code></td>
+<td>Used to define <a href="#Functions">functions</a>. Curly braces can also be used to just group lines of code together.</td>
+<td>
+<pre lang = "bash">function update {
+   sudo equo update && sudo equo upgrade
+}
+</pre>
+</td>
+</tr>
+<tr>
+<td><code>[...]</code><br/><code>[[...]]</code></td>
+<td>Used for <a href="#Tests">tests</a>, double square brackets are only available in more advanced Unix shells such as Bash, ksh and Zsh.</td>
+<td>
+<pre lang = "bash">[[ -n $1 ]]
+</pre>
+tests whether the input variable, <code>$1</code> exists.
+</td>
+</tr>
+<tr>
+<td><code>#</code></td>
+<td>Whatever follows is interpreted by Bash, as a comment, for human operators to read but to be left uninterpreted by Bash.</td>
+<td>
+<pre lang = "bash">
+# This is a comment
+</pre></td>
+</tr>
+<tr>
+<td><code>!</code></td>
+<td>Returns the reciprocal (opposite) or negates of what follows it.</td>
+<td>
+<pre lang = "bash">[[ $X != 3 ]]</pre>
+(which returns 0 (true) if the variable X does not equal 3, or 1 if it is equal to 3).
+</td>
+</tr>
+<tr>
+<td><code>$</code></td>
+<td>Evaluates what comes after it, such as a mathematical expression in double square brackets.</td>
+<td><code>echo $[3 * 2]</code> returns 6.</td>
+</tr>
+<tr>
+<td><code>|</code></td>
+<td>This is called a <b>pipe</b> and it sends the output of a command through another. For example, <code>A | B</code> does A and sends its output through B.</td>
+<td>The following example downloads the source code tarball of the 1.1.0 release of Atom and pipes it through tar and gzip to decompress it.[5. Note, I previously did not know how to pipe the output of wget through tar until I asked <a href = "http://unix.stackexchange.com/q/239741/27613">this</a> question at Unix & Linux StackExchange. The defining of an ATOM variable (instead of just combining it into the second line) is mostly just for space restrictions within this table]
+<pre lang = "bash">
+ATOM=https://github.com/atom/atom/archive
+wget -qO- $ATOM/v1.1.0.tar.gz | tar -xz
+</pre></td>
+</tr>
+<tr>
+<td><code>;</code></td>
+<td>Allows several commands to be executed on the same line.</td>
+<td>
+<pre lang = "bash">sudo equo update ; sudo equo upgrade
+</pre>
+</td>
+</tr>
+<tr>
+<td><code>~</code></td>
+<td>Denotes the home directory. For example, as my username is fusion809 on my Sabayon machine, my home directory is <code>/home/fusion809</code>.</td>
+<td><pre lang = "bash">
+cd ~
+</pre>
+takes one to current user's home directory. If it is run as root it will take one to one's <code>/root</code>.</td>
+</tr>
+<tr>
+<td><code>-</code></td>
+<td>Can be used as the arithmetic operator, minus, or as the previous working directory.</td>
+<td><pre lang = "bash">
+cd -
+</pre>
+takes one to one's previous working directory.</td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td>Wildcard operator, can take on any value. Can also be used for multiplication.</td>
+<td>
+If you have a directory, <code>~/VirtualBox</code> on your machine and no others starting with the prefix <code>~/Virtual</code> then:
+<pre lang = "bash">
+cd ~/Virtual*
+</pre>
+should change your current working directory to <code>~/VirtualBox</code>.
+</td>
+</tr>
+<tr>
+<td><code>.</code></td>
+<td>Serves as an equivalent to the <code>source</code> bulletin and as an equivalent to <code>pwd</code></td>
+<td>As <code>source</code> (the following will execute every file with the extension <code>.sh</code> in the <code>~/Shell</code> directory):
+<pre lang="bash" title="~/.bashrc" class="start-line:17-20">
+for i in ~/Shell/*.sh
+do
+	. $i
+done
+</pre>
+whereas as <code>pwd</code>:
+<pre lang = "bash">
+cd .
+</pre>
+which causes no change in current directory.
+</td>
+</tr>
+<tr>
+<td><code>..</code></td>
+<td>Denotes the parent directory</td>
+<td>If I am working in the <code>~/Shell</code> directory, and run:
+<pre lang = "bash">
+cd ..
+</pre>
+my present working directory (pwd) would then be <code>~</code>, my home directory. </td>
+</tr>
+<tr>
+<td><code>&&</code></td>
+<td>Executes subsequent commands, provided the preceding command(s) were executed without error. For example, <code>A && B</code> does A and then B, provided that A is executed without error. While <code>A && B && C</code> would do A, then if A returns no error, it would perform B and if A and B ran without error it would then run C.</td>
+<td>
+<pre>sudo equo update && sudo equo upgrade</pre>
+</td>
+</tr>
+<tr>
+<td><code>case</code><br/> <code>esac</code></td>
+<td>Conditional statement, checking whether inputs match. <code>case</code> starts them and <code>esac</code> ends them.</td>
+<td>
+<pre lang = "bash" title = "school-test.sh" style = "visibility: collapse;">
+case $X in
+     [1-5])
+      Message="You're not at school yet!"
+     ;;
+     [6-12])
+      Message="You're in primary school now, enjoy!"
+     ;;
+     [13-17])
+      Message="You're in high school now, changes are coming!"
+     ;;
+     [18-20]*)
+      Message="You're at Uni, enjoy the freedom!"
+     ;;
+esac
+</pre></td>
+</tr>
+<tr>
+<td><code>do</code><br/> <code>done</code><br/> <code>for</code></td>
+<td>Used in <code>for</code> loops. <code>for</code> begins the loop, <code>do</code> enacts commands and <code>done</code> and finishes the loop.</td>
+<td>
+<pre lang = "bash" title = "optimize.sh">
+for i in `find . -name "*.png"`
+do
+  optipng -o7 "$i"
+done
+</pre></td>
+</tr>
+<tr>
+<td><code>elif</code><br/> <code>else</code><br/> <code>fi</code><br/> <code>if</code><br/> <code>then</code></td>
+<td>Used in <code>if</code> conditionals.</td>
+<td><pre lang = "bash" title = "abash.sh">
+if [[ -n $1 ]]
+   then
+     atom ~/Shell/$1.sh
+   elif [[ -v $X ]]
+     atom ~/Shell/$X.sh
+   else
+     atom ~/.bashrc
+fi
+</pre></td>
+</tr>
+<tr>
+<td><code>in</code></td>
+<td>Used when dealing with lists</td>
+<td>This script should, if passed an argument open Atom to <code>~/Shell/$1.sh</code>, otherwise ask the user to select from the list of shell scripts in <code>~/Shell</code> of which one to open in Atom.
+<pre lang = "bash" title = "abashsel.sh">
+pushd ~/Shell
+if [[ -n $1 ]]
+   then
+     atom $1.sh
+   else
+     select x in `find . -name "*.sh"`
+     do
+       atom $x
+      break
+     done
+fi
+popd
+</pre></td>
+</tr>
+<tr>
+<td><code>select</code></td>
+<td>Gets users to select from a list of options.</td>
+<td><pre lang = "bash" title = "abashsel.sh">
+pushd ~/Shell #moving into the ~/Shell directory
+if [[ -n $1 ]]
+   then
+     atom $1.sh
+   else
+     select x in `find . -name "*.sh"`
+     do
+       atom $x
+      break
+     done
+fi
+popd #moving back out of the ~/Shell directory
+</pre></td>
+</tr>
+</tbody>
+</table>
+<code>until</code>, <code>while</code> and <code>time</code> are some other keywords that are not mentioned there, as I do not know enough about them to really comment on them. Keywords can be used as variables but I would not advise this, as this can quite easily become confusing.
+<h2>Variables</h2>
+Bash <b>variables</b> are defined using equal signs. They can be made global (making them available for all processes) or local (making them available just for the script at hand). Local variables are defined by just using an equal sign, for example:
+<div class="code">PYTHONPATH=/usr/bin/python</div>
+while to define this variable globally, one would run:
+<div class="code">export PYTHONPATH=/usr/bin/python</div>
+<h2>Bulletins</h2>
+Several Bash commands (or <b>bulletins</b>) exist and some (but by no stretch of the imagination all — I do not even understand them all!) basic ones are explained in <b>Table 2</b>. It is worthwhile noting that all these commands are purely Bash commands, by this I mean, they do not call any command-line programs to do their work for them. See many commands you will see in Bash scripts are not Bash commands, per se, rather they are commands that use another command-line program such as <code>mv</code> or <code>pwd</code> to do the work, but they can be run from within Bash. Many of these programs are also borrowed from the GNU Project, namely its core utilities package (<code><a href="https://packages.sabayon.org/show/coreutils,156043,sabayon-weekly,amd64,5,standard">sys-apps/coreutils</a></code>) and are stored in either <code>/usr/bin/</code> or <code>/bin/</code>, directories.
+<table style="width: 100%;"><caption>Table 2: Some Basic Bulletins</caption>
+<tbody>
+<tr>
+<td class="title">Command</td>
+<td class="title" style="width: 20%;">Meaning</td>
+<td class="title" style="width: 50%;">Examples</td>
+<td class="title" style="width: 20%;">Manpage (HTML)</td>
+</tr>
+<tr>
+<td><code>alias</code></td>
+<td>Set a synonym for a command or function</td>
+<td>
+<pre>alias ..='cd ..'</pre>
+</td>
+<td><a href="http://linux.x10host.com/blog/man/alias.1p.html">alias.1p.html</a></td>
+</tr>
+<tr>
+<td><code>cd</code></td>
+<td>Change directory.</td>
+<td>
+<pre>cd ~/Documents</pre>
+changes one's directory to /home/username/Documents.</td>
+<td><a href="http://linux.x10host.com/blog/man/cd.1p.html">cd.1p.html</a></td>
+</tr>
+<tr>
+<td><code>date</code></td>
+<td>Outputs the date. Inputs/variables can be used to set the timezone and the format of the date given.</td>
+<td>This gives my local date and time in my preferred format:
+<pre>TZ="Australia/Brisbane" date +"%r %A, %d %B %Y"</pre>
+</td>
+<td><a href="http://linux.x10host.com/blog/man/date.1.html">date.1.html</a></td>
+</tr>
+<tr>
+<td><code>export</code></td>
+<td>Set variables provided to it as environment, or global, variables.</td>
+<td><pre lang = "bash">export JAVA_HOME=/usr/lib/jvm/oracle-jdk-bin-1.8/bin</pre></td>
+<td><a href="http://linux.x10host.com/blog/man/export.1p.html">export.1p.html</a></td>
+</tr>
+<tr>
+<td><code>history</code></td>
+<td>Outputs Bash history.</td>
+<td>
+<pre>history -10</pre>
+should show the last ten commands executed with Bash.</td>
+<td><a href="http://linux.x10host.com/blog/man/history.3.html">history.3.html</a></td>
+</tr>
+<tr>
+<td><code>source</code></td>
+<td>Execute script(s) provided to it.</td>
+<td><pre lang = "bash">
+source ~/.bashrc
+</pre>
+runs the <code>~/.bashrc</code> script.
+</td>
+<td><a href="http://linux.x10host.com/blog/man/source.n.html">source.n.html</a></td>
+</tr>
+</tbody>
+</table>
+<h2>Tests</h2>
+Tests are essential for conditionals. As their name suggests, they test to see whether or not a condition is satisfied. If the condition is satisfied they return 0, while if the condition is unsatisfied they return 1. Square brackets (which are a bulletin, by-the-way), <code>[...]</code>, are used for tests, although double square brackets (<code>[[...]]</code>) can also be used for this purpose since Bash 2.02. The difference, from what I can tell, between single and double square brackets is that double square brackets allow one to perform more advanced tests than single square brackets. Single square brackets are also POSIX compliant and are found on all Unix shells.[6. Source: <a href="http://serverfault.com/a/52050/298691" target="_blank">Server Fault</a>]
+<h2>Conditionals</h2>
+In Bash scripts conditionals use the output of a test and perform an action accordingly. Conditionals usually involve at least one of the following keywords: <code>case</code>, <code>if</code>, <code>else</code>, <code>elseif</code> and <code>fi</code>.
+<h2>Functions</h2>
+Functions are essentially convenient ways we can group pieces of code together, so as to give them order and make them more logical. Quite often functions are designed to take input and use it to generate an output, or to perform a task, although some functions require no input. All Bash functions share two main things in common: the use of the word "function" and the fact the function's contents are contained within curly braces <code>{...}</code>.
+<h2>Loops</h2>
+Loops (which involve the <code>for</code> keyword), in Bash scripts, are used to automate the performing of tedious tasks that are sufficiently similar to one another.
+<h2>Selectors</h2>
+Selectors (marked by the <code>select</code> keyword) gives users choices as to which input(s) the rest of the selector block uses.
+# Applications
+The primary value of Bash scripts is to automate tasks that would otherwise have to be done, over a longer time-frame by a human operator. I personally use shell scripts to make my life, when I am at the command-line, easier.
+
+In my <code>~/.bashrc</code> file I have links to several shell scripts stored in my <code>~/Shell</code> directory. Both my <code>~/.bashrc</code> and the shell scripts in my <code>~/Shell</code> directory can be found at <a href = "https://github.com/fusion809/sabayon-scripts">this GitHub repository</a>. Here is my current <code>~/.bashrc</code> file:[7. The for loop I got from the answers to <a href = "http://unix.stackexchange.com/q/239881/27613">this question</a> at Unix & Linux SE]
+<pre lang = "bash" title = "~/.bashrc">
+# /etc/skel/.bashrc
+#
+# This file is sourced by all *interactive* bash shells on startup,
+# including some apparently interactive shells such as scp and rcp
+# that can't tolerate any output. So make sure this doesn't display
+# anything or bad things will happen !
+
+# Test for an interactive shell.  There is no need to set anything
+# past this point for scp and rcp, and it's important to refrain from
+# outputting anything in those cases.
+if [[ $- != *i* ]] ; then
+	# Shell is non-interactive.  Be done now!
+	return
+fi
+
+# Execute all shell scripts in the ~/Shell directory
+for i in ~/Shell/*.sh
+do
+	. $i
+done
+</pre>
+I have at least three dozen functions I have defined in shell scripts located in the <code>~/Shell</code> directory, but here I will mention some of the more interesting, or useful ones for Sabayon users, in general.
+
+<h2>Interesting Scripts[8. Which is in the eye of the beholder of course, you may not find these interesting at all]</h2>
+You may have noticed that I am hosting HTML versions of several Linux man pages within the <code>/man</code> subdomain of this blog. I generate them using a function contained within <code>~/Shell/man.sh</code> called <code>manhtml</code>. For example, to generate <a href = "http://linux.x10host.com/blog/man/emerge.1.html">emerge.1.html</a> I ran <code><span class = "codeu">user $</span> &nbsp;manhtml 1 emerge</code>. Here are the contents of <code>~/Shell/man.sh</code> (showing all the contents as <code>manhtml</code> depends on other functions to work):
+<pre lang = "bash" title = "~/Shell/man.sh">
+# Copy man page from /usr/share/man/... to ~/Documents/Manpages
+function cpman {
+  sudo cp -a /usr/share/man/man$1/$2.$1.bz2 ~/Documents/Manpages
+}
+
+# Convert bz2 man page to HTML
+function manconv {
+  cdman
+  sudo chmod 777 -R $2.$1.bz2
+  bzip2 -d $2.$1.bz2
+  gzip -c $2.$1 > $2.$1.gz
+  zcat $2.$1.gz | groff -mandoc -Thtml > $2.$1.html
+  sudo chmod 777 -R $2.$1.html
+  rm $2.$1.gz $2.$1
+}
+
+function manhtml {
+  cpman $1 $2 && manconv $1 $2
+}
+</pre>
+while here is a function I created to help me install Moksha themes (it appears differently in my <code>~/Shell/other.sh</code> file, as this form is mostly to walk you through how it works):
+<pre lang = "Shell">
+function theme {
+  #clone repo
+  git clone https://github.com/JeffHoogland/$1
+  #change directory to new cloned repo
+  cd $1
+  #add an upstream source
+  git remote add upstream https://github.com/JeffHoogland/$1
+  #change into the repo subdirectory where build.sh is located
+  cd $1
+  #build an edj file for the theme
+  ./build.sh
+  #cd back into the base repo directory
+  cd ..
+  #move edj file to theme directory
+  cp -a $1.edj ~/.e/e/themes/
+  #cd out of repo
+  cd ..
+}
+</pre>
+to install a new Moksha theme you would run <code><span class = "codeu">user $</span> &nbsp;theme &lt;THEME&gt;</code> where <code>&lt;THEME&gt;</code> is, of course, the theme's name (how they appear in their respective GitHub repo's URL).
+<h2>Useful Functions for Sabayon Users</h2>
+The following are some functions that, depending on how you operate on Sabayon, may be helpful.
+<h3>Entropy</h3>
+The following are taken from <code><a href = "https://github.com/fusion809/sabayon-scripts/blob/master/Shell/equo.sh">~/Shell/equo.sh</a></code> and they are functions (with aliases for said functions) that essentially automate some common actions one may perform with Entropy. They are not all the lines of code in <code>equo.sh</code>, they merely represent some of the more commonly-used codes. It is important to note some of these functions need not be defined as functions, they could instead be defined as aliases (using <code>alias NAME=`CODE`</code> where NAME is the function's name and <code>CODE</code> is what is between the curly brackets).
+<pre lang = "bash" title = "~/Shell/equo.sh">
+# Inflate Portage binary into SPM binary.
+function sepi {
+	pushd /usr/portage/packages/$1
+	sudo equo pkg inflate $2
+	popd
+}
+
+# Reinstall dependencies of package along with the package itself and all deep
+# dependencies
+function seqd {
+	sudo equo i -av --deep --empty $@
+}
+
+# Install a package with Entropy, ask first.
+function seqi {
+	sudo equo i -av $@
+}
+
+alias install=seqi
+alias ins=seqi
+
+# Install package dependencies (and only the dependencies) with Entropy
+function seqo {
+	sudo equo i -aov $@
+}
+
+alias build-dep=seqo
+alias builddep=seqo
+alias bdep=seqo
+
+# Remove a package with Entropy and all packages that depend on said package
+# Ask first. It is advisable to ask first, because sometimes this can remove
+# packages you want.
+function seqr {
+	sudo equo rm -av $@
+}
+
+alias remove=seqr
+alias rem=seqr
+
+# Update all packages installed with Entropy and make Entropy acknowledge emerged packages
+function sequ {
+	spm && sudo equo update && sudo equo upgrade --purge && sudo equo cleanup
+}
+
+alias update=sequ
+
+# Make Entropy acknowledge the existence of emerged packages
+function spm {
+	sudo equo rescue spmsync
+}
+</pre>
+<h3>Layman/Portage</h3>
+Here are some lines from my <a href = "https://github.com/fusion809/sabayon-scripts/blob/master/Shell/emerge.sh">emerge.sh</a> script.
+<pre lang = "bash" title = "~/Shell/emerge.sh">
+# Install a package, but ask first
+function ema {
+  sudo emerge -av $@
+}
+
+# Install package dependencies only and ask before doing so. e.g., emo enlightenment
+# would install all of enlightenment's dependencies.
+function emo {
+  sudo emerge -aov $@
+}
+
+# Pretend to install a package
+function emp {
+  sudo emerge -pv $@
+}
+
+# Unmerge a package
+function emrm {
+  sudo emerge -C $@
+}
+
+alias emc=emrm
+
+# Sync Portage Tree and all Layman overlays.
+function sync {
+  sudo emerge --sync && sudo layman -S
+}
+
+# Track the download progress of packages being installed with Portage
+function tailf {
+  tail -f /var/log/emerge-fetch.log
+}
+</pre>
+
+# Free Help Resources
+<ul>
+<li><a href = "http://stackoverflow.com/">Stack Overflow</a>[9. Its general topic is programming, so it is suitable for shell script-related questions. I have asked two questions there relating to shell script, as of 31 October 2015, both were resolved within an hour.]</li>
+<li><a href = "http://unix.stackexchange.com">Unix & Linux StackExchange</a>[10. As of 31 October 2015 I have asked 8 questions relating to shell scripts there and seven have been answered. Each of those that have been answered were resolved (that is, given an answer that solved whatever problem I had) within a day of me asking them.]</li>
+</ul>
+
+# Further Reading
+<div class="note"><b>NOTE</b>: *All the following links are to free PDFs*</div>
+<ul>
+	<li><a href="http://www.tldp.org/LDP/abs/abs-guide.pdf" target="_blank">Advanced Bash-Scripting Guide (2014) @ www.tldp.org</a></li>
+	<li><a href="http://www.tldp.org/LDP/Bash-Beginners-Guide/Bash-Beginners-Guide.pdf" target="_blank">Bash Guide for Beginners (2008) @ www.tldp.org</a></li>
+	<li><a href="http://www.gnu.org/software/bash/manual/bash.pdf" target="_blank">Bash Official Manual (2014) @ www.gnu.org</a></li>
+	<li><a href="http://www.tldp.org/LDP/GNU-Linux-Tools-Summary/GNU-Linux-Tools-Summary.pdf" target="_blank">GNU/Linux Tools Summary (2006) @ www.tldp.org</a></li>
+        <li><a href = "http://www.gnu.org/software/coreutils/manual/coreutils.pdf">GNU Core Utilities Manual (2015) @ www.gnu.org</a> (helpful in explaining what GNU Core Utilities you can call from within your Bash scripts)</li>
+</ul>
+# Footnotes
