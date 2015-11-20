@@ -1,3 +1,10 @@
+---
+layout: post
+title:  "An Introduction to Bash Scripting on Sabayon Linux"
+date:   2015-10-31
+categories: sabayon, bash, shell-scripting
+---
+
 {% include image.html image="optipng2.png" description="OptiPNG 0.7.5 running under Bash 4.3.39 in LXTerminal 0.2.0" width = "1300px" %}
 
 {% include note.html note1="Links to Wiki articles are provided in this post for those that wish to learn more, but it is important to note that I cannot guarantee their accuracy." %}
@@ -7,28 +14,33 @@ It was originally developed by [Brian J. Fox](https://en.wikipedia.org/wiki/Bria
 
 In this post I will give some necessary background on Bash and its predecessor, the Bourne shell, as well as some basic scripting in Bash, some applications, *etc.* It is important to remember I am not an expert at Bash or Bash scripting, I have even had doubts I could even write an entire post on Bash scripting. It is important to note too that this post is nowhere near *comprehensive* on this topic, as the only type of text I, or anyone, could write that would be comprehensive on this topic would be an entire several-hundred page book, not a dozen-or-so-page blog post. This post just gives you some of the tools to do many of the basic things a novice or intermediate user of Sabayon would like to be able to do with Bash.
 # Background
-{% include image.html url="images/BrianJFox.png" width="300" height="401" description="**Brian J. Fox (1959-), the original developer of Bash**" %}
+{% include image.html image="BrianJFox.png" width="300px" height="401px" description="Brian J. Fox (1959-), the original developer of Bash" %}
 
-The development of Bash began in January 1988, when <a href="https://en.wikipedia.org/wiki/Richard_Stallman" target="_blank">Richard Stallman</a>, the founder of the <a href="http://www.gnu.org/" target="_blank">GNU Project</a> and the <a href="http://www.fsf.org/" target="_blank">Free Software Foundation</a> (FSF), became dissatisfied with the previous author of the GNU shell's failure to meet the required deadlines and decided, instead, to get FSF staff member, Brian J. Fox to write a free imitation of the Bourne Shell.[1. Source: <a href="https://groups.google.com/forum/#!original/comp.unix.questions/iNjWwkyroR8/yedr9yDWSuQJ">email from 1987</a>] Later in June 1989, the first public release of Bash was made, 0.99 (which was a beta release) and until mid 1992 (when Bash 1.12 was released), Fox remained the lead developer of Bash.[2. Source: <a href="http://www.scribd.com/doc/40556434/2010-10-31-Chet-Ramey-Early-Bash-Dates">Chet Ramey's Scribd document</a>] When Fox left the FSF in mid 1992, <a href="http://tiswww.case.edu/php/chet/" target="_blank">Chet Ramey</a> took over responsibility for Bash's development, which he has kept to this very day.[3. Source: <a href="https://www.gnu.org/software/bash/">Bash Webpage</a>]
-<h2>Other Unix Shells</h2>
-The Bourne Shell was one of the first official Unix shells to be developed and was first developed in 1977. I am using the phrasing "official Unix shells", to draw attention to the fact that the Bourne Shell was developed at Bell Labs for use by Research Unix, which was the original Unix system. The Bourne Shell is named after <a href="https://en.wikipedia.org/wiki/Stephen_R._Bourne" target="_blank">Stephen Bourne</a>, its original developer.
+The development of Bash began in January 1988, when [Richard Stallman](https://en.wikipedia.org/wiki/Richard_Stallman), the founder of the [GNU Project](http://www.gnu.org/) and the [Free Software Foundation](http://www.fsf.org/) (FSF), became dissatisfied with the previous author of the GNU shell's failure to meet the required deadlines and decided, instead, to get FSF staff member, Brian J. Fox to write a free imitation of the Bourne Shell.[1. Source: [email from 1987](https://groups.google.com/forum/#!original/comp.unix.questions/iNjWwkyroR8/yedr9yDWSuQJ)] Later in June 1989, the first public release of Bash was made, 0.99 (which was a beta release) and until mid 1992 (when Bash 1.12 was released), Fox remained the lead developer of Bash.[2. Source: [Chet Ramey's Scribd document](http://www.scribd.com/doc/40556434/2010-10-31-Chet-Ramey-Early-Bash-Dates)] When Fox left the FSF in mid 1992, [Chet Ramey](http://tiswww.case.edu/php/chet/) took over responsibility for Bash's development, which he has kept to this very day.[3. Source: [Bash Webpage](https://www.gnu.org/software/bash/)]
+## Other Unix Shells
+The Bourne Shell was one of the first official Unix shells to be developed and was first developed in 1977. I am using the phrasing "official Unix shells", to draw attention to the fact that the Bourne Shell was developed at Bell Labs for use by Research Unix, which was the original Unix system. The Bourne Shell is named after [Stephen Bourne](https://en.wikipedia.org/wiki/Stephen_R._Bourne), its original developer.
 
-While Bash was originally developed as a free "imitation" of the Bourne Shell, it also has features that it borrows from other Unix shells: including the C shell and the Korn shell. The <b><a href="https://en.wikipedia.org/wiki/C_shell">C shell</a></b> (<b>csh</b>) is a Unix shell that was originally developed by <a href="https://en.wikipedia.org/wiki/Bill_Joy">Bill Joy</a> — the author of the Vi text editor (which is a direct ancestor of Vim) and was first released in 1978 (and is still under active development today). Its chief distinguishing feature is that its syntax is similar to that of the <a href="https://en.wikipedia.org/wiki/C_(programming_language)" target="_blank">C programming language</a>. A notable descendent of C shell that is also widely used today, is <b><a href="https://en.wikipedia.org/wiki/Tcsh">tcsh</a></b> (the <b>TENEX C Shell</b>), which before release 10.3 was the default shell of OS X. The <b><a href="https://en.wikipedia.org/wiki/Korn_shell">Korn shell</a></b> (<b>ksh</b>) was one of the Unix shells developed at Bell Labs for Research Unix, although unlike most other of the original Unix shells it is still under active development today.
+While Bash was originally developed as a free "imitation" of the Bourne Shell, it also has features that it borrows from other Unix shells: including the C shell and the Korn shell. The **[C shell](https://en.wikipedia.org/wiki/C_shell)** (**csh**) is a Unix shell that was originally developed by [Bill Joy](https://en.wikipedia.org/wiki/Bill_Joy) — the author of the Vi text editor (which is a direct ancestor of Vim) and was first released in 1978 (and is still under active development today). Its chief distinguishing feature is that its syntax is similar to that of the [C programming language](https://en.wikipedia.org/wiki/C_(programming_language)). A notable descendant of C shell that is also widely used today, is **[tcsh](https://en.wikipedia.org/wiki/Tcsh)** (the **TENEX C Shell**), which before release 10.3 was the default shell of OS X. The <b><a href="https://en.wikipedia.org/wiki/Korn_shell">Korn shell</a></b> (<b>ksh</b>) was one of the Unix shells developed at Bell Labs for Research Unix, although unlike most other of the original Unix shells it is still under active development today.
 
 Along with these shells, another free Unix shell that has gained notoriety, that I feel is worthwhile mentioning is the <b><a href="https://en.wikipedia.org/wiki/Z_shell">Z shell</a></b> (<b>Zsh</b>). Zsh was first released by Paul Falstad in 1990 and at the time Falstad was a student at Princeton University. Since then Zsh's development has become coordinated by Peter Stephenson. What is notable about Zsh, is how feature-packed it is. It has many of the same features as Bash, but it also has spelling-correction, easier customizability and a few other features that Bash lacks.
 
-All free Unix shells that are available for Gentoo or Sabayon systems are located in the category of app-shells within the <a href="https://packages.sabayon.org/quicksearch?q=app-shells&amp;filter=category_startswith&amp;filter_data=app-shells" target="_blank">Entropy Store</a>, <a href="https://packages.gentoo.org/categories/app-shells" target="_blank">Portage Tree</a> and <a href="http://gpo.zugaina.org/app-shells" target="_blank">Gentoo Portage Overlays</a>. To show them all from the command-line run:
-<div class = "code"><span class = "codeu">user $</span> &nbsp;eix -C -c "app-shells"</div>
+All free Unix shells that are available for Gentoo or Sabayon systems are located in the category of app-shells within the [Entropy Store](https://packages.sabayon.org/quicksearch?q=app-shells&amp;filter=category_startswith&amp;filter_data=app-shells), [Portage Tree](https://packages.gentoo.org/categories/app-shells) and [Gentoo Portage Overlays](http://gpo.zugaina.org/app-shells). To show them all from the command-line run:
+```sh
+eix -C -c "app-shells"
+```
 
-<h2>Changing Unix Shells</h2>
+## Changing Unix Shells
 On Unix/Unix-like platforms it is possible to change your login shell using the <code>chsh</code> command. For example, to change your login shell to Zsh (assuming it is installed), run:
-<div class = "code"><span class = "codeu">user $</span> &nbsp;chsh -s /bin/zsh</div>
+```sh
+chsh -s /bin/zsh
+```
 and then reboot.
 # Definitions
 A natural question, that is asked by everyone, that is introduced to Unix shells, is "What is a Unix shell, exactly?" While this question sounds simple and straightforward, the answer is difficult to put into words, without it being either too generalized and vague, or too focused on specific examples. So I am going to air on the side of generalization and say that a Unix shell, is a <b>command-line interpreter</b> (<b>CLI</b>) that provides a familiar interface by which users can interact with the Unix[4. Or Unix-like, in the case of Linux distributions such as Sabayon] system. Take the example of Bash, which is started whenever you open up a <b>terminal emulator</b> (<b>TEE</b>) or start <b>tty1</b> (with <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F1</kbd>) within most Linux systems, provided you have not set your default shell to something other than Bash. It interprets every command you type into the TEE or tty1 and can make changes to your system, accordingly. On most Linux systems, Unix shells are stored in the file directory <code>/bin</code>. You can list them all by issuing the command:
 <div class="code"><span class="coder">root #</span>  cat /etc/shells</div>
 for me, for example, on my Sabayon machine this gives the output:
-<pre>/bin/bash
+```sh
+/bin/bash
 /bin/csh
 /bin/esh
 /bin/fish
@@ -39,7 +51,7 @@ for me, for example, on my Sabayon machine this gives the output:
 /bin/zsh
 /bin/rcsh
 /bin/mksh
-</pre>
+```
 Bash and other Unix shells, have their own unique syntax or language (that is, how commands are passed onto Bash and other Unix shells), although most text editors (TEs) group all shell scripting languages together and call their collective syntax or language, "Shell script" or even just "sh". Examples of such TEs include: Atom, gedit and SciTE. They can do this without a problem in most cases because Unix shells share quite a lot of their syntax with one another.
 
 Another important concept, for one to understand in order for the rest of this post to make any sort of sense, is that of a <b>script</b>. Scripts are programs that can be interpreted from within a **run-time environment** (**RTE**) and they automate the execution of tasks that would otherwise have to be performed manually, one-by-one, by a human operator. In the case of shell scripts, including Bash scripts, the RTE in which the script is interpreted is the Unix shell.
@@ -48,7 +60,7 @@ Another important concept, for one to understand in order for the rest of this p
 Bash scripts usually have the file extension of <code>.sh</code>, although some have no file extension. When Bash is started as an interactive, non-login shell (for example, from within a TEE) it first reads <code>~/.bashrc</code>. When it is started as an interactive, login shell (like when it is started within tty1) it first reads <code>/etc/profile</code>, <code>~/.bash_profile</code>, <code>~/.bash_login</code> and <code>~/.profile</code>. Commands executed in Bash are also recorded in <code>~/.bash_history</code>. Commands interpreted by Bash are case-sensitive.
 # Basic Syntax
 The Bash syntax has several distinct components, which can be classed as <a href = "#Keywords_and_Special_Characters">keywords and special characters</a>, <a href = "#Bulletins">bulletins</a>, <a href = "#Variables">variables</a>, <a href = "#Functions">functions</a>, <a href = "#Tests">tests</a> and <a href = "#Conditionals">conditionals</a>.
-<h2>Keywords and Special Characters</h2>
+## Keywords and Special Characters
 <b>Keywords and special characters</b> (<b>KSCs</b>) are an important concept to understand, they are words, or symbols, that have a special, set meaning when scripting in Bash. Examples are listed in <b>Table 1</b>.
 <table style="width: 100%;"><caption>Table 1: Some Keywords and Special Characters Permitted in Bash</caption>
 <tbody>
@@ -260,12 +272,12 @@ popd #moving back out of the ~/Shell directory
 </tbody>
 </table>
 <code>until</code>, <code>while</code> and <code>time</code> are some other keywords that are not mentioned there, as I do not know enough about them to really comment on them. Keywords can be used as variables but I would not advise this, as this can quite easily become confusing.
-<h2>Variables</h2>
+## Variables
 Bash <b>variables</b> are defined using equal signs. They can be made global (making them available for all processes) or local (making them available just for the script at hand). Local variables are defined by just using an equal sign, for example:
 <div class="code">PYTHONPATH=/usr/bin/python</div>
 while to define this variable globally, one would run:
 <div class="code">export PYTHONPATH=/usr/bin/python</div>
-<h2>Bulletins</h2>
+## Bulletins
 Several Bash commands (or <b>bulletins</b>) exist and some (but by no stretch of the imagination all — I do not even understand them all!) basic ones are explained in <b>Table 2</b>. It is worthwhile noting that all these commands are purely Bash commands, by this I mean, they do not call any command-line programs to do their work for them. See many commands you will see in Bash scripts are not Bash commands, per se, rather they are commands that use another command-line program such as <code>mv</code> or <code>pwd</code> to do the work, but they can be run from within Bash. Many of these programs are also borrowed from the GNU Project, namely its core utilities package (<code><a href="https://packages.sabayon.org/show/coreutils,156043,sabayon-weekly,amd64,5,standard">sys-apps/coreutils</a></code>) and are stored in either <code>/usr/bin/</code> or <code>/bin/</code>, directories.
 <table style="width: 100%;"><caption>Table 2: Some Basic Bulletins</caption>
 <tbody>
@@ -325,15 +337,15 @@ runs the <code>~/.bashrc</code> script.
 </tr>
 </tbody>
 </table>
-<h2>Tests</h2>
+## Tests
 Tests are essential for conditionals. As their name suggests, they test to see whether or not a condition is satisfied. If the condition is satisfied they return 0, while if the condition is unsatisfied they return 1. Square brackets (which are a bulletin, by-the-way), <code>[...]</code>, are used for tests, although double square brackets (<code>[[...]]</code>) can also be used for this purpose since Bash 2.02. The difference, from what I can tell, between single and double square brackets is that double square brackets allow one to perform more advanced tests than single square brackets. Single square brackets are also POSIX compliant and are found on all Unix shells.[6. Source: <a href="http://serverfault.com/a/52050/298691" target="_blank">Server Fault</a>]
-<h2>Conditionals</h2>
+## Conditionals
 In Bash scripts conditionals use the output of a test and perform an action accordingly. Conditionals usually involve at least one of the following keywords: <code>case</code>, <code>if</code>, <code>else</code>, <code>elseif</code> and <code>fi</code>.
-<h2>Functions</h2>
+## Functions
 Functions are essentially convenient ways we can group pieces of code together, so as to give them order and make them more logical. Quite often functions are designed to take input and use it to generate an output, or to perform a task, although some functions require no input. All Bash functions share two main things in common: the use of the word "function" and the fact the function's contents are contained within curly braces <code>{...}</code>.
-<h2>Loops</h2>
+## Loops
 Loops (which involve the <code>for</code> keyword), in Bash scripts, are used to automate the performing of tedious tasks that are sufficiently similar to one another.
-<h2>Selectors</h2>
+## Selectors
 Selectors (marked by the <code>select</code> keyword) gives users choices as to which input(s) the rest of the selector block uses.
 # Applications
 The primary value of Bash scripts is to automate tasks that would otherwise have to be done, over a longer time-frame by a human operator. I personally use shell scripts to make my life, when I am at the command-line, easier.
@@ -363,7 +375,7 @@ done
 </pre>
 I have at least three dozen functions I have defined in shell scripts located in the <code>~/Shell</code> directory, but here I will mention some of the more interesting, or useful ones for Sabayon users, in general.
 
-<h2>Interesting Scripts[8. Which is in the eye of the beholder of course, you may not find these interesting at all]</h2>
+## Interesting Scripts[8. Which is in the eye of the beholder of course, you may not find these interesting at all]
 You may have noticed that I am hosting HTML versions of several Linux man pages within the <code>/man</code> subdomain of this blog. I generate them using a function contained within <code>~/Shell/man.sh</code> called <code>manhtml</code>. For example, to generate <a href = "http://linux.x10host.com/blog/man/emerge.1.html">emerge.1.html</a> I ran <code><span class = "codeu">user $</span> &nbsp;manhtml 1 emerge</code>. Here are the contents of <code>~/Shell/man.sh</code> (showing all the contents as <code>manhtml</code> depends on other functions to work):
 <pre lang = "bash" title = "~/Shell/man.sh">
 # Copy man page from /usr/share/man/... to ~/Documents/Manpages
@@ -408,7 +420,7 @@ function theme {
 }
 </pre>
 to install a new Moksha theme you would run <code><span class = "codeu">user $</span> &nbsp;theme &lt;THEME&gt;</code> where <code>&lt;THEME&gt;</code> is, of course, the theme's name (how they appear in their respective GitHub repo's URL).
-<h2>Useful Functions for Sabayon Users</h2>
+## Useful Functions for Sabayon Users
 The following are some functions that, depending on how you operate on Sabayon, may be helpful.
 <h3>Entropy</h3>
 The following are taken from <code><a href = "https://github.com/fusion809/sabayon-scripts/blob/master/Shell/equo.sh">~/Shell/equo.sh</a></code> and they are functions (with aliases for said functions) that essentially automate some common actions one may perform with Entropy. They are not all the lines of code in <code>equo.sh</code>, they merely represent some of the more commonly-used codes. It is important to note some of these functions need not be defined as functions, they could instead be defined as aliases (using <code>alias NAME=`CODE`</code> where NAME is the function's name and <code>CODE</code> is what is between the curly brackets).
