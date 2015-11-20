@@ -277,11 +277,13 @@ popd #moving back out of the ~/Shell directory
 </tbody>
 </table>
 <code>until</code>, <code>while</code> and <code>time</code> are some other keywords that are not mentioned there, as I do not know enough about them to really comment on them. Keywords can be used as variables but I would not advise this, as this can quite easily become confusing.
+
 ## Variables
 Bash <b>variables</b> are defined using equal signs. They can be made global (making them available for all processes) or local (making them available just for the script at hand). Local variables are defined by just using an equal sign, for example:
 <div class="code">PYTHONPATH=/usr/bin/python</div>
 while to define this variable globally, one would run:
 <div class="code">export PYTHONPATH=/usr/bin/python</div>
+
 ## Bulletins
 Several Bash commands (or <b>bulletins</b>) exist and some (but by no stretch of the imagination all — I do not even understand them all!) basic ones are explained in <b>Table 2</b>. It is worthwhile noting that all these commands are purely Bash commands, by this I mean, they do not call any command-line programs to do their work for them. See many commands you will see in Bash scripts are not Bash commands, per se, rather they are commands that use another command-line program such as <code>mv</code> or <code>pwd</code> to do the work, but they can be run from within Bash. Many of these programs are also borrowed from the GNU Project, namely its core utilities package (<code><a href="https://packages.sabayon.org/show/coreutils,156043,sabayon-weekly,amd64,5,standard">sys-apps/coreutils</a></code>) and are stored in either <code>/usr/bin/</code> or <code>/bin/</code>, directories.
 <table style="width: 100%;"><caption>Table 2: Some Basic Bulletins</caption>
