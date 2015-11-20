@@ -13,6 +13,7 @@ categories: sabayon, bash, shell-scripting
 It was originally developed by [Brian J. Fox](https://en.wikipedia.org/wiki/Brian_Fox_(computer_programmer)) in 1989 and has since become the most-widely used [Unix shell](https://en.wikipedia.org/wiki/Unix_shell), with the vast majority of Linux distributions using it as their default command shell (only notable exception I have come across is Deepin, which uses Zsh) and since the release of 10.3 in October 2003 is has replaced tcsh as the default command shell for OS X.
 
 In this post I will give some necessary background on Bash and its predecessor, the Bourne shell, as well as some basic scripting in Bash, some applications, *etc.* It is important to remember I am not an expert at Bash or Bash scripting, I have even had doubts I could even write an entire post on Bash scripting. It is important to note too that this post is nowhere near *comprehensive* on this topic, as the only type of text I, or anyone, could write that would be comprehensive on this topic would be an entire several-hundred page book, not a dozen-or-so-page blog post. This post just gives you some of the tools to do many of the basic things a novice or intermediate user of Sabayon would like to be able to do with Bash.
+
 # Background
 {% include image.html image="BrianJFox.png" width="300px" height="401px" description="Brian J. Fox (1959-), the original developer of Bash" %}
 
