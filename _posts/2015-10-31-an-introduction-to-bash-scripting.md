@@ -40,7 +40,7 @@ and then reboot.
 
 # Definitions
 A natural question, that is asked by everyone, that is introduced to Unix shells, is "What is a Unix shell, exactly?" While this question sounds simple and straightforward, the answer is difficult to put into words, without it being either too generalized and vague, or too focused on specific examples. So I am going to air on the side of generalization and say that a Unix shell, is a <b>command-line interpreter</b> (<b>CLI</b>) that provides a familiar interface by which users can interact with the Unix[4. Or Unix-like, in the case of Linux distributions such as Sabayon] system. Take the example of Bash, which is started whenever you open up a <b>terminal emulator</b> (<b>TEE</b>) or start <b>tty1</b> (with <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F1</kbd>) within most Linux systems, provided you have not set your default shell to something other than Bash. It interprets every command you type into the TEE or tty1 and can make changes to your system, accordingly. On most Linux systems, Unix shells are stored in the file directory <code>/bin</code>. You can list them all by issuing the command:
-<div class="code"><span class="coder">root #</span>  cat /etc/shells</div>
+`root #  cat /etc/shells`
 for me, for example, on my Sabayon machine this gives the output:
 ```sh
 /bin/bash
@@ -78,10 +78,11 @@ The Bash syntax has several distinct components, which can be classed as <a href
 <td><code>{...}</code><br/> <code>function</code></td>
 <td>Used to define <a href="#Functions">functions</a>. Curly braces can also be used to just group lines of code together.</td>
 <td>
-<pre lang = "bash">function update {
+```sh
+function update {
    sudo equo update && sudo equo upgrade
 }
-</pre>
+```
 </td>
 </tr>
 <tr>
@@ -280,12 +281,23 @@ popd #moving back out of the ~/Shell directory
 
 ## Variables
 Bash <b>variables</b> are defined using equal signs. They can be made global (making them available for all processes) or local (making them available just for the script at hand). Local variables are defined by just using an equal sign, for example:
-<div class="code">PYTHONPATH=/usr/bin/python</div>
+```
+PYTHONPATH=/usr/bin/python
+```
 while to define this variable globally, one would run:
-<div class="code">export PYTHONPATH=/usr/bin/python</div>
+```
+user $ export PYTHONPATH=/usr/bin/python
+```
 
 ## Bulletins
 Several Bash commands (or <b>bulletins</b>) exist and some (but by no stretch of the imagination all — I do not even understand them all!) basic ones are explained in <b>Table 2</b>. It is worthwhile noting that all these commands are purely Bash commands, by this I mean, they do not call any command-line programs to do their work for them. See many commands you will see in Bash scripts are not Bash commands, per se, rather they are commands that use another command-line program such as <code>mv</code> or <code>pwd</code> to do the work, but they can be run from within Bash. Many of these programs are also borrowed from the GNU Project, namely its core utilities package (<code><a href="https://packages.sabayon.org/show/coreutils,156043,sabayon-weekly,amd64,5,standard">sys-apps/coreutils</a></code>) and are stored in either <code>/usr/bin/</code> or <code>/bin/</code>, directories.
+
+Command | Meaning                                       | Examples           | Manpage (HTML)
+------- |---------------------------------------------- | ------------------ | --------------
+`alias` | Set a synonym for a command or function       | `alias ..='cd ..'` | [alias.1p.html](http://linux.x10host.com/blog/man/alias.1p.html)
+`cd`    | Change directory                              | `cd ~/Documents`   | [cd.1p.html](http://linux.x10host.com/blog/man/cd.1p.html)
+[Table 2: Some Basic Bulletins]
+
 <table style="width: 100%;"><caption>Table 2: Some Basic Bulletins</caption>
 <tbody>
 <tr>
