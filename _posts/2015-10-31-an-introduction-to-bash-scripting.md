@@ -344,6 +344,7 @@ runs the <code>~/.bashrc</code> script.
 </tr>
 </tbody>
 </table>
+
 ## Tests
 Tests are essential for conditionals. As their name suggests, they test to see whether or not a condition is satisfied. If the condition is satisfied they return 0, while if the condition is unsatisfied they return 1. Square brackets (which are a bulletin, by-the-way), <code>[...]</code>, are used for tests, although double square brackets (<code>[[...]]</code>) can also be used for this purpose since Bash 2.02. The difference, from what I can tell, between single and double square brackets is that double square brackets allow one to perform more advanced tests than single square brackets. Single square brackets are also POSIX compliant and are found on all Unix shells.[6. Source: <a href="http://serverfault.com/a/52050/298691" target="_blank">Server Fault</a>]
 ## Conditionals
