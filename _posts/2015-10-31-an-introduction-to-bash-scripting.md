@@ -61,6 +61,7 @@ Another important concept, for one to understand in order for the rest of this p
 
 # Bash and Files
 Bash scripts usually have the file extension of <code>.sh</code>, although some have no file extension. When Bash is started as an interactive, non-login shell (for example, from within a TEE) it first reads <code>~/.bashrc</code>. When it is started as an interactive, login shell (like when it is started within tty1) it first reads <code>/etc/profile</code>, <code>~/.bash_profile</code>, <code>~/.bash_login</code> and <code>~/.profile</code>. Commands executed in Bash are also recorded in <code>~/.bash_history</code>. Commands interpreted by Bash are case-sensitive.
+
 # Basic Syntax
 The Bash syntax has several distinct components, which can be classed as <a href = "#Keywords_and_Special_Characters">keywords and special characters</a>, <a href = "#Bulletins">bulletins</a>, <a href = "#Variables">variables</a>, <a href = "#Functions">functions</a>, <a href = "#Tests">tests</a> and <a href = "#Conditionals">conditionals</a>.
 ## Keywords and Special Characters
