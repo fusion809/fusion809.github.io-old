@@ -64,6 +64,7 @@ Bash scripts usually have the file extension of <code>.sh</code>, although some 
 
 # Basic Syntax
 The Bash syntax has several distinct components, which can be classed as <a href = "#Keywords_and_Special_Characters">keywords and special characters</a>, <a href = "#Bulletins">bulletins</a>, <a href = "#Variables">variables</a>, <a href = "#Functions">functions</a>, <a href = "#Tests">tests</a> and <a href = "#Conditionals">conditionals</a>.
+
 ## Keywords and Special Characters
 <b>Keywords and special characters</b> (<b>KSCs</b>) are an important concept to understand, they are words, or symbols, that have a special, set meaning when scripting in Bash. Examples are listed in <b>Table 1</b>.
 <table style="width: 100%;"><caption>Table 1: Some Keywords and Special Characters Permitted in Bash</caption>
