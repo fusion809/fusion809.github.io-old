@@ -78,10 +78,8 @@ The Bash syntax has several distinct components, which can be classed as <a href
 <td><code>{...}</code><br/> <code>function</code></td>
 <td>Used to define <a href="#Functions">functions</a>. Curly braces can also be used to just group lines of code together.</td>
 <td>
-<pre lang = "bash">
-function update {
-   sudo equo update && sudo equo upgrade
-}
+{% gist bcdf3c3357f7202b6777 %}
+
 </pre>
 </td>
 </tr>
@@ -196,7 +194,7 @@ my present working directory (pwd) would then be <code>~</code>, my home directo
 <td><code>case</code><br/> <code>esac</code></td>
 <td>Conditional statement, checking whether inputs match. <code>case</code> starts them and <code>esac</code> ends them.</td>
 <td>
-<pre lang = "bash" title = "school-test.sh" style = "visibility: collapse;">
+{% highlight bash %}
 case $X in
      [1-5])
       Message="You're not at school yet!"
@@ -211,7 +209,7 @@ case $X in
       Message="You're at Uni, enjoy the freedom!"
      ;;
 esac
-</pre></td>
+{% endhighlight %}</td>
 </tr>
 <tr>
 <td><code>do</code><br/> <code>done</code><br/> <code>for</code></td>
@@ -371,7 +369,7 @@ Selectors (marked by the <code>select</code> keyword) gives users choices as to 
 The primary value of Bash scripts is to automate tasks that would otherwise have to be done, over a longer time-frame by a human operator. I personally use shell scripts to make my life, when I am at the command-line, easier.
 
 In my <code>~/.bashrc</code> file I have links to several shell scripts stored in my <code>~/Shell</code> directory. Both my <code>~/.bashrc</code> and the shell scripts in my <code>~/Shell</code> directory can be found at <a href = "https://github.com/fusion809/sabayon-scripts">this GitHub repository</a>. Here is my current <code>~/.bashrc</code> file:[7. The for loop I got from the answers to <a href = "http://unix.stackexchange.com/q/239881/27613">this question</a> at Unix & Linux SE]
-<pre lang = "bash" title = "~/.bashrc">
+```bash
 # /etc/skel/.bashrc
 #
 # This file is sourced by all *interactive* bash shells on startup,
@@ -392,7 +390,7 @@ for i in ~/Shell/*.sh
 do
 	. $i
 done
-</pre>
+```
 I have at least three dozen functions I have defined in shell scripts located in the <code>~/Shell</code> directory, but here I will mention some of the more interesting, or useful ones for Sabayon users, in general.
 
 ## Interesting Scripts[8. Which is in the eye of the beholder of course, you may not find these interesting at all]
