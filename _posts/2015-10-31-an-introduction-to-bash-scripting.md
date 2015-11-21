@@ -78,11 +78,11 @@ The Bash syntax has several distinct components, which can be classed as <a href
 <td><code>{...}</code><br/> <code>function</code></td>
 <td>Used to define <a href="#Functions">functions</a>. Curly braces can also be used to just group lines of code together.</td>
 <td>
-```sh
+<pre lang = "bash">
 function update {
    sudo equo update && sudo equo upgrade
 }
-```
+</pre>
 </td>
 </tr>
 <tr>
