@@ -306,7 +306,7 @@ Several Bash commands (or **bulletins**) exist and some (but by no stretch of th
 <td>
 {% highlight bash %}alias ..='cd ..'{% endhighlight %}
 </td>
-<td><a href="http://linux.x10host.com/blog/man/alias.1p.html">alias.1p.html</a></td>
+<td><a href="https://fusion809.github.io/man/alias.1p">alias.1p.html</a></td>
 </tr>
 <tr>
 <td><code>cd</code></td>
@@ -314,7 +314,7 @@ Several Bash commands (or **bulletins**) exist and some (but by no stretch of th
 <td>
 {% highlight bash %}cd ~/Documents{% endhighlight %}
 changes one's directory to /home/username/Documents.</td>
-<td><a href="http://linux.x10host.com/blog/man/cd.1p.html">cd.1p.html</a></td>
+<td><a href="https://fusion809.github.io/man/cd.1p">cd.1p.html</a></td>
 </tr>
 <tr>
 <td><code>date</code></td>
@@ -322,13 +322,13 @@ changes one's directory to /home/username/Documents.</td>
 <td>This gives my local date and time in my preferred format:<br/>
 {% highlight bash %}TZ="Australia/Brisbane" date +"%r %A, %d %B %Y"{% endhighlight %}
 </td>
-<td><a href="http://linux.x10host.com/blog/man/date.1.html">date.1.html</a></td>
+<td><a href="https://fusion809.github.io/man/date.1">date.1.html</a></td>
 </tr>
 <tr>
 <td><code>export</code></td>
 <td>Set variables provided to it as environment, or global, variables.</td>
 <td>{% highlight bash %}export JAVA_HOME=/usr/lib/jvm/oracle-jdk-bin-1.8/bin{% endhighlight %}</td>
-<td><a href="http://linux.x10host.com/blog/man/export.1p.html">export.1p.html</a></td>
+<td><a href="https://fusion809.github.io/man/export.1p">export.1p.html</a></td>
 </tr>
 <tr>
 <td><code>history</code></td>
@@ -336,7 +336,7 @@ changes one's directory to /home/username/Documents.</td>
 <td>
 {% highlight bash %}history -10{% endhighlight %}
 should show the last ten commands executed with Bash.</td>
-<td><a href="http://linux.x10host.com/blog/man/history.3.html">history.3.html</a></td>
+<td><a href="https://fusion809.github.io/man/history.3">history.3.html</a></td>
 </tr>
 <tr>
 <td><code>source</code></td>
@@ -346,7 +346,7 @@ source ~/.bashrc
 {% endhighlight %}
 runs the <code>~/.bashrc</code> script.
 </td>
-<td><a href="http://linux.x10host.com/blog/man/source.n.html">source.n.html</a></td>
+<td><a href="https://fusion809.github.io/man/source.n">source.n.html</a></td>
 </tr>
 </tbody>
 </table>
@@ -390,7 +390,7 @@ done
 I have at least three dozen functions I have defined in shell scripts located in the `~/Shell` directory, but here I will mention some of the more interesting, or useful ones for Sabayon users, in general.
 
 ## Interesting Scripts[^8]
-You may have noticed that I am hosting HTML versions of several Linux man pages within the `/man` subdomain of this blog. I generate them using a function contained within `~/Shell/man.sh` called `manhtml`. For example, to generate [emerge.1.html](http://linux.x10host.com/blog/man/emerge.1.html) I ran:
+You may have noticed that I am hosting HTML versions of several Linux man pages within the `/man` subdomain of this blog. I generate them using a function contained within `~/Shell/man.sh` called `manhtml`. For example, to generate [emerge.1.html](https://fusion809.github.io/man/emerge.1) I ran:
 {% include codeu.html line1="manhtml 1 emerge" %}
 
 Here are the contents of `~/Shell/man.sh` (showing all the contents as `manhtml` depends on other functions to work):
