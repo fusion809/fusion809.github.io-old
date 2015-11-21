@@ -59,10 +59,10 @@ for me, for example, on my Sabayon machine this gives the output:
 ```
 Bash and other Unix shells, have their own unique syntax or language (that is, how commands are passed onto Bash and other Unix shells), although most text editors (TEs) group all shell scripting languages together and call their collective syntax or language, "Shell script" or even just "sh". Examples of such TEs include: Atom, gedit and SciTE. They can do this without a problem in most cases because Unix shells share quite a lot of their syntax with one another.
 
-Another important concept, for one to understand in order for the rest of this post to make any sort of sense, is that of a <b>script</b>. Scripts are programs that can be interpreted from within a **run-time environment** (**RTE**) and they automate the execution of tasks that would otherwise have to be performed manually, one-by-one, by a human operator. In the case of shell scripts, including Bash scripts, the RTE in which the script is interpreted is the Unix shell.
+Another important concept, for one to understand in order for the rest of this post to make any sort of sense, is that of a **script**. Scripts are programs that can be interpreted from within a **run-time environment** (**RTE**) and they automate the execution of tasks that would otherwise have to be performed manually, one-by-one, by a human operator. In the case of shell scripts, including Bash scripts, the RTE in which the script is interpreted is the Unix shell.
 
 # Bash and Files
-Bash scripts usually have the file extension of <code>.sh</code>, although some have no file extension. When Bash is started as an interactive, non-login shell (for example, from within a TEE) it first reads <code>~/.bashrc</code>. When it is started as an interactive, login shell (like when it is started within tty1) it first reads <code>/etc/profile</code>, <code>~/.bash_profile</code>, <code>~/.bash_login</code> and <code>~/.profile</code>. Commands executed in Bash are also recorded in <code>~/.bash_history</code>. Commands interpreted by Bash are case-sensitive.
+Bash scripts usually have the file extension of `.sh`, although some have no file extension. When Bash is started as an interactive, non-login shell (for example, from within a TEE) it first reads `~/.bashrc`. When it is started as an interactive, login shell (like when it is started within tty1) it first reads `/etc/profile`, `~/.bash_profile`, `~/.bash_login` and `~/.profile`. Commands executed in Bash are also recorded in `~/.bash_history`. Commands interpreted by Bash are case-sensitive.
 
 # Basic Syntax
 The Bash syntax has several distinct components, which can be classed as <a href = "#Keywords_and_Special_Characters">keywords and special characters</a>, <a href = "#Bulletins">bulletins</a>, <a href = "#Variables">variables</a>, <a href = "#Functions">functions</a>, <a href = "#Tests">tests</a> and <a href = "#Conditionals">conditionals</a>.
@@ -93,8 +93,9 @@ function update {
 <td><code>[...]</code><br/><code>[[...]]</code></td>
 <td>Used for <a href="#Tests">tests</a>, double square brackets are only available in more advanced Unix shells such as Bash, ksh and Zsh.</td>
 <td>
-<pre lang = "bash">[[ -n $1 ]]
-</pre>
+{% highlight bash %}
+[[ -n $1 ]]
+{% endhighlight %}
 tests whether the input variable, <code>$1</code> exists.
 </td>
 </tr>
@@ -102,15 +103,17 @@ tests whether the input variable, <code>$1</code> exists.
 <td><code>#</code></td>
 <td>Whatever follows is interpreted by Bash, as a comment, for human operators to read but to be left uninterpreted by Bash.</td>
 <td>
-<pre lang = "bash">
+{% highlight bash %}
 # This is a comment
-</pre></td>
+{% endhighlight %}</td>
 </tr>
 <tr>
 <td><code>!</code></td>
 <td>Returns the reciprocal (opposite) or negates of what follows it.</td>
 <td>
-<pre lang = "bash">[[ $X != 3 ]]</pre>
+{% highlight bash %}
+[[ $X != 3 ]]
+{% endhighlight %}
 (which returns 0 (true) if the variable X does not equal 3, or 1 if it is equal to 3).
 </td>
 </tr>
@@ -123,32 +126,31 @@ tests whether the input variable, <code>$1</code> exists.
 <td><code>|</code></td>
 <td>This is called a <b>pipe</b> and it sends the output of a command through another. For example, <code>A | B</code> does A and sends its output through B.</td>
 <td>The following example downloads the source code tarball of the 1.1.0 release of Atom and pipes it through tar and gzip to decompress it.
-<pre lang = "bash">
+{% highlight bash %}
 wget -qO- https://github.com/atom/atom/archive/v1.1.0.tar.gz | tar -xz
-</pre></td>
+{% endhighlight %}</td>
 </tr>
 <tr>
 <td><code>;</code></td>
 <td>Allows several commands to be executed on the same line.</td>
 <td>
-<pre lang = "bash">sudo equo update ; sudo equo upgrade
-</pre>
+{% highlight bash %}sudo equo update ; sudo equo upgrade{% endhighlight %}
 </td>
 </tr>
 <tr>
 <td><code>~</code></td>
 <td>Denotes the home directory. For example, as my username is fusion809 on my Sabayon machine, my home directory is <code>/home/fusion809</code>.</td>
-<td><pre lang = "bash">
+<td>{% highlight bash %}
 cd ~
-</pre>
+{% endhighlight %}
 takes one to current user's home directory. If it is run as root it will take one to one's <code>/root</code>.</td>
 </tr>
 <tr>
 <td><code>-</code></td>
 <td>Can be used as the arithmetic operator, minus, or as the previous working directory.</td>
-<td><pre lang = "bash">
+<td>{% highlight bash %}
 cd -
-</pre>
+{% endhighlight %}
 takes one to one's previous working directory.</td>
 </tr>
 <tr>
@@ -156,9 +158,9 @@ takes one to one's previous working directory.</td>
 <td>Wildcard operator, can take on any value. Can also be used for multiplication.</td>
 <td>
 If you have a directory, <code>~/VirtualBox</code> on your machine and no others starting with the prefix <code>~/Virtual</code> then:
-<pre lang = "bash">
+{% highlight bash %}
 cd ~/Virtual*
-</pre>
+{% endhighlight %}
 should change your current working directory to <code>~/VirtualBox</code>.
 </td>
 </tr>
@@ -166,16 +168,16 @@ should change your current working directory to <code>~/VirtualBox</code>.
 <td><code>.</code></td>
 <td>Serves as an equivalent to the <code>source</code> bulletin and as an equivalent to <code>pwd</code></td>
 <td>As <code>source</code> (the following will execute every file with the extension <code>.sh</code> in the <code>~/Shell</code> directory):
-<pre lang="bash" title="~/.bashrc" class="start-line:17-20">
+{% highlight bash %}
 for i in ~/Shell/*.sh
 do
 	. $i
 done
-</pre>
+{% endhighlight %}
 whereas as <code>pwd</code>:
-<pre lang = "bash">
+{% highlight bash %}
 cd .
-</pre>
+{% endhighlight %}
 which causes no change in current directory.
 </td>
 </tr>
@@ -183,16 +185,16 @@ which causes no change in current directory.
 <td><code>..</code></td>
 <td>Denotes the parent directory</td>
 <td>If I am working in the <code>~/Shell</code> directory, and run:
-<pre lang = "bash">
+{% highlight bash %}
 cd ..
-</pre>
+{% endhighlight %}
 my present working directory (pwd) would then be <code>~</code>, my home directory. </td>
 </tr>
 <tr>
 <td><code>&&</code></td>
 <td>Executes subsequent commands, provided the preceding command(s) were executed without error. For example, <code>A && B</code> does A and then B, provided that A is executed without error. While <code>A && B && C</code> would do A, then if A returns no error, it would perform B and if A and B ran without error it would then run C.</td>
 <td>
-<pre>sudo equo update && sudo equo upgrade</pre>
+{% highlight bash %}sudo equo update && sudo equo upgrade{% endhighlight %}
 </td>
 </tr>
 <tr>
@@ -220,17 +222,17 @@ esac
 <td><code>do</code><br/> <code>done</code><br/> <code>for</code></td>
 <td>Used in <code>for</code> loops. <code>for</code> begins the loop, <code>do</code> enacts commands and <code>done</code> and finishes the loop.</td>
 <td>
-<pre lang = "bash" title = "optimize.sh">
+{% highlight bash %}
 for i in `find . -name "*.png"`
 do
   optipng -o7 "$i"
 done
-</pre></td>
+{% endhighlight %}</td>
 </tr>
 <tr>
 <td><code>elif</code><br/> <code>else</code><br/> <code>fi</code><br/> <code>if</code><br/> <code>then</code></td>
 <td>Used in <code>if</code> conditionals.</td>
-<td><pre lang = "bash" title = "abash.sh">
+<td>{% highlight bash %}
 if [[ -n $1 ]]
    then
      atom ~/Shell/$1.sh
@@ -239,13 +241,13 @@ if [[ -n $1 ]]
    else
      atom ~/.bashrc
 fi
-</pre></td>
+{% endhighlight %}</td>
 </tr>
 <tr>
 <td><code>in</code></td>
 <td>Used when dealing with lists</td>
 <td>This script should, if passed an argument open Atom to <code>~/Shell/$1.sh</code>, otherwise ask the user to select from the list of shell scripts in <code>~/Shell</code> of which one to open in Atom.
-<pre lang = "bash" title = "abashsel.sh">
+{% highlight bash %}
 pushd ~/Shell
 if [[ -n $1 ]]
    then
@@ -258,12 +260,12 @@ if [[ -n $1 ]]
      done
 fi
 popd
-</pre></td>
+{% endhighlight %}</td>
 </tr>
 <tr>
 <td><code>select</code></td>
 <td>Gets users to select from a list of options.</td>
-<td><pre lang = "bash" title = "abashsel.sh">
+<td>{% highlight bash %}
 pushd ~/Shell #moving into the ~/Shell directory
 if [[ -n $1 ]]
    then
@@ -276,7 +278,7 @@ if [[ -n $1 ]]
      done
 fi
 popd #moving back out of the ~/Shell directory
-</pre></td>
+{% endhighlight %}</td>
 </tr>
 </tbody>
 </table>
@@ -284,16 +286,16 @@ popd #moving back out of the ~/Shell directory
 
 ## Variables
 Bash <b>variables</b> are defined using equal signs. They can be made global (making them available for all processes) or local (making them available just for the script at hand). Local variables are defined by just using an equal sign, for example:
-```
+```bash
 PYTHONPATH=/usr/bin/python
 ```
 while to define this variable globally, one would run:
-```
+```bash
 user $ export PYTHONPATH=/usr/bin/python
 ```
 
 ## Bulletins
-Several Bash commands (or <b>bulletins</b>) exist and some (but by no stretch of the imagination all &mdash; I do not even understand them all!) basic ones are explained in <b>Table 2</b>. It is worthwhile noting that all these commands are purely Bash commands, by this I mean, they do not call any command-line programs to do their work for them. See many commands you will see in Bash scripts are not Bash commands, per se, rather they are commands that use another command-line program such as <code>mv</code> or <code>pwd</code> to do the work, but they can be run from within Bash. Many of these programs are also borrowed from the GNU Project, namely its core utilities package (<code><a href="https://packages.sabayon.org/show/coreutils,156043,sabayon-weekly,amd64,5,standard">sys-apps/coreutils</a></code>) and are stored in either <code>/usr/bin/</code> or <code>/bin/</code>, directories.
+Several Bash commands (or <b>bulletins</b>) exist and some (but by no stretch of the imagination all &mdash; I do not even understand them all!) basic ones are explained in <b>Table 2</b>. It is worthwhile noting that all these commands are purely Bash commands, by this I mean, they do not call any command-line programs to do their work for them. See many commands you will see in Bash scripts are not Bash commands, per se, rather they are commands that use another command-line program such as <code>mv</code> or <code>pwd</code> to do the work, but they can be run from within Bash. Many of these programs are also borrowed from the GNU Project, namely its core utilities package ([`sys-apps/coreutils`](https://packages.sabayon.org/show/coreutils,156043,sabayon-weekly,amd64,5,standard)) and are stored in either `/usr/bin/` or `/bin/`, directories.
 
 <table style="width: 100%;">
 <caption>Table 2: Some Basic Bulletins</caption>
@@ -308,7 +310,7 @@ Several Bash commands (or <b>bulletins</b>) exist and some (but by no stretch of
 <td><code>alias</code></td>
 <td>Set a synonym for a command or function</td>
 <td>
-<pre>alias ..='cd ..'</pre>
+{% highlight bash %}alias ..='cd ..'{% endhighlight %}
 </td>
 <td><a href="http://linux.x10host.com/blog/man/alias.1p.html">alias.1p.html</a></td>
 </tr>
@@ -316,7 +318,7 @@ Several Bash commands (or <b>bulletins</b>) exist and some (but by no stretch of
 <td><code>cd</code></td>
 <td>Change directory.</td>
 <td>
-<pre>cd ~/Documents</pre>
+{% highlight bash %}cd ~/Documents{% endhighlight %}
 changes one's directory to /home/username/Documents.</td>
 <td><a href="http://linux.x10host.com/blog/man/cd.1p.html">cd.1p.html</a></td>
 </tr>
@@ -324,30 +326,30 @@ changes one's directory to /home/username/Documents.</td>
 <td><code>date</code></td>
 <td>Outputs the date. Inputs/variables can be used to set the timezone and the format of the date given.</td>
 <td>This gives my local date and time in my preferred format:
-<pre>TZ="Australia/Brisbane" date +"%r %A, %d %B %Y"</pre>
+{% highlight bash %}TZ="Australia/Brisbane" date +"%r %A, %d %B %Y"{% endhighlight %}
 </td>
 <td><a href="http://linux.x10host.com/blog/man/date.1.html">date.1.html</a></td>
 </tr>
 <tr>
 <td><code>export</code></td>
 <td>Set variables provided to it as environment, or global, variables.</td>
-<td><pre lang = "bash">export JAVA_HOME=/usr/lib/jvm/oracle-jdk-bin-1.8/bin</pre></td>
+<td>{% highlight bash %}export JAVA_HOME=/usr/lib/jvm/oracle-jdk-bin-1.8/bin{% endhighlight %}</td>
 <td><a href="http://linux.x10host.com/blog/man/export.1p.html">export.1p.html</a></td>
 </tr>
 <tr>
 <td><code>history</code></td>
 <td>Outputs Bash history.</td>
 <td>
-<pre>history -10</pre>
+{% highlight bash %}history -10{% endhighlight %}
 should show the last ten commands executed with Bash.</td>
 <td><a href="http://linux.x10host.com/blog/man/history.3.html">history.3.html</a></td>
 </tr>
 <tr>
 <td><code>source</code></td>
 <td>Execute script(s) provided to it.</td>
-<td><pre lang = "bash">
+<td>{% highlight bash %}
 source ~/.bashrc
-</pre>
+{% endhighlight %}
 runs the <code>~/.bashrc</code> script.
 </td>
 <td><a href="http://linux.x10host.com/blog/man/source.n.html">source.n.html</a></td>
@@ -356,7 +358,7 @@ runs the <code>~/.bashrc</code> script.
 </table>
 
 ## Tests
-Tests are essential for conditionals. As their name suggests, they test to see whether or not a condition is satisfied. If the condition is satisfied they return 0, while if the condition is unsatisfied they return 1. Square brackets (which are a bulletin, by-the-way), <code>[...]</code>, are used for tests, although double square brackets (<code>[[...]]</code>) can also be used for this purpose since Bash 2.02. The difference, from what I can tell, between single and double square brackets is that double square brackets allow one to perform more advanced tests than single square brackets. Single square brackets are also POSIX compliant and are found on all Unix shells.[6. Source: [Server Fault](http://serverfault.com/a/52050/298691)]
+Tests are essential for conditionals. As their name suggests, they test to see whether or not a condition is satisfied. If the condition is satisfied they return 0, while if the condition is unsatisfied they return 1. Square brackets (which are a bulletin, by-the-way), <code>[...]</code>, are used for tests, although double square brackets (<code>[[...]]</code>) can also be used for this purpose since Bash 2.02. The difference, from what I can tell, between single and double square brackets is that double square brackets allow one to perform more advanced tests than single square brackets. Single square brackets are also POSIX compliant and are found on all Unix shells.[^6]
 ## Conditionals
 In Bash scripts conditionals use the output of a test and perform an action accordingly. Conditionals usually involve at least one of the following keywords: <code>case</code>, <code>if</code>, <code>else</code>, <code>elseif</code> and <code>fi</code>.
 ## Functions
@@ -368,7 +370,7 @@ Selectors (marked by the <code>select</code> keyword) gives users choices as to 
 # Applications
 The primary value of Bash scripts is to automate tasks that would otherwise have to be done, over a longer time-frame by a human operator. I personally use shell scripts to make my life, when I am at the command-line, easier.
 
-In my <code>~/.bashrc</code> file I have links to several shell scripts stored in my <code>~/Shell</code> directory. Both my <code>~/.bashrc</code> and the shell scripts in my <code>~/Shell</code> directory can be found at <a href = "https://github.com/fusion809/sabayon-scripts">this GitHub repository</a>. Here is my current <code>~/.bashrc</code> file:[7. The for loop I got from the answers to <a href = "http://unix.stackexchange.com/q/239881/27613">this question</a> at Unix & Linux SE]
+In my `~/.bashrc` file I have links to several shell scripts stored in my <code>~/Shell</code> directory. Both my <code>~/.bashrc</code> and the shell scripts in my <code>~/Shell</code> directory can be found at <a href = "https://github.com/fusion809/sabayon-scripts">this GitHub repository</a>. Here is my current <code>~/.bashrc</code> file:[7. The for loop I got from the answers to <a href = "http://unix.stackexchange.com/q/239881/27613">this question</a> at Unix & Linux SE]
 ```bash
 # /etc/skel/.bashrc
 #
@@ -395,7 +397,7 @@ I have at least three dozen functions I have defined in shell scripts located in
 
 ## Interesting Scripts[8. Which is in the eye of the beholder of course, you may not find these interesting at all]
 You may have noticed that I am hosting HTML versions of several Linux man pages within the <code>/man</code> subdomain of this blog. I generate them using a function contained within <code>~/Shell/man.sh</code> called <code>manhtml</code>. For example, to generate <a href = "http://linux.x10host.com/blog/man/emerge.1.html">emerge.1.html</a> I ran <code><span class = "codeu">user $</span> manhtml 1 emerge</code>. Here are the contents of <code>~/Shell/man.sh</code> (showing all the contents as <code>manhtml</code> depends on other functions to work):
-<pre lang = "bash" title = "~/Shell/man.sh">
+```bash
 # Copy man page from /usr/share/man/... to ~/Documents/Manpages
 function cpman {
   sudo cp -a /usr/share/man/man$1/$2.$1.bz2 ~/Documents/Manpages
@@ -415,15 +417,15 @@ function manconv {
 function manhtml {
   cpman $1 $2 && manconv $1 $2
 }
-</pre>
+```
 while here is a function I created to help me install Moksha themes (it appears differently in my <code>~/Shell/other.sh</code> file, as this form is mostly to walk you through how it works):
-<pre lang = "Shell">
+```bash
 function theme {
   #clone repo
   git clone https://github.com/JeffHoogland/$1
   #change directory to new cloned repo
   cd $1
-  #add an upstream source
+  # add an upstream source
   git remote add upstream https://github.com/JeffHoogland/$1
   #change into the repo subdirectory where build.sh is located
   cd $1
@@ -436,13 +438,13 @@ function theme {
   #cd out of repo
   cd ..
 }
-</pre>
-to install a new Moksha theme you would run <code><span class = "codeu">user $</span>  theme &lt;THEME&gt;</code> where <code>&lt;THEME&gt;</code> is, of course, the theme's name (how they appear in their respective GitHub repo's URL).
+```
+to install a new Moksha theme you would run <code><span class = "codeu">user $</span>  theme &lt;THEME&gt;</code> where `&lt;THEME&gt;` is, of course, the theme's name (how they appear in their respective GitHub repo's URL).
 ## Useful Functions for Sabayon Users
 The following are some functions that, depending on how you operate on Sabayon, may be helpful.
-<h3>Entropy</h3>
-The following are taken from <code><a href = "https://github.com/fusion809/sabayon-scripts/blob/master/Shell/equo.sh">~/Shell/equo.sh</a></code> and they are functions (with aliases for said functions) that essentially automate some common actions one may perform with Entropy. They are not all the lines of code in <code>equo.sh</code>, they merely represent some of the more commonly-used codes. It is important to note some of these functions need not be defined as functions, they could instead be defined as aliases (using <code>alias NAME=`CODE`</code> where NAME is the function's name and <code>CODE</code> is what is between the curly brackets).
-<pre lang = "bash" title = "~/Shell/equo.sh">
+###Entropy
+The following are taken from [`~/Shell/equo.sh`](https://github.com/fusion809/sabayon-scripts/blob/master/Shell/equo.sh) and they are functions (with aliases for said functions) that essentially automate some common actions one may perform with Entropy. They are not all the lines of code in `equo.sh`, they merely represent some of the more commonly-used codes. It is important to note some of these functions need not be defined as functions, they could instead be defined as aliases (using `alias NAME='CODE'` where NAME is the function's name and `CODE` is what is between the curly brackets).
+```bash
 # Inflate Portage binary into SPM binary.
 function sepi {
 	pushd /usr/portage/packages/$1
@@ -494,10 +496,10 @@ alias update=sequ
 function spm {
 	sudo equo rescue spmsync
 }
-</pre>
-<h3>Layman/Portage</h3>
-Here are some lines from my <a href = "https://github.com/fusion809/sabayon-scripts/blob/master/Shell/emerge.sh">emerge.sh</a> script.
-<pre lang = "bash" title = "~/Shell/emerge.sh">
+```
+###Layman/Portage
+Here are some lines from my [emerge.sh](https://github.com/fusion809/sabayon-scripts/blob/master/Shell/emerge.sh) script.
+```bash
 # Install a package, but ask first
 function ema {
   sudo emerge -av $@
@@ -530,13 +532,12 @@ function sync {
 function tailf {
   tail -f /var/log/emerge-fetch.log
 }
-</pre>
+```
 
 # Free Help Resources
-<ul>
-<li><a href = "http://stackoverflow.com/">Stack Overflow</a>[9. Its general topic is programming, so it is suitable for shell script-related questions. I have asked two questions there relating to shell script, as of 31 October 2015, both were resolved within an hour.]</li>
-<li><a href = "http://unix.stackexchange.com">Unix & Linux StackExchange</a>[10. As of 31 October 2015 I have asked 8 questions relating to shell scripts there and seven have been answered. Each of those that have been answered were resolved (that is, given an answer that solved whatever problem I had) within a day of me asking them.]</li>
-</ul>
+* [Stack Overflow](http://stackoverflow.com/)[^9]
+* [Unix & Linux StackExchange](http://unix.stackexchange.com)[^10]
+
 
 # Further Reading
 {% include note.html note1="All the following links are to free PDFs" %}
@@ -551,4 +552,6 @@ function tailf {
 [^2]: Source: [Chet Ramey's Scribd document](http://www.scribd.com/doc/40556434/2010-10-31-Chet-Ramey-Early-Bash-Dates)
 [^3]: Source: [Bash Webpage](https://www.gnu.org/software/bash/)
 [^4]: Or Unix-like, in the case of Linux distributions such as Sabayon
-[^5]: Note, I previously did not know how to pipe the output of wget through tar until I asked [this](http://unix.stackexchange.com/q/239741/27613) question at Unix & Linux StackExchange.
+[^5]: Source: [Server Fault](http://serverfault.com/a/52050/298691)
+[^9]: Its general topic is programming, so it is suitable for shell script-related questions. I have asked two questions there relating to shell script, as of 31 October 2015, both were resolved within an hour.
+[^10]: As of 31 October 2015 I have asked 8 questions relating to shell scripts there and seven have been answered. Each of those that have been answered were resolved (that is, given an answer that solved whatever problem I had) within a day of me asking them.
