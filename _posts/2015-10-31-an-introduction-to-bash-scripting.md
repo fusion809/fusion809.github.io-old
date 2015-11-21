@@ -27,22 +27,16 @@ While Bash was originally developed as a free "imitation" of the Bourne Shell, i
 Along with these shells, another free Unix shell that has gained notoriety, that I feel is worthwhile mentioning is the **[Z shell](https://en.wikipedia.org/wiki/Z_shell)** (**Zsh**). Zsh was first released by Paul Falstad in 1990 and at the time Falstad was a student at Princeton University. Since then Zsh's development has become coordinated by Peter Stephenson. What is notable about Zsh, is how feature-packed it is. It has many of the same features as Bash, but it also has spelling-correction, easier customizability and a few other features that Bash lacks.
 
 All free Unix shells that are available for Gentoo or Sabayon systems are located in the category of app-shells within the [Entropy Store](https://packages.sabayon.org/quicksearch?q=app-shells&amp;filter=category_startswith&amp;filter_data=app-shells), [Portage Tree](https://packages.gentoo.org/categories/app-shells) and [Gentoo Portage Overlays](http://gpo.zugaina.org/app-shells). To show them all from the command-line run:
-```sh
-eix -C -c "app-shells"
-```
+{% include coder.html line1='eix -C -c "app-shells"' %}
 
 ## Changing Unix Shells
 On Unix/Unix-like platforms it is possible to change your login shell using the <code>chsh</code> command. For example, to change your login shell to Zsh (assuming it is installed), run:
-```sh
-chsh -s /bin/zsh
-```
+{% include codeu.html line1="chsh -s /bin/zsh" %}
 and then reboot.
 
 # Definitions
 A natural question, that is asked by everyone, that is introduced to Unix shells, is "What is a Unix shell, exactly?" While this question sounds simple and straightforward, the answer is difficult to put into words, without it being either too generalized and vague, or too focused on specific examples. So I am going to air on the side of generalization and say that a Unix shell, is a <b>command-line interpreter</b> (<b>CLI</b>) that provides a familiar interface by which users can interact with the Unix[^4] system. Take the example of Bash, which is started whenever you open up a <b>terminal emulator</b> (<b>TEE</b>) or start <b>tty1</b> (with <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F1</kbd>) within most Linux systems, provided you have not set your default shell to something other than Bash. It interprets every command you type into the TEE or tty1 and can make changes to your system, accordingly. On most Linux systems, Unix shells are stored in the file directory <code>/bin</code>. You can list them all by issuing the command:
-```sh
-cat /etc/shells
-```
+{% include coder.html line1="cat /etc/shells" %}
 for me, for example, on my Sabayon machine this gives the output:
 ```sh
 /bin/bash
@@ -286,13 +280,9 @@ popd #moving back out of the ~/Shell directory
 
 ## Variables
 Bash <b>variables</b> are defined using equal signs. They can be made global (making them available for all processes) or local (making them available just for the script at hand). Local variables are defined by just using an equal sign, for example:
-```bash
-PYTHONPATH=/usr/bin/python
-```
+{% include codeu.html line1="PYTHONPATH=/usr/bin/python" %}
 while to define this variable globally, one would run:
-```bash
-user $ export PYTHONPATH=/usr/bin/python
-```
+{% include codeu.html line1="export PYTHONPATH=/usr/bin/python" %}
 
 ## Bulletins
 Several Bash commands (or <b>bulletins</b>) exist and some (but by no stretch of the imagination all &mdash; I do not even understand them all!) basic ones are explained in <b>Table 2</b>. It is worthwhile noting that all these commands are purely Bash commands, by this I mean, they do not call any command-line programs to do their work for them. See many commands you will see in Bash scripts are not Bash commands, per se, rather they are commands that use another command-line program such as <code>mv</code> or <code>pwd</code> to do the work, but they can be run from within Bash. Many of these programs are also borrowed from the GNU Project, namely its core utilities package ([`sys-apps/coreutils`](https://packages.sabayon.org/show/coreutils,156043,sabayon-weekly,amd64,5,standard)) and are stored in either `/usr/bin/` or `/bin/`, directories.
@@ -370,7 +360,7 @@ Selectors (marked by the <code>select</code> keyword) gives users choices as to 
 # Applications
 The primary value of Bash scripts is to automate tasks that would otherwise have to be done, over a longer time-frame by a human operator. I personally use shell scripts to make my life, when I am at the command-line, easier.
 
-In my `~/.bashrc` file I have links to several shell scripts stored in my <code>~/Shell</code> directory. Both my <code>~/.bashrc</code> and the shell scripts in my <code>~/Shell</code> directory can be found at <a href = "https://github.com/fusion809/sabayon-scripts">this GitHub repository</a>. Here is my current <code>~/.bashrc</code> file:[7. The for loop I got from the answers to <a href = "http://unix.stackexchange.com/q/239881/27613">this question</a> at Unix & Linux SE]
+In my `~/.bashrc` file I have links to several shell scripts stored in my <code>~/Shell</code> directory. Both my <code>~/.bashrc</code> and the shell scripts in my <code>~/Shell</code> directory can be found at <a href = "https://github.com/fusion809/sabayon-scripts">this GitHub repository</a>. Here is my current <code>~/.bashrc</code> file:[^7]
 ```bash
 # /etc/skel/.bashrc
 #
@@ -395,7 +385,7 @@ done
 ```
 I have at least three dozen functions I have defined in shell scripts located in the <code>~/Shell</code> directory, but here I will mention some of the more interesting, or useful ones for Sabayon users, in general.
 
-## Interesting Scripts[8. Which is in the eye of the beholder of course, you may not find these interesting at all]
+## Interesting Scripts[^8]
 You may have noticed that I am hosting HTML versions of several Linux man pages within the <code>/man</code> subdomain of this blog. I generate them using a function contained within <code>~/Shell/man.sh</code> called <code>manhtml</code>. For example, to generate <a href = "http://linux.x10host.com/blog/man/emerge.1.html">emerge.1.html</a> I ran <code><span class = "codeu">user $</span> manhtml 1 emerge</code>. Here are the contents of <code>~/Shell/man.sh</code> (showing all the contents as <code>manhtml</code> depends on other functions to work):
 ```bash
 # Copy man page from /usr/share/man/... to ~/Documents/Manpages
@@ -553,5 +543,7 @@ function tailf {
 [^3]: Source: [Bash Webpage](https://www.gnu.org/software/bash/)
 [^4]: Or Unix-like, in the case of Linux distributions such as Sabayon
 [^5]: Source: [Server Fault](http://serverfault.com/a/52050/298691)
+[^7]: The for loop I got from the answers to <a href = "http://unix.stackexchange.com/q/239881/27613">this question</a> at Unix & Linux SE
+[^8]: Which is in the eye of the beholder of course, you may not find these interesting at all
 [^9]: Its general topic is programming, so it is suitable for shell script-related questions. I have asked two questions there relating to shell script, as of 31 October 2015, both were resolved within an hour.
 [^10]: As of 31 October 2015 I have asked 8 questions relating to shell scripts there and seven have been answered. Each of those that have been answered were resolved (that is, given an answer that solved whatever problem I had) within a day of me asking them.
