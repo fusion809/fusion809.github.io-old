@@ -80,7 +80,11 @@ The Bash syntax has several distinct components, which can be classed as <a href
 <td><code>{...}</code><br/> <code>function</code></td>
 <td>Used to define <a href="#Functions">functions</a>. Curly braces can also be used to just group lines of code together.</td>
 <td>
-{% gist bcdf3c3357f7202b6777 %}
+{% highlight bash %}
+function update {
+   sudo equo update && sudo equo upgrade
+}
+{% endhighlight %}
 
 </pre>
 </td>
@@ -118,10 +122,9 @@ tests whether the input variable, <code>$1</code> exists.
 <tr>
 <td><code>|</code></td>
 <td>This is called a <b>pipe</b> and it sends the output of a command through another. For example, <code>A | B</code> does A and sends its output through B.</td>
-<td>The following example downloads the source code tarball of the 1.1.0 release of Atom and pipes it through tar and gzip to decompress it.[5. Note, I previously did not know how to pipe the output of wget through tar until I asked <a href = "http://unix.stackexchange.com/q/239741/27613">this</a> question at Unix & Linux StackExchange. The defining of an ATOM variable (instead of just combining it into the second line) is mostly just for space restrictions within this table]
+<td>The following example downloads the source code tarball of the 1.1.0 release of Atom and pipes it through tar and gzip to decompress it.
 <pre lang = "bash">
-ATOM=https://github.com/atom/atom/archive
-wget -qO- $ATOM/v1.1.0.tar.gz | tar -xz
+wget -qO- https://github.com/atom/atom/archive/v1.1.0.tar.gz | tar -xz
 </pre></td>
 </tr>
 <tr>
@@ -292,13 +295,8 @@ user $ export PYTHONPATH=/usr/bin/python
 ## Bulletins
 Several Bash commands (or <b>bulletins</b>) exist and some (but by no stretch of the imagination all &mdash; I do not even understand them all!) basic ones are explained in <b>Table 2</b>. It is worthwhile noting that all these commands are purely Bash commands, by this I mean, they do not call any command-line programs to do their work for them. See many commands you will see in Bash scripts are not Bash commands, per se, rather they are commands that use another command-line program such as <code>mv</code> or <code>pwd</code> to do the work, but they can be run from within Bash. Many of these programs are also borrowed from the GNU Project, namely its core utilities package (<code><a href="https://packages.sabayon.org/show/coreutils,156043,sabayon-weekly,amd64,5,standard">sys-apps/coreutils</a></code>) and are stored in either <code>/usr/bin/</code> or <code>/bin/</code>, directories.
 
-Command | Meaning                                       | Examples           | Manpage (HTML)
-------- |---------------------------------------------- | ------------------ | --------------
-`alias` | Set a synonym for a command or function       | `alias ..='cd ..'` | [alias.1p.html](http://linux.x10host.com/blog/man/alias.1p.html)
-`cd`    | Change directory                              | `cd ~/Documents`   | [cd.1p.html](http://linux.x10host.com/blog/man/cd.1p.html)
-[Table 2: Some Basic Bulletins]
-
-<table style="width: 100%;"><caption>Table 2: Some Basic Bulletins</caption>
+<table style="width: 100%;">
+<caption>Table 2: Some Basic Bulletins</caption>
 <tbody>
 <tr>
 <td class="title">Command</td>
@@ -553,3 +551,4 @@ function tailf {
 [^2]: Source: [Chet Ramey's Scribd document](http://www.scribd.com/doc/40556434/2010-10-31-Chet-Ramey-Early-Bash-Dates)
 [^3]: Source: [Bash Webpage](https://www.gnu.org/software/bash/)
 [^4]: Or Unix-like, in the case of Linux distributions such as Sabayon
+[^5]: Note, I previously did not know how to pipe the output of wget through tar until I asked [this](http://unix.stackexchange.com/q/239741/27613) question at Unix & Linux StackExchange.
