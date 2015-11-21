@@ -22,7 +22,7 @@ The development of Bash began in January 1988, when [Richard Stallman](https://e
 ## Other Unix Shells
 The Bourne Shell was one of the first official Unix shells to be developed and was first developed in 1977. I am using the phrasing "official Unix shells", to draw attention to the fact that the Bourne Shell was developed at Bell Labs for use by Research Unix, which was the original Unix system. The Bourne Shell is named after [Stephen Bourne](https://en.wikipedia.org/wiki/Stephen_R._Bourne), its original developer.
 
-While Bash was originally developed as a free "imitation" of the Bourne Shell, it also has features that it borrows from other Unix shells: including the C shell and the Korn shell. The **[C shell](https://en.wikipedia.org/wiki/C_shell)** (**csh**) is a Unix shell that was originally developed by [Bill Joy](https://en.wikipedia.org/wiki/Bill_Joy) &mdash; the author of the Vi text editor (which is a direct ancestor of Vim) and was first released in 1978 (and is still under active development today). Its chief distinguishing feature is that its syntax is similar to that of the [C programming language](https://en.wikipedia.org/wiki/C_(programming_language)). A notable descendant of C shell that is also widely used today, is **[tcsh](https://en.wikipedia.org/wiki/Tcsh)** (the **TENEX C Shell**), which before release 10.3 was the default shell of OS X. The **[Korn shell](https://en.wikipedia.org/wiki/Korn_shell)** (**ksh**) was one of the Unix shells developed at Bell Labs for Research Unix, although unlike most other of the original Unix shells it is still under active development today.
+While Bash was originally developed as a free "imitation" of the Bourne Shell, it also has features that it borrows from other Unix shells: including the C shell and the Korn shell. The **[C shell](https://en.wikipedia.org/wiki/C_shell)** (**csh**) is a Unix shell that was originally developed by [Bill Joy](https://en.wikipedia.org/wiki/Bill_Joy) &mdash; the author of the Vi text editor (which is a direct ancestor of Vim) and was first released in 1978 (and is still under active development today). Its chief distinguishing feature is that its syntax is similar to that of the [C programming language](https://en.wikipedia.org/wiki/C_(programming_language)). A notable descendant of C shell that is also widely used today, is **[tcsh](https://en.wikipedia.org/wiki/Tcsh)** (the **TENEX C Shell**), which before release 10.3 was the default shell of OS X and continues to be the default shell of most [Berkeley Software Distribution](https://en.wikipedia.org/wiki/Berkeley_Software_Distribution) derivatives such as [FreeBSD](https://en.wikipedia.org/wiki/FreeBSD). The **[Korn shell](https://en.wikipedia.org/wiki/Korn_shell)** (**ksh**) was one of the Unix shells developed at Bell Labs for Research Unix, although unlike most other of the original Unix shells it is still under active development today.
 
 Along with these shells, another free Unix shell that has gained notoriety, that I feel is worthwhile mentioning is the **[Z shell](https://en.wikipedia.org/wiki/Z_shell)** (**Zsh**). Zsh was first released by Paul Falstad in 1990 and at the time Falstad was a student at Princeton University. Since then Zsh's development has become coordinated by Peter Stephenson. What is notable about Zsh, is how feature-packed it is. It has many of the same features as Bash, but it also has spelling-correction, easier customizability and a few other features that Bash lacks.
 
@@ -30,7 +30,7 @@ All free Unix shells that are available for Gentoo or Sabayon systems are locate
 {% include coder.html line1='eix -C -c "app-shells"' %}
 
 ## Changing Unix Shells
-On Unix/Unix-like platforms it is possible to change your login shell using the <code>chsh</code> command. For example, to change your login shell to Zsh (assuming it is installed), run:
+On Unix/Unix-like platforms it is possible to change your login shell using the [`chsh`](/man/chsh.1.html) command. For example, to change your login shell to Zsh (assuming it is installed), run:
 {% include codeu.html line1="chsh -s /bin/zsh" %}
 and then reboot.
 
@@ -119,7 +119,8 @@ tests whether the input variable, <code>$1</code> exists.
 <tr>
 <td><code>|</code></td>
 <td>This is called a <b>pipe</b> and it sends the output of a command through another. For example, <code>A | B</code> does A and sends its output through B.</td>
-<td>The following example downloads the source code tarball of the 1.1.0 release of Atom and pipes it through tar and gzip to decompress it.<br/>
+<td>The following example downloads the source code tarball of the 1.1.0 release of Atom and pipes it through tar and gzip to decompress it.
+<br/>
 {% highlight bash %}
 wget -qO- https://github.com/atom/atom/archive/v1.1.0.tar.gz | tar -xz
 {% endhighlight %}</td>
@@ -306,7 +307,7 @@ Several Bash commands (or **bulletins**) exist and some (but by no stretch of th
 <td>
 {% highlight bash %}alias ..='cd ..'{% endhighlight %}
 </td>
-<td><a href="https://fusion809.github.io/man/alias.1p">alias.1p.html</a></td>
+<td><a href="/man/alias.1p.html">alias.1p.html</a></td>
 </tr>
 <tr>
 <td><code>cd</code></td>
@@ -314,7 +315,7 @@ Several Bash commands (or **bulletins**) exist and some (but by no stretch of th
 <td>
 {% highlight bash %}cd ~/Documents{% endhighlight %}
 changes one's directory to /home/username/Documents.</td>
-<td><a href="https://fusion809.github.io/man/cd.1p">cd.1p.html</a></td>
+<td><a href="/man/cd.1p.html">cd.1p.html</a></td>
 </tr>
 <tr>
 <td><code>date</code></td>
@@ -322,13 +323,13 @@ changes one's directory to /home/username/Documents.</td>
 <td>This gives my local date and time in my preferred format:<br/>
 {% highlight bash %}TZ="Australia/Brisbane" date +"%r %A, %d %B %Y"{% endhighlight %}
 </td>
-<td><a href="https://fusion809.github.io/man/date.1">date.1.html</a></td>
+<td><a href="/man/date.1.html">date.1.html</a></td>
 </tr>
 <tr>
 <td><code>export</code></td>
 <td>Set variables provided to it as environment, or global, variables.</td>
 <td>{% highlight bash %}export JAVA_HOME=/usr/lib/jvm/oracle-jdk-bin-1.8/bin{% endhighlight %}</td>
-<td><a href="https://fusion809.github.io/man/export.1p">export.1p.html</a></td>
+<td><a href="/man/export.1p.html">export.1p.html</a></td>
 </tr>
 <tr>
 <td><code>history</code></td>
@@ -336,7 +337,7 @@ changes one's directory to /home/username/Documents.</td>
 <td>
 {% highlight bash %}history -10{% endhighlight %}
 should show the last ten commands executed with Bash.</td>
-<td><a href="https://fusion809.github.io/man/history.3">history.3.html</a></td>
+<td><a href="/man/history.3.html">history.3.html</a></td>
 </tr>
 <tr>
 <td><code>source</code></td>
@@ -346,7 +347,7 @@ source ~/.bashrc
 {% endhighlight %}
 runs the <code>~/.bashrc</code> script.
 </td>
-<td><a href="https://fusion809.github.io/man/source.n">source.n.html</a></td>
+<td><a href="/man/source.n.html">source.n.html</a></td>
 </tr>
 </tbody>
 </table>
@@ -390,7 +391,7 @@ done
 I have at least three dozen functions I have defined in shell scripts located in the `~/Shell` directory, but here I will mention some of the more interesting, or useful ones for Sabayon users, in general.
 
 ## Interesting Scripts[^8]
-You may have noticed that I am hosting HTML versions of several Linux man pages within the `/man` subdomain of this blog. I generate them using a function contained within `~/Shell/man.sh` called `manhtml`. For example, to generate [emerge.1.html](https://fusion809.github.io/man/emerge.1) I ran:
+You may have noticed that I am hosting HTML versions of several Linux man pages within the `/man` subdomain of this blog. I generate them using a function contained within `~/Shell/man.sh` called `manhtml`. For example, to generate [emerge.1.html](/man/emerge.1.html) I ran:
 {% include codeu.html line1="manhtml 1 emerge" %}
 
 Here are the contents of `~/Shell/man.sh` (showing all the contents as `manhtml` depends on other functions to work):
