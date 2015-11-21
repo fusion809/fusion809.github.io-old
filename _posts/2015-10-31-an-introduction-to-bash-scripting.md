@@ -35,7 +35,7 @@ On Unix/Unix-like platforms it is possible to change your login shell using the 
 and then reboot.
 
 # Definitions
-A natural question, that is asked by everyone, that is introduced to Unix shells, is "What is a Unix shell, exactly?" While this question sounds simple and straightforward, the answer is difficult to put into words, without it being either too generalized and vague, or too focused on specific examples. So I am going to air on the side of generalization and say that a Unix shell, is a <b>command-line interpreter</b> (<b>CLI</b>) that provides a familiar interface by which users can interact with the Unix[^4] system. Take the example of Bash, which is started whenever you open up a <b>terminal emulator</b> (<b>TEE</b>) or start <b>tty1</b> (with <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F1</kbd>) within most Linux systems, provided you have not set your default shell to something other than Bash. It interprets every command you type into the TEE or tty1 and can make changes to your system, accordingly. On most Linux systems, Unix shells are stored in the file directory <code>/bin</code>. You can list them all by issuing the command:
+A natural question, that is asked by everyone, that is introduced to Unix shells, is "What is a Unix shell, exactly?" While this question sounds simple and straightforward, the answer is difficult to put into words, without it being either too generalized and vague, or too focused on specific examples. So I am going to air on the side of generalization and say that a Unix shell, is a **command-line interpreter** (**CLI**) that provides a familiar interface by which users can interact with the Unix[^4] system. Take the example of Bash, which is started whenever you open up a **terminal emulator** (**TEE**) or start **tty1** (with <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F1</kbd>) within most Linux systems, provided you have not set your default shell to something other than Bash. It interprets every command you type into the TEE or tty1 and can make changes to your system, accordingly. On most Linux systems, Unix shells are stored in the file directory `/bin`. You can list them all by issuing the command:
 {% include coder.html line1="cat /etc/shells" %}
 for me, for example, on my Sabayon machine this gives the output:
 ```sh
@@ -59,10 +59,10 @@ Another important concept, for one to understand in order for the rest of this p
 Bash scripts usually have the file extension of `.sh`, although some have no file extension. When Bash is started as an interactive, non-login shell (for example, from within a TEE) it first reads `~/.bashrc`. When it is started as an interactive, login shell (like when it is started within tty1) it first reads `/etc/profile`, `~/.bash_profile`, `~/.bash_login` and `~/.profile`. Commands executed in Bash are also recorded in `~/.bash_history`. Commands interpreted by Bash are case-sensitive.
 
 # Basic Syntax
-The Bash syntax has several distinct components, which can be classed as <a href = "#Keywords_and_Special_Characters">keywords and special characters</a>, <a href = "#Bulletins">bulletins</a>, <a href = "#Variables">variables</a>, <a href = "#Functions">functions</a>, <a href = "#Tests">tests</a> and <a href = "#Conditionals">conditionals</a>.
+The Bash syntax has several distinct components, which can be classed as keywords and special characters, bulletins, variables, functions, tests and conditionals.
 
 ## Keywords and Special Characters
-<b>Keywords and special characters</b> (<b>KSCs</b>) are an important concept to understand, they are words, or symbols, that have a special, set meaning when scripting in Bash. Examples are listed in <b>Table 1</b>.
+**Keywords and special characters** (**KSCs**) are an important concept to understand, they are words, or symbols, that have a special, set meaning when scripting in Bash. Examples are listed in **Table 1**.
 <table style="width: 100%;"><caption>Table 1: Some Keywords and Special Characters Permitted in Bash</caption>
 <tbody>
 <tr>
@@ -280,16 +280,16 @@ popd #moving back out of the ~/Shell directory
 </tr>
 </tbody>
 </table>
-<code>until</code>, <code>while</code> and <code>time</code> are some other keywords that are not mentioned there, as I do not know enough about them to really comment on them. Keywords can be used as variables but I would not advise this, as this can quite easily become confusing.
+`until`, `while` and `time` are some other keywords that are not mentioned there, as I do not know enough about them to really comment on them. Keywords can be used as variables but I would not advise this, as this can quite easily become confusing.
 
 ## Variables
-Bash <b>variables</b> are defined using equal signs. They can be made global (making them available for all processes) or local (making them available just for the script at hand). Local variables are defined by just using an equal sign, for example:
+Bash **variables** are defined using equal signs. They can be made global (making them available for all processes) or local (making them available just for the script at hand). Local variables are defined by just using an equal sign, for example:
 {% include codeu.html line1="PYTHONPATH=/usr/bin/python" %}
 while to define this variable globally, one would run:
 {% include codeu.html line1="export PYTHONPATH=/usr/bin/python" %}
 
 ## Bulletins
-Several Bash commands (or <b>bulletins</b>) exist and some (but by no stretch of the imagination all &mdash; I do not even understand them all!) basic ones are explained in <b>Table 2</b>. It is worthwhile noting that all these commands are purely Bash commands, by this I mean, they do not call any command-line programs to do their work for them. See many commands you will see in Bash scripts are not Bash commands, per se, rather they are commands that use another command-line program such as <code>mv</code> or <code>pwd</code> to do the work, but they can be run from within Bash. Many of these programs are also borrowed from the GNU Project, namely its core utilities package ([`sys-apps/coreutils`](https://packages.sabayon.org/show/coreutils,156043,sabayon-weekly,amd64,5,standard)) and are stored in either `/usr/bin/` or `/bin/`, directories.
+Several Bash commands (or **bulletins**) exist and some (but by no stretch of the imagination all &mdash; I do not even understand them all!) basic ones are explained in **Table 2**. It is worthwhile noting that all these commands are purely Bash commands, by this I mean, they do not call any command-line programs to do their work for them. See many commands you will see in Bash scripts are not Bash commands, *per se*, rather they are commands that use another command-line program such as `mv` or `pwd` to do the work, but they can be run from within Bash. Many of these programs are also borrowed from the GNU Project, namely its core utilities package ([`sys-apps/coreutils`](https://packages.sabayon.org/show/coreutils,156043,sabayon-weekly,amd64,5,standard)) and are stored in either `/usr/bin/` or `/bin/`, directories.
 
 <table style="width: 100%;">
 <caption>Table 2: Some Basic Bulletins</caption>
@@ -352,19 +352,19 @@ runs the <code>~/.bashrc</code> script.
 </table>
 
 ## Tests
-Tests are essential for conditionals. As their name suggests, they test to see whether or not a condition is satisfied. If the condition is satisfied they return 0, while if the condition is unsatisfied they return 1. Square brackets (which are a bulletin, by-the-way), <code>[...]</code>, are used for tests, although double square brackets (<code>[[...]]</code>) can also be used for this purpose since Bash 2.02. The difference, from what I can tell, between single and double square brackets is that double square brackets allow one to perform more advanced tests than single square brackets. Single square brackets are also POSIX compliant and are found on all Unix shells.[^6]
+Tests are essential for conditionals. As their name suggests, they test to see whether or not a condition is satisfied. If the condition is satisfied they return 0, while if the condition is unsatisfied they return 1. Square brackets (which are a bulletin, by-the-way), `[...]`, are used for tests, although double square brackets (`[[...]]`) can also be used for this purpose since Bash 2.02. The difference, from what I can tell, between single and double square brackets is that double square brackets allow one to perform more advanced tests than single square brackets. Single square brackets are also POSIX compliant and are found on all Unix shells.[^6]
 ## Conditionals
-In Bash scripts conditionals use the output of a test and perform an action accordingly. Conditionals usually involve at least one of the following keywords: <code>case</code>, <code>if</code>, <code>else</code>, <code>elseif</code> and <code>fi</code>.
+In Bash scripts conditionals use the output of a test and perform an action accordingly. Conditionals usually involve at least one of the following keywords: `case`, `if`, `else`, `elseif` and `fi`.
 ## Functions
-Functions are essentially convenient ways we can group pieces of code together, so as to give them order and make them more logical. Quite often functions are designed to take input and use it to generate an output, or to perform a task, although some functions require no input. All Bash functions share two main things in common: the use of the word "function" and the fact the function's contents are contained within curly braces <code>{...}</code>.
+Functions are essentially convenient ways we can group pieces of code together, so as to give them order and make them more logical. Quite often functions are designed to take input and use it to generate an output, or to perform a task, although some functions require no input. All Bash functions share two main things in common: the use of the word "function" and the fact the function's contents are contained within curly braces `{...}`.
 ## Loops
-Loops (which involve the <code>for</code> keyword), in Bash scripts, are used to automate the performing of tedious tasks that are sufficiently similar to one another.
+Loops (which involve the `for` keyword), in Bash scripts, are used to automate the performing of tedious tasks that are sufficiently similar to one another.
 ## Selectors
-Selectors (marked by the <code>select</code> keyword) gives users choices as to which input(s) the rest of the selector block uses.
+Selectors (marked by the `select` keyword) gives users choices as to which input(s) the rest of the selector block uses.
 # Applications
 The primary value of Bash scripts is to automate tasks that would otherwise have to be done, over a longer time-frame by a human operator. I personally use shell scripts to make my life, when I am at the command-line, easier.
 
-In my `~/.bashrc` file I have links to several shell scripts stored in my <code>~/Shell</code> directory. Both my <code>~/.bashrc</code> and the shell scripts in my <code>~/Shell</code> directory can be found at <a href = "https://github.com/fusion809/sabayon-scripts">this GitHub repository</a>. Here is my current <code>~/.bashrc</code> file:[^7]
+In my `~/.bashrc` file I have links to several shell scripts stored in my `~/Shell` directory. Both my `~/.bashrc` and the shell scripts in my `~/Shell` directory can be found at [this GitHub repository](https://github.com/fusion809/sabayon-scripts). Here is my current `~/.bashrc` file:[^7]
 ```bash
 # /etc/skel/.bashrc
 #
@@ -387,10 +387,13 @@ do
 	. $i
 done
 ```
-I have at least three dozen functions I have defined in shell scripts located in the <code>~/Shell</code> directory, but here I will mention some of the more interesting, or useful ones for Sabayon users, in general.
+I have at least three dozen functions I have defined in shell scripts located in the `~/Shell` directory, but here I will mention some of the more interesting, or useful ones for Sabayon users, in general.
 
 ## Interesting Scripts[^8]
-You may have noticed that I am hosting HTML versions of several Linux man pages within the <code>/man</code> subdomain of this blog. I generate them using a function contained within <code>~/Shell/man.sh</code> called <code>manhtml</code>. For example, to generate <a href = "http://linux.x10host.com/blog/man/emerge.1.html">emerge.1.html</a> I ran <code><span class = "codeu">user $</span> manhtml 1 emerge</code>. Here are the contents of <code>~/Shell/man.sh</code> (showing all the contents as <code>manhtml</code> depends on other functions to work):
+You may have noticed that I am hosting HTML versions of several Linux man pages within the `/man` subdomain of this blog. I generate them using a function contained within `~/Shell/man.sh` called `manhtml`. For example, to generate [emerge.1.html](http://linux.x10host.com/blog/man/emerge.1.html) I ran:
+{% include codeu.html line1="manhtml 1 emerge" %}
+
+Here are the contents of `~/Shell/man.sh` (showing all the contents as `manhtml` depends on other functions to work):
 ```bash
 # Copy man page from /usr/share/man/... to ~/Documents/Manpages
 function cpman {
@@ -433,7 +436,8 @@ function theme {
   cd ..
 }
 ```
-to install a new Moksha theme you would run <code><span class = "codeu">user $</span>  theme &lt;THEME&gt;</code> where `&lt;THEME&gt;` is, of course, the theme's name (how they appear in their respective GitHub repo's URL).
+to install a new Moksha theme you would run:
+{% include codeu.html line1="theme &lt;THEME&gt;" %} where `<THEME>` is, of course, the theme's name (how they appear in their respective GitHub repo's URL).
 ## Useful Functions for Sabayon Users
 The following are some functions that, depending on how you operate on Sabayon, may be helpful.
 ###Entropy
