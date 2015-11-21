@@ -5,7 +5,7 @@ date:   2015-10-31
 categories: sabayon, bash, shell-scripting
 ---
 
-{% include image.html image="optipng2.png" description="OptiPNG 0.7.5 running under Bash 4.3.39 in LXTerminal 0.2.0" width = "1250px" %}
+{% include image.html image="optipng2.png" description="OptiPNG 0.7.5 running under Bash 4.3.39 in LXTerminal 0.2.0" width = "1240px" float = "none" %}
 {% include note.html note1="Links to Wiki articles are provided in this post for those that wish to learn more, but it is important to note that I cannot guarantee their accuracy." %}
 
 **Bash**, also known as the **Bourne-again shell**, is a Unix shell and command language, that is developed as part of the GNU Project. Along with the Linux kernel and package management system, I would rank Bash as one of the three most important components of a Sabayon Linux system. Without it or some other Unix shell in its place, one's ability to interact one's system would be very limited and difficult.

@@ -1,0 +1,519 @@
+<!-- Creator     : groff version 1.22.3 -->
+<!-- CreationDate: Wed Oct  7 19:38:37 2015 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       h1      { text-align: center }
+</style>
+<title>EBUILD</title>
+
+</head>
+<body>
+
+<h1 align="center">EBUILD</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#FILE">FILE</a><br>
+<a href="#COMMANDS">COMMANDS</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#REPORTING BUGS">REPORTING BUGS</a><br>
+<a href="#AUTHORS">AUTHORS</a><br>
+<a href="#FILES">FILES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<h2>NAME
+<a name="NAME"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">ebuild &minus;
+a low level interface to the Portage system</p>
+
+<h2>SYNOPSIS
+<a name="SYNOPSIS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>ebuild</b>
+<i>file command [command]</i>...</p>
+
+<h2>DESCRIPTION
+<a name="DESCRIPTION"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The ebuild
+program is a direct interface to the Portage system. It
+allows for direct action upon an ebuild with specific
+subcommands or groups of commands to perform in a specific
+ebuild&rsquo;s context and functions. Accepting an ebuild
+script and one or more commands as arguments, the ebuild
+program parses the ebuild script and executes the specified
+commands. Commands exist to fetch sources, unpack sources,
+compile sources, install object files into a temporary
+directory &quot;image&quot;, merge the image to the local
+filesystem, create a bzipped tarball package out of the
+image, and more.</p>
+
+<h2>FILE
+<a name="FILE"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">This must be a
+valid ebuild script. For further information read
+<b>ebuild</b>(5).</p>
+
+<h2>COMMANDS
+<a name="COMMANDS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">By default,
+portage will execute all the functions in order up to the
+one actually specified, except for the functions that have
+already been executed in a previous invocation of ebuild.
+For example, simply issuing the command <b>compile</b> will
+trigger the functions before it to also be run (such as
+<b>setup</b> and <b>unpack</b>), unless they were run in a
+previous invocation of ebuild. If you want to make sure they
+are all run, you need to use the command <b>clean</b> first.
+If you wish to only have the specified command run, then you
+should use the <i>noauto</i> option in the <b>FEATURES</b>
+environment variable. See the <b>make.conf</b>(5) man page
+for more information.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p><b>help</b></p></td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p>Shows a condensed form of this man page along with a lot
+of package specific information.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p><b>setup</b></p></td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p>Runs all package-specific setup actions and exotic
+system checks.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p><b>clean</b></p></td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p>Cleans the temporary build directory that Portage has
+created for this particular ebuild file. The temporary build
+directory normally contains the extracted source files as
+well as a possible &quot;install image&quot; (all the files
+that will be merged to the local filesystem or stored in a
+package). The location of the build directory is set by the
+PORTAGE_TMPDIR variable. For information on what this
+variable is, run <i>emerge &minus;&minus;info</i>, or to
+override this variable, see <b>make.conf</b>(5).</p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Note: Portage
+cleans up almost everything after a package has been
+successfully merged unless FEATURES contains
+&rsquo;noclean&rsquo;. Adding noclean to FEATURES will cause
+a lot of files to remain and will consume large amounts of
+space, very quickly. It is not recommended to leave this on,
+unless you have use for the sources post&minus;merge.
+Optionally, one may manually clean these files with <i>rm
+&minus;rf /var/tmp/portage</i>.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p style="margin-top: 1em"><b>fetch</b></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em">Checks to see if all the sources
+specified in SRC_URI are available in DISTDIR (see
+<b>make.conf</b>(5) for more information) and have a valid
+checksum. If the sources aren&rsquo;t available, an attempt
+is made to download them from the locations specified in
+SRC_URI. If multiple download locations are listed for a
+particular file, Portage pings each location to see which
+location is closer. (May not be true presently.) The Gentoo
+Linux mirrors defined by GENTOO_MIRRORS is always considered
+first. If for some reason the current or
+just&minus;downloaded sources&rsquo; checksums don&rsquo;t
+match those recorded in
+files/digest&minus;[package]&minus;[version&minus;rev], a
+warning is printed and ebuild exits with an error code of
+1.</p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p><b>digest</b></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p>This is now equivalent to the <i>manifest</i>
+command.</p> </td></tr>
+</table>
+
+<p style="margin-left:11%;"><b>manifest</b></p>
+
+<p style="margin-left:22%;">Updates the manifest file for
+the package. This creates checksums for all of the files
+found in the same directory as the current ebuild as well as
+the recursive contents of the files subdirectory. It also
+creates checksums for all of the files listed in SRC_URI for
+each ebuild. For further information regarding the behavior
+of this command, see the documentation for the
+<i>assume&minus;digests</i> value of the <b>FEATURES</b>
+variable in <b>make.conf</b>(5). See the
+<b>&minus;&minus;force</b> option if you would like to
+prevent digests from being assumed.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p><b>unpack</b></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p>Extracts the sources to a subdirectory in the <i>build
+directory</i> (BUILD_PREFIX) by running the
+<i>src_unpack()</i> function in the ebuild file. If no
+src_unpack() function has been specified, a default
+src_unpack() function is used that extracts all the files
+specified in SRC_URI. The sources are normally extracted to
+${BUILD_PREFIX}/[package]&minus;[version&minus;rev]/work.
+This particular directory can be referenced by using the
+${WORKDIR} variable.</p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">If you&rsquo;re
+creating an ebuild, you&rsquo;ll want to make sure that the
+S (source directory) variable defined at the top of your
+ebuild script points to the directory that contains your
+extracted sources. This directory is defined by default to
+be ${WORKDIR}/${P}, so it is not often required. The
+src_unpack() function is also responsible for making the
+appropriate patches to the sources so that they&rsquo;re
+ready for compilation.</p>
+
+<p style="margin-left:11%;"><b>prepare</b></p>
+
+<p style="margin-left:22%;">Prepares the extracted sources
+by running the <i>src_prepare()</i> function specified in
+the ebuild file. When src_prepare() starts, the current
+working directory will be set to ${S}. This function is
+supported beginning with <b>EAPI 2</b>.</p>
+
+<p style="margin-left:11%;"><b>configure</b></p>
+
+<p style="margin-left:22%;">Configures the extracted
+sources by running the <i>src_configure()</i> function
+specified in the ebuild file. When src_configure() starts,
+the current working directory will be set to ${S}. This
+function is supported beginning with <b>EAPI 2</b>.</p>
+
+<p style="margin-left:11%;"><b>compile</b></p>
+
+<p style="margin-left:22%;">Compiles the extracted sources
+by running the <i>src_compile()</i> function specified in
+the ebuild file. When src_compile() starts, the current
+working directory will be set to ${S}. When src_compile()
+completes, the sources should be fully compiled.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="6%">
+
+
+<p><b>test</b></p></td>
+<td width="5%"></td>
+<td width="78%">
+
+
+<p>Runs package-specific test cases to verify that
+everything was built properly.</p></td></tr>
+</table>
+
+<p style="margin-left:11%;"><b>preinst</b></p>
+
+<p style="margin-left:22%;">Runs package-specific actions
+that need to be done before the package is installed into
+the live filesystem.</p>
+
+<p style="margin-left:11%;"><b>install</b></p>
+
+<p style="margin-left:22%;">Installs the package to the
+temporary <i>install directory</i> by running the
+<i>src_install()</i> function. When completed, the
+<i>install directory</i>
+(${BUILD_PREFIX}/[package]&minus;[version&minus;rev]/image)
+will contain all the files that should either be merged to
+the local filesystem or included in a binary package.</p>
+
+<p style="margin-left:11%;"><b>postinst</b></p>
+
+<p style="margin-left:22%;">Runs package-specific actions
+that need to be done after the package is installed into the
+live filesystem. Usually helpful messages are shown
+here.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p><b>qmerge</b></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p>This function installs all the files in the <i>install
+directory</i> to the live filesystem. The process works as
+follows: first, the <i>pkg_preinst()</i> function (if
+specified) is run. Then, the files are merged into the live
+filesystem, and the installed files&rsquo; checksums are
+recorded in
+<i>/var/db/pkg/${CATEGORY}/${PN}&minus;${PVR}/CONTENTS</i>.
+After all the files have been merged, the
+<i>pkg_postinst()</i> function (if specified) is
+executed.</p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p><b>merge</b></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p>Normally, to merge an ebuild, you need to <i>fetch</i>,
+<i>unpack</i>, <i>compile</i>, <i>install</i> and
+<i>qmerge</i>. If you&rsquo;re simply interested in merging
+the ebuild, you can use this command, which will perform all
+these steps for you, stopping along the way if a particular
+step doesn&rsquo;t complete successfully.</p></td></tr>
+</table>
+
+<p style="margin-left:11%;"><b>unmerge</b></p>
+
+<p style="margin-left:22%;">This function first executes
+the <i>pkg_prerm()</i> function (if specified). Then it
+removes all files from the live filesystem that have a valid
+checksum and mtime in the package contents file. Any empty
+directories are recursively removed. Finally, it runs
+<i>pkg_postrm()</i> function (if specified). It is safe to
+merge a new version of a package first and then unmerge the
+old one. In fact, this is the recommended package upgrade
+method.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p><b>prerm</b></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p>Runs package-specific actions that need to be executed
+before the package is removed from the filesystem. See also
+<i>unmerge</i>.</p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p><b>postrm</b></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p>Runs package-specific actions that need to be executed
+after the package is removed from the filesystem. See also
+<i>unmerge</i>.</p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p><b>config</b></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p>Runs package-specific actions that need to be executed
+after the emerge process has completed. This usually entails
+setup of configuration files or other similar setups that
+the user may wish to run.</p></td></tr>
+</table>
+
+<p style="margin-left:11%;"><b>package</b></p>
+
+<p style="margin-left:22%;">This command is a lot like the
+<i>merge</i> command, except that after fetching, unpacking,
+compiling and installing, a .tbz2 binary package tarball is
+created and stored in <b>PKGDIR</b> (see
+<b>make.conf</b>(5)).</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p><b>rpm</b></p></td>
+<td width="7%"></td>
+<td width="78%">
+
+
+<p>Builds a RedHat RPM package from the files in the
+temporary <i>install directory</i>. At the moment, the
+ebuild&rsquo;s dependency information is not incorporated
+into the RPM.</p></td></tr>
+</table>
+
+<h2>OPTIONS
+<a name="OPTIONS"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;debug</b></p>
+
+<p style="margin-left:22%;">Run bash with the &minus;x
+option, causing it to output verbose debugging information
+to stdout.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;color &lt; y |
+n &gt;</b></p>
+
+<p style="margin-left:22%;">Enable or disable color output.
+This option will override <i>NOCOLOR</i> (see
+<b>make.conf</b>(5)) and may also be used to force color
+output when stdout is not a tty (by default, color is
+disabled unless stdout is a tty).</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;force</b></p>
+
+<p style="margin-left:22%;">When used together with the
+digest or manifest command, this option forces regeneration
+of digests for all distfiles associated with the current
+ebuild. Any distfiles that do not already exist in
+${DISTDIR} will be automatically fetched.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;ignore&minus;default&minus;opts</b></p>
+
+<p style="margin-left:22%;">Do not use the
+<i>EBUILD_DEFAULT_OPTS</i> environment variable.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;skip&minus;manifest</b></p>
+
+<p style="margin-left:22%;">Skip all manifest checks.</p>
+
+<h2>REPORTING BUGS
+<a name="REPORTING BUGS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Please report
+bugs via http://bugs.gentoo.org/</p>
+
+<h2>AUTHORS
+<a name="AUTHORS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Achim Gottinger
+&lt;achim@gentoo.org&gt; <br>
+Daniel Robbins &lt;drobbins@gentoo.org&gt; <br>
+Nicholas Jones &lt;carpaski@gentoo.org&gt; <br>
+Mike Frysinger &lt;vapier@gentoo.org&gt;</p>
+
+<h2>FILES
+<a name="FILES"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>/etc/portage/make.conf</b></p>
+
+<p style="margin-left:22%;">Contains variables for the
+build&minus;process and overwrites those in
+make.globals.</p>
+
+
+<p style="margin-left:11%;"><b>/etc/portage/color.map</b></p>
+
+<p style="margin-left:22%;">Contains variables customizing
+colors.</p>
+
+<h2>SEE ALSO
+<a name="SEE ALSO"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>emerge</b>(1),
+<b>ebuild</b>(5), <b>make.conf</b>(5), <b>color.map</b>(5)
+<br>
+The <i>/usr/lib/portage/bin/ebuild.sh</i> script. <br>
+The helper apps in <i>/usr/lib/portage/bin</i>.</p>
+<hr>
+</body>
+</html>
