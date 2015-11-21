@@ -119,7 +119,7 @@ tests whether the input variable, <code>$1</code> exists.
 <tr>
 <td><code>|</code></td>
 <td>This is called a <b>pipe</b> and it sends the output of a command through another. For example, <code>A | B</code> does A and sends its output through B.</td>
-<td>The following example downloads the source code tarball of the 1.1.0 release of Atom and pipes it through tar and gzip to decompress it.
+<td>The following example downloads the source code tarball of the 1.1.0 release of Atom and pipes it through tar and gzip to decompress it.<br/>
 {% highlight bash %}
 wget -qO- https://github.com/atom/atom/archive/v1.1.0.tar.gz | tar -xz
 {% endhighlight %}</td>
@@ -152,6 +152,7 @@ takes one to one's previous working directory.</td>
 <td>Wildcard operator, can take on any value. Can also be used for multiplication.</td>
 <td>
 If you have a directory, <code>~/VirtualBox</code> on your machine and no others starting with the prefix <code>~/Virtual</code> then:
+<br/>
 {% highlight bash %}
 cd ~/Virtual*
 {% endhighlight %}
@@ -162,6 +163,7 @@ should change your current working directory to <code>~/VirtualBox</code>.
 <td><code>.</code></td>
 <td>Serves as an equivalent to the <code>source</code> bulletin and as an equivalent to <code>pwd</code></td>
 <td>As <code>source</code> (the following will execute every file with the extension <code>.sh</code> in the <code>~/Shell</code> directory):
+<br/>
 {% highlight bash %}
 for i in ~/Shell/*.sh
 do
@@ -169,6 +171,7 @@ do
 done
 {% endhighlight %}
 whereas as <code>pwd</code>:
+<br/>
 {% highlight bash %}
 cd .
 {% endhighlight %}
@@ -179,6 +182,7 @@ which causes no change in current directory.
 <td><code>..</code></td>
 <td>Denotes the parent directory</td>
 <td>If I am working in the <code>~/Shell</code> directory, and run:
+<br/>
 {% highlight bash %}
 cd ..
 {% endhighlight %}
@@ -240,7 +244,7 @@ fi
 <tr>
 <td><code>in</code></td>
 <td>Used when dealing with lists</td>
-<td>This script should, if passed an argument open Atom to <code>~/Shell/$1.sh</code>, otherwise ask the user to select from the list of shell scripts in <code>~/Shell</code> of which one to open in Atom.
+<td>This script should, if passed an argument open Atom to <code>~/Shell/$1.sh</code>, otherwise ask the user to select from the list of shell scripts in <code>~/Shell</code> of which one to open in Atom.<br/>
 {% highlight bash %}
 pushd ~/Shell
 if [[ -n $1 ]]
@@ -315,7 +319,7 @@ changes one's directory to /home/username/Documents.</td>
 <tr>
 <td><code>date</code></td>
 <td>Outputs the date. Inputs/variables can be used to set the timezone and the format of the date given.</td>
-<td>This gives my local date and time in my preferred format:
+<td>This gives my local date and time in my preferred format:<br/>
 {% highlight bash %}TZ="Australia/Brisbane" date +"%r %A, %d %B %Y"{% endhighlight %}
 </td>
 <td><a href="http://linux.x10host.com/blog/man/date.1.html">date.1.html</a></td>
