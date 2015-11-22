@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "An Introduction to Bash Scripting on Sabayon Linux"
+title:  "An Introduction to Sabayon Command-Line and Bash Scripting"
 date:   2015-10-31
 categories: sabayon, bash, shell-scripting
 ---
@@ -8,7 +8,7 @@ categories: sabayon, bash, shell-scripting
 {% include image.html image="optipng2.png" description="OptiPNG 0.7.5 running under Bash 4.3.39 in LXTerminal 0.2.0" width = "1240px" float = "none" %}
 {% include note.html note1="Links to Wiki articles are provided in this post for those that wish to learn more, but it is important to note that I cannot guarantee their accuracy." %}
 
-**Bash**, also known as the **Bourne-again shell**, is a Unix shell and command language, that is developed as part of the GNU Project. Along with the Linux kernel and package management system, I would rank Bash as one of the three most important components of a Sabayon Linux system. Without it or some other Unix shell in its place, one's ability to interact one's system would be very limited and difficult.
+On **Sabayon Linux** and other Linux distributions, along with other [Unix](https://en.wikipedia.org/wiki/Unix)/[Unix-like](https://en.wikipedia.org/wiki/Unix-like) systems the command-line is a pivotal way by which users can interact with the operating system and its various components. The Un **Bash**, also known as the **Bourne-again shell**, is a Unix shell and command language, that is developed as part of the GNU Project. Along with the Linux kernel and package management system, I would rank Bash as one of the three most important components of a Sabayon Linux system. Without it or some other Unix shell in its place, one's ability to interact one's system would be very limited and difficult.
 
 It was originally developed by [Brian J. Fox](https://en.wikipedia.org/wiki/Brian_Fox_(computer_programmer)) in 1989 and has since become the most-widely used [Unix shell](https://en.wikipedia.org/wiki/Unix_shell), with the vast majority of Linux distributions using it as their default command shell (only notable exception I have come across is Deepin, which uses Zsh) and since the release of 10.3 in October 2003 is has replaced tcsh as the default command shell for OS X.
 
@@ -17,7 +17,7 @@ In this post I will give some necessary background on Bash and its predecessor, 
 # Background
 {% include image.html image="BrianJFox.png" width="300px" height="401px" description="Brian J. Fox (1959-), the original developer of Bash" %}
 
-The development of Bash began in January 1988, when [Richard Stallman](https://en.wikipedia.org/wiki/Richard_Stallman), the founder of the [GNU Project](http://www.gnu.org/) and the [Free Software Foundation](http://www.fsf.org/) (FSF), became dissatisfied with the previous author of the GNU shell's failure to meet the required deadlines and decided, instead, to get FSF staff member, Brian J. Fox to write a free imitation of the Bourne Shell.[^1] Later in June 1989, the first public release of Bash was made, 0.99 (which was a beta release) and until mid 1992 (when Bash 1.12 was released), Fox remained the lead developer of Bash.[^2] When Fox left the FSF in mid 1992, [Chet Ramey](http://tiswww.case.edu/php/chet/) took over responsibility for Bash's development, which he has kept to this very day.[^3]
+The development of Bash began in January 1988, when [Richard Stallman](https://en.wikipedia.org/wiki/Richard_Stallman), the founder of the [GNU Project](http://www.gnu.org/) and the [Free Software Foundation](http://www.fsf.org/) (FSF), became dissatisfied with the previous author of the GNU shell's failure to meet the required deadlines and decided, instead, to get FSF staff member, Brian J. Fox to write a free imitation of the Bourne Shell.[^2] Later in June 1989, the first public release of Bash was made, 0.99 (which was a beta release) and until mid 1992 (when Bash 1.12 was released), Fox remained the lead developer of Bash.[^3] When Fox left the FSF in mid 1992, [Chet Ramey](http://tiswww.case.edu/php/chet/) took over responsibility for Bash's development, which he has kept to this very day.[^4]
 
 ## Other Unix Shells
 The Bourne Shell was one of the first official Unix shells to be developed and was first developed in 1977. I am using the phrasing "official Unix shells", to draw attention to the fact that the Bourne Shell was developed at Bell Labs for use by Research Unix, which was the original Unix system. The Bourne Shell is named after [Stephen Bourne](https://en.wikipedia.org/wiki/Stephen_R._Bourne), its original developer.
@@ -35,7 +35,7 @@ On Unix/Unix-like platforms it is possible to change your login shell using the 
 and then reboot.
 
 # Definitions
-A natural question, that is asked by everyone, that is introduced to Unix shells, is "What is a Unix shell, exactly?" While this question sounds simple and straightforward, the answer is difficult to put into words, without it being either too generalized and vague, or too focused on specific examples. So I am going to air on the side of generalization and say that a Unix shell, is a **command-line interpreter** (**CLI**) that provides a familiar interface by which users can interact with the Unix[^4] system. Take the example of Bash, which is started whenever you open up a **terminal emulator** (**TEE**) or start **tty1** (with <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F1</kbd>) within most Linux systems, provided you have not set your default shell to something other than Bash. It interprets every command you type into the TEE or tty1 and can make changes to your system, accordingly. On most Linux systems, Unix shells are stored in the file directory `/bin`. You can list them all by issuing the command:
+A natural question, that is asked by everyone, that is introduced to Unix shells, is "What is a Unix shell, exactly?" While this question sounds simple and straightforward, the answer is difficult to put into words, without it being either too generalized and vague, or too focused on specific examples. So I am going to air on the side of generalization and say that a Unix shell, is a **command-line interpreter** (**CLI**) that provides a familiar interface by which users can interact with the Unix[^5] system. Take the example of Bash, which is started whenever you open up a **terminal emulator** (**TEE**) or start **tty1** (with <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F1</kbd>) within most Linux systems, provided you have not set your default shell to something other than Bash. It interprets every command you type into the TEE or tty1 and can make changes to your system, accordingly. On most Linux systems, Unix shells are stored in the file directory `/bin`. You can list them all by issuing the command:
 {% include coder.html line1="cat /etc/shells" %}
 for me, for example, on my Sabayon machine this gives the output:
 ```sh
@@ -353,7 +353,7 @@ runs the <code>~/.bashrc</code> script.
 </table>
 
 ## Tests
-Tests are essential for conditionals. As their name suggests, they test to see whether or not a condition is satisfied. If the condition is satisfied they return 0, while if the condition is unsatisfied they return 1. Square brackets (which are a bulletin, by-the-way), `[...]`, are used for tests, although double square brackets (`[[...]]`) can also be used for this purpose since Bash 2.02. The difference, from what I can tell, between single and double square brackets is that double square brackets allow one to perform more advanced tests than single square brackets. Single square brackets are also POSIX compliant and are found on all Unix shells.[^6]
+Tests are essential for conditionals. As their name suggests, they test to see whether or not a condition is satisfied. If the condition is satisfied they return 0, while if the condition is unsatisfied they return 1. Square brackets (which are a bulletin, by-the-way), `[...]`, are used for tests, although double square brackets (`[[...]]`) can also be used for this purpose since Bash 2.02. The difference, from what I can tell, between single and double square brackets is that double square brackets allow one to perform more advanced tests than single square brackets. Single square brackets are also POSIX compliant and are found on all Unix shells.[^7]
 ## Conditionals
 In Bash scripts conditionals use the output of a test and perform an action accordingly. Conditionals usually involve at least one of the following keywords: `case`, `if`, `else`, `elseif` and `fi`.
 ## Functions
@@ -547,11 +547,12 @@ function tailf {
 * [GNU Core Utilities Manual (2015) @ www.gnu.org](http://www.gnu.org/software/coreutils/manual/coreutils.pdf) (helpful in explaining what GNU Core Utilities you can call from within your Bash scripts)
 
 # Footnotes
-[^1]: Source: [email from 1987](https://groups.google.com/forum/#!original/comp.unix.questions/iNjWwkyroR8/yedr9yDWSuQJ)
-[^2]: Source: [Chet Ramey's Scribd document](http://www.scribd.com/doc/40556434/2010-10-31-Chet-Ramey-Early-Bash-Dates)
-[^3]: Source: [Bash Webpage](https://www.gnu.org/software/bash/)
-[^4]: Or Unix-like, in the case of Linux distributions such as Sabayon
-[^5]: Source: [Server Fault](http://serverfault.com/a/52050/298691)
+[^1]: Henceforth I will refer to Unix/Unix-like systems, collectively, as &#42;nix systems.
+[^2]: Source: [email from 1987](https://groups.google.com/forum/#!original/comp.unix.questions/iNjWwkyroR8/yedr9yDWSuQJ)
+[^3]: Source: [Chet Ramey's Scribd document](http://www.scribd.com/doc/40556434/2010-10-31-Chet-Ramey-Early-Bash-Dates)
+[^4]: Source: [Bash Webpage](https://www.gnu.org/software/bash/)
+[^5]: Or Unix-like, in the case of Linux distributions such as Sabayon
+[^6]: Source: [Server Fault](http://serverfault.com/a/52050/298691)
 [^7]: The for loop I got from the answers to <a href = "http://unix.stackexchange.com/q/239881/27613">this question</a> at Unix & Linux SE
 [^8]: Which is in the eye of the beholder of course, you may not find these interesting at all
 [^9]: Its general topic is programming, so it is suitable for shell script-related questions. I have asked two questions there relating to shell script, as of 31 October 2015, both were resolved within an hour.
