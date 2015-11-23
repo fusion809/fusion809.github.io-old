@@ -154,7 +154,7 @@ The Bash syntax has several distinct components, which can be classed as keyword
 <tr>
 <td><code>uname</code></td>
 <td>Print system information</td>
-<td>{% highlight bash %}uname -r{% endhighlight %}</td>
+<td>{% highlight bash %}uname -r{% endhighlight %} lists the kernel details.</td>
 <td>{% include man.html man="uname.1" %}</td>
 </tr>
 </tbody>
