@@ -1,11 +1,12 @@
 ---
 layout: post
-title:  "An Introduction to the Command-Line and Bash Scripting for Sabayon Users"
+title:  "Bash Scripting and the Command-Line: an Introduction for Sabayon Users"
 date:   2015-11-24
 categories: sabayon, bash, shell-scripting, command-line
 redirect_from:
   - /2015/10/31/an-introduction-to-the-command-line-and-bash-scripting-for-sabayon-users/
   - /2015/10/31/an-introduction-to-bash-scripting/
+  - /2015/11/24/an-introduction-to-the-command-line-and-bash-scripting-for-sabayon-users/
 ---
 
 {% include image.html image="optipng2.png" description="OptiPNG 0.7.5 running under Bash 4.3.39 in LXTerminal 0.2.0" width = "1240px" float = "none" %}
