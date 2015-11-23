@@ -79,7 +79,7 @@ The Bash syntax has several distinct components, which can be classed as keyword
 </tr>
 <tr>
 <td><code>cat</code></td>
-<td>Concatenate file. Take file contents and send them through <a href = "https://en.wikipedia.org/wiki/Standard_streams">standard output</a>.</td>
+<td>Concatenate file. Take file contents and send them to <a href = "https://en.wikipedia.org/wiki/Standard_streams">standard output</a>.</td>
 <td>{% highlight bash %}cat /etc/shells{% endhighlight %}</td>
 <td>{% include man.html man="cat.1p" %}</td>
 </tr>
@@ -112,6 +112,12 @@ The Bash syntax has several distinct components, which can be classed as keyword
 <td>List files</td>
 <td>{% highlight bash %}ls{% endhighlight %} lists files and directories in the current directory, except for hidden ones.</td>
 <td>{% include man.html man="ls.1p" %}</td>
+</tr>
+<tr>
+<td><code>mv</code></td>
+<td>Move file</td>
+<td>{% highlight bash %}mv ~/.bashrc ~/GitHub/sabayon-scripts/{% endhighlight %}</td>
+<td>{% include man.html man="mv.1p" %}</td>
 </tr>
 </tbody>
 </table>
