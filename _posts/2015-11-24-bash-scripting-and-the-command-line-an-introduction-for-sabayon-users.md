@@ -644,10 +644,34 @@ function tailf {
 ```
 
 # Terminal Emulators
-Terminal emulators (TEs) for Sabayon include tty1-tty6, the whole-screen virtual terminals managed by the getty Unix command (which are started with <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Fn</kbd> with n ranging from 1 to 6) and various graphical TEs (that is, TEs windows running within a graphical user interface) including GNOME Terminal, Konsole and LXTerminal. Most of these graphical TEs are found in the "x11-term" category in the [Portage Tree](https://packages.gentoo.org/categories/x11-terms), [Gentoo Portage Overlays](http://gpo.zugaina.org/x11-terms/) and [Entropy Store](https://packages.sabayon.org/category/x11-terms). You can search for terminals using the command:
+Terminal emulators (TEs) for Sabayon include tty1-tty6, the whole-screen virtual terminals managed by the getty Unix command (which are started with <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Fn</kbd> with n ranging from 1 to 6) and various graphical TEs (<abbr title="Graphical Terminal Emulators">GTEs</abbr>; that is, TE windows running within a graphical user interface) including GNOME Terminal, Konsole and LXTerminal. Most of these graphical TEs are found in the "x11-terms" category in the [Portage Tree](https://packages.gentoo.org/categories/x11-terms), [Gentoo Portage Overlays](http://gpo.zugaina.org/x11-terms/) and [Entropy Store](https://packages.sabayon.org/category/x11-terms). You can list all programs in this category by issuing the command:
 {% include coder.html line1='eix -C -c "x11-terms"' %}
 
-# GNOME Terminal
+The following section will involve me comparing the various graphical terminal emulators I have any real experience with.
+
+## GNOME Terminal
+{% include image.html image="GNOME-Terminal-3.16.2.png" width="743px" description="GNOME Terminal 3.16.2" float="none" %}
+{% include links.html package="x11-terms/gnome-terminal" link="GNOME Terminal" wp="GNOME Terminal" %} is a GTE that is part of the GNOME Core Applications. It is written in C and licensed under GNU GPLv2. I find it, like most GNOME Core Applications fairly feature-packed, with several customization options being available for the terminal window. These include custom keyboard shortcuts, colour schemes, fonts and behaviours.
+
+### Rating(s)
+<ul>
+<li><b>Availability</b>: 10. Comes pre-installed on GNOME edition of Sabayon. Also available from the Entropy Store, to install it run:
+{% include coder.html line1="equo i gnome-terminal" %}</li>
+<li><b>Customizability</b>: 8.</li>
+<li><b><abbr title="System Resource Usage">SRU</abbr></b>: 8. Here is my `ps_mem` table:
+{% highlight bash %}
+ Private  +   Shared  =  RAM used       Program
+
+  1.6 MiB + 250.5 KiB =   1.8 MiB       bash
+ 15.2 MiB +   4.5 MiB =  19.8 MiB       gnome-terminal-server
+---------------------------------
+                         21.6 MiB
+=================================
+{% endhighlight %}</li>
+<li> <b>Overall</b>: 9.</li>
+</ul>
+
+## Konsole
 
 # Free Help Resources
 * [Stack Overflow](http://stackoverflow.com/)[^7]
