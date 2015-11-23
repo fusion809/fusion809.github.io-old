@@ -134,10 +134,28 @@ The Bash syntax has several distinct components, which can be classed as keyword
 <td>{% include man.html man="ls.1p" %}</td>
 </tr>
 <tr>
+<td><code>mkdir</code></td>
+<td>Create a new empty directory</td>
+<td>{% highlight bash %}mkdir -p $HOME/Documents/Manpages{% endhighlight %}</td>
+<td>{% include man.html man="mkdir.1"%}</td>
+</tr>
+<tr>
 <td><code>mv</code></td>
 <td>Move file</td>
 <td>{% highlight bash %}mv ~/.bashrc ~/GitHub/sabayon-scripts/{% endhighlight %}</td>
 <td>{% include man.html man="mv.1p" %}</td>
+</tr>
+<tr>
+<td><code>rm</code></td>
+<td>Remove file(s)</td>
+<td>{% highlight bash %}rm $HOME/Documents/Manpages/equo.1.html{% endhighlight %}</td>
+<td>{% include man.html man="rm.1" %}</td>
+</tr>
+<tr>
+<td><code>uname</code></td>
+<td>Print system information</td>
+<td>{% highlight bash %}uname -r{% endhighlight %}</td>
+<td>{% include man.html man="uname.1" %}</td>
 </tr>
 </tbody>
 </table>
