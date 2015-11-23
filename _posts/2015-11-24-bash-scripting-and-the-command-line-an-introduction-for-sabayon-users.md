@@ -429,7 +429,7 @@ Bash **variables** are defined using equal signs. They can be made global (makin
 while to define this variable globally, one would run:
 {% include codeu.html line1="export PYTHONPATH=/usr/bin/python" %}
 
-# Applications
+# Bash Scripting Applications
 The primary value of Bash scripts is to automate tasks that would otherwise have to be done, over a longer time-frame by a human operator. I personally use shell scripts to make my life, when I am at the command-line, easier.
 
 In my `~/.bashrc` file I have links to several shell scripts stored in my `~/Shell` directory. Both my `~/.bashrc` and the shell scripts in my `~/Shell` directory can be found at [this GitHub repository](https://github.com/fusion809/sabayon-scripts). Here is my current `~/.bashrc` file:[^6]
@@ -457,7 +457,9 @@ done
 ```
 I have at least three dozen functions I have defined in shell scripts located in the `~/Shell` directory, but here I will mention some of the more interesting, or useful ones for Sabayon users, in general.
 
-## Interesting Scripts[^7]
+## Interesting Scripts
+*Whether these scripts are interesting, is, of course, in the eye of the beholder, you may not find these interesting at all.*
+
 You may have noticed that I am hosting HTML versions of several Linux man pages within the `/man` subdomain of this blog. I generate them using a function contained within `~/Shell/man.sh` called `manhtml`. For example, to generate [emerge.1.html](/man/emerge.1.html) I ran:
 {% include codeu.html line1="manhtml 1 emerge" %}
 
@@ -508,8 +510,10 @@ function theme {
 ```
 to install a new Moksha theme you would run:
 {% include codeu.html line1="theme &lt;THEME&gt;" %} where `<THEME>` is, of course, the theme's name (how they appear in their respective GitHub repo's URL).
+
 ## Useful Functions for Sabayon Users
 The following are some functions that, depending on how you operate on Sabayon, may be helpful.
+
 ###Entropy
 The following are taken from [`~/Shell/equo.sh`](https://github.com/fusion809/sabayon-scripts/blob/master/Shell/equo.sh) and they are functions (with aliases for said functions) that essentially automate some common actions one may perform with Entropy. They are not all the lines of code in `equo.sh`, they merely represent some of the more commonly-used codes. It is important to note some of these functions need not be defined as functions, they could instead be defined as aliases (using `alias NAME='CODE'` where NAME is the function's name and `CODE` is what is between the curly brackets).
 ```bash
@@ -622,6 +626,5 @@ function tailf {
 [^4]: Source: [Bash Webpage](https://www.gnu.org/software/bash/)
 [^5]: Source: [Server Fault](http://serverfault.com/a/52050/298691)
 [^6]: The for loop I got from the answers to [this question](http://unix.stackexchange.com/q/239881/27613) at Unix & Linux SE
-[^7]: Which is in the eye of the beholder of course, you may not find these interesting at all
-[^8]: Its general topic is programming, so it is suitable for shell script-related questions. I have asked two questions there relating to shell script, as of 31 October 2015, both were resolved within an hour.
-[^9]: As of 31 October 2015 I have asked 8 questions relating to shell scripts there and seven have been answered. Each of those that have been answered were resolved (that is, given an answer that solved whatever problem I had) within a day of me asking them.
+[^7]: Its general topic is programming, so it is suitable for shell script-related questions. I have asked two questions there relating to shell script, as of 31 October 2015, both were resolved within an hour.
+[^8]: As of 31 October 2015 I have asked 8 questions relating to shell scripts there and seven have been answered. Each of those that have been answered were resolved (that is, given an answer that solved whatever problem I had) within a day of me asking them.
