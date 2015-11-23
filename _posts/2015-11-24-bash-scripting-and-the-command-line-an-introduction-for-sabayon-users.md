@@ -69,6 +69,7 @@ Bash scripts usually have the file extension of `.sh`, although some have no fil
 The Bash syntax has several distinct components, which can be classed as keywords and special characters, bulletins, variables, functions, tests and conditionals.
 
 ## Basic Unix Commands
+**Table 1** lists some basic Unix commands that are provided by the GNU Core Utilities package. Not all are listed, as I do not even understand them all.
 <table style="width: 100%;">
 <caption>Table 1: Basic Unix Commands, provided by the GNU Core Utilities Package</caption>
 <tbody>
@@ -113,6 +114,12 @@ The Bash syntax has several distinct components, which can be classed as keyword
 <td>Estimate file space usage</td>
 <td>{% highlight bash %}du -bs tmp.bundle{% endhighlight %}</td>
 <td>{% include man.html man="du.1" %}</td>
+</tr>
+<tr>
+<td><code>echo</code></td>
+<td>Display a line of text</td>
+<td>{% highlight bash %}echo $SHELL{% endhighlight %} returns the current shell's file system location.</td>
+<td>{% include man.html man="echo.1" %}</td>
 </tr>
 <tr>
 <td><code>ln</code></td>
