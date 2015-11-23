@@ -78,16 +78,40 @@ The Bash syntax has several distinct components, which can be classed as keyword
 <td class = "title">Manpage (HTML)</td>
 </tr>
 <tr>
+<td><code>cat</code></td>
+<td>Concatenate file. Take file contents and send them through <a href = "https://en.wikipedia.org/wiki/Standard_streams">standard output</a>.</td>
+<td>{% highlight bash %}cat /etc/shells{% endhighlight %}</td>
+<td>{% include man.html man="cat.1p" %}</td>
+</tr>
+<tr>
 <td><code>chmod</code></td>
 <td>Change the permissions of a file</td>
 <td>{% highlight bash %}chmod +x build.sh{% endhighlight %}</td>
 <td>{% include man.html man="chmod.1p" %}</td>
 </tr>
 <tr>
+<td><code>chown</code></td>
+<td>Change the ownership of a file</td>
+<td>{% highlight bash %}chmown apache:apache -R /var/www/localhost/htdocs{% endhighlight %}</td>
+<td>{% include man.html man="chown.1p" %}</td>
+</tr>
+<tr>
 <td><code>cp</code></td>
 <td>Copy file</td>
 <td>{% highlight bash %}cp ~/.bashrc ~/GitHub/.bashrc{% endhighlight %}</td>
 <td>{% include man.html man="cp.1p" %}</td>
+</tr>
+<tr>
+<td><code>ln</code></td>
+<td>Make a link between files</td>
+<td>{% highlight bash %}ln -s /usr/bin/atom /usr/local/bin/atom {% endhighlight %} when Atom is installed from Entropy allows <code>/usr/local/bin/atom</code> to be used to launch Atom.</td>
+<td>{% include man.html man="ln.1p" %}</td>
+</tr>
+<tr>
+<td><code>ls</code></td>
+<td>List files</td>
+<td>{% highlight bash %}ls{% endhighlight %} lists files and directories in the current directory, except for hidden ones.</td>
+<td>{% include man.html man="ls.1p" %}</td>
 </tr>
 </tbody>
 </table>
