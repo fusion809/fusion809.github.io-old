@@ -70,7 +70,7 @@ The Bash syntax has several distinct components, which can be classed as keyword
 
 ## Basic Unix Commands
 <table style="width: 100%;">
-<caption>Table 2: Basic Unix Commands, provided by the GNU Core Utilities Package</caption>
+<caption>Table 1: Basic Unix Commands, provided by the GNU Core Utilities Package</caption>
 <tbody>
 <tr>
 <td class = "title">Command</td>
@@ -124,10 +124,10 @@ The Bash syntax has several distinct components, which can be classed as keyword
 </table>
 
 ## Bulletins
-Several Bash commands (or **bulletins**) exist and some (but by no stretch of the imagination all &mdash; I do not even understand them all!) basic ones are explained in **Table 3**. It is worthwhile noting that all these commands are purely Bash commands, by this I mean, they do not call any command-line programs to do their work for them. See many commands you will see in Bash scripts are not Bash commands, *per se*, rather they are commands that use another command-line program such as `mv` or `pwd` to do the work, but they can be run from within Bash.
+Several Bash commands (or **bulletins**) exist and some (but by no stretch of the imagination all &mdash; I do not even understand them all!) basic ones are explained in **Table 2**. It is worthwhile noting that all these commands are purely Bash commands, by this I mean, they do not call any command-line programs to do their work for them. See many commands you will see in Bash scripts are not Bash commands, *per se*, rather they are commands that use another command-line program such as `mv` or `pwd` to do the work, but they can be run from within Bash.
 
 <table style="width: 100%;">
-<caption>Table 3: Some Basic Bulletins</caption>
+<caption>Table 2: Some Basic Bulletins</caption>
 <tbody>
 <tr>
 <td class="title">Command</td>
@@ -193,8 +193,8 @@ In Bash scripts conditionals use the output of a test and perform an action acco
 Functions are essentially convenient ways we can group pieces of code together, so as to give them order and make them more logical. Quite often functions are designed to take input and use it to generate an output, or to perform a task, although some functions require no input. All Bash functions share two main things in common: the use of the word "function" and the fact the function's contents are contained within curly braces `{...}`.
 
 ## Keywords and Special Characters
-**Keywords and special characters** (**KSCs**) are an important concept to understand, they are words, or symbols, that have a special, set meaning when scripting in Bash. Examples are listed in **Table 1**.
-<table style="width: 100%;"><caption>Table 1: Some Keywords and Special Characters Permitted in Bash</caption>
+**Keywords and special characters** (**KSCs**) are an important concept to understand, they are words, or symbols, that have a special, set meaning when scripting in Bash. Examples are listed in **Table 3**.
+<table style="width: 100%;"><caption>Table 3: Some Keywords and Special Characters Permitted in Bash</caption>
 <tbody>
 <tr>
 <td class="title" style="width: 10%;"><abbr title = "Keywords/Special Character">KSC</abbr></td>
