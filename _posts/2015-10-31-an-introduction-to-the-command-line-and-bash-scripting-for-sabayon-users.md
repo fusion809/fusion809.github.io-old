@@ -36,7 +36,7 @@ On Unix/Unix-like platforms it is possible to change your login shell using the 
 and then reboot.
 
 # Definitions
-A natural question, that is asked by everyone, that is introduced to Unix shells, is "What is a Unix shell, exactly?" While this question sounds simple and straightforward, the answer is difficult to put into words, without it being either too generalized and vague, or too focused on specific examples. So I am going to air on the side of generalization and say that a Unix shell, is a **command-line interpreter** (**CLI**) that provides a familiar interface by which users can interact with the Unix[^5] system. Take the example of Bash, which is started whenever you open up a **terminal emulator** (**TEE**) or start **tty1** (with <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F1</kbd>) within most Linux systems, provided you have not set your default shell to something other than Bash. It interprets every command you type into the TEE or tty1 and can make changes to your system, accordingly. On most Linux systems, Unix shells are stored in the file directory `/bin`. You can list them all by issuing the command:
+On most Linux systems, Unix shells are stored in the file directory `/bin`. You can list them all by issuing the command:
 {% include coder.html line1="cat /etc/shells" %}
 for me, for example, on my Sabayon machine this gives the output:
 ```sh
