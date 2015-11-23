@@ -3,12 +3,15 @@ layout: post
 title:  "An Introduction to the Command-Line and Bash Scripting for Sabayon Users"
 date:   2015-11-24
 categories: sabayon, bash, shell-scripting, command-line
+redirect_from:
+  - /2015/10/31/an-introduction-to-the-command-line-and-bash-scripting-for-sabayon-users/
+  - /2015/10/31/an-introduction-to-bash-scripting/
 ---
 
 {% include image.html image="optipng2.png" description="OptiPNG 0.7.5 running under Bash 4.3.39 in LXTerminal 0.2.0" width = "1240px" float = "none" %}
 {% include note.html note1="Links to Wiki articles are provided in this post for those that wish to learn more, but it is important to note that I cannot guarantee their accuracy." %}
 
-On **Sabayon Linux** and other [Linux distributions](https://en.wikipedia.org/wiki/Linux_distribution), along with other [Unix](https://en.wikipedia.org/wiki/Unix)/[Unix-like](https://en.wikipedia.org/wiki/Unix-like) systems,[^1] the command-line is a pivotal way by which users can interact with the operating system, the files stored on it and the system's various components. The command-line on such systems is usually accessed via so called &ldquo;**[terminal emulators](https://en.wikipedia.org/wiki/Terminal_emulator)**&rdquo;, which start and allow users to interact with their [Unix shell](https://en.wikipedia.org/wiki/Unix_shell). It is Unix shells that really serve as the command-line of &#42;nix systems and from within them various command-line programs can be called and used to perform specific tasks. Examples of such programs include `cp` (which copies files), `find` (which finds files), `ls` (which lists files), `rm` (which removes files), *etc.* In fact, one of the defining properties of all Unix/Unix-like systems is that they share a set of basic command-line utilities that perform specific and usually singular tasks. On Linux platforms such as Sabayon these basic utilities are usually provided by the [**GNU Core Utilities**](https://en.wikipedia.org/wiki/GNU_Core_Utilities) ([sys-apps/coreutils](https://packages.sabayon.org/show/coreutils,156043,sabayon-weekly,amd64,5,standard)) package and the Unix shell used is usually **[Bash](https://en.wikipdia.org/wiki/Bash_(Unix_shell))**.
+On **Sabayon Linux** and other [Linux distributions](https://en.wikipedia.org/wiki/Linux_distribution), along with other [Unix](https://en.wikipedia.org/wiki/Unix)/[Unix-like](https://en.wikipedia.org/wiki/Unix-like) systems,[^1] the command-line is a pivotal way by which users can interact with the operating system, the files stored on it and the system's various components. The command-line on such systems is usually accessed via so called &ldquo;**[terminal emulators](https://en.wikipedia.org/wiki/Terminal_emulator)**&rdquo;, which start and allow users to interact with their [Unix shell](https://en.wikipedia.org/wiki/Unix_shell). It is Unix shells that really serve as the command-line of &#42;nix systems and from within them various command-line programs can be called and used to perform specific tasks. Examples of such programs include `cp`, `find`, `ls`, `rm`, *etc.* In fact, one of the defining properties of all Unix/Unix-like systems is that they share a set of basic command-line utilities that perform specific and usually singular tasks. On Linux platforms such as Sabayon these basic utilities are usually provided by the [**GNU Core Utilities**](https://en.wikipedia.org/wiki/GNU_Core_Utilities) ([sys-apps/coreutils](https://packages.sabayon.org/show/coreutils,156043,sabayon-weekly,amd64,5,standard)) package and the Unix shell used is usually **[Bash](https://en.wikipdia.org/wiki/Bash_(Unix_shell))**.
 
 **Bash**, which is abbreviated from the **Bourne-again shell**, is a Unix shell and command language, that is developed as part of the [GNU Project](http://www.gnu.org/). Along with the [Linux kernel](https://en.wikipedia.org/wiki/Linux_kernel) and [package management system](https://en.wikipedia.org/wiki/Package_manager), I would rank Bash as one of the three most important components of a Sabayon Linux system. Without it or some other Unix shell in its place, one's ability to interact one's system would be very limited and difficult. Bash was originally developed by [Brian J. Fox](https://en.wikipedia.org/wiki/Brian_Fox_(computer_programmer)) in 1989 and has since become the most-widely used Unix shell, with the vast majority of Linux distributions using it as their default command shell (only notable exception I have come across is [Deepin](https://en.wikipedia.org/wiki/Deepin), which uses Zsh) and since the release of 10.3 in October 2003 is has replaced tcsh as the default command shell for [OS X](https://en.wikipedia.org/wiki/OS_X).
 
@@ -85,6 +88,11 @@ while to define this variable globally, one would run:
 <td>Change the permissions of a file</td>
 <td>{% include codeu.html line1="chmod +x build.sh" %}</td>
 <td>{% include man.html man="chmod.1p" %}</td>
+</tr>
+<tr>
+<td><code>cp</code></td>
+<td>Copy file</td>
+
 </tr>
 </tbody>
 </table>
@@ -387,12 +395,12 @@ Loops (which involve the `for` keyword), in Bash scripts, are used to automate t
 Selectors (marked by the `select` keyword) gives users choices as to which input(s) the rest of the selector block uses.
 
 ## Tests
-Tests are essential for conditionals. As their name suggests, they test to see whether or not a condition is satisfied. If the condition is satisfied they return 0, while if the condition is unsatisfied they return 1. Square brackets (which are a bulletin, by-the-way), `[...]`, are used for tests, although double square brackets (`[[...]]`) can also be used for this purpose since Bash 2.02. The difference, from what I can tell, between single and double square brackets is that double square brackets allow one to perform more advanced tests than single square brackets. Single square brackets are also POSIX compliant and are found on all Unix shells.[^7]
+Tests are essential for conditionals. As their name suggests, they test to see whether or not a condition is satisfied. If the condition is satisfied they return 0, while if the condition is unsatisfied they return 1. Square brackets (which are a bulletin, by-the-way), `[...]`, are used for tests, although double square brackets (`[[...]]`) can also be used for this purpose since Bash 2.02. The difference, from what I can tell, between single and double square brackets is that double square brackets allow one to perform more advanced tests than single square brackets. Single square brackets are also POSIX compliant and are found on all Unix shells.[^5]
 
 # Applications
 The primary value of Bash scripts is to automate tasks that would otherwise have to be done, over a longer time-frame by a human operator. I personally use shell scripts to make my life, when I am at the command-line, easier.
 
-In my `~/.bashrc` file I have links to several shell scripts stored in my `~/Shell` directory. Both my `~/.bashrc` and the shell scripts in my `~/Shell` directory can be found at [this GitHub repository](https://github.com/fusion809/sabayon-scripts). Here is my current `~/.bashrc` file:[^7]
+In my `~/.bashrc` file I have links to several shell scripts stored in my `~/Shell` directory. Both my `~/.bashrc` and the shell scripts in my `~/Shell` directory can be found at [this GitHub repository](https://github.com/fusion809/sabayon-scripts). Here is my current `~/.bashrc` file:[^6]
 ```bash
 # /etc/skel/.bashrc
 #
@@ -417,7 +425,7 @@ done
 ```
 I have at least three dozen functions I have defined in shell scripts located in the `~/Shell` directory, but here I will mention some of the more interesting, or useful ones for Sabayon users, in general.
 
-## Interesting Scripts[^8]
+## Interesting Scripts[^7]
 You may have noticed that I am hosting HTML versions of several Linux man pages within the `/man` subdomain of this blog. I generate them using a function contained within `~/Shell/man.sh` called `manhtml`. For example, to generate [emerge.1.html](/man/emerge.1.html) I ran:
 {% include codeu.html line1="manhtml 1 emerge" %}
 
@@ -563,8 +571,8 @@ function tailf {
 ```
 
 # Free Help Resources
-* [Stack Overflow](http://stackoverflow.com/)[^9]
-* [Unix & Linux StackExchange](http://unix.stackexchange.com)[^10]
+* [Stack Overflow](http://stackoverflow.com/)[^8]
+* [Unix & Linux StackExchange](http://unix.stackexchange.com)[^9]
 
 
 # Further Reading
@@ -580,9 +588,8 @@ function tailf {
 [^2]: Source: [email from 1987](https://groups.google.com/forum/#!original/comp.unix.questions/iNjWwkyroR8/yedr9yDWSuQJ)
 [^3]: Source: [Chet Ramey's Scribd document](http://www.scribd.com/doc/40556434/2010-10-31-Chet-Ramey-Early-Bash-Dates)
 [^4]: Source: [Bash Webpage](https://www.gnu.org/software/bash/)
-[^5]: Or Unix-like, in the case of Linux distributions such as Sabayon
-[^6]: Source: [Server Fault](http://serverfault.com/a/52050/298691)
-[^7]: The for loop I got from the answers to <a href = "http://unix.stackexchange.com/q/239881/27613">this question</a> at Unix & Linux SE
-[^8]: Which is in the eye of the beholder of course, you may not find these interesting at all
-[^9]: Its general topic is programming, so it is suitable for shell script-related questions. I have asked two questions there relating to shell script, as of 31 October 2015, both were resolved within an hour.
-[^10]: As of 31 October 2015 I have asked 8 questions relating to shell scripts there and seven have been answered. Each of those that have been answered were resolved (that is, given an answer that solved whatever problem I had) within a day of me asking them.
+[^5]: Source: [Server Fault](http://serverfault.com/a/52050/298691)
+[^6]: The for loop I got from the answers to [this question](http://unix.stackexchange.com/q/239881/27613) at Unix & Linux SE
+[^7]: Which is in the eye of the beholder of course, you may not find these interesting at all
+[^8]: Its general topic is programming, so it is suitable for shell script-related questions. I have asked two questions there relating to shell script, as of 31 October 2015, both were resolved within an hour.
+[^9]: As of 31 October 2015 I have asked 8 questions relating to shell scripts there and seven have been answered. Each of those that have been answered were resolved (that is, given an answer that solved whatever problem I had) within a day of me asking them.
