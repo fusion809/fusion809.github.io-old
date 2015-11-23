@@ -97,6 +97,12 @@ The Bash syntax has several distinct components, which can be classed as keyword
 <td>{% include man.html man="chown.1p" %}</td>
 </tr>
 <tr>
+<td><code>chroot</code></td>
+<td>Run a command/interactive shell with a special root directory</td>
+<td>{% highlight bash %}chroot /mnt/sabayon /bin/bash{% endhighlight %}</td>
+<td>{% include man.html man="chroot.1" %}</td>
+</tr>
+<tr>
 <td><code>cp</code></td>
 <td>Copy file</td>
 <td>{% highlight bash %}cp ~/.bashrc ~/GitHub/.bashrc{% endhighlight %}</td>
