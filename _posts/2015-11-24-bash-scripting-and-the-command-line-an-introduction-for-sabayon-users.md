@@ -644,7 +644,10 @@ function tailf {
 ```
 
 # Terminal Emulators
-Terminal emulators (TEs) for Sabayon include tty1-tty6, the whole-screen virtual terminals managed by the getty Unix command (which are started with <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Fn</kbd> with n ranging from 1 to 6) and various graphical TEs (that is, TEs windows running within a graphical user interface) including GNOME Terminal, Konsole and LXTerminal.
+Terminal emulators (TEs) for Sabayon include tty1-tty6, the whole-screen virtual terminals managed by the getty Unix command (which are started with <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Fn</kbd> with n ranging from 1 to 6) and various graphical TEs (that is, TEs windows running within a graphical user interface) including GNOME Terminal, Konsole and LXTerminal. Most of these graphical TEs are found in the "x11-term" category in the [Portage Tree](https://packages.gentoo.org/categories/x11-terms), [Gentoo Portage Overlays](http://gpo.zugaina.org/x11-terms/) and [Entropy Store](https://packages.sabayon.org/category/x11-terms). You can search for terminals using the command:
+{% include coder.html line1='eix -C -c "x11-terms"' %}
+
+# GNOME Terminal
 
 # Free Help Resources
 * [Stack Overflow](http://stackoverflow.com/)[^7]
