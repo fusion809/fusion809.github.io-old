@@ -103,6 +103,12 @@ The Bash syntax has several distinct components, which can be classed as keyword
 <td>{% include man.html man="cp.1p" %}</td>
 </tr>
 <tr>
+<td><code>du</code></td>
+<td>Estimate file space usage</td>
+<td>{% highlight bash %}du -bs tmp.bundle{% endhighlight %}</td>
+<td>{% include man.html man="du.1" %}</td>
+</tr>
+<tr>
 <td><code>ln</code></td>
 <td>Make a link between files</td>
 <td>{% highlight bash %}ln -s /usr/bin/atom /usr/local/bin/atom {% endhighlight %} when Atom is installed from Entropy allows <code>/usr/local/bin/atom</code> to be used to launch Atom.</td>
