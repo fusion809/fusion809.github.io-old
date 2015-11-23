@@ -20,12 +20,12 @@ In this post I will give provide an introduction to the &#42;nix command-line, i
 
 <div id="toc" class="toc"></div>
 
-# History of Bash
+# Background on Unix Shells
 {% include image.html image="BrianJFox.png" width="300px" height="401px" description="Brian J. Fox (1959-), the original developer of Bash" %}
 
 The development of Bash began in January 1988, when [Richard Stallman](https://en.wikipedia.org/wiki/Richard_Stallman), the founder of the GNU Project and the [Free Software Foundation](http://www.fsf.org/) (FSF), became dissatisfied with the previous author of the GNU shell's failure to meet the required deadlines and decided, instead, to get FSF staff member, Brian J. Fox to write a free imitation of the Bourne Shell.[^2] Later in June 1989, the first public release of Bash was made, 0.99 (which was a beta release) and until mid 1992 (when Bash 1.12 was released), Fox remained the lead developer of Bash.[^3] When Fox left the FSF in mid 1992, [Chet Ramey](http://tiswww.case.edu/php/chet/) took over responsibility for Bash's development, which he has kept to this very day.[^4] Bash was and still is written entirely in C, as was its predecessor, the Bourne Shell.
 
-# Other Unix Shells
+## Other Unix Shells
 The [Bourne Shell](https://en.wikipedia.org/wiki/Bourne_shell) was one of the first official Unix shells to be developed and was first developed in 1977. I am using the phrasing "official Unix shells", to draw attention to the fact that the Bourne Shell was developed at Bell Labs for use by Research Unix, which was the original Unix system. The Bourne Shell is named after [Stephen Bourne](https://en.wikipedia.org/wiki/Stephen_R._Bourne), its original developer.
 
 {% include image.html image="Bill_Joy.jpg" width="300px" height="375px" description="Bill Joy (1954-), the original developer of Csh and Vi" float="left" %}
@@ -36,12 +36,12 @@ Along with these shells, another free Unix shell that has gained notoriety, that
 All free Unix shells that are available for Gentoo or Sabayon systems are located in the category of app-shells within the [Entropy Store](https://packages.sabayon.org/quicksearch?q=app-shells&amp;filter=category_startswith&amp;filter_data=app-shells), [Portage Tree](https://packages.gentoo.org/categories/app-shells) and [Gentoo Portage Overlays](http://gpo.zugaina.org/app-shells). To show them all from the command-line run:
 {% include coder.html line1='eix -C -c "app-shells"' %}
 
-# Changing Unix Shells
+## Changing Unix Shells
 On Unix/Unix-like platforms it is possible to change your login shell using the [`chsh`](/man/chsh.1.html) command. For example, to change your login shell to Zsh (assuming it is installed), run:
 {% include codeu.html line1="chsh -s /bin/zsh" %}
 and then reboot.
 
-# Definitions
+## Definitions
 On most Linux systems, Unix shells are stored in the file directory `/bin`. You can list them all by issuing the command:
 {% include coder.html line1="cat /etc/shells" %}
 for me, for example, on my Sabayon machine this gives the output:
@@ -62,7 +62,7 @@ Bash and other Unix shells, have their own unique syntax or language (that is, h
 
 Another important concept, for one to understand in order for the rest of this post to make any sort of sense, is that of a **script**. Scripts are programs that can be interpreted from within a **run-time environment** (**RTE**) and they automate the execution of tasks that would otherwise have to be performed manually, one-by-one, by a human operator. In the case of shell scripts, including Bash scripts, the RTE in which the script is interpreted is the Unix shell.
 
-# Bash and Files
+## Bash and Files
 Bash scripts usually have the file extension of `.sh`, although some have no file extension. When Bash is started as an interactive, non-login shell (for example, from within a TEE) it first reads `~/.bashrc`. When it is started as an interactive, login shell (like when it is started within tty1) it first reads `/etc/profile`, `~/.bash_profile`, `~/.bash_login` and `~/.profile`. Commands executed in Bash are also recorded in `~/.bash_history`. Commands interpreted by Bash are case-sensitive.
 
 # Basic Syntax
@@ -643,10 +643,12 @@ function tailf {
 }
 ```
 
-# Free Help Resources
-* [Stack Overflow](http://stackoverflow.com/)[^8]
-* [Unix & Linux StackExchange](http://unix.stackexchange.com)[^9]
+# Terminal Emulators
+Terminal emulators (TEs) for Sabayon include tty1-tty6, the whole-screen virtual terminals managed by the getty Unix command (which are started with <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Fn</kbd> with n ranging from 1 to 6) and various graphical TEs (that is, TEs windows running within a graphical user interface) including GNOME Terminal, Konsole and LXTerminal.
 
+# Free Help Resources
+* [Stack Overflow](http://stackoverflow.com/)[^7]
+* [Unix & Linux StackExchange](http://unix.stackexchange.com)[^8]
 
 # Further Reading
 {% include note.html note1="All the following links are to free PDFs" %}
