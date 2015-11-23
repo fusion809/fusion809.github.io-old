@@ -67,12 +67,6 @@ Bash scripts usually have the file extension of `.sh`, although some have no fil
 # Basic Syntax
 The Bash syntax has several distinct components, which can be classed as keywords and special characters, bulletins, variables, functions, tests and conditionals.
 
-## Variables
-Bash **variables** are defined using equal signs. They can be made global (making them available for all processes) or local (making them available just for the script at hand). Local variables are defined by just using an equal sign, for example:
-{% include codeu.html line1="PYTHONPATH=/usr/bin/python" %}
-while to define this variable globally, one would run:
-{% include codeu.html line1="export PYTHONPATH=/usr/bin/python" %}
-
 ## Basic Unix Commands
 <table style="width: 100%;">
 <caption>Table 2: Basic Unix Commands, provided by the GNU Core Utilities Package</caption>
@@ -86,13 +80,14 @@ while to define this variable globally, one would run:
 <tr>
 <td><code>chmod</code></td>
 <td>Change the permissions of a file</td>
-<td>{% include codeu.html line1="chmod +x build.sh" %}</td>
+<td>{% highlight bash %}chmod +x build.sh{% endhighlight %}</td>
 <td>{% include man.html man="chmod.1p" %}</td>
 </tr>
 <tr>
 <td><code>cp</code></td>
 <td>Copy file</td>
-
+<td>{% highlight bash %}cp ~/.bashrc ~/GitHub/.bashrc{% endhighlight %}</td>
+<td>{% include man.html man="cp.1p" %}</td>
 </tr>
 </tbody>
 </table>
@@ -396,6 +391,12 @@ Selectors (marked by the `select` keyword) gives users choices as to which input
 
 ## Tests
 Tests are essential for conditionals. As their name suggests, they test to see whether or not a condition is satisfied. If the condition is satisfied they return 0, while if the condition is unsatisfied they return 1. Square brackets (which are a bulletin, by-the-way), `[...]`, are used for tests, although double square brackets (`[[...]]`) can also be used for this purpose since Bash 2.02. The difference, from what I can tell, between single and double square brackets is that double square brackets allow one to perform more advanced tests than single square brackets. Single square brackets are also POSIX compliant and are found on all Unix shells.[^5]
+
+## Variables
+Bash **variables** are defined using equal signs. They can be made global (making them available for all processes) or local (making them available just for the script at hand). Local variables are defined by just using an equal sign, for example:
+{% include codeu.html line1="PYTHONPATH=/usr/bin/python" %}
+while to define this variable globally, one would run:
+{% include codeu.html line1="export PYTHONPATH=/usr/bin/python" %}
 
 # Applications
 The primary value of Bash scripts is to automate tasks that would otherwise have to be done, over a longer time-frame by a human operator. I personally use shell scripts to make my life, when I am at the command-line, easier.
