@@ -63,7 +63,7 @@ Bash and other Unix shells, have their own unique syntax or language (that is, h
 Another important concept, for one to understand in order for the rest of this post to make any sort of sense, is that of a **script**. Scripts are programs that can be interpreted from within a **run-time environment** (**RTE**) and they automate the execution of tasks that would otherwise have to be performed manually, one-by-one, by a human operator. In the case of shell scripts, including Bash scripts, the RTE in which the script is interpreted is the Unix shell.
 
 ## Bash and Files
-Bash scripts usually have the file extension of `.sh`, although some have no file extension. When Bash is started as an interactive, non-login shell (for example, from within a TEE) it first reads `~/.bashrc`. When it is started as an interactive, login shell (like when it is started within tty1) it first reads `/etc/profile`, `~/.bash_profile`, `~/.bash_login` and `~/.profile`. Commands executed in Bash are also recorded in `~/.bash_history`. Commands interpreted by Bash are case-sensitive.
+Bash scripts usually have the file extension of `.sh`, although some have no file extension. When Bash is started as an interactive, non-login shell (for example, from within a terminal emulator) it first reads `~/.bashrc`. When it is started as an interactive, login shell (like when it is started within tty1) it first reads `/etc/profile`, `~/.bash_profile`, `~/.bash_login` and `~/.profile`. Commands executed in Bash are also recorded in `~/.bash_history`. Commands interpreted by Bash are case-sensitive, that is, `mv` is not the same as `Mv`, `mV` or `MV`.
 
 # Basic Syntax
 The Bash syntax has several distinct components, which can be classed as keywords and special characters, bulletins, variables, functions, tests and conditionals.
@@ -696,6 +696,26 @@ Private  +   Shared  =  RAM used	Program
 
 ## [LXTerminal](http://wiki.lxde.org/en/LXTerminal)
 {% include image.html image="LXTerminal-0.2.0.png" description="LXTerminal 0.2.0" width="1000px" float="none" %}
+{% include links.html package="lxde-base/lxterminal" link="LXTerminal" %} is a terminal emulator that is part of the core applications suite of LXDE. It uses the GTK+2 toolkit and while lightweight still has a few of the features that more advanced terminal emulators like Konsole boast. These include: ability to customize keyboard shortcuts and fonts (although a custom colour scheme is not permitted).
+
+### Rating(s)
+<ul>
+<li><b>Availability</b>: 8, available in the Entropy Store but not preinstalled on any official Sabayon edition.</li>
+<li><b>Customizability</b>: 9.</li>
+<li><b>Features</b>: 9.</li>
+<li><b><abbr title="System Resource Usage">SRU</abbr></b>: 9. Here is my `ps_mem` table:
+{% highlight bash %}
+Private  +   Shared  =  RAM used	Program
+
+156.0 KiB +  43.0 KiB = 199.0 KiB	gnome-pty-helper
+ 1.5 MiB + 305.5 KiB =   1.8 MiB	bash
+ 6.2 MiB +   2.6 MiB =   8.8 MiB	lxterminal
+---------------------------------
+                        10.8 MiB
+=================================
+{% endhighlight %}</li>
+<li><b>Overall</b>: 8.</li>
+</ul>
 
 # Free Help Resources
 * [Stack Overflow](http://stackoverflow.com/)[^7]
