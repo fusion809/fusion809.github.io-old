@@ -649,9 +649,9 @@ Terminal emulators (TEs) for Sabayon include tty1-tty6, the whole-screen virtual
 
 The following section will involve me comparing the various graphical terminal emulators I have any real experience with.
 
-## [GNOME Terminal](https://wiki.gnome.org/Apps/Terminal)
+## GNOME Terminal
 {% include image.html image="GNOME-Terminal-3.16.2.png" width="743px" description="GNOME Terminal 3.16.2" float="none" %}
-{% include links.html package="x11-terms/gnome-terminal" link="GNOME Terminal" wp="GNOME Terminal" %} is a GTE that is part of the GNOME Core Applications. It is written in C and licensed under GNU GPLv2. I find it, like most GNOME Core Applications fairly feature-packed, with several customization options being available for the terminal window. These include custom keyboard shortcuts, colour schemes, fonts and behaviours.
+{% include links.html package="x11-terms/gnome-terminal" program="GNOME Terminal" link="https://wiki.gnome.org/Apps/Terminal" wp="GNOME Terminal" %} is a GTE that is part of the GNOME Core Applications. It is written in C and licensed under GNU GPLv2. I find it, like most GNOME Core Applications fairly feature-packed, with several customization options being available for the terminal window. These include custom keyboard shortcuts, colour schemes, fonts and behaviours.
 
 ### Rating(s)
 <ul>
@@ -672,9 +672,9 @@ Private  +   Shared  =  RAM used	Program
 <li> <b>Overall</b>: 9.</li>
 </ul>
 
-## [Konsole](https://konsole.kde.org/)
+## Konsole
 {% include image.html image="Konsole-15.08.2.png" width="1000px" description="Konsole 15.08.2" float="none" %}
-{% include links.html package="kde-apps/konsole" link="Konsole" wp="Konsole" %} is a GTE based on the Qt widget toolkit that is part of the KDE Core Applications (or KDE Frameworks 5). I would probably say that Konsole is the single most feature-packed GTE, with custom keyboard shortcuts, colour schemes, fonts and behaviours possible.
+{% include links.html package="kde-apps/konsole" program="Konsole" link="https://konsole.kde.org/" wp="Konsole" %} is a GTE based on the Qt widget toolkit that is part of the KDE Core Applications (or KDE Frameworks 5). I would probably say that Konsole is the single most feature-packed GTE, with custom keyboard shortcuts, colour schemes, fonts and behaviours possible.
 
 ### Rating(s)
 <ul>
@@ -694,9 +694,9 @@ Private  +   Shared  =  RAM used	Program
 <li><b>Overall</b>: 9.</li>
 </ul>
 
-## [LXTerminal](http://wiki.lxde.org/en/LXTerminal)
+## LXTerminal
 {% include image.html image="LXTerminal-0.2.0.png" description="LXTerminal 0.2.0" width="1000px" float="none" %}
-{% include links.html package="lxde-base/lxterminal" link="LXTerminal" %} is a terminal emulator that is part of the core applications suite of LXDE. It uses the GTK+2 toolkit and while lightweight still has a few of the features that more advanced terminal emulators like Konsole boast. These include: ability to customize keyboard shortcuts and fonts (although a custom colour scheme is not permitted).
+{% include links.html package="lxde-base/lxterminal" program="LXTerminal" link="http://wiki.lxde.org/en/LXTerminal" %} is a terminal emulator that is part of the core applications suite of LXDE. It uses the GTK+2 toolkit and while lightweight still has a few of the features that more advanced terminal emulators like Konsole boast. These include: ability to customize keyboard shortcuts and fonts (although a custom colour scheme is not permitted).
 
 ### Rating(s)
 <ul>
@@ -716,6 +716,10 @@ Private  +   Shared  =  RAM used	Program
 {% endhighlight %}</li>
 <li><b>Overall</b>: 8.</li>
 </ul>
+
+## MATE Terminal
+{% include image.html image="MATE-Terminal-1.8.1.png" description="MATE Terminal 1.8.1" width="1000px" float="none" %}
+
 
 # Free Help Resources
 * [Stack Overflow](http://stackoverflow.com/)[^7]
