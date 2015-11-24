@@ -649,7 +649,7 @@ Terminal emulators (TEs) for Sabayon include tty1-tty6, the whole-screen virtual
 
 The following section will involve me comparing the various graphical terminal emulators I have any real experience with.
 
-## GNOME Terminal
+## [GNOME Terminal](https://wiki.gnome.org/Apps/Terminal)
 {% include image.html image="GNOME-Terminal-3.16.2.png" width="743px" description="GNOME Terminal 3.16.2" float="none" %}
 {% include links.html package="x11-terms/gnome-terminal" link="GNOME Terminal" wp="GNOME Terminal" %} is a GTE that is part of the GNOME Core Applications. It is written in C and licensed under GNU GPLv2. I find it, like most GNOME Core Applications fairly feature-packed, with several customization options being available for the terminal window. These include custom keyboard shortcuts, colour schemes, fonts and behaviours.
 
@@ -671,9 +671,9 @@ The following section will involve me comparing the various graphical terminal e
 <li> <b>Overall</b>: 9.</li>
 </ul>
 
-## Konsole
+## [Konsole](https://konsole.kde.org/)
 {% include image.html image="Konsole-15.08.2.png" width="1000px" description="Konsole 15.08.2" float="none" %}
-{% include links.html package="kde-apps/konsole" link="Konsole" wp="Konsole" %}
+{% include links.html package="kde-apps/konsole" link="Konsole" wp="Konsole" %} is a GTE based on the Qt widget toolkit that is part of the KDE Core Applications (or KDE Frameworks 5).
 
 # Free Help Resources
 * [Stack Overflow](http://stackoverflow.com/)[^7]
