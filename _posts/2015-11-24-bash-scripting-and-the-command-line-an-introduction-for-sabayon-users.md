@@ -658,14 +658,15 @@ The following section will involve me comparing the various graphical terminal e
 <li><b>Availability</b>: 10. Comes pre-installed on GNOME edition of Sabayon. Also available from the Entropy Store, to install it run:
 {% include coder.html line1="equo i gnome-terminal" %}</li>
 <li><b>Customizability</b>: 8.</li>
+<li><b>Features</b>: 8.</li>
 <li><b><abbr title="System Resource Usage">SRU</abbr></b>: 8. Here is my `ps_mem` table:
 {% highlight bash %}
- Private  +   Shared  =  RAM used       Program
+Private  +   Shared  =  RAM used	Program
 
-  1.6 MiB + 250.5 KiB =   1.8 MiB       bash
- 15.2 MiB +   4.5 MiB =  19.8 MiB       gnome-terminal-server
+ 1.9 MiB + 482.5 KiB =   2.4 MiB	bash
+10.4 MiB +   3.6 MiB =  14.0 MiB	gnome-terminal-server
 ---------------------------------
-                         21.6 MiB
+                        16.4 MiB
 =================================
 {% endhighlight %}</li>
 <li> <b>Overall</b>: 9.</li>
@@ -673,7 +674,28 @@ The following section will involve me comparing the various graphical terminal e
 
 ## [Konsole](https://konsole.kde.org/)
 {% include image.html image="Konsole-15.08.2.png" width="1000px" description="Konsole 15.08.2" float="none" %}
-{% include links.html package="kde-apps/konsole" link="Konsole" wp="Konsole" %} is a GTE based on the Qt widget toolkit that is part of the KDE Core Applications (or KDE Frameworks 5).
+{% include links.html package="kde-apps/konsole" link="Konsole" wp="Konsole" %} is a GTE based on the Qt widget toolkit that is part of the KDE Core Applications (or KDE Frameworks 5). I would probably say that Konsole is the single most feature-packed GTE, with custom keyboard shortcuts, colour schemes, fonts and behaviours possible.
+
+### Rating(s)
+<ul>
+<li><b>Availability</b>: 10. Comes preinstalled on the KDE edition of Sabayon and available from the Entropy Store.</li>
+<li><b>Customizability</b>: 9.</li>
+<li><b>Features</b>: 9.</li>
+<li><b><abbr title="System Resource Usage">SRU</abbr></b>: 8. Here is my `ps_mem` table:
+{% highlight bash %}
+Private  +   Shared  =  RAM used	Program
+
+ 1.9 MiB + 362.5 KiB =   2.2 MiB	bash
+11.1 MiB +   5.9 MiB =  16.9 MiB	konsole
+---------------------------------
+                        19.2 MiB
+=================================
+{% endhighlight %}</li>
+<li><b>Overall</b>: 9.</li>
+</ul>
+
+## [LXTerminal](http://wiki.lxde.org/en/LXTerminal)
+{% include image.html image="LXTerminal-0.2.0.png" description="LXTerminal 0.2.0" width="1000px" float="none" %}
 
 # Free Help Resources
 * [Stack Overflow](http://stackoverflow.com/)[^7]
