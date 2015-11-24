@@ -644,7 +644,7 @@ function tailf {
 ```
 
 # Terminal Emulators
-Terminal emulators (TEs) for Sabayon include tty1-tty6, the whole-screen virtual terminals managed by the getty Unix command (which are started with <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Fn</kbd> with n ranging from 1 to 6) and various graphical TEs (<abbr title="Graphical Terminal Emulators">GTEs</abbr>; that is, TE windows running within a graphical user interface) including GNOME Terminal, Konsole and LXTerminal. Most of these graphical TEs are found in the "x11-terms" category in the [Portage Tree](https://packages.gentoo.org/categories/x11-terms), [Gentoo Portage Overlays](http://gpo.zugaina.org/x11-terms/) and [Entropy Store](https://packages.sabayon.org/category/x11-terms). You can list all programs in this category by issuing the command:
+Terminal emulators (TEs) for Sabayon include tty1-tty6, the whole-screen virtual terminals managed by the getty Unix command (which are started with <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Fn</kbd> with n ranging from 1 to 6) and various graphical TEs (<abbr title="Graphical Terminal Emulators">GTEs</abbr>; that is, TE windows running within a graphical user interface) including GNOME Terminal, Konsole and LXTerminal. Most of these graphical TEs are found in the "x11-terms" category in the [Portage Tree](https://packages.gentoo.org/categories/x11-terms), [Gentoo Portage Overlays](http://gpo.zugaina.org/x11-terms/) and [Entropy Store](https://packages.sabayon.org/category/x11-terms), although there are exceptions, the most notable one being Konsole (which is in the kde-apps category). You can list all programs in this category by issuing the command:
 {% include coder.html line1='eix -C -c "x11-terms"' %}
 
 The following section will involve me comparing the various graphical terminal emulators I have any real experience with.
@@ -672,6 +672,8 @@ The following section will involve me comparing the various graphical terminal e
 </ul>
 
 ## Konsole
+{% include image.html image="Konsole-15.08.2.png" width="1000px" description="Konsole 15.08.2" float="none" %}
+{% include links.html package="kde-apps/konsole" link="Konsole" wp="Konsole" %}
 
 # Free Help Resources
 * [Stack Overflow](http://stackoverflow.com/)[^7]
