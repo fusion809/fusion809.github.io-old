@@ -845,7 +845,7 @@ fi
 ```
 
 ###Layman/Portage
-Here are some lines from my [emerge.sh](https://github.com/fusion809/sabayon-scripts/blob/master/Shell/emerge.sh) script.
+Here are some lines from my [`~/Shell/emerge.sh`](https://github.com/fusion809/sabayon-scripts/blob/master/Shell/emerge.sh) script.
 ```bash
 # Install a package, but ask first
 function ema {
