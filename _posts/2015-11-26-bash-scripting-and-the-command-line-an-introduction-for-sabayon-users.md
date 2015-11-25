@@ -930,7 +930,7 @@ The following section will involve me comparing the various graphical terminal e
 {% include TE-ratings.html availability="8. Not pre-installed on any official Sabayon edition, but can be easily installed using Entropy." customizability="9. Colour scheme, keybindings and several other features are customizable." features="9. Feature-packed, can even view image files in it" sru="8." gist="cc49c4322790078ae7e0" overall="8" %}
 
 ## Xfce4 Terminal
-{% include image.html url="Xfce-terminal.png" width="1000px" float="none" description="Xfce4 Terminal 0.6.3" %}
+{% include image.html image="Xfce-terminal.png" width="1000px" float="none" description="Xfce4 Terminal 0.6.3" %}
 {% include links.html package="x11-terms/xfce4-terminal" program="Xfce Terminal" link="http://docs.xfce.org/apps/terminal/start" wp="Terminal_(Xfce)" %} is the terminal emulator of Xfce. I have personally found it, despite using more RAM than LXTerminal, less customizable and feature-packed. It is based on the GTK+3 toolkit.
 
 ### Rating(s)
