@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "A Comparison of Linux distributions"
+title:  "A Comparison of Linux distributions" [DRAFT]
 date:   2015-11-10 +1000
 categories: linux, comparisons
 ---
