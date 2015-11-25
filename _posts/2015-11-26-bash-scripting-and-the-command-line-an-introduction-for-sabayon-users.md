@@ -165,7 +165,7 @@ The Bash syntax has several distinct components, which can be classed as <a href
 Several Bash commands (or **builtins**) exist and some (but by no stretch of the imagination all &mdash; I do not even understand them all!) basic ones are explained in **Table 2**. It is worthwhile noting that all these commands are purely Bash commands, by this I mean, they do not call any command-line programs to do their work for them. See many commands you will see in Bash scripts are not Bash commands, *per se*, rather they are commands that use another command-line program such as `mv` or `pwd` to do the work, but they can be run from within Bash.
 
 <table style="width: 100%;">
-<caption>Table 2: Some Basic builtins</caption>
+<caption>Table 2: Some Basic Builtins</caption>
 <tbody>
 <tr>
 <td class="title">Command</td>
