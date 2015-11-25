@@ -761,6 +761,8 @@ I wrote a Bash script ([`~/Shell/gentoo-doc.sh`](https://github.com/fusion809/sa
 where `<ARCHITECTURE>` is, of course, the architecture of the system. For example for AMD64 run:
 {% include codeu.html line1="unit AMD64"%}
 
+gentoo-doc.sh is shown below.
+
 ```bash
 # Requires wkhtmltopdf, which was recently added to the Entropy Store.
 # To install it run: sudo equo i wkhtmltopdf
@@ -776,7 +778,7 @@ function ghandall {
   mkdir -p ~/Textbooks/Gentoo/$1 && cd ~/Textbooks/Gentoo/$1
   wkhtmltopdf https://wiki.gentoo.org/wiki/Handbook:"$1" "$1".pdf
 
-  # Installation
+  # Convert to PDF the four major sections
   L=('Installation' 'Working' 'Portage' 'Networking')
   for i in "${L[@]}"
   do
