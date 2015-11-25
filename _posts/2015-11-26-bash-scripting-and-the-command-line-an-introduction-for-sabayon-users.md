@@ -889,7 +889,7 @@ The following section will involve me comparing the various graphical terminal e
 
 ## GNOME Terminal
 {% include image.html image="GNOME-Terminal-3.16.2.png" width="743px" description="GNOME Terminal 3.16.2" float="none" %}
-{% include links.html package="x11-terms/gnome-terminal" program="GNOME Terminal" link="https://wiki.gnome.org/Apps/Terminal" wp="GNOME Terminal" %} is a GTE that is part of the GNOME Core Applications. It is written in C and licensed under GNU GPLv2. I find it, like most GNOME Core Applications fairly feature-packed, with several customization options being available for the terminal window. These include custom keyboard shortcuts, colour schemes, fonts and behaviours.
+{% include links.html package="x11-terms/gnome-terminal" program="GNOME Terminal" link="https://wiki.gnome.org/Apps/Terminal" wp="GNOME Terminal" %} is a GTE that is part of the GNOME Core Applications suite. It is written in C and licensed under GNU GPLv2. I find it, like most GNOME Core Applications fairly feature-packed, with several customization options being available for the terminal window. These include custom keyboard shortcuts, colour schemes, fonts and behaviours.
 
 ### Rating(s)
 {% include TE-ratings.html availability="10. Comes pre-installed on GNOME edition of Sabayon. Also available from the Entropy Store." customizability="8" features="8" sru="8." gist="d0e2ea07a2def192cacc" overall="9" %}
@@ -912,7 +912,7 @@ The following section will involve me comparing the various graphical terminal e
 
 ## MATE Terminal
 {% include image.html image="MATE-Terminal-1.8.1.png" description="MATE Terminal 1.8.1" width="1000px" float="none" %}
-{% include links.html package="x11-terms/mate-terminal" program="MATE Terminal" link="https://github.com/mate-desktop/mate-terminal" %} is a terminal emulator that is part of the core application suite of MATE, a fork of GNOME 2. Consequently the MATE Terminal is based on the GTK+2 toolkit. Unlike most terminal emulators I have found it does not work under Moksha. See whenever I run `mate-terminal` I get the segmentation fault messages.
+{% include links.html package="x11-terms/mate-terminal" program="MATE Terminal" link="https://github.com/mate-desktop/mate-terminal" %} is a terminal emulator that is part of the core application suite of MATE, a fork of GNOME 2. Consequently the MATE Terminal is based on the GTK+2 toolkit. Unlike most terminal emulators (in fact all of them mentioned in this post) I have found it does not work under Moksha. See whenever I run `mate-terminal` I get segmentation fault messages.
 
 ### Rating(s)
 {% include TE-ratings.html availability="10. Installed, by default, on Sabayon MATE edition." customizability="8. Shares many of the same customizability options of GNOME Terminal." features="8. Same features as GNOME Terminal." sru="9. Like most MATE components it is fairly lightweight." gist="b345c67359307ff5bc17" overall="9. To me the fact that it does not work on Moksha is a big drawback, if for you it launches fine on your desktop of choice, it would probably be a better option than GNOME Terminal as it shares the same features but is lighter on SRU." %}
