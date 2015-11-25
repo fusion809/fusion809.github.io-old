@@ -1,12 +1,13 @@
 ---
 layout: post
 title:  "Bash Scripting and the Command-Line: an Introduction for Sabayon Users"
-date:   2015-11-24
+date:   2015-11-26
 categories: sabayon, bash, shell-scripting, command-line
 redirect_from:
   - /2015/10/31/an-introduction-to-the-command-line-and-bash-scripting-for-sabayon-users/
   - /2015/10/31/an-introduction-to-bash-scripting/
   - /2015/11/24/an-introduction-to-the-command-line-and-bash-scripting-for-sabayon-users/
+  - /2015/11/24/bash-scripting-and-the-command-line-an-introduction-for-sabayon-users/
 ---
 
 {% include image.html image="optipng2.png" description="OptiPNG 0.7.5 running under Bash 4.3.39 in LXTerminal 0.2.0" width = "1240px" float = "none" %}
@@ -65,12 +66,12 @@ Another important concept, for one to understand in order for the rest of this p
 ## Bash and Files
 Bash scripts usually have the file extension of `.sh`, although some have no file extension. When Bash is started as an interactive, non-login shell (for example, from within a terminal emulator) it first reads `~/.bashrc`. When it is started as an interactive, login shell (like when it is started within tty1) it first reads `/etc/profile`, `~/.bash_profile`, `~/.bash_login` and `~/.profile`. Commands executed in Bash are also recorded in `~/.bash_history`. Commands interpreted by Bash are case-sensitive, that is, `mv` is not the same as `Mv`, `mV` or `MV`.
 
-# Basic Syntax
-The Bash syntax has several distinct components, which can be classed as keywords and special characters, bulletins, variables, functions, tests and conditionals.
+# Basic Bash Syntax
+The Bash syntax has several distinct components, which can be classed as keywords and special characters, external commands, bulletins, variables, functions, tests and conditionals. Many of these are shared by other Unix shells.
 
 ## Basic Unix Commands
 **Table 1** lists some basic Unix commands that are provided by the GNU Core Utilities package. Not all are listed, as I do not even understand them all.
-<table style="width: 100%;">
+<table style="width: 100%;" class="green">
 <caption>Table 1: Basic Unix Commands, provided by the GNU Core Utilities Package</caption>
 <tbody>
 <tr>
@@ -80,82 +81,82 @@ The Bash syntax has several distinct components, which can be classed as keyword
 <td class = "title">Manpage (HTML)</td>
 </tr>
 <tr>
-<td><code>cat</code></td>
-<td>Concatenate file. Take file contents and send them to <a href = "https://en.wikipedia.org/wiki/Standard_streams">standard output</a>.</td>
-<td>{% highlight bash %}cat /etc/shells{% endhighlight %}</td>
-<td>{% include man.html man="cat.1p" %}</td>
+<td class="green"><code>cat</code></td>
+<td class="green">Concatenate file. Take file contents and send them to <a href = "https://en.wikipedia.org/wiki/Standard_streams">standard output</a>.</td>
+<td class="green">{% highlight bash %}cat /etc/shells{% endhighlight %}</td>
+<td class="green">{% include man.html man="cat.1p" %}</td>
 </tr>
 <tr>
-<td><code>chmod</code></td>
-<td>Change the permissions of a file</td>
-<td>{% highlight bash %}chmod +x build.sh{% endhighlight %}</td>
-<td>{% include man.html man="chmod.1p" %}</td>
+<td class="green"><code>chmod</code></td>
+<td class="green">Change the permissions of a file</td>
+<td class="green">{% highlight bash %}chmod +x build.sh{% endhighlight %}</td>
+<td class="green">{% include man.html man="chmod.1p" %}</td>
 </tr>
 <tr>
-<td><code>chown</code></td>
-<td>Change the ownership of a file</td>
-<td>{% highlight bash %}chmown apache:apache -R /var/www/localhost/htdocs{% endhighlight %}</td>
-<td>{% include man.html man="chown.1p" %}</td>
+<td class="green"><code>chown</code></td>
+<td class="green">Change the ownership of a file</td>
+<td class="green">{% highlight bash %}chmown apache:apache -R /var/www/localhost/htdocs{% endhighlight %}</td>
+<td class="green">{% include man.html man="chown.1p" %}</td>
 </tr>
 <tr>
-<td><code>chroot</code></td>
-<td>Run a command/interactive shell with a special root directory</td>
-<td>{% highlight bash %}chroot /mnt/sabayon /bin/bash{% endhighlight %}</td>
-<td>{% include man.html man="chroot.1" %}</td>
+<td class="green"><code>chroot</code></td>
+<td class="green">Run a command/interactive shell with a special root directory</td>
+<td class="green">{% highlight bash %}chroot /mnt/sabayon /bin/bash{% endhighlight %}</td>
+<td class="green">{% include man.html man="chroot.1" %}</td>
 </tr>
 <tr>
-<td><code>cp</code></td>
-<td>Copy file</td>
-<td>{% highlight bash %}cp ~/.bashrc ~/GitHub/.bashrc{% endhighlight %}</td>
-<td>{% include man.html man="cp.1p" %}</td>
+<td class="green"><code>cp</code></td>
+<td class="green">Copy file</td>
+<td class="green">{% highlight bash %}cp ~/.bashrc ~/GitHub/.bashrc{% endhighlight %}</td>
+<td class="green">{% include man.html man="cp.1p" %}</td>
 </tr>
 <tr>
-<td><code>du</code></td>
-<td>Estimate file space usage</td>
-<td>{% highlight bash %}du -bs tmp.bundle{% endhighlight %}</td>
-<td>{% include man.html man="du.1" %}</td>
+<td class="green"><code>du</code></td>
+<td class="green">Estimate file space usage</td>
+<td class="green">{% highlight bash %}du -bs tmp.bundle{% endhighlight %}</td>
+<td class="green">{% include man.html man="du.1" %}</td>
 </tr>
 <tr>
-<td><code>echo</code></td>
-<td>Display a line of text</td>
-<td>{% highlight bash %}echo $SHELL{% endhighlight %} returns the current shell's file system location.</td>
-<td>{% include man.html man="echo.1" %}</td>
+<td class="green"><code>echo</code></td>
+<td class="green">Display a line of text</td>
+<td class="green">{% highlight bash %}echo $SHELL{% endhighlight %} returns the current shell's file system location.</td>
+<td class="green">{% include man.html man="echo.1" %}</td>
 </tr>
 <tr>
-<td><code>ln</code></td>
-<td>Make a link between files</td>
-<td>{% highlight bash %}ln -s /usr/bin/atom /usr/local/bin/atom {% endhighlight %} when Atom is installed from Entropy allows <code>/usr/local/bin/atom</code> to be used to launch Atom.</td>
-<td>{% include man.html man="ln.1p" %}</td>
+<td class="green"><code>ln</code></td>
+<td class="green">Make a link between files</td>
+<td class="green">{% highlight bash %}ln -s /usr/bin/atom /usr/local/bin/atom {% endhighlight %} when Atom is installed from Entropy allows <code>/usr/local/bin/atom</code> to be used to launch Atom.</td>
+<td class="green">{% include man.html man="ln.1p" %}</td>
 </tr>
 <tr>
-<td><code>ls</code></td>
-<td>List files</td>
-<td>{% highlight bash %}ls{% endhighlight %} lists files and directories in the current directory, except for hidden ones.</td>
-<td>{% include man.html man="ls.1p" %}</td>
+<td class="green"><code>ls</code></td>
+<td class="green">List files</td>
+<td class="green">{% highlight bash %}ls{% endhighlight %} lists files and directories in the current directory, except for hidden ones.</td>
+<td class="green">{% include man.html man="ls.1p" %}</td>
 </tr>
 <tr>
-<td><code>mkdir</code></td>
-<td>Create a new empty directory</td>
-<td>{% highlight bash %}mkdir -p $HOME/Documents/Manpages{% endhighlight %}</td>
-<td>{% include man.html man="mkdir.1"%}</td>
+<td class="green"><code>mkdir</code></td>
+<td class="green">Create a new empty directory</td>
+<td class="green">{% highlight bash %}mkdir -p $HOME/Documents/Manpages{% endhighlight %}</td>
+<td class="green">{% include man.html man="mkdir.1"%}</td>
 </tr>
 <tr>
-<td><code>mv</code></td>
-<td>Move file</td>
-<td>{% highlight bash %}mv ~/.bashrc ~/GitHub/sabayon-scripts/{% endhighlight %}</td>
-<td>{% include man.html man="mv.1p" %}</td>
+<td class="green"><code>mv</code></td>
+<td class="green">Move file</td>
+<td class="green">{% highlight bash %}mv ~/.bashrc ~/GitHub/sabayon-scripts/{% endhighlight %}</td>
+<td class="green">{% include man.html man="mv.1p" %}</td>
 </tr>
 <tr>
-<td><code>rm</code></td>
-<td>Remove file(s)</td>
-<td>{% highlight bash %}rm $HOME/Documents/Manpages/equo.1.html{% endhighlight %}</td>
-<td>{% include man.html man="rm.1" %}</td>
+<td class="green"><code>rm</code></td>
+<td class="green">Remove file(s)</td>
+<td class="green">{% highlight bash %}rm $HOME/Documents/Manpages/equo.1.html{% endhighlight %}</td>
+<td class="green">{% include man.html man="rm.1" %}</td>
 </tr>
 <tr>
-<td><code>uname</code></td>
-<td>Print system information</td>
-<td>{% highlight bash %}uname -r{% endhighlight %} lists the kernel details.</td>
-<td>{% include man.html man="uname.1" %}</td>
+<td class="green"><code>uname</code></td>
+<td class="green">Print system information</td>
+<td class="green">{% highlight bash %}uname -r{% endhighlight %} lists the kernel details.</td>
+<td class="green">{% include man.html man="uname.1" %}</td>
 </tr>
 </tbody>
 </table>
@@ -173,52 +174,52 @@ Several Bash commands (or **bulletins**) exist and some (but by no stretch of th
 <td class="title" style="width: 20%;">Manpage (HTML)</td>
 </tr>
 <tr>
-<td><code>alias</code></td>
-<td>Set a synonym for a command or function</td>
-<td>
+<td class="green"><code>alias</code></td>
+<td class="green">Set a synonym for a command or function</td>
+<td class="green">
 {% highlight bash %}alias ..='cd ..'{% endhighlight %}
 </td>
-<td><a href="/man/alias.1p.html">alias.1p.html</a></td>
+<td class="green"><a href="/man/alias.1p.html">alias.1p.html</a></td>
 </tr>
 <tr>
-<td><code>cd</code></td>
-<td>Change directory.</td>
-<td>
+<td class="green"><code>cd</code></td>
+<td class="green">Change directory.</td>
+<td class="green">
 {% highlight bash %}cd ~/Documents{% endhighlight %}
 changes one's directory to /home/username/Documents.</td>
-<td><a href="/man/cd.1p.html">cd.1p.html</a></td>
+<td class="green"><a href="/man/cd.1p.html">cd.1p.html</a></td>
 </tr>
 <tr>
-<td><code>date</code></td>
-<td>Outputs the date. Inputs/variables can be used to set the timezone and the format of the date given.</td>
-<td>This gives my local date and time in my preferred format:<br/>
+<td class="green"><code>date</code></td>
+<td class="green">Outputs the date. Inputs/variables can be used to set the timezone and the format of the date given.</td>
+<td class="green">This gives my local date and time in my preferred format:<br/>
 {% highlight bash %}TZ="Australia/Brisbane" date +"%r %A, %d %B %Y"{% endhighlight %}
 </td>
-<td><a href="/man/date.1.html">date.1.html</a></td>
+<td class="green"><a href="/man/date.1.html">date.1.html</a></td>
 </tr>
 <tr>
-<td><code>export</code></td>
-<td>Set variables provided to it as environment, or global, variables.</td>
-<td>{% highlight bash %}export JAVA_HOME=/usr/lib/jvm/oracle-jdk-bin-1.8/bin{% endhighlight %}</td>
-<td><a href="/man/export.1p.html">export.1p.html</a></td>
+<td class="green"><code>export</code></td>
+<td class="green">Set variables provided to it as environment, or global, variables.</td>
+<td class="green">{% highlight bash %}export JAVA_HOME=/usr/lib/jvm/oracle-jdk-bin-1.8/bin{% endhighlight %}</td>
+<td class="green"><a href="/man/export.1p.html">export.1p.html</a></td>
 </tr>
 <tr>
-<td><code>history</code></td>
-<td>Outputs Bash history.</td>
-<td>
+<td class="green"><code>history</code></td>
+<td class="green">Outputs Bash history.</td>
+<td class="green">
 {% highlight bash %}history -10{% endhighlight %}
 should show the last ten commands executed with Bash.</td>
-<td><a href="/man/history.3.html">history.3.html</a></td>
+<td class="green"><a href="/man/history.3.html">history.3.html</a></td>
 </tr>
 <tr>
-<td><code>source</code></td>
-<td>Execute script(s) provided to it.</td>
-<td>{% highlight bash %}
+<td class="green"><code>source</code></td>
+<td class="green">Execute script(s) provided to it.</td>
+<td class="green">{% highlight bash %}
 source ~/.bashrc
 {% endhighlight %}
 runs the <code>~/.bashrc</code> script.
 </td>
-<td><a href="/man/source.n.html">source.n.html</a></td>
+<td class="green"><a href="/man/source.n.html">source.n.html</a></td>
 </tr>
 </tbody>
 </table>
@@ -239,9 +240,9 @@ Functions are essentially convenient ways we can group pieces of code together, 
 <td class="title" style="width: 50%;">Example(s)</td>
 </tr>
 <tr>
-<td><code>{...}</code><br/> <code>function</code></td>
-<td>Used to define <a href="#Functions">functions</a>. Curly braces can also be used to just group lines of code together.</td>
-<td>
+<td class="green"><code>{...}</code><br/> <code>function</code></td>
+<td class="green">Used to define <a href="#Functions">functions</a>. Curly braces can also be used to just group lines of code together.</td>
+<td class="green">
 {% highlight bash %}
 function update {
    sudo equo update && sudo equo upgrade
@@ -252,9 +253,9 @@ function update {
 </td>
 </tr>
 <tr>
-<td><code>[...]</code><br/><code>[[...]]</code></td>
-<td>Used for <a href="#Tests">tests</a>, double square brackets are only available in more advanced Unix shells such as Bash, ksh and Zsh.</td>
-<td>
+<td class="green"><code>[...]</code><br/><code>[[...]]</code></td>
+<td class="green">Used for <a href="#Tests">tests</a>, double square brackets are only available in more advanced Unix shells such as Bash, ksh and Zsh.</td>
+<td class="green">
 {% highlight bash %}
 [[ -n $1 ]]
 {% endhighlight %}
@@ -262,17 +263,17 @@ tests whether the input variable, <code>$1</code> exists.
 </td>
 </tr>
 <tr>
-<td><code>#</code></td>
-<td>Whatever follows is interpreted by Bash, as a comment, for human operators to read but to be left uninterpreted by Bash.</td>
-<td>
+<td class="green"><code>#</code></td>
+<td class="green">Whatever follows is interpreted by Bash, as a comment, for human operators to read but to be left uninterpreted by Bash.</td>
+<td class="green">
 {% highlight bash %}
 # This is a comment
 {% endhighlight %}</td>
 </tr>
 <tr>
-<td><code>!</code></td>
-<td>Returns the reciprocal (opposite) or negates of what follows it.</td>
-<td>
+<td class="green"><code>!</code></td>
+<td class="green">Returns the reciprocal (opposite) or negates of what follows it.</td>
+<td class="green">
 {% highlight bash %}
 [[ $X != 3 ]]
 {% endhighlight %}
@@ -280,46 +281,46 @@ tests whether the input variable, <code>$1</code> exists.
 </td>
 </tr>
 <tr>
-<td><code>$</code></td>
-<td>Evaluates what comes after it, such as a mathematical expression in double square brackets.</td>
-<td><code>echo $[3 * 2]</code> returns 6.</td>
+<td class="green"><code>$</code></td>
+<td class="green">Evaluates what comes after it, such as a mathematical expression in double square brackets.</td>
+<td class="green"><code>echo $[3 * 2]</code> returns 6.</td>
 </tr>
 <tr>
-<td><code>|</code></td>
-<td>This is called a <b>pipe</b> and it sends the output of a command through another. For example, <code>A | B</code> does A and sends its output through B.</td>
-<td>The following example downloads the source code tarball of the 1.1.0 release of Atom and pipes it through tar and gzip to decompress it.
+<td class="green"><code>|</code></td>
+<td class="green">This is called a <b>pipe</b> and it sends the output of a command through another. For example, <code>A | B</code> does A and sends its output through B.</td>
+<td class="green">The following example downloads the source code tarball of the 1.1.0 release of Atom and pipes it through tar and gzip to decompress it.
 <br/>
 {% highlight bash %}
 wget -qO- https://github.com/atom/atom/archive/v1.1.0.tar.gz | tar -xz
 {% endhighlight %}</td>
 </tr>
 <tr>
-<td><code>;</code></td>
-<td>Allows several commands to be executed on the same line.</td>
-<td>
+<td class="green"><code>;</code></td>
+<td class="green">Allows several commands to be executed on the same line.</td>
+<td class="green">
 {% highlight bash %}sudo equo update ; sudo equo upgrade{% endhighlight %}
 </td>
 </tr>
 <tr>
-<td><code>~</code></td>
-<td>Denotes the home directory. For example, as my username is fusion809 on my Sabayon machine, my home directory is <code>/home/fusion809</code>.</td>
-<td>{% highlight bash %}
+<td class="green"><code>~</code></td>
+<td class="green">Denotes the home directory. For example, as my username is fusion809 on my Sabayon machine, my home directory is <code>/home/fusion809</code>.</td>
+<td class="green">{% highlight bash %}
 cd ~
 {% endhighlight %}
 takes one to current user's home directory. If it is run as root it will take one to one's <code>/root</code>.</td>
 </tr>
 <tr>
-<td><code>-</code></td>
-<td>Can be used as the arithmetic operator, minus, or as the previous working directory.</td>
-<td>{% highlight bash %}
+<td class="green"><code>-</code></td>
+<td class="green">Can be used as the arithmetic operator, minus, or as the previous working directory.</td>
+<td class="green">{% highlight bash %}
 cd -
 {% endhighlight %}
 takes one to one's previous working directory.</td>
 </tr>
 <tr>
-<td><code>*</code></td>
-<td>Wildcard operator, can take on any value. Can also be used for multiplication.</td>
-<td>
+<td class="green"><code>*</code></td>
+<td class="green">Wildcard operator, can take on any value. Can also be used for multiplication.</td>
+<td class="green">
 If you have a directory, <code>~/VirtualBox</code> on your machine and no others starting with the prefix <code>~/Virtual</code> then:
 <br/>
 {% highlight bash %}
@@ -329,9 +330,9 @@ should change your current working directory to <code>~/VirtualBox</code>.
 </td>
 </tr>
 <tr>
-<td><code>.</code></td>
-<td>Serves as an equivalent to the <code>source</code> bulletin and as an equivalent to <code>pwd</code></td>
-<td>As <code>source</code> (the following will execute every file with the extension <code>.sh</code> in the <code>~/Shell</code> directory):
+<td class="green"><code>.</code></td>
+<td class="green">Serves as an equivalent to the <code>source</code> bulletin and as an equivalent to <code>pwd</code></td>
+<td class="green">As <code>source</code> (the following will execute every file with the extension <code>.sh</code> in the <code>~/Shell</code> directory):
 <br/>
 {% highlight bash %}
 for i in ~/Shell/*.sh
@@ -348,9 +349,9 @@ which causes no change in current directory.
 </td>
 </tr>
 <tr>
-<td><code>..</code></td>
-<td>Denotes the parent directory</td>
-<td>If I am working in the <code>~/Shell</code> directory, and run:
+<td class="green"><code>..</code></td>
+<td class="green">Denotes the parent directory</td>
+<td class="green">If I am working in the <code>~/Shell</code> directory, and run:
 <br/>
 {% highlight bash %}
 cd ..
@@ -358,16 +359,16 @@ cd ..
 my present working directory (pwd) would then be <code>~</code>, my home directory. </td>
 </tr>
 <tr>
-<td><code>&&</code></td>
-<td>Executes subsequent commands, provided the preceding command(s) were executed without error. For example, <code>A && B</code> does A and then B, provided that A is executed without error. While <code>A && B && C</code> would do A, then if A returns no error, it would perform B and if A and B ran without error it would then run C.</td>
-<td>
+<td class="green"><code>&&</code></td>
+<td class="green">Executes subsequent commands, provided the preceding command(s) were executed without error. For example, <code>A && B</code> does A and then B, provided that A is executed without error. While <code>A && B && C</code> would do A, then if A returns no error, it would perform B and if A and B ran without error it would then run C.</td>
+<td class="green">
 {% highlight bash %}sudo equo update && sudo equo upgrade{% endhighlight %}
 </td>
 </tr>
 <tr>
-<td><code>case</code><br/> <code>esac</code></td>
-<td>Conditional statement, checking whether inputs match. <code>case</code> starts them and <code>esac</code> ends them.</td>
-<td>
+<td class="green"><code>case</code><br/> <code>esac</code></td>
+<td class="green">Conditional statement, checking whether inputs match. <code>case</code> starts them and <code>esac</code> ends them.</td>
+<td class="green">
 {% highlight bash %}
 case $X in
      [1-5])
@@ -386,9 +387,9 @@ esac
 {% endhighlight %}</td>
 </tr>
 <tr>
-<td><code>do</code><br/> <code>done</code><br/> <code>for</code></td>
-<td>Used in <code>for</code> loops. <code>for</code> begins the loop, <code>do</code> enacts commands and <code>done</code> and finishes the loop.</td>
-<td>
+<td class="green"><code>do</code><br/> <code>done</code><br/> <code>for</code></td>
+<td class="green">Used in <code>for</code> loops. <code>for</code> begins the loop, <code>do</code> enacts commands and <code>done</code> and finishes the loop.</td>
+<td class="green">
 {% highlight bash %}
 for i in `find . -name "*.png"`
 do
@@ -397,9 +398,9 @@ done
 {% endhighlight %}</td>
 </tr>
 <tr>
-<td><code>elif</code><br/> <code>else</code><br/> <code>fi</code><br/> <code>if</code><br/> <code>then</code></td>
-<td>Used in <code>if</code> conditionals.</td>
-<td>{% highlight bash %}
+<td class="green"><code>elif</code><br/> <code>else</code><br/> <code>fi</code><br/> <code>if</code><br/> <code>then</code></td>
+<td class="green">Used in <code>if</code> conditionals.</td>
+<td class="green">{% highlight bash %}
 if [[ -n $1 ]]
    then
      atom ~/Shell/$1.sh
@@ -411,9 +412,9 @@ fi
 {% endhighlight %}</td>
 </tr>
 <tr>
-<td><code>in</code></td>
-<td>Used when dealing with lists</td>
-<td>This script should, if passed an argument open Atom to <code>~/Shell/$1.sh</code>, otherwise ask the user to select from the list of shell scripts in <code>~/Shell</code> of which one to open in Atom.<br/>
+<td class="green"><code>in</code></td>
+<td class="green">Used when dealing with lists</td>
+<td class="green">This script should, if passed an argument open Atom to <code>~/Shell/$1.sh</code>, otherwise ask the user to select from the list of shell scripts in <code>~/Shell</code> of which one to open in Atom.<br/>
 {% highlight bash %}
 pushd ~/Shell
 if [[ -n $1 ]]
@@ -430,9 +431,9 @@ popd
 {% endhighlight %}</td>
 </tr>
 <tr>
-<td><code>select</code></td>
-<td>Gets users to select from a list of options.</td>
-<td>{% highlight bash %}
+<td class="green"><code>select</code></td>
+<td class="green">Gets users to select from a list of options.</td>
+<td class="green">{% highlight bash %}
 pushd ~/Shell #moving into the ~/Shell directory
 if [[ -n $1 ]]
    then
@@ -644,7 +645,7 @@ function tailf {
 ```
 
 # Terminal Emulators
-Terminal emulators (TEs) for Sabayon include tty1-tty6, the whole-screen virtual terminals managed by the getty Unix command (which are started with <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Fn</kbd> with n ranging from 1 to 6) and various graphical TEs (<abbr title="Graphical Terminal Emulators">GTEs</abbr>; that is, TE windows running within a graphical user interface) including GNOME Terminal, Konsole and LXTerminal. Most of these graphical TEs are found in the "x11-terms" category in the [Portage Tree](https://packages.gentoo.org/categories/x11-terms), [Gentoo Portage Overlays](http://gpo.zugaina.org/x11-terms/) and [Entropy Store](https://packages.sabayon.org/category/x11-terms), although there are exceptions, the most notable one being Konsole (which is in the kde-apps category). You can list all programs in this category by issuing the command:
+Terminal emulators (TEs) for Sabayon include tty1-tty6, the whole-screen virtual terminals managed by the getty Unix command[^7] and various graphical TEs (<abbr title="Graphical Terminal Emulators">GTEs</abbr>; that is, TE windows running within a graphical user interface) including GNOME Terminal, Konsole and LXTerminal. Most of these graphical TEs are found in the "x11-terms" category in the [Portage Tree](https://packages.gentoo.org/categories/x11-terms), [Gentoo Portage Overlays](http://gpo.zugaina.org/x11-terms/) and [Entropy Store](https://packages.sabayon.org/category/x11-terms), although there are exceptions, the most notable one being Konsole (which is in the kde-apps category). You can list all programs in this category by issuing the command:
 {% include coder.html line1='eix -C -c "x11-terms"' %}
 
 The following section will involve me comparing the various graphical terminal emulators I have any real experience with.
@@ -654,76 +655,32 @@ The following section will involve me comparing the various graphical terminal e
 {% include links.html package="x11-terms/gnome-terminal" program="GNOME Terminal" link="https://wiki.gnome.org/Apps/Terminal" wp="GNOME Terminal" %} is a GTE that is part of the GNOME Core Applications. It is written in C and licensed under GNU GPLv2. I find it, like most GNOME Core Applications fairly feature-packed, with several customization options being available for the terminal window. These include custom keyboard shortcuts, colour schemes, fonts and behaviours.
 
 ### Rating(s)
-<ul>
-<li><b>Availability</b>: 10. Comes pre-installed on GNOME edition of Sabayon. Also available from the Entropy Store, to install it run:
-{% include coder.html line1="equo i gnome-terminal" %}</li>
-<li><b>Customizability</b>: 8.</li>
-<li><b>Features</b>: 8.</li>
-<li><b><abbr title="System Resource Usage">SRU</abbr></b>: 8. Here is my `ps_mem` table:
-{% highlight bash %}
-Private  +   Shared  =  RAM used	Program
-
- 1.9 MiB + 482.5 KiB =   2.4 MiB	bash
-10.4 MiB +   3.6 MiB =  14.0 MiB	gnome-terminal-server
----------------------------------
-                        16.4 MiB
-=================================
-{% endhighlight %}</li>
-<li> <b>Overall</b>: 9.</li>
-</ul>
+{% include TE-ratings.html availability="10. Comes pre-installed on GNOME edition of Sabayon. Also available from the Entropy Store." customizability="8" features="8" sru="8." gist="d0e2ea07a2def192cacc" overall="9" %}
 
 ## Konsole
 {% include image.html image="Konsole-15.08.2.png" width="1000px" description="Konsole 15.08.2" float="none" %}
 {% include links.html package="kde-apps/konsole" program="Konsole" link="https://konsole.kde.org/" wp="Konsole" %} is a GTE based on the Qt widget toolkit that is part of the KDE Core Applications (or KDE Frameworks 5). I would probably say that Konsole is the single most feature-packed GTE, with custom keyboard shortcuts, colour schemes, fonts and behaviours possible.
 
 ### Rating(s)
-<ul>
-<li><b>Availability</b>: 10. Comes preinstalled on the KDE edition of Sabayon and available from the Entropy Store.</li>
-<li><b>Customizability</b>: 9.</li>
-<li><b>Features</b>: 9.</li>
-<li><b><abbr title="System Resource Usage">SRU</abbr></b>: 8. Here is my `ps_mem` table:
-{% highlight bash %}
-Private  +   Shared  =  RAM used	Program
-
- 1.9 MiB + 362.5 KiB =   2.2 MiB	bash
-11.1 MiB +   5.9 MiB =  16.9 MiB	konsole
----------------------------------
-                        19.2 MiB
-=================================
-{% endhighlight %}</li>
-<li><b>Overall</b>: 9.</li>
-</ul>
+{% include TE-ratings.html availability="10. Comes preinstalled on the KDE edition of Sabayon and available from the Entropy Store." customizability="9." sru="8." overall="9" gist="b03ca0f3e5e6b961ed19" %}
 
 ## LXTerminal
 {% include image.html image="LXTerminal-0.2.0.png" description="LXTerminal 0.2.0" width="1000px" float="none" %}
 {% include links.html package="lxde-base/lxterminal" program="LXTerminal" link="http://wiki.lxde.org/en/LXTerminal" %} is a terminal emulator that is part of the core applications suite of LXDE. It uses the GTK+2 toolkit and while lightweight still has a few of the features that more advanced terminal emulators like Konsole boast. These include: ability to customize keyboard shortcuts and fonts (although a custom colour scheme is not permitted).
 
 ### Rating(s)
-<ul>
-<li><b>Availability</b>: 8, available in the Entropy Store but not preinstalled on any official Sabayon edition.</li>
-<li><b>Customizability</b>: 9.</li>
-<li><b>Features</b>: 9.</li>
-<li><b><abbr title="System Resource Usage">SRU</abbr></b>: 9. Here is my `ps_mem` table:
-{% highlight bash %}
-Private  +   Shared  =  RAM used	Program
-
-156.0 KiB +  43.0 KiB = 199.0 KiB	gnome-pty-helper
- 1.5 MiB + 305.5 KiB =   1.8 MiB	bash
- 6.2 MiB +   2.6 MiB =   8.8 MiB	lxterminal
----------------------------------
-                        10.8 MiB
-=================================
-{% endhighlight %}</li>
-<li><b>Overall</b>: 8.</li>
-</ul>
+{% include TE-ratings.html availability="8, available in the Entropy Store but not preinstalled on any official Sabayon edition." customizability="9" features="9" sru="9." gist="74f4c3c54450760623d2" overall="8" %}
 
 ## MATE Terminal
 {% include image.html image="MATE-Terminal-1.8.1.png" description="MATE Terminal 1.8.1" width="1000px" float="none" %}
+{% include links.html package="x11-terms/mate-terminal" program="MATE Terminal" link="https://github.com/mate-desktop/mate-terminal" %} is a terminal emulator that is part of the core application suite of MATE, a fork of GNOME 2. Consequently the MATE Terminal is based on the GTK+2 toolkit. Unlike most terminal emulators I have found it does not work under Moksha. See whenever I run `mate-terminal` I get the segmentation fault messages.
 
+### Rating(s)
+{% include TE-ratings.html availability="10. Installed, by default, on Sabayon MATE edition." customizability="8. Shares many of the same customizability options of GNOME Terminal." features="8. Same features as GNOME Terminal." sru="9. Like most MATE components it is fairly lightweight." gist="b345c67359307ff5bc17" overall="8. To me the fact that it does not work on Moksha is a big drawback" %}
 
 # Free Help Resources
-* [Stack Overflow](http://stackoverflow.com/)[^7]
-* [Unix & Linux StackExchange](http://unix.stackexchange.com)[^8]
+* [Stack Overflow](http://stackoverflow.com/)[^8]
+* [Unix & Linux StackExchange](http://unix.stackexchange.com)[^9]
 
 # Further Reading
 {% include note.html note1="All the following links are to free PDFs" %}
@@ -740,5 +697,6 @@ Private  +   Shared  =  RAM used	Program
 [^4]: Source: [Bash Webpage](https://www.gnu.org/software/bash/)
 [^5]: Source: [Server Fault](http://serverfault.com/a/52050/298691)
 [^6]: The for loop I got from the answers to [this question](http://unix.stackexchange.com/q/239881/27613) at Unix & Linux SE
-[^7]: Its general topic is programming, so it is suitable for shell script-related questions. I have asked two questions there relating to shell script, as of 31 October 2015, both were resolved within an hour.
-[^8]: As of 31 October 2015 I have asked 8 questions relating to shell scripts there and seven have been answered. Each of those that have been answered were resolved (that is, given an answer that solved whatever problem I had) within a day of me asking them.
+[^7]: Which are started with <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Fn</kbd> with n ranging from 1 to 6. For example, to launch tty1 run <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F1</kbd>, while to launch tty2 run <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F2</kbd> and so forth.
+[^8]: Its general topic is programming, so it is suitable for shell script-related questions. I have asked two questions there relating to shell script, as of 31 October 2015, both were resolved within an hour.
+[^9]: As of 31 October 2015 I have asked 8 questions relating to shell scripts there and seven have been answered. Each of those that have been answered were resolved (that is, given an answer that solved whatever problem I had) within a day of me asking them.
