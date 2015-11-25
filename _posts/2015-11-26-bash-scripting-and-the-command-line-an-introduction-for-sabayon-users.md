@@ -876,7 +876,7 @@ The following section will involve me comparing the various graphical terminal e
 {% include image.html image="Konsole-purple-tab-colour.png" width="1000px" float="none" description="Konsole showing the purple tab highlighting. Note, how the first tab with its title starting with <code>...09@brenton-pc</code> is coloured purple, this indicates that it has unread output" %}
 
 ### Rating(s)
-{% include TE-ratings.html availability="10. Comes preinstalled on the KDE edition of Sabayon and available from the Entropy Store." customizability="9." sru="8." overall="9" gist="b03ca0f3e5e6b961ed19" %}
+{% include TE-ratings.html availability="10. Comes preinstalled on the KDE edition of Sabayon and available from the Entropy Store." customizability="9." sru="8." features="9." overall="9" gist="b03ca0f3e5e6b961ed19" %}
 
 ## LXTerminal
 {% include image.html image="LXTerminal-0.2.0.png" description="LXTerminal 0.2.0" width="1000px" float="none" %}
