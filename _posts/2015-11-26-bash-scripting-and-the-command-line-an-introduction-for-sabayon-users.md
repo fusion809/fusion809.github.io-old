@@ -916,8 +916,8 @@ The following section will involve me comparing the various graphical terminal e
 {% include TE-ratings.html availability="10. Installed, by default, on Sabayon MATE edition." customizability="8. Shares many of the same customizability options of GNOME Terminal." features="8. Same features as GNOME Terminal." sru="9. Like most MATE components it is fairly lightweight." gist="b345c67359307ff5bc17" overall="9. To me the fact that it does not work on Moksha is a big drawback, if for you it launches fine on your desktop of choice, it would probably be a better option than GNOME Terminal as it shares the same features but is lighter on SRU." %}
 
 ## Terminator
-{% include image.html image="Terminator-0.98.png" width="1000px" float="none" description="Terminator 0.98 running under Moksha" wp="Terminator_(terminal_emulator)" %}
-{% include links.html package="x11-terms/terminator" program="Terminator" link="https://launchpad.net/terminator" %} is a terminal emulator that uses the GTK toolkit and is written in Python. Compared to other terminal emulators its major advantage is that of window splitting. See, in most terminal emulators the only way you can open another terminal within the same window is by creating another tab (which is something Terminator can do to), which can be annoying if what you want to type into the other terminal is found in the one you are currently working in (as you cannot see what is in the current terminal when you open a new tab and start working in it), while with terminator you can show two terminals side-by-side in the same window, making it easier to work on two or more related things at a time.
+{% include image.html image="Terminator-0.98.png" width="1000px" float="none" description="Terminator 0.98 running under Moksha" %}
+{% include links.html package="x11-terms/terminator" program="Terminator" link="https://launchpad.net/terminator" wp="Terminator_(terminal_emulator)" %} is a terminal emulator that uses the GTK toolkit and is written in Python. Compared to other terminal emulators its major advantage is that of window splitting. See, in most terminal emulators the only way you can open another terminal within the same window is by creating another tab (which is something Terminator can do to), which can be annoying if what you want to type into the other terminal is found in the one you are currently working in (as you cannot see what is in the current terminal when you open a new tab and start working in it), while with terminator you can show two terminals side-by-side in the same window, making it easier to work on two or more related things at a time.
 
 ### Rating(s)
 {% include TE-ratings.html availability="8. Not pre-installed on any official Sabayon edition, but can be easily installed using Entropy." customizability="9. Colour scheme, keybindings and several other features are customizable." features="9. Feature-packed, extra features can be added using plugins." sru="5" gist="24dd1c1a4fd65acfe2a9" overall="8" %}
@@ -928,6 +928,13 @@ The following section will involve me comparing the various graphical terminal e
 
 ### Rating(s)
 {% include TE-ratings.html availability="8. Not pre-installed on any official Sabayon edition, but can be easily installed using Entropy." customizability="9. Colour scheme, keybindings and several other features are customizable." features="9. Feature-packed, can even view image files in it" sru="8." gist="cc49c4322790078ae7e0" overall="8" %}
+
+## Xfce4 Terminal
+{% include image.html url="Xfce-terminal.png" width="1000px" float="none" description="Xfce4 Terminal 0.6.3" %}
+{% include links.html package="x11-terms/xfce4-terminal" program="Xfce Terminal" link="http://docs.xfce.org/apps/terminal/start" wp="Terminal_(Xfce)" %} is the terminal emulator of Xfce. I have personally found it, despite using more RAM than LXTerminal, less customizable and feature-packed. It is based on the GTK+3 toolkit.
+
+### Rating(s)
+{% include TE-ratings.html availability="10. Comes pre-installed on the Xfce edition of Sabayon" customizability="7. The keyboard shortcuts are not even customizable." features="7." sru="9." gist="f250f470f12f08613b54" overall="8" %}
 
 ## Other Terminal Emulators
 I have limited experience with drop-down terminals and X terminals like UXTerm and XTerm, hence I cannot really comment on anything but their system resource usage (SRU) and ease of installation. Here is a graph comparing RAM usage amongst GTEs, note that each of these GTEs are installable using Entropy:
