@@ -552,6 +552,74 @@ to install a new Moksha theme you would run:
 ## Useful Functions for Sabayon Users
 The following are some functions that, depending on how you operate on Sabayon, may be helpful.
 
+###Chroots
+`chroot` is a Unix command-line program that allows you to change the apparent root directory for the current running process and all processes started by said process (that is, its "children"). Most commonly `chroot` is used to run Bash as from within Bash one can perform several tasks. `chroot` also makes all other files on a system, outside the chroot directory (and its subdirectories) inaccessible to processes run within the chroot. This can be handy, when one is running processes that could potentially cause unwanted, even damaging changes, to one's system, as if it blows up in your face, the damage will be confined to the chroot directory. The following are taken from [`~/Shell/chroot.sh`](https://github.com/fusion809/sabayon-scripts/blob/master/Shell/chroot.sh).
+
+```bash
+function root2 {
+  sudo chroot /root2 /bin/bash
+}
+
+function gentoo-chrootn {
+  if [[ $1 > 1 ]]
+    then
+      sudo mkdir /root$1
+      REL=20151112
+      sudo cp -a stage3-amd64-$REL.tar.bz2 /root$1
+      cd /root$1
+      sudo tar xvjpf stage3-amd64-$REL.tar.bz2
+      sudo mount -t proc none /root$1/proc
+      sudo mount -o bind /dev /root$1/dev
+      sudo mkdir usr/portage
+      sudo mount -o bind /usr/portage /root$1/usr/portage
+      sudo mkdir usr/src/linux
+      sudo mount -o bind /usr/src/linux /root$1/usr/src/linux
+      sudo mkdir lib/modules
+      sudo mount -o bind /lib/modules /root$1/lib/modules
+      sudo mount -o bind /sys /root$1/sys
+      sudo cp /etc/resolv.conf /root$1/etc/resolv.conf
+      sudo mount -o bind /tmp /root$1/tmp
+      sudo mount --rbind /dev /root$1/dev
+      sudo mount --rbind /sys /root$2/sys
+  fi
+}
+
+function chrootb {
+  sudo umount /root2/proc
+  sudo umount /root2/dev
+  sudo umount /root2/usr/portage
+  sudo umount /root2/usr/src/linux
+  sudo umount /root2/lib/modules
+  sudo umount /root2/sys
+  sudo umount /root2/tmp
+  sudo umount /root2/dev
+  sudo umount /root2/sys
+}
+
+function sabayon-chrootn {
+  if [[ $1 > 1 ]]
+    then
+      sudo mkdir /root$1
+      sudo cp -a "$HOME/VirtualBox VMs/Sabayon_Linux_15.11_amd64_tarball.tar.gz" /root$1
+      cd /root$1
+      sudo tar xvzpf Sabayon_Linux_15.11_amd64_tarball.tar.gz
+      sudo mount -t proc none /root$1/proc
+      sudo mount -o bind /dev /root$1/dev
+      sudo mount -o bind /usr/portage /root$1/usr/portage
+      sudo mount -o bind /usr/src/linux /root$1/usr/src/linux
+      sudo mount -o bind /lib/modules /root$1/lib/modules
+      sudo mount -o bind /sys /root$1/sys
+      sudo cp /etc/resolv.conf /root$1/etc/resolv.conf
+      sudo mount -o bind /tmp /root$1/tmp
+      sudo mount --rbind /dev /root$1/dev
+      sudo mount --rbind /sys /root$1/sys
+  fi
+}
+
+alias schrootn=sabayon-chrootn
+alias schroot2='sabayon-chrootn 2'
+```
+
 ###Entropy
 The following are taken from [`~/Shell/equo.sh`](https://github.com/fusion809/sabayon-scripts/blob/master/Shell/equo.sh) and they are functions (with aliases for said functions) that essentially automate some common actions one may perform with Entropy. They are not all the lines of code in `equo.sh`, they merely represent some of the more commonly-used codes. It is important to note some of these functions need not be defined as functions, they could instead be defined as aliases (using `alias NAME='CODE'` where NAME is the function's name and `CODE` is what is between the curly brackets).
 ```bash
@@ -659,7 +727,9 @@ The following section will involve me comparing the various graphical terminal e
 
 ## Konsole
 {% include image.html image="Konsole-15.08.2.png" width="1000px" description="Konsole 15.08.2" float="none" %}
-{% include links.html package="kde-apps/konsole" program="Konsole" link="https://konsole.kde.org/" wp="Konsole" %} is a GTE based on the Qt widget toolkit that is part of the KDE Core Applications (or KDE Frameworks 5). I would probably say that Konsole is the single most feature-packed GTE, with custom keyboard shortcuts, colour schemes, fonts and behaviours possible.
+{% include links.html package="kde-apps/konsole" program="Konsole" link="https://konsole.kde.org/" wp="Konsole" %} is a GTE based on the Qt widget toolkit that is part of the KDE Core Applications (or KDE Frameworks 5). I would probably say that Konsole and Terminator are the most feature-packed GTEs, with custom keyboard shortcuts, colour schemes, fonts and behaviours possible. Konsole does have an advantage, in my opinion, over Terminator, though. See Konsole highlights tabs (in purple, see the screenshot below) that have pushed out extra output since they were last viewed, which can be handy at times.
+
+{% include image.html image="Konsole-purple-tab-colour.png" width="1000px" float="none" description="Konsole showing the purple tab highlighting. Note, how the first tab with its title starting with <code>...09@brenton-pc</code> is coloured purple, this indicates that it has unread output" %}
 
 ### Rating(s)
 {% include TE-ratings.html availability="10. Comes preinstalled on the KDE edition of Sabayon and available from the Entropy Store." customizability="9." sru="8." overall="9" gist="b03ca0f3e5e6b961ed19" %}
@@ -676,7 +746,25 @@ The following section will involve me comparing the various graphical terminal e
 {% include links.html package="x11-terms/mate-terminal" program="MATE Terminal" link="https://github.com/mate-desktop/mate-terminal" %} is a terminal emulator that is part of the core application suite of MATE, a fork of GNOME 2. Consequently the MATE Terminal is based on the GTK+2 toolkit. Unlike most terminal emulators I have found it does not work under Moksha. See whenever I run `mate-terminal` I get the segmentation fault messages.
 
 ### Rating(s)
-{% include TE-ratings.html availability="10. Installed, by default, on Sabayon MATE edition." customizability="8. Shares many of the same customizability options of GNOME Terminal." features="8. Same features as GNOME Terminal." sru="9. Like most MATE components it is fairly lightweight." gist="b345c67359307ff5bc17" overall="8. To me the fact that it does not work on Moksha is a big drawback" %}
+{% include TE-ratings.html availability="10. Installed, by default, on Sabayon MATE edition." customizability="8. Shares many of the same customizability options of GNOME Terminal." features="8. Same features as GNOME Terminal." sru="9. Like most MATE components it is fairly lightweight." gist="b345c67359307ff5bc17" overall="9. To me the fact that it does not work on Moksha is a big drawback, if for you it launches fine on your desktop of choice, it would probably be a better option than GNOME Terminal as it shares the same features but is lighter on SRU." %}
+
+## Terminator
+{% include image.html image="Terminator-0.98.png" width="1000px" float="none" description="Terminator 0.98 running under Moksha" %}
+{% include links.html package="x11-terms/terminator" program="Terminator" link="https://launchpad.net/terminator" %} is a terminal emulator that uses the GTK toolkit and is written in Python. Compared to other terminal emulators its major advantage is that of window splitting. See, in most terminal emulators the only way you can open another terminal within the same window is by creating another tab (which is something Terminator can do to), which can be annoying if what you want to type into the other terminal is found in the one you are currently working in (as you cannot see what is in the current terminal when you open a new tab and start working in it), while with terminator you can show two terminals side-by-side in the same window, making it easier to work on two or more related things at a time.
+
+### Rating(s)
+{% include TE-ratings.html availability="8. Not pre-installed on any official Sabayon edition, but can be easily installed using Entropy." customizability="9. Colour scheme, keybindings and several other features are customizable." features="9. Feature-packed, extra features can be added using plugins." sru="5" gist="24dd1c1a4fd65acfe2a9" overall="8" %}
+
+## Terminology
+{% include image.html image="Terminology-0.9.1.png" width="1000px" float="none" description="Terminology 0.9.1 running under Moksha" %}
+{% include links.html package="x11-terms/terminology" program="Terminology" link="https://www.enlightenment.org/about-terminology" %} is the terminal emulator of the Enlightenment desktop environment. Compared to other GTEs it is less intuitive and can be irritating to get the ropes of, because of how different it is to other GTEs. My experience is fairly limited with it, due to the fact I find it frustrating and hence have usually opted for less irritating alternatives like Konsole and LXTerminal. Despite this it does seem quite customizable and feature-packed, in fact, on their [about page](https://www.enlightenment.org/about-terminology) at enlightenment.org, it even says you can view image files (including bitmap and vector images) in Terminology.  
+
+### Rating(s)
+{% include TE-ratings.html availability="8. Not pre-installed on any official Sabayon edition, but can be easily installed using Entropy." customizability="9. Colour scheme, keybindings and several other features are customizable." features="9. Feature-packed, can even view image files in it" sru="8." gist="cc49c4322790078ae7e0" overall="8" %}
+
+## Other Terminal Emulators
+I have limited experience with drop-down terminals and X terminals like UXTerm and XTerm, hence I cannot really comment on anything but their system resource usage (SRU) and ease of installation. Here is a graph comparing RAM usage amongst GTEs, note that each of these GTEs are installable using Entropy:
+{% include image.html image="RAM-usage-TEs.png" width="1000px" float="none" description="RAM usage of GTEs" %}
 
 # Free Help Resources
 * [Stack Overflow](http://stackoverflow.com/)[^8]
