@@ -67,7 +67,7 @@ Another important concept, for one to understand in order for the rest of this p
 Bash scripts usually have the file extension of `.sh`, although some have no file extension. When Bash is started as an interactive, non-login shell (for example, from within a terminal emulator) it first reads `~/.bashrc`. When it is started as an interactive, login shell (like when it is started within tty1) it first reads `/etc/profile`, `~/.bash_profile`, `~/.bash_login` and `~/.profile`. Commands executed in Bash are also recorded in `~/.bash_history`. Commands interpreted by Bash are case-sensitive, that is, `mv` is not the same as `Mv`, `mV` or `MV`.
 
 # Basic Bash Syntax
-The Bash syntax has several distinct components, which can be classed as keywords and special characters, external commands, builtins, variables, functions, tests and conditionals. Many of these are shared by other Unix shells.
+The Bash syntax has several distinct components, which can be classed as <a href="#keywords-and-special-characters">keywords and special characters</a>, <a href="#basic-unix-commands">external commands</a>, <a href="#builtins">builtins</a>, <a href="#variables">variables</a>, <a href="#functions">functions</a>, <a href="#loops">loops</a>, <a href="#selectors">selectors</a>, <a href="#tests">tests</a> and <a href="#conditionals">conditionals</a>. Many of these are shared by other Unix shells.
 
 ## Basic Unix Commands
 **Table 1** lists some basic Unix commands that are provided by the GNU Core Utilities package. Not all are listed, as I do not even understand them all.
@@ -161,7 +161,7 @@ The Bash syntax has several distinct components, which can be classed as keyword
 </tbody>
 </table>
 
-## builtins
+## Builtins
 Several Bash commands (or **builtins**) exist and some (but by no stretch of the imagination all &mdash; I do not even understand them all!) basic ones are explained in **Table 2**. It is worthwhile noting that all these commands are purely Bash commands, by this I mean, they do not call any command-line programs to do their work for them. See many commands you will see in Bash scripts are not Bash commands, *per se*, rather they are commands that use another command-line program such as `mv` or `pwd` to do the work, but they can be run from within Bash.
 
 <table style="width: 100%;">
