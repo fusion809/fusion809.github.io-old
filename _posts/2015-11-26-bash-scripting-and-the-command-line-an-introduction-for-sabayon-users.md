@@ -67,7 +67,7 @@ Another important concept, for one to understand in order for the rest of this p
 Bash scripts usually have the file extension of `.sh`, although some have no file extension. When Bash is started as an interactive, non-login shell (for example, from within a terminal emulator) it first reads `~/.bashrc`. When it is started as an interactive, login shell (like when it is started within tty1) it first reads `/etc/profile`, `~/.bash_profile`, `~/.bash_login` and `~/.profile`. Commands executed in Bash are also recorded in `~/.bash_history`. Commands interpreted by Bash are case-sensitive, that is, `mv` is not the same as `Mv`, `mV` or `MV`.
 
 # Basic Bash Syntax
-The Bash syntax has several distinct components, which can be classed as keywords and special characters, external commands, bulletins, variables, functions, tests and conditionals. Many of these are shared by other Unix shells.
+The Bash syntax has several distinct components, which can be classed as keywords and special characters, external commands, builtins, variables, functions, tests and conditionals. Many of these are shared by other Unix shells.
 
 ## Basic Unix Commands
 **Table 1** lists some basic Unix commands that are provided by the GNU Core Utilities package. Not all are listed, as I do not even understand them all.
@@ -161,11 +161,11 @@ The Bash syntax has several distinct components, which can be classed as keyword
 </tbody>
 </table>
 
-## Bulletins
-Several Bash commands (or **bulletins**) exist and some (but by no stretch of the imagination all &mdash; I do not even understand them all!) basic ones are explained in **Table 2**. It is worthwhile noting that all these commands are purely Bash commands, by this I mean, they do not call any command-line programs to do their work for them. See many commands you will see in Bash scripts are not Bash commands, *per se*, rather they are commands that use another command-line program such as `mv` or `pwd` to do the work, but they can be run from within Bash.
+## builtins
+Several Bash commands (or **builtins**) exist and some (but by no stretch of the imagination all &mdash; I do not even understand them all!) basic ones are explained in **Table 2**. It is worthwhile noting that all these commands are purely Bash commands, by this I mean, they do not call any command-line programs to do their work for them. See many commands you will see in Bash scripts are not Bash commands, *per se*, rather they are commands that use another command-line program such as `mv` or `pwd` to do the work, but they can be run from within Bash.
 
 <table style="width: 100%;">
-<caption>Table 2: Some Basic Bulletins</caption>
+<caption>Table 2: Some Basic builtins</caption>
 <tbody>
 <tr>
 <td class="title">Command</td>
@@ -331,7 +331,7 @@ should change your current working directory to <code>~/VirtualBox</code>.
 </tr>
 <tr>
 <td class="green"><code>.</code></td>
-<td class="green">Serves as an equivalent to the <code>source</code> bulletin and as an equivalent to <code>pwd</code></td>
+<td class="green">Serves as an equivalent to the <code>source</code> builtin and as an equivalent to <code>pwd</code></td>
 <td class="green">As <code>source</code> (the following will execute every file with the extension <code>.sh</code> in the <code>~/Shell</code> directory):
 <br/>
 {% highlight bash %}
@@ -459,7 +459,7 @@ Loops (which involve the `for` keyword), in Bash scripts, are used to automate t
 Selectors (marked by the `select` keyword) gives users choices as to which input(s) the rest of the selector block uses.
 
 ## Tests
-Tests are essential for conditionals. As their name suggests, they test to see whether or not a condition is satisfied. If the condition is satisfied they return 0, while if the condition is unsatisfied they return 1. Square brackets (which are a bulletin, by-the-way), `[...]`, are used for tests, although double square brackets (`[[...]]`) can also be used for this purpose since Bash 2.02. The difference, from what I can tell, between single and double square brackets is that double square brackets allow one to perform more advanced tests than single square brackets. Single square brackets are also POSIX compliant and are found on all Unix shells.[^5]
+Tests are essential for conditionals. As their name suggests, they test to see whether or not a condition is satisfied. If the condition is satisfied they return 0, while if the condition is unsatisfied they return 1. Square brackets (which are a builtin, by-the-way), `[...]`, are used for tests, although double square brackets (`[[...]]`) can also be used for this purpose since Bash 2.02. The difference, from what I can tell, between single and double square brackets is that double square brackets allow one to perform more advanced tests than single square brackets. Single square brackets are also POSIX compliant and are found on all Unix shells.[^5]
 
 ## Variables
 Bash **variables** are defined using equal signs. They can be made global (making them available for all processes) or local (making them available just for the script at hand). Local variables are defined by just using an equal sign, for example:
@@ -553,21 +553,34 @@ to install a new Moksha theme you would run:
 The following are some functions that, depending on how you operate on Sabayon, may be helpful.
 
 ###Chroots
-`chroot` is a Unix command-line program that allows you to change the apparent root directory for the current running process and all processes started by said process (that is, its "children"). Most commonly `chroot` is used to run Bash as from within Bash one can perform several tasks. `chroot` also makes all other files on a system, outside the chroot directory (and its subdirectories) inaccessible to processes run within the chroot. This can be handy, when one is running processes that could potentially cause unwanted, even damaging changes, to one's system, as if it blows up in your face, the damage will be confined to the chroot directory. The following are taken from [`~/Shell/chroot.sh`](https://github.com/fusion809/sabayon-scripts/blob/master/Shell/chroot.sh).
+`chroot` is a Unix command-line program that allows you to change the apparent root directory for the current running process and all processes started by said process (that is, its "children"). Most commonly `chroot` is used to run Bash as from within Bash one can perform several tasks. `chroot` also makes all other files on a system, outside the chroot directory (and its subdirectories) inaccessible to processes run within the chroot. This can be handy, when one is running processes that could potentially cause unwanted, even damaging changes, to one's system, as if it blows up in your face, the damage will be confined to the chroot directory. On Gentoo and Sabayon chroots are usually, in my fairly minimal experience, used to create a new installation (when for whatever reason the graphical Calamares installer is not suitable), repair an existing installation, build new binary packages and test out ebuilds. The following are taken from [`~/Shell/chroot.sh`](https://github.com/fusion809/sabayon-scripts/blob/master/Shell/chroot.sh).
 
 ```bash
+# root2 enters a chroot in the /root2 directory. To generate such a chroot
+# (which is necessary before entering it) use gentoo-chrootn or sabayon-chrootn
+# Upon rebooting, however, you may wish to run chrootb, as otherwise your chroot
+# will take up a lot of your RAM leading to program crashes. DON'T RUN chrootb
+# BEFORE REBOOTING AS IT CAN CAUSE DAMAGE TO YOUR SYSTEM!
 function root2 {
   sudo chroot /root2 /bin/bash
 }
 
 function gentoo-chrootn {
+  # First input ($1) is usually 2, unless you want to set up multiple chroots
+  # Second input refers to the release date of the stage3 tarball being used.
+  # Go to
+  # http://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64/
+  # As of 25 November 2015 the latest release was on 19 November 2015 and
+  # to get it, you would use the second input 20151119
+  # e.g., gentoo-chrootn 2 20151119, would create a chroot at /root2 for the
+  # 20151119 stage3 tarball.
   if [[ $1 > 1 ]]
     then
+      wget -c http://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64/stage3-amd64-$2.tar.bz2
       sudo mkdir /root$1
-      REL=20151112
-      sudo cp -a stage3-amd64-$REL.tar.bz2 /root$1
+      sudo cp -a stage3-amd64-$2.tar.bz2 /root$1
       cd /root$1
-      sudo tar xvjpf stage3-amd64-$REL.tar.bz2
+      sudo tar xvjpf stage3-amd64-$2.tar.bz2
       sudo mount -t proc none /root$1/proc
       sudo mount -o bind /dev /root$1/dev
       sudo mkdir usr/portage
@@ -596,23 +609,66 @@ function chrootb {
   sudo umount /root2/sys
 }
 
+function sabayon-mirror {
+  L=(
+  'Argentina                         - ftp://mirrors.coopvgg.com.ar/sabayon'
+  'Austria                           - ftp://gd.tuwien.ac.at/linux/sabayonlinux'
+  'Australia (Optus, 2,000 MB/s)     - ftp://mirror.optusnet.com.au/sabayon'
+  'Australia (Internode, 1,000 MB/s) - ftp://mirror.internode.on.net/pub/sabayon'
+  'Belgium                           - ftp://ftp.belnet.be/mirror/sabayonlinux'
+  'Brazil                            - ftp://sabayon.c3sl.ufpr.br/sabayon'
+  'Czech Republic                    - ftp://mirror.dkm.cz/pub/sabayon'
+  'Denmark                           - ftp://ftp.klid.dk/sabayonlinux'
+  'Ecuador                           - ftp://mirror.uta.edu.ec/sabayon'
+  'Germany (Official)                - http://mirror.de.sabayon.org'
+  'Greece                            - ftp://ftp.cc.uoc.gr/mirrors/linux/SabayonLinux'
+  'Italy (Garr Consortium)           - ftp://na.mirror.garr.it/mirrors/sabayonlinux'
+  'Italy (TOP-IX Official Mirror)    - http://mirror.it.sabayon.org'
+  'Japan (RIKEN, 10,000 MB/s)        - ftp://ftp.riken.jp/Linux/sabayon'
+  'Netherlands                       - ftp://ftp.nluug.nl/pub/os/Linux/distr/sabayonlinux'
+  'New Zealand                       - http://mirror.auckland.ac.nz/sabayon'
+  'Portugal (Rede, 1,000 MB/s)       - ftp://ftp.rnl.tecnico.ulisboa.pt/pub/sabayon'
+  'Russian Federation                - ftp://mirror.yandex.ru/sabayon'
+  'South Africa                      - ftp://sabayon.mirror.ac.za'
+  'Sweden                            - ftp://ftp.portlane.com/pub/os/linux/sabayon'
+  'U.S.A (UMD, 10,000 MB/s)          - http://mirror.umd.edu/sabayonlinux'
+  )
+  select x in "${L[@]}"
+  do
+    export MIRROR="${x#*-}"
+  done
+}
+
 function sabayon-chrootn {
   if [[ $1 > 1 ]]
     then
-      sudo mkdir /root$1
-      sudo cp -a "$HOME/VirtualBox VMs/Sabayon_Linux_15.11_amd64_tarball.tar.gz" /root$1
-      cd /root$1
-      sudo tar xvzpf Sabayon_Linux_15.11_amd64_tarball.tar.gz
-      sudo mount -t proc none /root$1/proc
-      sudo mount -o bind /dev /root$1/dev
-      sudo mount -o bind /usr/portage /root$1/usr/portage
-      sudo mount -o bind /usr/src/linux /root$1/usr/src/linux
-      sudo mount -o bind /lib/modules /root$1/lib/modules
-      sudo mount -o bind /sys /root$1/sys
-      sudo cp /etc/resolv.conf /root$1/etc/resolv.conf
-      sudo mount -o bind /tmp /root$1/tmp
-      sudo mount --rbind /dev /root$1/dev
-      sudo mount --rbind /sys /root$1/sys
+      # Create a chroots directory, in which to store tarball releases of Gentoo/
+      # Sabayon. This directory is NOT where the chroot will end up being
+      mkdir $HOME/chroots
+      # Enter the chroots directory
+      pushd "$HOME/chroots"
+        # Select a mirror from which to download the tarball. I have chosen this
+        # mirror as it is the best one available for Australian Sabayon users, like
+        # myself. If you reside in another country, you should choose a mirror
+        # closest to you! These tarballs are usually >500 MB in size, so closer
+        # the mirror, the better.
+        MIRROR=ftp://mirror.optusnet.com.au/sabayon
+        wget -c $MIRROR/iso/daily/Sabayon_Linux_DAILY_amd64_tarball.tar.gz
+        sudo mkdir /root$1
+        sudo cp -a "Sabayon_Linux_DAILY_amd64_tarball.tar.gz" /root$1
+        cd /root$1
+        sudo tar xvzpf Sabayon_Linux_DAILY_amd64_tarball.tar.gz
+        sudo mount -t proc none /root$1/proc
+        sudo mount -o bind /dev /root$1/dev
+        sudo mount -o bind /usr/portage /root$1/usr/portage
+        sudo mount -o bind /usr/src/linux /root$1/usr/src/linux
+        sudo mount -o bind /lib/modules /root$1/lib/modules
+        sudo mount -o bind /sys /root$1/sys
+        sudo cp /etc/resolv.conf /root$1/etc/resolv.conf
+        sudo mount -o bind /tmp /root$1/tmp
+        sudo mount --rbind /dev /root$1/dev
+        sudo mount --rbind /sys /root$1/sys
+      popd
   fi
 }
 
@@ -675,6 +731,94 @@ function spm {
 	sudo equo rescue spmsync
 }
 ```
+
+###Gentoo Documentation
+I wrote a Bash script ([`~/Shell/gentoo-doc.sh`](https://github.com/fusion809/sabayon-scripts/blob/master/Shell/gentoo-doc.sh)) to generate a PDF of the complete Gentoo Handbook. Sadly, the final document does not include the CSS styling of the original handbook, but still it is better than no PDF at all. To get the complete PDF handbook for a specific architecture merely run:
+{% include codeu.html line1="unit &lt;ARCHITECTURE&gt;"%}
+where `<ARCHITECTURE>` is, of course, the architecture of the system. For example for AMD64 run:
+{% include codeu.html line1="unit AMD64"%}
+
+```bash
+# Requires wkhtmltopdf, which was recently added to the Entropy Store.
+# To install it run: sudo equo i wkhtmltopdf
+function ghand {
+  # Input 1 is the architecture
+  # Input 2 is the Page name.
+  mkdir -p ~/Textbooks/Gentoo/$1/$2/..
+  cd ~/Textbooks/Gentoo/$1/$2/..
+  wkhtmltopdf https://wiki.gentoo.org/wiki/Handbook:"$1"/"$2" "${2##*/}".pdf
+}
+
+function ghandall {
+  mkdir -p ~/Textbooks/Gentoo/$1 && cd ~/Textbooks/Gentoo/$1
+  wkhtmltopdf https://wiki.gentoo.org/wiki/Handbook:"$1" "$1".pdf
+
+  # Installation
+  L=('Installation' 'Working' 'Portage' 'Networking')
+  for i in "${L[@]}"
+  do
+    wkhtmltopdf https://wiki.gentoo.org/wiki/Handbook:"$1"/Full/"$i" "$i".pdf
+  done
+}
+
+function unit {
+  ghandall "$1"
+  pdfunite Installation.pdf Working.pdf Portage.pdf Networking.pdf ""$1"-Handbook".pdf
+}
+```
+
+###Git Tools
+The following script (taken from [`~/Shell/git.sh`](https://github.com/fusion809/sabayon-scripts/blob/master/Shell/git.sh)) makes my life simpler when I am working with Git repositories.
+
+```bash
+# Switch to SSH. Allows for contributing without having to constantly provide
+# one's username and password.
+function gitsw {
+  # $1 is the username of the repo
+  git remote rm origin
+  git remote rm upstream
+  if [[ -n "$1" ]]
+    then
+      git remote add origin git@github.com:$1/"${PWD##*/}".git
+      git remote add upstream git@github.com:$1/"${PWD##*/}".git
+    else
+      git remote add origin git@github.com:fusion809/"${PWD##*/}".git
+      git remote add upstream git@github.com:fusion809/"${PWD##*/}".git
+  fi
+}
+
+alias SSH=gitsw
+alias gitssh=gitsw
+alias gits=gitsw
+
+#############################################################
+# Sign in with SSH at startup
+# Makes contributing to GitHub projects a lot simpler.
+SSH_ENV=$HOME/.ssh/environment
+
+# start the ssh-agent
+# Remember, for this to work you need your SSH keys setup
+# https://help.github.com/articles/generating-ssh-keys/
+function start_agent {
+    echo "Initializing new SSH agent..."
+    # spawn ssh-agent
+    /usr/bin/ssh-agent | sed 's/^echo/#echo/' > "${SSH_ENV}"
+    echo succeeded
+    chmod 600 "${SSH_ENV}"
+    . "${SSH_ENV}" > /dev/null
+    /usr/bin/ssh-add
+}
+
+if [ -f "${SSH_ENV}" ]; then
+     . "${SSH_ENV}" > /dev/null
+     ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ > /dev/null || {
+      start_agent;
+    }
+else
+    start_agent;
+fi
+```
+
 ###Layman/Portage
 Here are some lines from my [emerge.sh](https://github.com/fusion809/sabayon-scripts/blob/master/Shell/emerge.sh) script.
 ```bash
