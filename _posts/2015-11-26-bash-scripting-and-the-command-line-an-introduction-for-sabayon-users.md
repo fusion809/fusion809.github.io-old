@@ -906,7 +906,7 @@ The following section will involve me comparing the various graphical terminal e
 {% include links.html package="lxde-base/lxterminal" program="LXTerminal" link="http://wiki.lxde.org/en/LXTerminal" %} is a terminal emulator that is part of the core applications suite of LXDE. It uses the GTK+2 toolkit and while lightweight still has a few of the features that more advanced terminal emulators like Konsole boast. These include: ability to customize keyboard shortcuts and fonts (although a custom colour scheme is not permitted).
 
 ### Rating(s)
-{% include TE-ratings.html availability="8, available in the Entropy Store but not preinstalled on any official Sabayon edition." customizability="9" features="9" sru="9." gist="74f4c3c54450760623d2" overall="8" %}
+{% include TE-ratings.html availability="8, available in the Entropy Store but not preinstalled on any official Sabayon edition." customizability="8" features="8" sru="9." gist="74f4c3c54450760623d2" overall="8" %}
 
 ## MATE Terminal
 {% include image.html image="MATE-Terminal-1.8.1.png" description="MATE Terminal 1.8.1" width="1000px" float="none" %}
