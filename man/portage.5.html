@@ -1,0 +1,2017 @@
+
+<HTML><HEAD><TITLE>Manpage of PORTAGE</TITLE>
+</HEAD><BODY>
+<H1>PORTAGE</H1>
+Section: Portage (5)<BR>Updated: Feb 2015<BR><A HREF="#index">Index</A>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>NAME</H2>
+
+portage - the heart of Gentoo
+<A NAME="lbAC">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The current portage code uses many different configuration files, most of which
+are unknown to users and normal developers.  Here we will try to collect all
+the odds and ends so as to help users more effectively utilize portage.  This
+is a reference only for files which do not already have a man page.
+<P>
+All files in the make.profile directory may be tweaked via parent profiles
+when using cascading profiles.  For more info, please see
+<A HREF="http://www.gentoo.org/proj/en/releng/docs/cascading-profiles.xml">http://www.gentoo.org/proj/en/releng/docs/cascading-profiles.xml</A>
+<DL COMPACT>
+<DT>Note:<DD>
+If you are looking for information on how to emerge something, please see
+<B><A HREF="emerge.1.html">emerge</A></B>(1).
+
+</DL>
+<A NAME="lbAD">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+<DL COMPACT>
+<DT><B>/etc/portage/make.profile/</B> or <B>/etc/make.profile/</B><DD>
+site-specific overrides go in <B>/etc/portage/profile/</B>
+<PRE>
+deprecated
+eapi
+make.defaults
+packages
+packages.build
+package.accept_keywords
+package.bashrc
+package.keywords
+package.mask
+package.provided
+package.unmask
+package.use
+package.use.force
+package.use.mask
+package.use.stable.force
+package.use.stable.mask
+parent
+profile.bashrc
+soname.provided
+use.force
+use.mask
+use.stable.mask
+use.stable.force
+virtuals
+</PRE>
+
+<DT><B>/etc/portage/</B>
+
+<DD>
+<PRE>
+bashrc
+categories
+color.map
+license_groups
+<B><A HREF="make.conf.5.html">make.conf</A></B>(5)
+mirrors
+modules
+package.accept_keywords
+package.accept_restrict
+package.env
+package.keywords
+package.license
+package.mask
+package.properties
+package.unmask
+package.use
+postsync.d
+repo.postsync.d
+repos.conf
+sets.conf
+</PRE>
+
+<DT><B>/etc/portage/env/</B>
+
+<DD>
+package-specific bashrc files
+<DT><B>/etc/portage/profile/</B>
+
+<DD>
+site-specific overrides of <B>/etc/portage/make.profile/</B>
+<DT><B>/etc/portage/sets/</B>
+
+<DD>
+user-defined package sets
+<DT><B>/usr/portage/</B>
+
+<DD>
+<PRE>
+sets.conf
+</PRE>
+
+<DT><B>/usr/portage/metadata/</B>
+
+<DD>
+<PRE>
+layout.conf
+pkg_desc_index
+</PRE>
+
+<DT><B>/usr/portage/profiles/</B>
+
+<DD>
+<PRE>
+arch.list
+categories
+info_pkgs
+info_vars
+license_groups
+make.defaults
+package.mask
+package.unmask
+package.use
+package.use.force
+package.use.mask
+package.use.stable.force
+package.use.stable.mask
+profiles.desc
+repo_name
+thirdpartymirrors
+use.desc
+use.force
+use.local.desc
+use.mask
+use.stable.mask
+use.stable.force
+</PRE>
+
+<DT><B>/usr/share/portage/config/</B>
+
+<DD>
+<PRE>
+make.globals
+repos.conf
+sets
+</PRE>
+
+<DT><B>/var/cache/edb/</B>
+
+<DD>
+misc internal cache files
+<DT><B>/var/db/pkg/</B>
+
+<DD>
+database to track installed packages
+<DT><B>/var/lib/portage/</B>
+
+<DD>
+<PRE>
+config
+world
+world_sets
+</PRE>
+
+</DL>
+<A NAME="lbAE">&nbsp;</A>
+<H2>GLOSSARY</H2>
+
+In the following sections, some terminology may be foreign to you or used
+with meaning specific to Portage.  Please see the referenced manpages for
+more detailed explanations.
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>DEPEND atom</B>
+
+<DD>
+An atom is either of the form category/package or consists of an operator
+followed by category/package followed by a hyphen and a version specification.
+An atom might be suffixed by a slot specification.
+<BR>
+
+More reading:
+<B><A HREF="ebuild.5.html">ebuild</A></B>(5)
+
+<P>
+<B>Extended Atom Syntax</B>
+
+<BR>
+
+The following atom syntax extensions are only supported in user
+configuration files and command line arguments for programs such as
+<B><A HREF="emerge.1.html">emerge</A></B>(1):
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>Repository Constraints</B>
+
+<DD>
+Atoms with repository constraints have a '::' separator appended to the
+right side, followed by a repository name. Each repository name should
+correspond to the value of a <B>repo_name</B> entry from one of the
+repositories that is configured in <B>repos.conf</B> file.
+<P>
+<I>Examples:</I>
+
+<PRE>
+# match sed from the 'gentoo' repository
+sys-apps/sed::gentoo
+# match kdelibs from the 'kde-testing' repository
+kde-base/kdelibs::kde-testing
+# match empathy from the 'gnome' repository
+net-im/empathy::gnome
+</PRE>
+
+<DT><B>Wildcard Patterns</B>
+
+<DD>
+Atoms containing wildcard patterns are of the form category/package, where
+the special '*' wildcard character substitutes for an arbitrary number
+of normal characters. More than one '*' character is allowed, but not two
+next to each other.
+<P>
+<I>Examples:</I>
+
+<PRE>
+# match anything with a version containing 9999, which can be used in
+# package.mask to prevent emerge --autounmask from selecting live ebuilds
+=*/*-*9999*
+# match anything with a version containing _beta
+=*/*-*_beta*
+# match anything from the 'sys-apps' category
+sys-apps/*
+# match packages named 'zlib' from any category
+*/zlib
+# match any package from a category that begins with 'net-'
+net-*/*
+# match any package name from any category
+*/*
+# match any package from the 'gentoo' repository
+*/*::gentoo
+</PRE>
+
+</DL>
+</DL>
+
+<DT><B>KEYWORD</B>
+
+<DD>
+Each architecture has a unique KEYWORD.
+<BR>
+
+More reading:
+<B><A HREF="ebuild.5.html">ebuild</A></B>(5)
+
+<DT><B>virtual</B>
+
+<DD>
+A DEPEND atom that is part of the &quot;virtual&quot; category.  They are used
+when different packages can satisfy a dependency and only one of them is
+needed.
+<BR>
+
+More reading:
+<B><A HREF="ebuild.5.html">ebuild</A></B>(5)
+
+</DL>
+</DL>
+
+<A NAME="lbAF">&nbsp;</A>
+<H2>SPECIFIC FILE DESCRIPTIONS</H2>
+
+<DL COMPACT>
+<DT><B>/etc/portage/make.profile/</B> or <B>/etc/make.profile/</B><DD>
+This is usually just a symlink to the correct profile in
+<B>/usr/portage/profiles/</B>.  Since it is part of the portage tree, it
+may easily be updated/regenerated by running `emerge --sync`.  It defines
+what a profile is (usually arch specific stuff).  If you need a custom
+profile, then you should make your own <B>make.profile</B>
+directory and populate it.  However, if you just wish to override some
+settings, use <B>/etc/portage/profile/</B> (it supports all of the same file
+types that <B>make.profile</B> does, except parent). Do NOT edit the
+settings in <B>make.profile</B> because they WILL be lost with the next
+`emerge --sync`. If both <B>/etc/portage/make.profile/</B> and
+<B>/etc/make.profile/</B> exist, then <B>/etc/portage/make.profile/</B>
+will be preferred.
+<P>
+Any file in this directory, directories of other profiles or top-level
+&quot;profiles&quot; directory that begins with &quot;package.&quot; or &quot;use.&quot; can be more than
+just a flat file.  If it is a directory, then all the files in that directory
+will be sorted in ascending alphabetical order by file name and summed together
+as if it were a single file. Note that this behavior is only supported since
+portage-2.1.6.7, and it is not included in PMS at this time.
+<P>
+<I>Example:</I>
+
+<PRE>
+${repository_location}/profiles/package.mask/removals
+${repository_location}/profiles/package.mask/testing
+</PRE>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>deprecated</B>
+
+<DD>
+The existence of this file marks a profile as deprecated, meaning it is
+not supported by Gentoo anymore.  The first line must be the profile to which
+users are encouraged to upgrade, optionally followed by some instructions
+explaining how they can upgrade.
+<P>
+<I>Example:</I>
+
+<PRE>
+default-linux/x86/2005.0
+# emerge -n '&gt;=sys-apps/portage-2.0.51'
+# rm -f /etc/portage/make.profile
+# ln -s /usr/portage/profiles/default-linux/alpha/2005.0 /etc/portage/make.profile
+</PRE>
+
+<DT><B>eapi</B>
+
+<DD>
+The first line of this file specifies the <B>EAPI</B> to which files in the
+same directory conform. See <B><A HREF="ebuild.5.html">ebuild</A></B>(5) for information about <B>EAPI</B>
+and related features. Beginning with <B>EAPI 5</B>, new USE
+configuration files are supported: use.stable.mask,
+use.stable.force, package.use.stable.mask and
+package.use.stable.force. These files behave similarly to
+previously supported USE configuration files, except that they
+only influence packages that are merged due to a stable keyword.
+<P>
+If the eapi file does not exist, then the <B>EAPI</B> defaults to
+<I>0</I> unless the default has been overridden by a
+profile_eapi_when_unspecified setting inside <I>metadata/layout.conf</I>
+of the containing repository.
+<DT><B>make.defaults</B>
+
+<DD>
+The profile default settings for Portage.  The general format is described
+in <B><A HREF="make.conf.5.html">make.conf</A></B>(5).  The <I>make.defaults</I> for your profile defines a
+few specific variables too:
+<P>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>ARCH</B>
+
+<DD>
+Architecture type (x86/ppc/hppa/etc...).
+<DT><B>IUSE_IMPLICIT</B> = <I>[space delimited list of USE flags]</I><DD>
+Defines implicit <B>IUSE</B> for ebuilds using <B>EAPI 5</B> or
+later. Flags that come from <B>USE_EXPAND</B> or
+<B>USE_EXPAND_UNPREFIXED</B> variables do not belong in
+<B>IUSE_IMPLICIT</B>, since <B>USE_EXPAND_VALUES_*</B> variables
+are used to define implicit <B>IUSE</B> for those flags. See
+<B><A HREF="ebuild.5.html">ebuild</A></B>(5) for more information about <B>IUSE</B>.
+<DT><B>USERLAND = </B><I>GNU</I>
+
+<DD>
+Support BSD/cygwin/etc...
+<DT><B>USE_EXPAND</B> = <I>[space delimited list of variable names]</I><DD>
+Any variable listed here will be used to augment USE by inserting a new flag
+for every value in that variable, so USE_EXPAND=&quot;FOO&quot; and FOO=&quot;bar bla&quot; results
+in USE=&quot;foo_bar foo_bla&quot;.
+<DT><B>USE_EXPAND_HIDDEN</B> = <I>[space delimited list of variable names]</I><DD>
+Names of <B>USE_EXPAND</B> variables that should not be shown in the verbose
+merge list output of the <B><A HREF="emerge.1.html">emerge</A></B>(1) command.
+<DT><B>USE_EXPAND_IMPLICIT</B> = <I>[space delimited list of variable names]</I><DD>
+Defines <B>USE_EXPAND</B> and <B>USE_EXPAND_UNPREFIXED</B>
+variables for which the corresponding USE flags may have
+implicit <B>IUSE</B> for ebuilds using <B>EAPI 5</B> or later.
+<DT><B>USE_EXPAND_UNPREFIXED</B> = <I>[space delimited list of variable names]</I><DD>
+Any variable listed here will be used to augment USE by
+inserting a new flag for every value in that variable, so
+USE_EXPAND_UNPREFIXED=&quot;FOO&quot; and FOO=&quot;bar bla&quot; results in
+USE=&quot;bar bla&quot;.
+<DT><B>USE_EXPAND_VALUES_ARCH</B> = <I>[space delimited list of ARCH values]</I><DD>
+Defines ARCH values used to generate implicit
+<B>IUSE</B> for ebuilds using <B>EAPI 5</B> or later.
+<DT><B>USE_EXPAND_VALUES_ELIBC</B> = <I>[space delimited list of ELIBC values]</I><DD>
+Defines ELIBC values used to generate implicit
+<B>IUSE</B> for ebuilds using <B>EAPI 5</B> or later.
+<DT><B>USE_EXPAND_VALUES_KERNEL</B> = <I>[space delimited list of KERNEL values]</I><DD>
+Defines KERNEL values used to generate implicit
+<B>IUSE</B> for ebuilds using <B>EAPI 5</B> or later.
+<DT><B>USE_EXPAND_VALUES_USERLAND</B> = <I>[space delimited list of USERLAND values]</I><DD>
+Defines USERLAND values used to generate implicit
+<B>IUSE</B> for ebuilds using <B>EAPI 5</B> or later.
+<DT><B>ELIBC = </B><I>glibc</I>
+
+<DD>
+Support uClibc/BSD libc/etc...
+<DT><B>PROFILE_ONLY_VARIABLES = </B><I>ARCH</I>
+
+<DD>
+Prevent critical variables from being changed by the user in make.conf
+or the env.
+<DT><B>PROFILE_ARCH</B>
+
+<DD>
+Distinguish machines classes that have the same <B>ARCH</B>.  All sparc
+machines have ARCH=sparc but set this to either 'sparc32' or 'sparc64'.
+<DT><B>BOOTSTRAP_USE</B>
+
+<DD>
+Special USE flags which may be needed when bootstrapping from stage1 to stage2.
+</DL>
+</DL>
+
+
+<DT><B>packages</B>
+
+<DD>
+Provides the list of packages that compose the <I>@system</I> and
+<I>@profile</I>  package sets. The motivation to have <I>@profile</I>
+separate from <I>@system</I> is that <I>@system</I> packages may have
+incomplete dependency specifications (due to long-standing Gentoo
+policy), and incomplete dependency specifications have deleterious
+effects on the ability of <B>emerge</B> to parallelize builds. So,
+unlike <I>@system</I>, packages included in <I>@profile</I> do not
+hurt <B>emerge</B>'s ability to parallelize.
+<P>
+<I>Format:</I>
+
+<PRE>
+- comments begin with # (no inline comments)
+- one DEPEND atom per line
+- packages to be added to the @system set begin with a *
+- packages to be added to the @profile set do not begin with a *
+- packages may only be added to the @profile set if the containing
+  repository's layout.conf has 'profile-set' listed in the
+  profile-formats field. Otherwise, packages that do not begin with
+  '*' will simply be ignored for legacy reasons
+</PRE>
+
+<I>Note:</I>
+
+In a cascading profile setup, you can remove packages in children
+profiles which were added by parent profiles by prefixing the atom with
+a '-'.
+<P>
+<I>Example:</I>
+
+<PRE>
+# i am a comment !
+# pull a version of glibc less than 2.3 into @system
+*&lt;sys-libs/glibc-2.3
+# pull any version of bash into @system
+*app-shells/bash
+# pull a version of readline earlier than 4.2 into @system
+*&lt;sys-libs/readline-4.2
+# pull vim into @profile
+app-editors/vim
+</PRE>
+
+<DT><B>packages.build</B>
+
+<DD>
+A list of packages (one per line) that make up a stage1 tarball.  Really only
+useful for stage builders.
+<DT><B>package.bashrc</B>
+
+<DD>
+Per-package bashrc mechanism.  Contains a list of bashrc files to be sourced
+before emerging a given atom.  The bashrc files must be stored in bashrc/, in
+the profile directory.
+<P>
+<I>Note:</I>
+
+<PRE>
+- The bashrc files will be sourced after profile.bashrc for the same profile.
+- profile-formats in metadata/layout.conf must contain profile-bashrcs for this
+to be enabled.
+</PRE>
+
+<P>
+<I>Format:</I>
+
+<PRE>
+- comments begin with # (no inline comments).
+- one atom per line with space-delimited list of bashrc files.
+</PRE>
+
+<P>
+<I>Example:</I>
+
+<PRE>
+# By setting INSTALL_MASK in bashrc/nostandardconf.conf, we can avoid installing
+# the standard configuration and enable another package to install it.
+net-misc/dhcp nostardardconf.conf
+</PRE>
+
+<DT><B>package.provided</B>
+
+<DD>
+A list of packages (one per line) that portage should assume have been
+provided.  Useful for porting to non-Linux systems. Basically, it's a
+list that replaces the <B>emerge --inject</B> syntax.
+<P>
+For example, if you manage your own copy of a 2.6 kernel, then you can
+tell portage that 'sys-kernel/development-sources-2.6.7' is already taken
+care of and it should get off your back about it.
+<P>
+Portage will not attempt to update a package that is listed here unless
+another package explicitly requires a version that is newer than what
+has been listed. Dependencies that are satisfied by package.provided
+entries may cause installed packages satisfying equivalent dependencies
+to be removed by <B><A HREF="emerge.1.html">emerge</A></B>(1) <B>--depclean</B> actions (see the
+<B>ACTIONS</B> section of the <B><A HREF="emerge.1.html">emerge</A></B>(1) man page for more information).
+<P>
+<I>Format:</I>
+
+<PRE>
+- comments begin with # (no inline comments)
+- one DEPEND atom per line
+- relational operators are not allowed
+- must include a version
+</PRE>
+
+<P>
+<I>Example:</I>
+
+<PRE>
+# you take care of the kernel
+sys-kernel/development-sources-2.6.7
+
+# you installed your own special copy of QT
+x11-libs/qt-3.3.0
+
+# you have modular X but packages want monolithic
+x11-base/xorg-x11-6.8
+</PRE>
+
+<DT><B>package.use.force</B> and <B>package.use.stable.force</B><DD>
+Per-package USE flag forcing.
+<P>
+<I>Note:</I>
+
+In a cascading profile setup, you can remove USE flags in children
+profiles which were added by parent profiles by prefixing the flag with
+a '-'.
+<P>
+<I>Format:</I>
+
+<PRE>
+- comments begin with # (no inline comments)
+- one DEPEND atom per line with space-delimited USE flags
+</PRE>
+
+<P>
+<I>Example:</I>
+
+<PRE>
+# force docs for GTK 2.x
+=x11-libs/gtk+-2* doc
+# unforce mysql support for QT
+x11-libs/qt -mysql
+</PRE>
+
+<DT><B>package.use.mask</B> and <B>package.use.stable.mask</B><DD>
+Per-package USE flag masks.
+<P>
+<I>Note:</I>
+
+In a cascading profile setup, you can remove USE flags in children
+profiles which were added by parent profiles by prefixing the flag with
+a '-'.
+<P>
+<I>Format:</I>
+
+<PRE>
+- comments begin with # (no inline comments)
+- one DEPEND atom per line with space-delimited USE flags
+</PRE>
+
+<P>
+<I>Example:</I>
+
+<PRE>
+# mask docs for GTK 2.x
+=x11-libs/gtk+-2* doc
+# unmask mysql support for QT
+x11-libs/qt -mysql
+</PRE>
+
+<DT><B>parent</B>
+
+<DD>
+This contains paths to the parent profiles (one per line).  They may be either
+relative (to the location of the profile) or absolute.  Most commonly this file
+contains '..' to indicate the directory above.  Utilized only in cascading
+profiles.
+<P>
+When multiple parent profiles are specified, they are inherited in order from
+the first line to the last.
+<P>
+If <B>layout.conf</B> is new enough, you can also use the &lt;repo&gt;:&lt;path&gt;
+syntax.  The &lt;repo&gt; is the same string as is stored in the <B>repo_name</B>
+file (or omitted to refer to the current repo), and &lt;path&gt; is a subdir starting
+at profiles/.
+<DT><B>profile.bashrc</B>
+
+<DD>
+If needed, this file can be used to set up a special environment for ebuilds,
+different from the standard root environment.  The syntax is the same as for
+any other bash script.
+<DT><B>soname.provided</B>
+
+<DD>
+A list of sonames that portage should assume have been provided. This
+is useful for using portage to install binary packages on top of a base
+image which lacks /var/db/pkg for some reason (perhaps the image was
+assembled by another package manager, or by Linux From Scratch).
+<P>
+<I>Format:</I>
+
+<PRE>
+- comments begin with # (no inline comments)
+- line begins with a multilib category
+- multilib category is followed by one or more sonames
+- only one multilib category is allowed per line
+- prefixing an soname with a '-' will negate a parent profile setting
+</PRE>
+
+<P>
+<I>Example:</I>
+
+<PRE>
+# provide libc and ld-linux sonames for x86_32 and x86_64 categories
+x86_32 ld-linux.so.2 libc.so.6
+x86_64 ld-linux-x86-64.so.2 libc.so.6
+</PRE>
+
+<DT><B>use.force</B> and <B>use.stable.force</B><DD>
+Some USE flags don't make sense to disable under certain conditions.  Here we
+list forced flags.
+<P>
+<I>Note:</I>
+
+In a cascading profile setup, you can remove USE flags in children
+profiles which were added by parent profiles by prefixing the flag with
+a '-'.
+<P>
+<I>Format:</I>
+
+<PRE>
+- comments begin with # (no inline comments)
+- one USE flag per line
+</PRE>
+
+<DT><B>use.mask</B> and <B>use.stable.mask</B><DD>
+Some USE flags don't make sense on some archs (for example altivec on
+non-ppc or mmx on non-x86), or haven't yet been tested.  Here we list
+the masked ones.
+<P>
+<I>Note:</I>
+
+In a cascading profile setup, you can remove USE flags in children
+profiles which were added by parent profiles by prefixing the flag with
+a '-'.
+<P>
+<I>Format:</I>
+
+<PRE>
+- comments begin with # (no inline comments)
+- one USE flag per line
+</PRE>
+
+<P>
+<I>Example:</I>
+
+<PRE>
+# mask doc
+doc
+# unmask mysql
+-mysql
+</PRE>
+
+<DT><B>virtuals</B>
+
+<DD>
+The virtuals file controls default preferences for virtuals that
+are defined via the <B>PROVIDE</B> ebuild variable (see
+<B><A HREF="ebuild.5.html">ebuild</A></B>(5)). Since Gentoo now uses <B>GLEP 37</B> virtuals
+instead of <B>PROVIDE</B> virtuals, the virtuals file is
+irrelevant for all Gentoo ebuilds. However, it is still possible
+for third-parties to distribute ebuilds that make use of
+<B>PROVIDE</B>.
+<P>
+<I>Format:</I>
+
+<PRE>
+- comments begin with # (no inline comments)
+- one virtual and DEPEND atom base pair per line
+</PRE>
+
+<P>
+<I>Example:</I>
+
+<PRE>
+# use net-mail/ssmtp as the default mta
+virtual/mta           net-mail/ssmtp
+# use app-dicts/aspell-en as the default dictionary
+virtual/aspell-dict   app-dicts/aspell-en
+</PRE>
+
+</DL>
+</DL>
+
+<DT><B>/etc/portage/</B>
+
+<DD>
+Files in this directory including make.conf, repos.conf, and any file
+with a name that begins with &quot;package.&quot; can be
+more than just a flat file.  If it is a directory, then all the files in that
+directory will be sorted in ascending alphabetical order by file name and summed
+together as if it were a single file.
+<P>
+<I>Example:</I>
+
+<PRE>
+/etc/portage/package.accept_keywords/common
+/etc/portage/package.accept_keywords/e17
+/etc/portage/package.accept_keywords/kde
+</PRE>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>bashrc</B>
+
+<DD>
+If needed, this file can be used to set up a special environment for ebuilds,
+different from the standard root environment.  The syntax is the same as for
+any other bash script.
+<P>
+Additional package-specific bashrc files can be created in /etc/portage/env.
+<DT><B>categories</B>
+
+<DD>
+A simple list of valid categories that may be used in repositories and PKGDIR
+(see <B><A HREF="make.conf.5.html">make.conf</A></B>(5)). This allows for custom categories to be created.
+<P>
+<I>Format:</I>
+
+<PRE>
+- one category per line
+</PRE>
+
+<P>
+<I>Example:</I>
+
+<PRE>
+app-hackers
+media-other
+</PRE>
+
+<DT><B>color.map</B>
+
+<DD>
+Contains variables customizing colors. See <B><A HREF="color.map.5.html">color.map</A></B>(5).
+<DT><B>make.conf</B>
+
+<DD>
+The global custom settings for Portage. See <B><A HREF="make.conf.5.html">make.conf</A></B>(5).
+<DT><B>mirrors</B>
+
+<DD>
+Whenever portage encounters a mirror:// style URI it will look up the actual
+hosts here.  If the mirror set is not found here, it will check the global
+mirrors file at /usr/portage/profiles/thirdpartymirrors.  You may also set a
+special mirror type called &quot;local&quot;.  This list of mirrors will be checked
+before GENTOO_MIRRORS and will be used even if the package has
+RESTRICT=&quot;mirror&quot; or RESTRICT=&quot;fetch&quot;.
+<P>
+<I>Format:</I>
+
+<PRE>
+- comments begin with # (no inline comments)
+- mirror type followed by a list of hosts
+</PRE>
+
+<P>
+<I>Example:</I>
+
+<PRE>
+# local private mirrors used only by my company
+local <A HREF="ftp://192.168.0.3/mirrors/gentoo">ftp://192.168.0.3/mirrors/gentoo</A> <A HREF="http://192.168.0.4/distfiles">http://192.168.0.4/distfiles</A>
+
+# people in japan would want to use the japanese mirror first
+sourceforge <A HREF="http://keihanna.dl.sourceforge.net/sourceforge">http://keihanna.dl.sourceforge.net/sourceforge</A>
+
+# people in tawain would want to use the local gnu mirror first
+gnu <A HREF="ftp://ftp.nctu.edu.tw/UNIX/gnu/">ftp://ftp.nctu.edu.tw/UNIX/gnu/</A>
+</PRE>
+
+<DT><B>modules</B>
+
+<DD>
+This file can be used to override the metadata cache implementation.  In
+practice, portdbapi.auxdbmodule is the only variable that the user will want to
+override.
+<P>
+<I>Example:</I>
+
+<PRE>
+portdbapi.auxdbmodule = portage.cache.sqlite.database
+</PRE>
+
+<P>
+After changing the portdbapi.auxdbmodule setting, it may be necessary to
+transfer or regenerate metadata cache. Users of the rsync tree need to
+run `emerge --metadata` if they have enabled FEATURES=&quot;metadata-transfer&quot;
+in <B><A HREF="make.conf.5.html">make.conf</A></B>(5). In order to regenerate metadata for repositories
+not distributing pregenerated metadata cache, run `emerge --regen`
+(see <B><A HREF="emerge.1.html">emerge</A></B>(1)). If you use something like the sqlite module and want
+to keep all metadata in that format alone (useful for querying), enable
+FEATURES=&quot;metadata-transfer&quot; in <B><A HREF="make.conf.5.html">make.conf</A></B>(5).
+<DT><B>package.accept_keywords</B> and <B>package.keywords</B><DD>
+Per-package ACCEPT_KEYWORDS.  Useful for mixing unstable packages in with a
+normally stable system or vice versa.  This will allow ACCEPT_KEYWORDS to be
+augmented for a single package. If both <B>package.accept_keywords</B> and
+<B>package.keywords</B> are present, both of them will be used, and values
+from <B>package.accept_keywords</B> will override values from
+<B>package.keywords</B>. The <B>package.accept_keywords</B> file is
+intended to replace the <B>package.keywords</B> file, since
+profiles support a different form of <B>package.keywords</B> which
+modifies effective KEYWORDS (rather than ACCEPT_KEYWORDS).
+<P>
+<I>Format:</I>
+
+<PRE>
+- comment lines begin with # (no inline comments)
+- one DEPEND atom per line followed by additional KEYWORDS
+- lines without any KEYWORDS imply unstable host arch
+
+<I>Example:</I>
+# always use unstable libgd
+media-libs/libgd ~x86
+# only use stable mplayer
+media-video/mplayer -~x86
+# always use unstable netcat
+net-analyzer/netcat
+</PRE>
+
+<P>
+<I>Note:</I>
+
+
+In addition to the normal values from ACCEPT_KEYWORDS package.keywords supports
+three special tokens:
+<P>
+<PRE>
+<B>*</B>  package is visible if it is stable on any architecture
+<B>~*</B> package is visible if it is in testing on any architecture
+<B>**</B> package is always visible (KEYWORDS are ignored completely)
+</PRE>
+
+<P>
+<I>Additional Note:</I>
+
+If you encounter the <B>-*</B> KEYWORD, this indicates that the package is known
+to be broken on all systems which are not otherwise listed in KEYWORDS.  For
+example, a binary only package which is built for x86 will look like:
+<P>
+games-fps/quake3-demo-1.11.ebuild:KEYWORDS=&quot;-* x86&quot;
+<P>
+If you wish to accept this package anyways, then use one of the other keywords
+in your package.accept_keywords like this:
+<P>
+games-fps/quake3-demo x86
+<P>
+<DT><B>package.accept_restrict</B>
+
+<DD>
+This will allow ACCEPT_RESTRICT (see <B><A HREF="make.conf.5.html">make.conf</A></B>(5)) to be augmented for a
+single package.
+<P>
+<I>Format:</I>
+
+<PRE>
+- comment lines begin with # (no inline comments)
+- one DEPEND atom per line followed by additional RESTRICT tokens
+</PRE>
+
+<DT><B>package.env</B>
+
+<DD>
+Per-package environment variable settings. Entries refer to
+environment files that are placed in the <B>/etc/portage/env/</B>
+directory and have the same format as <B><A HREF="make.conf.5.html">make.conf</A></B>(5). Note that these
+files are interpreted much earlier than the package-specific <I>bashrc</I>
+files which are described in a later section about <B>/etc/portage/env/</B>.
+Beginners should be careful to recognize the difference between these two types
+of files. When environment variable settings are all that's needed,
+<B>package.env</B> is the recommended approach to use.
+<P>
+<I>Format:</I>
+
+<PRE>
+- comment lines begin with # (no inline comments)
+- one DEPEND atom per line followed by name(s) of environment file(s)
+</PRE>
+
+<P>
+<I>Example:</I>
+
+<PRE>
+# use environment variables from /etc/portage/env/glibc.conf for the glibc package
+sys-libs/glibc glibc.conf
+</PRE>
+
+<P>
+<DT><B>package.license</B>
+
+<DD>
+This will allow ACCEPT_LICENSE (see <B><A HREF="make.conf.5.html">make.conf</A></B>(5)) to be augmented for a
+single package.
+<P>
+<I>Format:</I>
+
+<PRE>
+- comment lines begin with # (no inline comments)
+- one DEPEND atom per line followed by additional licenses or groups
+</PRE>
+
+<DT><B>package.mask</B>
+
+<DD>
+A list of package atoms to mask.  Useful if specific versions of packages do
+not work well for you.  For example, you swear by the Nvidia drivers, but only
+versions earlier than 1.0.4496.  No problem!
+<P>
+<I>Format:</I>
+
+<PRE>
+- comment lines begin with # (no inline comments)
+- one DEPEND atom per line
+</PRE>
+
+<P>
+<I>Example:</I>
+
+<PRE>
+# mask out versions 1.0.4496 of the nvidia
+# drivers and later
+&gt;=media-video/nvidia-kernel-1.0.4496
+&gt;=media-video/nvidia-glx-1.0.4496
+</PRE>
+
+<DT><B>package.properties</B>
+
+<DD>
+This will allow ACCEPT_PROPERTIES (see <B><A HREF="make.conf.5.html">make.conf</A></B>(5)) to be augmented for
+a single package.
+<P>
+<I>Format:</I>
+
+<PRE>
+- comment lines begin with # (no inline comments)
+- one DEPEND atom per line followed by additional properties
+</PRE>
+
+<DT><B>package.unmask</B>
+
+<DD>
+Just like package.mask above, except here you list packages you want to
+unmask.  Useful for overriding the global package.mask file (see
+above).  Note that this does not override packages that are masked via
+KEYWORDS.
+<DT><B>package.use</B>
+
+<DD>
+Per-package USE flags.  Useful for tracking local USE flags or for
+enabling USE flags for certain packages only.  Perhaps you develop GTK
+and thus you want documentation for it, but you don't want
+documentation for QT.  Easy as pie my friend!
+<P>
+<I>Format:</I>
+
+<PRE>
+- comments begin with # (no inline comments)
+- one DEPEND atom per line with space-delimited USE flags
+- USE flags can be prefixed with USE_EXPAND name followed by a colon (:)
+and a space. In this case, all the names following it are treated
+as values for the USE_EXPAND. Note that if you need to remove earlier
+assignments or defaults, you need to explicitly specify '-*'.
+</PRE>
+
+<P>
+<I>Example:</I>
+
+<PRE>
+# turn on docs for GTK 2.x
+=x11-libs/gtk+-2* doc
+# disable mysql support for QT
+x11-libs/qt -mysql
+# set preferred video card for all packages
+*/* VIDEO_CARDS: -* radeon
+</PRE>
+
+<DT><B>postsync.d/</B>
+
+<DD>
+This directory is for user supplied postsync hooks to be run once after all
+repositories have been synced.  Each script is called in alphabetic order
+without any arguments.
+
+<DT><B>repo.postsync.d/</B>
+
+<DD>
+This directory is for user supplied postsync hooks to be run once after each
+repository has been synced.  Each script is called in alphabetic order
+with three arguments.
+<P>
+<I>args:</I>
+
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;repository&nbsp;name,&nbsp;sync-uri,&nbsp;location
+
+<P>
+Using this information it is possible for hooks to be run for only a certain
+repository.  This way other update actions can be performed for that repository
+only.
+
+<DT><B>repos.conf</B>
+
+<DD>
+Specifies <I>site-specific</I> repository configuration information.
+<BR>
+
+Configuration specified in <B>repos.conf</B> can be overriden by <B>PORTAGE_REPOSITORIES</B>
+environmental variable, which has the same format as <B>repos.conf</B>.
+<P>
+<I>Format:</I>
+
+<PRE>
+- comments begin with # (no inline comments)
+- configuration of each repository is specified in a section starting with &quot;[${repository_name}]&quot;
+- attributes are specified in &quot;${attribute} = ${value}&quot; format
+</PRE>
+
+<P>
+<I>Attributes supported in DEFAULT section:</I>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>main-repo</B>
+
+<DD>
+Specifies main repository.
+<DT><B>eclass-overrides</B>
+
+<DD>
+Makes all repositories inherit eclasses from specified repositories.
+<BR>
+
+Setting this attribute is generally not recommended since resulting changes
+in eclass inheritance may trigger performance issues due to invalidation
+of metadata cache.
+<BR>
+
+When 'force = eclass-overrides' attribute is not set, <B><A HREF="egencache.1.html">egencache</A></B>(1),
+<B><A HREF="emirrordist.1.html">emirrordist</A></B>(1) and <B><A HREF="repoman.1.html">repoman</A></B>(1) ignore this attribute,
+since operations performed by these tools are inherently
+<B>not</B> <I>site-specific</I>.
+<DT><B>force</B>
+
+<DD>
+Specifies names of attributes, which should be forcefully respected by
+<B><A HREF="egencache.1.html">egencache</A></B>(1), <B><A HREF="emirrordist.1.html">emirrordist</A></B>(1) and <B><A HREF="repoman.1.html">repoman</A></B>(1).
+<BR>
+
+Valid values: aliases, eclass-overrides, masters
+</DL>
+</DL>
+
+<P>
+<I>Attributes supported in sections of repositories:</I>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>aliases</B>
+
+<DD>
+Specifies aliases of given repository.
+<BR>
+
+Setting this attribute is generally not recommended since resulting changes
+in eclass inheritance may trigger performance issues due to invalidation
+of metadata cache.
+<BR>
+
+When 'force = aliases' attribute is not set, <B><A HREF="egencache.1.html">egencache</A></B>(1),
+<B><A HREF="emirrordist.1.html">emirrordist</A></B>(1) and <B><A HREF="repoman.1.html">repoman</A></B>(1) ignore this attribute,
+since operations performed by these tools are inherently
+<B>not</B> <I>site-specific</I>.
+<DT><B>auto-sync</B>
+
+<DD>
+This setting determines if the repo will be synced during &quot;<B>emerge --sync</B>&quot; or
+&quot;<B>emaint sync --auto</B>&quot; runs.  This allows for repositories to be synced only when
+desired via &quot;<B>emaint sync --repo foo</B>&quot;.
+<BR>
+
+Valid values: yes, no, true, false.
+<BR>
+
+If unset, the repo will be treated as set
+yes, true.
+<DT><B>eclass-overrides</B>
+
+<DD>
+Makes given repository inherit eclasses from specified repositories.
+<BR>
+
+Setting this attribute is generally not recommended since resulting changes
+in eclass inheritance may trigger performance issues due to invalidation
+of metadata cache.
+<BR>
+
+When 'force = eclass-overrides' attribute is not set, <B><A HREF="egencache.1.html">egencache</A></B>(1),
+<B><A HREF="emirrordist.1.html">emirrordist</A></B>(1) and <B><A HREF="repoman.1.html">repoman</A></B>(1) ignore this attribute,
+since operations performed by these tools are inherently
+<B>not</B> <I>site-specific</I>.
+<DT><B>force</B>
+
+<DD>
+Specifies names of attributes, which should be forcefully respected by
+<B><A HREF="egencache.1.html">egencache</A></B>(1), <B><A HREF="emirrordist.1.html">emirrordist</A></B>(1) and <B><A HREF="repoman.1.html">repoman</A></B>(1).
+<BR>
+
+Valid values: aliases, eclass-overrides, masters
+<DT><B>location</B>
+
+<DD>
+Specifies location of given repository.
+<DT><B>masters</B>
+
+<DD>
+Specifies master repositories of given repository.
+<BR>
+
+Setting this attribute is generally not recommended since resulting changes
+in eclass inheritance may trigger performance issues due to invalidation
+of metadata cache.
+<BR>
+
+When 'force = masters' attribute is not set, <B><A HREF="egencache.1.html">egencache</A></B>(1),
+<B><A HREF="emirrordist.1.html">emirrordist</A></B>(1) and <B><A HREF="repoman.1.html">repoman</A></B>(1) ignore this attribute,
+since operations performed by these tools are inherently
+<B>not</B> <I>site-specific</I>.
+<DT><B>priority</B>
+
+<DD>
+Specifies priority of given repository.
+<DT><B>sync-cvs-repo</B>
+
+<DD>
+Specifies CVS repository.
+<DT><B>sync-depth</B>
+
+<DD>
+Specifies clone depth to use for DVCS repositories. Defaults to 1 (only
+the newest commit). If set to 0, the depth is unlimited.
+<DT><B>sync-type</B>
+
+<DD>
+Specifies type of synchronization performed by `emerge --sync`.
+<BR>
+
+Valid non-empty values: cvs, git, rsync, svn, websync (emerge-webrsync)
+<BR>
+
+This attribute can be set to empty value to disable synchronization of given
+repository. Empty value is default.
+<DT><B>sync-umask</B>
+
+<DD>
+Specifies umask used to synchronize the repository.
+<BR>
+
+Takes an octal permission mask, e.g. 022.
+<DT><B>sync-uri</B>
+
+<DD>
+Specifies URI of repository used for synchronization performed by `emerge
+--sync`.
+<BR>
+
+This attribute can be set to empty value to disable synchronization of given
+repository. Empty value is default.
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT>Syntax:<DD>
+cvs: [<A HREF="cvs://]:access_method:[username@]hostname[:port]:/path">cvs://]:access_method:[username@]hostname[:port]:/path</A>
+<BR>
+
+git: (git|git+ssh|http|https)://[username@]hostname[:port]/path
+<BR>
+
+rsync: (rsync|ssh)://[username@]hostname[:port]/(module|path)
+<DT>Examples:<DD>
+<DL COMPACT><DT><DD>
+<A HREF="rsync://private-mirror.com/portage-module">rsync://private-mirror.com/portage-module</A>
+<BR>
+
+<A HREF="rsync://rsync-user@private-mirror.com:873/gentoo-portage">rsync://rsync-user@private-mirror.com:873/gentoo-portage</A>
+<BR>
+
+<A HREF="ssh://ssh-user@192.168.0.1:22/usr/portage">ssh://ssh-user@192.168.0.1:22/usr/portage</A>
+<BR>
+
+<A HREF="ssh://ssh-user@192.168.0.1:22/\${HOME}/portage-storage">ssh://ssh-user@192.168.0.1:22/\${HOME}/portage-storage</A>
+</DL>
+
+<DT>Note: For the ssh:// scheme, key-based authentication might be of interest.<DD>
+</DL>
+</DL>
+
+<DT><B>sync-user</B>
+
+<DD>
+Specifies the credentials used to perform the synchronization.
+<BR>
+
+Syntax: [user][:group]
+<BR>
+
+If only user is provided, the primary group of the user will be used.
+If only group is provided, the current user will be preserved and only
+group id will be changed.
+<BR>
+
+This key takes precedence over FEATURES=userpriv. If user or group id
+is provided, Portage no longer uses owner of the directory.
+</DL>
+</DL>
+
+<P>
+<I>Example:</I>
+
+<PRE>
+[DEFAULT]
+# make gentoo the main repository, which makes it the default master
+# repository for repositories that do not specify masters
+main-repo = gentoo
+# make all repositories inherit eclasses from the java-overlay and
+# java-experimental repositories, with eclasses from java-experimental
+# taking precedence over those from java-overlay
+eclass-overrides = java-overlay java-experimental
+
+[gentoo]
+# repos with higher priorities are preferred when ebuilds with equal versions
+# are found in multiple repos (see the `emerge --info --verbose` repo
+# display for a listing of repos and their corresponding priorities).
+priority = 9999
+# disable all eclass overrides for ebuilds from the gentoo repository
+eclass-overrides =
+# when processing metadata/layout.conf from other repositories, substitute
+# 'gentoo' in place of references to repositories named 'foo' and 'bar',
+# and discard the 'baz' alias contained in gentoo's layout.conf
+aliases = foo bar -baz
+
+[kde-testing]
+# override the metadata/layout.conf masters setting from the kde-testing repo
+masters = gentoo kde
+
+[python]
+# override the metadata/layout.conf masters setting from the python repo,
+# so that settings won't be inherited from those masters, and so that
+# those master repos won't be required as dependencies (the user must
+# ensure that any required dependencies such as eclasses are satisfied)
+masters =
+
+# Repository 'gentoo' synchronized using CVS
+[gentoo]
+location = /usr/portage
+sync-type = cvs
+sync-uri = :pserver:<A HREF="mailto:anonymous@anoncvs.gentoo.org">anonymous@anoncvs.gentoo.org</A>:/var/cvsroot
+sync-cvs-repo = gentoo-x86
+auto-sync = yes
+
+# Overlay 'voip' syncronized with layman's plug-in sync module
+[voip]
+location = /var/lib/layman/voip
+sync-type = laymanator
+sync-uri = <A HREF="git://git.overlays.gentoo.org/proj/voip.git">git://git.overlays.gentoo.org/proj/voip.git</A>
+auto-sync = yes
+</PRE>
+
+</DL>
+
+<DT><B>sets.conf</B>
+
+<DD>
+A package set configuration file. Settings here override settings from
+<B>/usr/portage/sets.conf</B> and <B>/usr/share/portage/config/sets</B>.
+The format is described extensively in the
+<I>Package Set Configuration</I> section of the html documentation which
+is installed with portage when the &quot;doc&quot; USE flag is enabled.
+<P>
+<I>Example:</I>
+
+<PRE>
+[world]
+class = portage.sets.base.DummyPackageSet
+packages = @profile @selected @system
+
+[usersets]
+class = portage.sets.files.StaticFileSet
+multiset = true
+directory =  %(PORTAGE_CONFIGROOT)setc/portage/sets
+world-candidate = True
+
+[module-rebuild]
+class = portage.sets.dbapi.OwnerSet
+files = /lib/modules
+</PRE>
+
+</DL>
+</DL>
+
+<DT><B>/etc/portage/env/</B>
+
+<DD>
+<DL COMPACT><DT><DD>
+In this directory additional package-specific bashrc files can be created.
+Note that if package-specific environment variable settings are all that's
+needed, then <B>/etc/portage/package.env</B> should be used instead of the
+bashrc approach that is described here. Also note that special variables
+such as <B>FEATURES</B> and <B>INSTALL_MASK</B> will not produce the intended
+results if they are set in bashrc, and therefore
+<B>/etc/portage/package.env</B> should be used instead. Lastly, note that these
+files are interpreted much later than the portage environment file
+<B>package.env</B>.
+<P>
+Portage will source all of these bashrc files after <B>/etc/portage/bashrc</B>
+in the following order:
+
+<DL COMPACT>
+<DT>step].<DD>
+/etc/portage/env/${CATEGORY}/${PN}
+<DT>step].<DD>
+/etc/portage/env/${CATEGORY}/${PN}:${SLOT}
+<DT>step].<DD>
+/etc/portage/env/${CATEGORY}/${P}
+<DT>step].<DD>
+/etc/portage/env/${CATEGORY}/${PF}
+</DL>
+</DL>
+
+<DT><B>/etc/portage/sets/</B>
+
+<DD>
+<DL COMPACT><DT><DD>
+For each file in this directory, a package set is created with its name
+corresponding to the name of the file. Each file should contain a list
+of package atoms and nested package sets, one per line. When a package
+set is referenced as an <B><A HREF="emerge.1.html">emerge</A></B>(1) argument or when it is
+referenced as a nested package set (inside of another package set), the
+set name is prefixed with <B>@</B>.
+<P>
+Also see <B>/var/lib/portage/world_sets</B> and the <B><A HREF="emerge.1.html">emerge</A></B>(1)
+<B>--list-sets</B> option.
+</DL>
+
+<DT><B>/usr/portage/</B>
+
+<DD>
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>sets.conf</B>
+
+<DD>
+A package set configuration file. Also see <B>/etc/portage/sets.conf</B>
+which overrides these settings, and
+<B>/usr/share/portage/config/sets</B> which contains default settings.
+</DL>
+</DL>
+
+<DT><B>/usr/portage/metadata/</B>
+
+<DD>
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>layout.conf</B>
+
+<DD>
+Specifies information about the repository layout.
+<I>Site-specific</I> overrides to <B>layout.conf</B> settings may be specified in
+<B>/etc/portage/repos.conf</B>.
+Settings in <B>repos.conf</B> take precedence over settings in
+<B>layout.conf</B>, except tools such as <B><A HREF="repoman.1.html">repoman</A></B>(1) and <B><A HREF="egencache.1.html">egencache</A></B>(1)
+ignore &quot;aliases&quot;, &quot;eclass-overrides&quot; and &quot;masters&quot; attributes set in
+<B>repos.conf</B> since their operations are inherently <B>not</B>
+<I>site-specific</I>.
+<P>
+<I>Format:</I>
+
+<PRE>
+- comments begin with # (no inline comments)
+- attributes are specified in &quot;${attribute} = ${value}&quot; format
+</PRE>
+
+<P>
+<I>Supported attributes.</I>
+
+<DL COMPACT><DT><DD>
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>aliases</B>
+
+<DD>
+Behaves like an &quot;aliases&quot; attribute in <B>repos.conf</B>.
+<DT><B>eapis-banned</B>
+
+<DD>
+List of EAPIs which are not allowed in this repo.
+<DT><B>eapis-deprecated</B>
+
+<DD>
+List of EAPIs which are allowed but generate warnings when used.
+<DT><B>masters</B>
+
+<DD>
+Names of repositories which satisfy dependencies on eclasses and from which
+settings specified in various repository-level files (<B>package.mask</B>,
+<B>package.use.mask</B>, <B>use.mask</B> etc.) are inherited. Each repository
+name should correspond to the value of a <B>repo_name</B> entry from one of
+the repositories that is configured in <B>repos.conf</B> file. Repositories
+listed toward the right of the <B>masters</B> list take precedence over those
+listed toward the left of the list.
+<DT><B>repo-name</B> = &lt;value of profiles/repo_name&gt;
+
+<DD>
+The name of this repository (overrides profiles/repo_name if it exists).
+<DT><B>sign-commits</B> = [true|<B>false</B>]
+
+<DD>
+Boolean value whether we should sign commits in this repo.
+<DT><B>sign-manifests</B> = [<B>true</B>|false]
+
+<DD>
+Boolean value whether we should sign Manifest files in this repo.
+<DT><B>thin-manifests</B> = [true|<B>false</B>]
+
+<DD>
+Boolean value whether Manifest files contain only DIST entries.
+<DT><B>use-manifests</B> = [<B>strict</B>|true|false]
+
+<DD>
+How Manifest files get used.  Possible values are &quot;strict&quot; (require an entry
+for every file), &quot;true&quot; (if an entry exists for a file, enforce it), or &quot;false&quot;
+(don't check Manifest files at all).
+<DT><B>manifest-hashes</B>
+
+<DD>
+List of hashes to generate/check in Manifest files.  Valid hashes depend on the
+current version of portage; see the portage.const.MANIFEST2_HASH_FUNCTIONS
+constant for the current list.
+<DT><B>update-changelog</B> = [true|<B>false</B>]
+
+<DD>
+The default setting for repoman's --echangelog option.
+<DT><B>cache-formats</B> = [pms] [md5-dict]
+
+<DD>
+The cache formats supported in the metadata tree.  There is the old &quot;pms&quot; format
+and the newer/faster &quot;md5-dict&quot; format.  Default is to detect dirs.
+<DT><B>profile_eapi_when_unspecified</B>
+
+<DD>
+The EAPI to use for profiles when unspecified. This attribute is
+supported only if profile-default-eapi is included in profile-formats.
+<DT><B>profile-formats</B> = [pms] [portage-1] [portage-2] [profile-bashrcs] [profile-set] [profile-default-eapi] [build-id]
+
+<DD>
+Control functionality available to profiles in this repo such as which files
+may be dirs, or the syntax available in parent files.  Use &quot;portage-2&quot; if you're
+unsure.  The default is &quot;portage-1-compat&quot; mode which is meant to be compatible
+with old profiles, but is not allowed to be opted into directly.
+Setting profile-bashrcs will enable the per-profile bashrc mechanism
+<B>package.bashrc</B>. Setting profile-set enables support for using the
+profile <B>packages</B> file to add atoms to the @profile package set.
+See the profile <B>packages</B> section for more information.
+Setting profile-default-eapi enables support for the
+profile_eapi_when_unspecified attribute. Setting build-id allows
+dependency atoms in the profile to refer to specific builds (see the
+binpkg-multi-instance FEATURES setting in <B><A HREF="make.conf.5.html">make.conf</A></B>(5)). A
+build-id atom is identical to a version-specific atom, except that the
+version is followed by a hyphen and an integer build-id.
+</DL>
+</DL>
+
+</DL>
+
+<P>
+<DL COMPACT><DT><DD>
+<I>Example:</I>
+
+<PRE>
+# Specify the repository name (overriding profils/repo_name).
+repo-name = foo-overlay
+
+# eclasses provided by java-overlay take precedence over identically named
+# eclasses that are provided by gentoo
+masters = gentoo java-overlay
+
+# indicate that this repo can be used as a substitute for foo-overlay
+aliases = foo-overlay
+
+# indicate that ebuilds with the specified EAPIs are banned
+eapis-banned = 0 1
+
+# indicate that ebuilds with the specified EAPIs are deprecated
+eapis-deprecated = 2 3
+
+# sign commits in this repo, which requires Git &gt;=1.7.9, and
+# key configured by `git config user.signingkey key_id`
+sign-commits = true
+
+# do not sign Manifest files in this repo
+sign-manifests = false
+
+# Manifest files only contain DIST entries
+thin-manifests = true
+
+# indicate that this repo requires manifests for each package, and is
+# considered a failure if a manifest file is missing/incorrect
+use-manifests = strict
+
+# customize the set of hashes generated for Manifest entries
+manifest-hashes = SHA256 SHA512 WHIRLPOOL
+
+# indicate that this repo enables repoman's --echangelog=y option automatically
+update-changelog = true
+
+# indicate that this repo contains both md5-dict and pms cache formats,
+# which may be generated by <A HREF="egencache.1.html">egencache</A>(1)
+cache-formats = md5-dict pms
+
+# indicate that this repo contains profiles that may use directories for
+# package.mask, package.provided, package.use, package.use.force,
+# package.use.mask, package.use.stable.force, package.use.stable.mask,
+# use.force, use.mask, use.stable.force, and use.stable.mask.
+# profile-formats = portage-1
+# indicate that paths such as 'gentoo:targets/desktop' or ':targets/desktop' in
+# profile parent files can be used to express paths relative to the root
+# 'profiles' directory of a repository (when the repo name is omitted before
+# the colon, it refers to the current repository the parent file is inside)
+profile-formats = portage-2
+</PRE>
+
+</DL>
+
+<DT><B>pkg_desc_index</B>
+
+<DD>
+This is an index of package names, versions, and descriptions which
+may be generated by <B><A HREF="egencache.1.html">egencache</A></B>(1) in order to optimize
+<B><A HREF="emerge.1.html">emerge</A></B>(1) search actions.
+<P>
+<I>Example:</I>
+
+<PRE>
+sys-apps/sed 4.2 4.2.1 4.2.1-r1 4.2.2: Super-useful stream editor
+sys-apps/usleep 0.1: A wrapper for usleep
+</PRE>
+
+</DL>
+</DL>
+
+<DT><B>/usr/portage/profiles/</B>
+
+<DD>
+Global Gentoo settings that are controlled by the developers.  To override
+these settings, you can use the files in <B>/etc/portage/</B>.
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>arch.list</B>
+
+<DD>
+A list of all valid KEYWORDS.  This does not include modifiers.
+<P>
+<I>Format:</I>
+
+<PRE>
+- one KEYWORD per line
+</PRE>
+
+<P>
+<I>Example:</I>
+
+<PRE>
+x86
+ppc
+sparc
+</PRE>
+
+<DT><B>categories</B>
+
+<DD>
+A simple list of valid categories that may be used in repositories and PKGDIR
+(see <B><A HREF="make.conf.5.html">make.conf</A></B>(5)).
+<P>
+<I>Format:</I>
+
+<PRE>
+- one category per line
+</PRE>
+
+<P>
+<I>Example:</I>
+
+<PRE>
+app-admin
+dev-lang
+games-strategy
+sys-kernel
+</PRE>
+
+<DT><B>info_pkgs</B>
+
+<DD>
+A list of all the packages which will be displayed when you run `emerge info`.
+<DT><B>info_vars</B>
+
+<DD>
+A list of all the variables which will be displayed when you run `emerge info`.
+<DT><B>license_groups</B>
+
+<DD>
+This contains groups of licenses that may be specifed in the
+<B>ACCEPT_LICENSE</B> variable (see <B><A HREF="make.conf.5.html">make.conf</A></B>(5)). Refer
+to GLEP 23 for further information:
+<I><A HREF="http://www.gentoo.org/proj/en/glep/glep-0023.html">http://www.gentoo.org/proj/en/glep/glep-0023.html</A></I>.
+<P>
+<I>Format:</I>
+
+<PRE>
+- comments begin with # (no inline comments)
+- one group name, followed by list of licenses and nested groups
+- nested groups are prefixed with the '@' symbol
+</PRE>
+
+<P>
+<I>Example:</I>
+
+<PRE>
+# The FSF-APPROVED group includes the entire GPL-COMPATIBLE group and more.
+FSF-APPROVED @GPL-COMPATIBLE Apache-1.1 BSD-4 MPL-1.0 MPL-1.1
+# The GPL-COMPATIBLE group includes all licenses compatible with the GNU GPL.
+GPL-COMPATIBLE Apache-2.0 BSD BSD-2 GPL-2 GPL-3 LGPL-2.1 LGPL-3 X11 ZLIB
+</PRE>
+
+<DT><B>package.accept_keywords</B>
+
+<DD>
+Per-package ACCEPT_KEYWORDS for profiles. This has the same format and
+behavior as /etc/portage/package.accept_keywords, including the ability
+to list atoms without any keywords in order to accept unstable variants
+of all stable keywords listed in ACCEPT_KEYWORDS.
+<DT><B>package.keywords</B>
+
+<DD>
+Per-profile KEYWORDS. Useful for cases in which the effective KEYWORDS of a
+given package should vary depending on which profile the user has selected.
+<P>
+<I>Format:</I>
+
+<PRE>
+- comment lines begin with # (no inline comments)
+- one DEPEND atom per line followed by additional KEYWORDS
+</PRE>
+
+<P>
+<I>Example:</I>
+
+<PRE>
+# add stable keyword to libgd
+media-libs/libgd x86
+# remove stable keyword from mplayer and add unstable keyword
+media-video/mplayer -x86 ~x86
+# remove all keywords from netcat
+net-analyzer/netcat -*
+</PRE>
+
+<DT><B>package.mask</B>
+
+<DD>
+This contains a list of DEPEND atoms for packages that should not be installed
+in any profile.  Useful for adding the latest KDE betas and making sure no
+one accidentally upgrades to them.  Also useful for quickly masking specific
+versions due to security issues.  ALWAYS include a comment explaining WHY the
+package has been masked and WHO is doing the masking.
+<P>
+<I>Format:</I>
+
+<PRE>
+- comments begin with # (no inline comments)
+- one DEPEND atom per line
+</PRE>
+
+<P>
+<I>Example:</I>
+
+<PRE>
+# masked for security reasons
+&lt;sys-libs/zlib-1.1.4
+# &lt;<A HREF="mailto:caleb@gentoo.org">caleb@gentoo.org</A>&gt; (10 Sep 2003)
+# new kde betas
+=kde-base/kde-3.2.0_beta1
+=kde-base/kdeaccessibility-3.2.0_beta1
+</PRE>
+
+<DT><B>profiles.desc</B>
+
+<DD>
+List all the current stable and development profiles.  If a profile is listed
+here, then it will be checked by repoman.
+<I>Format:</I>
+
+<PRE>
+- comments begin with # (no inline comments)
+- one profile list per line in format: arch dir status
+- arch must be listed in arch.list
+- dir is relative to profiles.desc
+- status must be 'stable', 'dev', or 'exp'
+</PRE>
+
+<P>
+<I>Example:</I>
+
+<PRE>
+alpha        default/linux/alpha/10.0    stable
+m68k         default/linux/m68k/10.0     dev
+x86          default/linux/x86/10.0      stable
+x86-linux    prefix/linux/x86            exp
+</PRE>
+
+<DT><B>repo_name</B>
+
+<DD>
+The first line of the file should define a unique repository name. The name
+may contain any of the characters [A-Za-z0-9_-]. It must not begin with a
+hyphen. If the repo-name attribute is specified in layout.conf, then that
+setting will take precedence.
+<DT><B>thirdpartymirrors</B>
+
+<DD>
+Controls the mapping of mirror:// style URIs to actual lists of
+mirrors.  Keeps us from overloading a single server.
+<P>
+<I>Format:</I>
+
+<PRE>
+- comments begin with # (no inline comments)
+- mirror type followed by a list of hosts
+</PRE>
+
+<P>
+<I>Example:</I>
+
+<PRE>
+sourceforge <A HREF="http://aleron.dl.sourceforge.net/sourceforge">http://aleron.dl.sourceforge.net/sourceforge</A> <A HREF="http://unc.dl.sourceforge.net/sourceforge">http://unc.dl.sourceforge.net/sourceforge</A>
+
+gentoo <A HREF="http://distro.ibiblio.org/pub/linux/distributions/gentoo/distfiles/">http://distro.ibiblio.org/pub/linux/distributions/gentoo/distfiles/</A> <A HREF="ftp://ftp.gtlib.cc.gatech.edu/pub/gentoo/distfiles">ftp://ftp.gtlib.cc.gatech.edu/pub/gentoo/distfiles</A>
+
+kernel <A HREF="http://www.kernel.org/pub">http://www.kernel.org/pub</A> <A HREF="http://www.us.kernel.org/pub">http://www.us.kernel.org/pub</A>
+</PRE>
+
+<DT><B>use.desc</B>
+
+<DD>
+All global USE flags must be listed here with a description of what they do.
+<P>
+<I>Format:</I>
+
+<PRE>
+- comments begin with # (no inline comments)
+- use flag - some description
+</PRE>
+
+<P>
+<I>Example:</I>
+
+<PRE>
+3dfx - Adds support for 3dfx video cards
+acl - Adds support for Access Control Lists
+doc - Adds extra documentation
+</PRE>
+
+<DT><B>use.local.desc</B>
+
+<DD>
+All local USE flags are listed here along with the package and a
+description. This file is automatically generated from the
+metadata.xml files that are included with each individual package.
+Refer to GLEP 56 for further information:
+<I><A HREF="http://www.gentoo.org/proj/en/glep/glep-0056.html">http://www.gentoo.org/proj/en/glep/glep-0056.html</A></I>.
+<P>
+<PRE>
+<I>Format:</I>
+- comments begin with # (no inline comments)
+- package:use flag - description
+
+<I>Example:</I>
+app-editors/nano:justify - Toggles the justify option
+dev-libs/DirectFB:fusion - Adds Multi Application support
+games-emulation/xmess:net - Adds network support
+</PRE>
+
+</DL>
+</DL>
+
+<DT><B>/usr/share/portage/config/</B>
+
+<DD>
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>make.globals</B>
+
+<DD>
+The global default settings for Portage.  This comes from the portage package
+itself.  Settings in <B>make.conf</B> or <B>package.env</B> override values set
+here. The format is described extensively in <B><A HREF="make.conf.5.html">make.conf</A></B>(5).
+<DT><B>repos.conf</B>
+
+<DD>
+The default configuration of repositories for Portage.  This comes from
+the portage package itself.  Settings in <B>/etc/portage/repos.conf</B>
+override values set here. The format is described extensively in section
+for <B>/etc/portage/repos.conf</B>.
+<DT><B>sets</B>
+
+<DD>
+A directory containing package set configuration files. Also see
+<B>/etc/portage/sets.conf</B> and <B>/usr/portage/sets.conf</B>, both of
+which override values set here. Default set configurations are installed
+in <B>/usr/share/portage/config/sets/portage.conf</B>.
+</DL>
+</DL>
+
+
+<DT><B>/var/cache/edb/</B>
+
+<DD>
+<DL COMPACT><DT><DD>
+This directory is used to store internal portage cache files.  The names and
+purpose of these files are not documented on purpose so as to keep down bitrot
+as internals change.  If you aren't working on portage internally, then the
+details most likely do not matter to you.
+<P>
+This entire directory can be safely deleted.  It is highly recommended you do
+not do this however as it can be a time consuming process to generate them all
+again.
+</DL>
+
+<DT><B>/var/db/pkg/</B>
+
+<DD>
+<DL COMPACT><DT><DD>
+All installed package information is recorded here.  If portage thinks you have
+a package installed, it is usually because it is listed here.
+<P>
+The format follows somewhat closely that of the portage tree.  There is a
+directory for each category and a package-version subdirectory for each package
+you have installed.
+<P>
+Inside each package directory are misc files that describe the installed
+contents of the package as well as build time information (so that the package
+can be unmerged without needing the portage tree).
+<P>
+The exact file contents and format are not described here again so that things
+can be changed quickly.  Generally though there is one file per environment
+variable that &quot;matters&quot; (like CFLAGS) with the contents stored inside of it.
+Another common file is the CONTENTS file which lists the path and hashes of
+all objects that the package installed onto your system.
+<DL COMPACT>
+<DT><B>PROVIDES</B>
+
+<DD>
+Contains information about the sonames that a package provides, which is
+automatically generated from the files that it installs. The sonames
+may have been filtered by the <B>PROVIDES_EXCLUDE</B> <B><A HREF="ebuild.5.html">ebuild</A></B>(5)
+variable. A multilib category, followed by a colon, always preceeds a
+list of one or more sonames.
+<P>
+<I>Example:</I>
+
+<PRE>
+x86_32: libcom_err.so.2 libss.so.2 x86_64: libcom_err.so.2 libss.so.2
+</PRE>
+
+<DT><B>REQUIRES</B>
+
+<DD>
+Contains information about the sonames that a package requires, which is
+automatically generated from the files that it installs. The sonames
+may have been filtered by the <B>REQUIRES_EXCLUDE</B> <B><A HREF="ebuild.5.html">ebuild</A></B>(5)
+variable. Any sonames that a package provides are automatically excluded
+from <B>REQUIRES</B>. A multilib category, followed by a colon, always
+preceeds a list of one or more sonames.
+<P>
+<I>Example:</I>
+
+<PRE>
+x86_32: ld-linux.so.2 libc.so.6 x86_64: ld-linux-x86-64.so.2 libc.so.6
+</PRE>
+
+</DL>
+</DL>
+
+<DT><B>/var/lib/portage/</B>
+
+<DD>
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>config</B>
+
+<DD>
+Hashes which are used to determine whether files in config protected
+directories have been modified since being installed.  Files which have not
+been modified will automatically be unmerged.
+<DT><B>world</B>
+
+<DD>
+Every time you emerge a package, the package that you requested is
+recorded here.  Then when you run `emerge world -up`, the list of
+packages is read from this file.  Note that this does not mean that the
+packages that were installed as dependencies are listed here.  For
+example, if you run `emerge mod_wsgi` and you do not have apache
+already, then &quot;www-apache/mod_wsgi&quot; is recorded in the world file but
+&quot;www-servers/apache&quot; is not.  For more information, review <B><A HREF="emerge.1.html">emerge</A></B>(1).
+<P>
+<I>Format:</I>
+
+<PRE>
+- one DEPEND atom base per line
+</PRE>
+
+<P>
+<I>Example:</I>
+
+<PRE>
+games-misc/fortune-mod-gentoo-dev
+dev-libs/uclibc
+app-cdr/cdemu
+</PRE>
+
+<DT><B>world_sets</B>
+
+<DD>
+This is like the world file but instead of package atoms it contains
+packages sets which always begin with the <B>@</B> character. Use
+<B>/etc/portage/sets/</B> to define user package sets.
+<P>
+<I>Example:</I>
+
+<PRE>
+@kde
+</PRE>
+
+</DL>
+</DL>
+
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H2>REPORTING BUGS</H2>
+
+Please report bugs via <A HREF="http://bugs.gentoo.org/">http://bugs.gentoo.org/</A>
+<A NAME="lbAH">&nbsp;</A>
+<H2>AUTHORS</H2>
+
+<PRE>
+Marius Mauch &lt;<A HREF="mailto:genone@gentoo.org">genone@gentoo.org</A>&gt;
+Mike Frysinger &lt;<A HREF="mailto:vapier@gentoo.org">vapier@gentoo.org</A>&gt;
+Drake Wyrm &lt;<A HREF="mailto:wyrm@haell.com">wyrm@haell.com</A>&gt;
+Arfrever Frehtes Taifersar Arahesis &lt;<A HREF="mailto:arfrever@apache.org">arfrever@apache.org</A>&gt;
+</PRE>
+
+<A NAME="lbAI">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<B><A HREF="emerge.1.html">emerge</A></B>(1),
+
+<B><A HREF="ebuild.1.html">ebuild</A></B>(1),
+
+<B><A HREF="ebuild.5.html">ebuild</A></B>(5),
+
+<B><A HREF="make.conf.5.html">make.conf</A></B>(5),
+
+<B><A HREF="color.map.5.html">color.map</A></B>(5)
+
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">NAME</A><DD>
+<DT><A HREF="#lbAC">DESCRIPTION</A><DD>
+<DT><A HREF="#lbAD">SYNOPSIS</A><DD>
+<DT><A HREF="#lbAE">GLOSSARY</A><DD>
+<DT><A HREF="#lbAF">SPECIFIC FILE DESCRIPTIONS</A><DD>
+<DT><A HREF="#lbAG">REPORTING BUGS</A><DD>
+<DT><A HREF="#lbAH">AUTHORS</A><DD>
+<DT><A HREF="#lbAI">SEE ALSO</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="http://freshmeat.net/projects/man/">man2html</A>,
+using the manual pages.<BR>
+Time: 00:33:13 GMT, March 19, 2015
+</BODY>
+</HTML>

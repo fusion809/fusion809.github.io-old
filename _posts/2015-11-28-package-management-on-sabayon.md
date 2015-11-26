@@ -16,22 +16,22 @@ Entropy, Layman and Portage are all written in Python. Entropy is maintained by 
 ##Portage
 {% include image.html image="GTK-based-Portage-front-end-Porthole.png" description="Screenshot of Porthole running under KDE Plasma 5" width="1366" height="738" %}
 
-**Portage** is a package management system that is arguably the most powerful Linux PMS available today. It is written in [Python](https://en.wikipedia.org/wiki/Python_(programming_language)) and [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) script, so as to afford users the ability to script with Portage. Portage installs, removes and upgrades software using the instructions contained in **ebuild** (that is, Bash scripts with the file extension `.ebuild`) files, which are stored within the &quot;**Portage Tree**&quot; which is `/usr/portage`, by default. This tree, only contains ebuilds from the **Official Gentoo Overlay** (OGO, you can search this overlay online [here](https://packages.gentoo.org)), ebuilds in overlays added with Layman are added to another location, `/var/lib/layman`. Normally Portage installs (or &quot;*merges*&quot;) software from source code, so as to maximize the control users have over the features their software has, but some pre-compiled binary packages exist in the OGO for software that would otherwise take several hours to compile. These packages are in `.tbz2` file format and are created by running emerge with the `--buildpkg` or `--buildpkgonly` options enabled. Installing software from source code may also improve the performance (minimizing resource usage) of software installed this way.
+{% include links.html sw="En:Portage" wp="Portage_(software)" package="sys-apps/portage" program="Portage" gw="Portage" %} is a package management system that is arguably the most powerful Linux PMS available today. It is written in [Python](https://en.wikipedia.org/wiki/Python_(programming_language)) and [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) script, so as to afford users the ability to script with Portage. Portage installs, removes and upgrades software using the instructions contained in **ebuild** (that is, Bash scripts with the file extension `.ebuild`) files, which are stored within the &quot;**Portage Tree**&quot; which is `/usr/portage`, by default. This tree, only contains ebuilds from the **Official Gentoo Overlay** (OGO, you can search this overlay online [here](https://packages.gentoo.org)), ebuilds in overlays added with Layman are added to another location, `/var/lib/layman`. Normally Portage installs (or &quot;*merges*&quot;) software from source code, so as to maximize the control users have over the features their software has, but some pre-compiled binary packages exist in the OGO for software that would otherwise take several hours to compile. These packages are in `.tbz2` file format and are created by running emerge with the `--buildpkg` or `--buildpkgonly` options enabled. Installing software from source code may also improve the performance (minimizing resource usage) of software installed this way.
 
 Portage affords users this extra control via **USE flags**, which are “keywords that embodies support and dependency-information for a certain concept” (quoted from the [Gentoo Handbook](https://wiki.gentoo.org/wiki/Handbook:X86/Working/USE)), in other words they are keywords that allow users to decide which (if any) optional package features (like language bindings, for example) will be built, when the package itself is built. These USE flags can be enabled or disabled for individual packages (via modifying files in the directory `/etc/portage/package.use`) or for all packages (via editing the `USE="...` line in `/etc/portage/make.conf`. USE flags should not be confused with **package keywords** (individual package keywords can be found in the directory `/etc/portage/package.keywords`, editing keywords for all packages can be done by editing the `ACCEPT_KEYWORDS="..."` line in `/etc/portage/make.conf`), which are entirely separate keywords, that detail architecture support (x86_64 vs. x86) and a few other features. Likewise packages you do not want Portage to emerge under any circumstances (which can be called **masked packages**) can be added to files within the directory `/etc/portage/package.mask`.
 
-Portage is traditionally a **command-line package management system** (invoked by the command `emerge`), with no official graphical front-ends available, but a few unofficial graphical front-ends exist in the OGO, of which the most popular is probably the GTK+ based **[Porthole](http://porthole.sourceforge.net/)** (<span class="package"><a href="https://packages.gentoo.org/packages/app-portage/porthole" target="_blank">app-portage/porthole</a></span>).
+Portage is traditionally a **command-line package management system** (invoked by the command `emerge`), with no official graphical front-ends available, but a few unofficial graphical front-ends exist in the OGO, of which the most popular is probably the GTK+ based {% include links.html package="app-portage/porthole" program="Porthole" link="http://porthole.sourceforge.net/" %}
 
-The OGO contains over 18,500 software packages, as of October 2015, and while this may seem like quite a fair number (which it is) there will always be some people that will want to install software that is not in the OGO. To do this it is advisable to search the <a href="http://gpo.zugaina.org/" target="_blank">GPO website</a>, for the package you would like and then add the overlay that contains the package you want with **Layman**.
+The OGO contains over 18,500 software packages, as of October 2015, and while this may seem like quite a fair number (which it is) there will always be some people that will want to install software that is not in the OGO. To do this it is advisable to search the [GPO website](http://gpo.zugaina.org/), for the package you would like and then add the overlay that contains the package you want with **Layman**.
 ###Emerge Syntax
 According to **Portage's Manpage**[^1], emerge commands have the following format:
-<div class="code"><span class="coder">root #</span>  emerge [<em>options</em>] [<em>action</em>] [<em>ebuild</em> | <em>tbz2file</em> | <em>file</em> | <em>@set</em> | <em>atom</em>]                                       <span style="background-color: #c4c4ff; color: red;"><em>(1)</em></span></div>
+{% include coder.html line1="emerge [<em>options</em>] [<em>action</em>] [<em>ebuild</em> | <em>tbz2file</em> | <em>file</em> | <em>@set</em> | <em>atom</em>]" no="1" %}
 This can be confusing to users not familiar with the formatting used by Gentoo's Manpages (or Linux Manpages in general, for that matter), but I will attempt to explain. Before I do, I need you to get into the mind-frame you had when you first learnt algebra in high school, where variables (like x or y) could be substituted with numbers, letters, other characters or a combination of any, or even all of these. With this mind-frame the above generalized format of emerge commands will make more sense, as all words in that command except for root and emerge can be substituted, depending on what you want to do with Portage.
 
-What is in square-brackets (`[...]`) are optional parts of the command (that is, they can be omitted) and when you are writing an actual command you omit the square brackets and substitute the word inside with any of a set of possible values it can take on. Some (not all, I do not even understand them all!) possible values <em>options</em> and <em>action</em> can take on are covered in the tables below. Multiple options can be combined with certain actions, often using the shortened notation. For example, to combine the ask and verbose options when emerging GNU Octave, one can run the shortened form `<span class="coder">root #</span> &nbsp;emerge -av sci-mathematics/octave` or the full-lengthed form `<span class="coder">root #</span> &nbsp;emerge --ask --verbose sci-mathematics/octave`. The vertical lines or pipes, as they can also be called, which is `|`, in (1) means the options separated by it and between the square brackets are mutually-exclusive options (that is, you either pick one or you pick none, depending on what you want to do). To save time, I will call the following part of (1) &quot;**input**&quot;:
+What is in square-brackets (`[...]`) are optional parts of the command (that is, they can be omitted) and when you are writing an actual command you omit the square brackets and substitute the word inside with any of a set of possible values it can take on. Some (not all, I do not even understand them all!) possible values *options* and *action* can take on are covered in the tables below. Multiple options can be combined with certain actions, often using the shortened notation. For example, to combine the ask and verbose options when emerging GNU Octave, one can run the shortened form <code><span class="coder">root #</span> &nbsp;emerge -av sci-mathematics/octave</code> or the full-lengthed form <code><span class="coder">root #</span> &nbsp;emerge --ask --verbose sci-mathematics/octave</code>. The vertical lines or pipes, as they can also be called, which is `|`, in (1) means the options separated by it and between the square brackets are mutually-exclusive options (that is, you either pick one or you pick none, depending on what you want to do). To save time, I will call the following part of (1) &quot;**input**&quot;:
 <div class="code">[<em>ebuild</em> | <em>tbz2file</em> | <em>file</em> | <em>@set</em> | <em>atom</em>]</div>
-**Sets** (`@set` in the "input") are essentially a useful way of specifying a large group of packages. There are six sets found in a default install of Sabayon, more can be created by users with root access by them editing files in the directory, `/etc/portage/sets`. Running `<span class="coder">root #</span>  emerge --list-sets` should list all available sets. **ebuilds** are just the names of packages you want to install. At a bare minimum they should be the package's name (case-sensitive), without its category (e.g., wordpress for www-apps/wordpress), but sometimes specifying a package's name without its category leaves some ambiguity (that is, there may be more than one package in the Portage Tree or unofficial overlays added with Layman, that has the name specified), so it is often safer to specify the category also. Some people may want to specify the specific package version they want too, to do this add an equal sign before the category and specify the package version after the package's name, for example running `emerge =sys-apps/portage-2.2.20` should install Portage version 2.2.20. **Files** are files that have been created by installed packages. **tbz2file**, as one can probably guess are any binary packages created by emerge itself, in the `.tbz2` file format that one wishes to install. **Atoms** (`atom`) are essentially the same as ebuilds, only with bounds on their version numbers specified. For example, `emerge &lt;dev-lang/python-2.0` should install the latest version of Python available before version 2.0.
-<table class="green" style="width: 100%; border: 1px; padding: 1em; vertical-align: middle;"><caption><strong>Table 1: Options for Emerge</strong></caption>
+**Sets** (`@set` in the "input") are essentially a useful way of specifying a large group of packages. There are six sets found in a default install of Sabayon, more can be created by users with root access by them editing files in the directory, `/etc/portage/sets`. Running {% include coders.html line1="emerge --list-sets" %} should list all available sets. **ebuilds** are just the names of packages you want to install. At a bare minimum they should be the package's name (case-sensitive), without its category (e.g., wordpress for www-apps/wordpress), but sometimes specifying a package's name without its category leaves some ambiguity (that is, there may be more than one package in the Portage Tree or unofficial overlays added with Layman, that has the name specified), so it is often safer to specify the category also. Some people may want to specify the specific package version they want too, to do this add an equal sign before the category and specify the package version after the package's name, for example running {% include coders.html line1="emerge =sys-apps/portage-2.2.20" %} should install Portage version 2.2.20. **Files** are files that have been created by installed packages. **tbz2file**, as one can probably guess are any binary packages created by emerge itself, in the `.tbz2` file format that one wishes to install. **Atoms** (`atom`) are essentially the same as ebuilds, only with bounds on their version numbers specified. For example, {% include coders.html line1="emerge &lt;dev-lang/python-2.0" %} should install the latest version of Python available before version 2.0.
+<table style="width: 100%; border: 1px; padding: 1em; vertical-align: middle;"><caption><strong>Table 1: Options for Emerge</strong></caption>
 <tbody>
 <tr class="green">
 <td class="title" style="width: 240px;">Long</td>
@@ -254,24 +254,15 @@ What is in square-brackets (`[...]`) are optional parts of the command (that is,
 </tr>
 </tbody>
 </table>
-<h3>Links</h3>
-<h4>Handbook</h4>
-<ul>
-	<li><a title="undefined" href="https://wiki.gentoo.org/wiki/Handbook:AMD64/Working/Portage">AMD64 Handbook</a></li>
-</ul>
-<h4>Manpages</h4>
-<ul>
-	<li><a href="https://dev.gentoo.org/~zmedico/portage/doc/man/ebuild.1.html" target="_blank">EBUILD(1) Manpage</a></li>
-	<li><a href="https://dev.gentoo.org/~zmedico/portage/doc/man/ebuild.5.html" target="_blank">EBUILD(5) Manpage</a></li>
-	<li><a href="https://dev.gentoo.org/~zmedico/portage/doc/man/emerge.1.html" target="_blank">EMERGE(1) Manpage</a></li>
-	<li><a href="https://dev.gentoo.org/~zmedico/portage/doc/man/portage.5.html" target="_blank">PORTAGE(5) Manpage</a></li>
-</ul>
-####Wiki Articles
-<ul>
-	<li><a href="https://wiki.gentoo.org/wiki/Portage" target="_blank">Gentoo Wiki</a></li>
-	<li><a href="https://wiki.sabayon.org/index.php?title=En:Portage" target="_blank">Sabayon Wiki</a></li>
-	<li><a href="https://en.wikipedia.org/wiki/Portage_(software)" target="_blank">English Wikipedia</a></li>
-</ul>
+###Links
+####Handbook
+* [AMD64 Handbook](https://wiki.gentoo.org/wiki/Handbook:AMD64/Working/Portage)
+
+####Manpages
+* [EBUILD(1) Manpage](/man/ebuild.1.html)
+* [EBUILD(5) Manpage](/man/ebuild.5.html)
+* [EMERGE(1) Manpage](/man/emerge.1.html)
+* [PORTAGE(5) Manpage](/man/portage.5.html)
 ##Layman
 **Layman** is a command-line tool for managing Portage overlays. It can be installed with Portage (from the OGO) using the command:
 <div class="code"><span class="coder">root #</span>  emerge -av app-portage/layman</div>
@@ -388,7 +379,7 @@ To add a new overlay that is not within the reference list, run:
 </tr>
 </tbody>
 </table>
-<h3>Links</h3>
+###Links
 <ul>
 	<li><a href="https://wiki.gentoo.org/wiki/Project:Layman" target="_blank">Gentoo Project</a></li>
 	<li><a href="https://wiki.gentoo.org/wiki/Layman" target="_blank">Gentoo Wiki Article</a></li>
@@ -530,14 +521,13 @@ where <code>&lt;REPO&gt;</code> is the name of an Entropy repository (e.g., <cod
 </tr>
 </tbody>
 </table>
-<h3>Links</h3>
-<ul>
-	<li><a href="/man/equo.1.html" target="_blank">equo(1) Manpage</a></li>
-	<li><a href="http://linux.x10host.com/blog/equo.pdf" target="_blank">Complete Equo Manual</a> (PDF version of all Equo manpages combined)</li>
-	<li><a href="https://packages.sabayon.org" target="_blank">Entropy Store</a></li>
-	<li><a href="https://github.com/Sabayon/entropy" target="_blank">GitHub repository</a></li>
-	<li><a href="https://wiki.sabayon.org/index.php?title=En:Entropy" target="_blank">Sabayon Wiki Article</a></li>
-</ul>
+###Links
+* [equo(1) Manpage](/man/equo.1.html)
+* [Complete Equo Manual](/man/equo.pdf) (PDF version of all Equo manpages combined)
+* [Entropy Store](https://packages.sabayon.org)
+* [GitHub repository](https://github.com/Sabayon/entropy)
+* [Sabayon Wiki Article](https://wiki.sabayon.org/index.php?title=En:Entropy)
+
 #Mixing Entropy with Portage
 By default Entropy and Portage act fairly independently of one another. In order for you to use them together, you must tell Entropy that you are also using Portage to install packages by running:
 <div class="code"><span class="coder">root #</span>  equo rescue spmsync</div>
@@ -609,7 +599,7 @@ This does not add an executable of OpenRA to `/usr/games/bin/` and hence running
 * [Official Website](http://www.openra.net/)
 * [Official Wiki](https://github.com/OpenRA/OpenRA/wiki)
 ##SuperTux
-[caption id="attachment_588" align="alignnone" width="800"]<a href="https://upload.wikimedia.org/wikipedia/commons/4/4a/Supertux-checkpoint.png"><img class="size-full wp-image-588" src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Supertux-checkpoint.png" alt="SuperTux 0.3.3" width="800" height="600" /></a> **SuperTux 0.3.3**[/caption]
+{% include image.html image="Supertux-checkpoint.png" alt="SuperTux 0.3.3" width="800" height="600" %}
 
 **SuperTux** (`games-arcade/supertux`) is a free and open-source (licensed under GNU GPLv3) 2D platform game that was first released in April 2003. Its gameplay is very similar to that of the proprietary game, Super Mario Bros. The initial 2003 release was called "Milestone 1" (or if you would prefer a version number 0.1.3) and is the version of SuperTux available in the Entropy Store and the Official Gentoo Overlay (OGO). I have installed this version with Entropy, using:
 <div class="code"><span class="coder">root #</span>  equo i games-arcade/supertux</div>
