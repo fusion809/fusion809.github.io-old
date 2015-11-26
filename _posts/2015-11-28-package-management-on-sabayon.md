@@ -23,12 +23,12 @@ Portage affords users this extra control via **USE flags**, which are “keyword
 Portage is traditionally a **command-line package management system** (invoked by the command `emerge`), with no official graphical front-ends available, but a few unofficial graphical front-ends exist in the OGO, of which the most popular is probably the GTK+ based **[Porthole](http://porthole.sourceforge.net/)** (<span class="package"><a href="https://packages.gentoo.org/packages/app-portage/porthole" target="_blank">app-portage/porthole</a></span>).
 
 The OGO contains over 18,500 software packages, as of October 2015, and while this may seem like quite a fair number (which it is) there will always be some people that will want to install software that is not in the OGO. To do this it is advisable to search the <a href="http://gpo.zugaina.org/" target="_blank">GPO website</a>, for the package you would like and then add the overlay that contains the package you want with **Layman**.
-<h3>Emerge Syntax</h3>
-According to **Portage's Manpage**[1. Specifically the <a href="https://dev.gentoo.org/~zmedico/portage/doc/man/emerge.1.html" target="_blank">emerge(1)</a> manpage], emerge commands have the following format:
+###Emerge Syntax
+According to **Portage's Manpage**[^1], emerge commands have the following format:
 <div class="code"><span class="coder">root #</span>  emerge [<em>options</em>] [<em>action</em>] [<em>ebuild</em> | <em>tbz2file</em> | <em>file</em> | <em>@set</em> | <em>atom</em>]                                       <span style="background-color: #c4c4ff; color: red;"><em>(1)</em></span></div>
 This can be confusing to users not familiar with the formatting used by Gentoo's Manpages (or Linux Manpages in general, for that matter), but I will attempt to explain. Before I do, I need you to get into the mind-frame you had when you first learnt algebra in high school, where variables (like x or y) could be substituted with numbers, letters, other characters or a combination of any, or even all of these. With this mind-frame the above generalized format of emerge commands will make more sense, as all words in that command except for root and emerge can be substituted, depending on what you want to do with Portage.
 
-What is in square-brackets (`[...]`) are optional parts of the command (that is, they can be omitted) and when you are writing an actual command you omit the square brackets and substitute the word inside with any of a set of possible values it can take on. Some (not all, I do not even understand them all!) possible values <em>options</em> and <em>action</em> can take on are covered in the tables below. Multiple options can be combined with certain actions, often using the shortened notation. For example, to combine the ask and verbose options when emerging GNU Octave, one can run the shortened form `<span class="coder">root #</span> emerge -av sci-mathematics/octave` or the full-lengthed form `<span class="coder">root #</span> emerge --ask --verbose sci-mathematics/octave`. The vertical lines or pipes, as they can also be called, which is `|`, in (1) means the options separated by it and between the square brackets are mutually-exclusive options (that is, you either pick one or you pick none, depending on what you want to do). To save time, I will call the following part of (1) &quot;**input**&quot;:
+What is in square-brackets (`[...]`) are optional parts of the command (that is, they can be omitted) and when you are writing an actual command you omit the square brackets and substitute the word inside with any of a set of possible values it can take on. Some (not all, I do not even understand them all!) possible values <em>options</em> and <em>action</em> can take on are covered in the tables below. Multiple options can be combined with certain actions, often using the shortened notation. For example, to combine the ask and verbose options when emerging GNU Octave, one can run the shortened form `<span class="coder">root #</span> &nbsp;emerge -av sci-mathematics/octave` or the full-lengthed form `<span class="coder">root #</span> &nbsp;emerge --ask --verbose sci-mathematics/octave`. The vertical lines or pipes, as they can also be called, which is `|`, in (1) means the options separated by it and between the square brackets are mutually-exclusive options (that is, you either pick one or you pick none, depending on what you want to do). To save time, I will call the following part of (1) &quot;**input**&quot;:
 <div class="code">[<em>ebuild</em> | <em>tbz2file</em> | <em>file</em> | <em>@set</em> | <em>atom</em>]</div>
 **Sets** (`@set` in the "input") are essentially a useful way of specifying a large group of packages. There are six sets found in a default install of Sabayon, more can be created by users with root access by them editing files in the directory, `/etc/portage/sets`. Running `<span class="coder">root #</span>  emerge --list-sets` should list all available sets. **ebuilds** are just the names of packages you want to install. At a bare minimum they should be the package's name (case-sensitive), without its category (e.g., wordpress for www-apps/wordpress), but sometimes specifying a package's name without its category leaves some ambiguity (that is, there may be more than one package in the Portage Tree or unofficial overlays added with Layman, that has the name specified), so it is often safer to specify the category also. Some people may want to specify the specific package version they want too, to do this add an equal sign before the category and specify the package version after the package's name, for example running `emerge =sys-apps/portage-2.2.20` should install Portage version 2.2.20. **Files** are files that have been created by installed packages. **tbz2file**, as one can probably guess are any binary packages created by emerge itself, in the `.tbz2` file format that one wishes to install. **Atoms** (`atom`) are essentially the same as ebuilds, only with bounds on their version numbers specified. For example, `emerge &lt;dev-lang/python-2.0` should install the latest version of Python available before version 2.0.
 <table class="green" style="width: 100%; border: 1px; padding: 1em; vertical-align: middle;"><caption><strong>Table 1: Options for Emerge</strong></caption>
@@ -266,13 +266,13 @@ What is in square-brackets (`[...]`) are optional parts of the command (that is,
 	<li><a href="https://dev.gentoo.org/~zmedico/portage/doc/man/emerge.1.html" target="_blank">EMERGE(1) Manpage</a></li>
 	<li><a href="https://dev.gentoo.org/~zmedico/portage/doc/man/portage.5.html" target="_blank">PORTAGE(5) Manpage</a></li>
 </ul>
-<h4>Wiki Articles</h4>
+####Wiki Articles
 <ul>
 	<li><a href="https://wiki.gentoo.org/wiki/Portage" target="_blank">Gentoo Wiki</a></li>
 	<li><a href="https://wiki.sabayon.org/index.php?title=En:Portage" target="_blank">Sabayon Wiki</a></li>
 	<li><a href="https://en.wikipedia.org/wiki/Portage_(software)" target="_blank">English Wikipedia</a></li>
 </ul>
-<h2>Layman</h2>
+##Layman
 **Layman** is a command-line tool for managing Portage overlays. It can be installed with Portage (from the OGO) using the command:
 <div class="code"><span class="coder">root #</span>  emerge -av app-portage/layman</div>
 or with Entropy using the command:
@@ -447,6 +447,7 @@ where <code>&lt;REPO&gt;</code> is the name of an Entropy repository (e.g., <cod
 </tr>
 </tbody>
 </table>
+<br/>
 <table class="green" style="width: 100%; border: 1px; padding: 1em; vertical-align: middle;"><caption><strong>Table 6: Actions for Equo</strong></caption>
 <tbody>
 <tr class="green">
@@ -459,85 +460,85 @@ where <code>&lt;REPO&gt;</code> is the name of an Entropy repository (e.g., <cod
 <td class="green"><code>cleanup</code></td>
 <td class="green">N/A</td>
 <td class="green">Remove downloaded packages and clean temporary directories.</td>
-<td class="green"><a href="http://linux.x10host.com/blog/man/equo-cleanup.1.html" target="_blank">equo-cleanup.1</a></td>
+<td class="green"><a href="/man/equo-cleanup.1.html" target="_blank">equo-cleanup.1</a></td>
 </tr>
 <tr class="green">
 <td class="green"><code>config</code></td>
 <td class="green">N/A</td>
 <td class="green">Configure installed packages.</td>
-<td class="green"><a href="http://linux.x10host.com/blog/man/equo-config.1.html" target="_blank">equo-config.1</a></td>
+<td class="green"><a href="/man/equo-config.1.html" target="_blank">equo-config.1</a></td>
 </tr>
 <tr class="green">
 <td class="green"><code>deptest</code></td>
 <td class="green"><code>dt</code></td>
 <td class="green">Look for unsatisfied dependencies.</td>
-<td class="green"><a href="http://linux.x10host.com/blog/man/equo-deptest.1.html" target="_blank">equo-deptest.1</a></td>
+<td class="green"><a href="/man/equo-deptest.1.html" target="_blank">equo-deptest.1</a></td>
 </tr>
 <tr class="green">
 <td class="green"><code>install</code></td>
 <td class="green"><code>i</code></td>
 <td class="green">Install software.</td>
-<td class="green"><a href="http://linux.x10host.com/blog/man/equo-install.1.html" target="_blank">equo-install.1</a></td>
+<td class="green"><a href="/man/equo-install.1.html" target="_blank">equo-install.1</a></td>
 </tr>
 <tr class="green">
 <td class="green"><code>libtest</code></td>
 <td class="green"><code>lt</code></td>
 <td class="green">Look for missing libraries required by other packages.</td>
-<td class="green"><a href="http://linux.x10host.com/blog/man/equo-libtest.1.html" target="_blank">equo-libtest.1</a></td>
+<td class="green"><a href="/man/equo-libtest.1.html" target="_blank">equo-libtest.1</a></td>
 </tr>
 <tr class="green">
 <td class="green"><code>mask</code></td>
 <td class="green">N/A</td>
 <td class="green">Mask packages given as input.</td>
-<td class="green"><a href="http://linux.x10host.com/blog/man/equo-mask.1.html" target="_blank">equo-mask.1</a></td>
+<td class="green"><a href="/man/equo-mask.1.html" target="_blank">equo-mask.1</a></td>
 </tr>
 <tr class="green">
 <td class="green"><code>remove</code></td>
 <td class="green"><code>rm</code></td>
 <td class="green">Remove packages given as input.</td>
-<td class="green"><a href="http://linux.x10host.com/blog/man/equo-remove.1.html" target="_blank">equo-remove.1</a></td>
+<td class="green"><a href="/man/equo-remove.1.html" target="_blank">equo-remove.1</a></td>
 </tr>
 <tr class="green">
 <td class="green"><code>rescue</code></td>
 <td class="green">N/A</td>
 <td class="green">Tools to rescue system</td>
-<td class="green"><a href="http://linux.x10host.com/blog/man/equo-rescue.1.html" target="_blank">equo-rescue.1</a></td>
+<td class="green"><a href="/man/equo-rescue.1.html" target="_blank">equo-rescue.1</a></td>
 </tr>
 <tr class="green">
 <td class="green"><code>search</code></td>
 <td class="green"><code>s</code></td>
 <td class="green">Search for packages in repositories.</td>
-<td class="green"><a href="http://linux.x10host.com/blog/man/equo-search.1.html" target="_blank">equo-search.1</a></td>
+<td class="green"><a href="/man/equo-search.1.html" target="_blank">equo-search.1</a></td>
 </tr>
 <tr class="green">
 <td class="green"><code>unmask</code></td>
 <td class="green">N/A</td>
 <td class="green">Unmask packages given as input.</td>
-<td class="green"><a href="http://linux.x10host.com/blog/man/equo-unmask.1.html" target="_blank">equo-unmask.1</a></td>
+<td class="green"><a href="/man/equo-unmask.1.html" target="_blank">equo-unmask.1</a></td>
 </tr>
 <tr class="green">
 <td class="green"><code>update</code></td>
 <td class="green"><code>up</code></td>
 <td class="green">Update repositories.</td>
-<td class="green"><a href="http://linux.x10host.com/blog/man/equo-update.1.html" target="_blank">equo-update.1</a></td>
+<td class="green"><a href="/man/equo-update.1.html" target="_blank">equo-update.1</a></td>
 </tr>
 <tr class="green">
 <td class="green"><code>upgrade</code></td>
 <td class="green"><code>u</code></td>
 <td class="green">Upgrade packages that have been updated (in the software repositories) since they were installed, or since you last ran this command.</td>
-<td class="green"><a href="http://linux.x10host.com/blog/man/equo-upgrade.1.html" target="_blank">equo-upgrade.1</a></td>
+<td class="green"><a href="/man/equo-upgrade.1.html" target="_blank">equo-upgrade.1</a></td>
 </tr>
 </tbody>
 </table>
 <h3>Links</h3>
 <ul>
-	<li><a href="http://linux.x10host.com/blog/man/equo.1.html" target="_blank">equo(1) Manpage</a></li>
+	<li><a href="/man/equo.1.html" target="_blank">equo(1) Manpage</a></li>
 	<li><a href="http://linux.x10host.com/blog/equo.pdf" target="_blank">Complete Equo Manual</a> (PDF version of all Equo manpages combined)</li>
 	<li><a href="https://packages.sabayon.org" target="_blank">Entropy Store</a></li>
 	<li><a href="https://github.com/Sabayon/entropy" target="_blank">GitHub repository</a></li>
 	<li><a href="https://wiki.sabayon.org/index.php?title=En:Entropy" target="_blank">Sabayon Wiki Article</a></li>
 </ul>
-<h1>Mixing Entropy with Portage</h1>
+#Mixing Entropy with Portage
 By default Entropy and Portage act fairly independently of one another. In order for you to use them together, you must tell Entropy that you are also using Portage to install packages by running:
 <div class="code"><span class="coder">root #</span>  equo rescue spmsync</div>
 whenever you emerge, unmerge or update a package. I have this saved in my `~/.bashrc` (for root user) as the function `spm`, so as to make it easier for me to run it when necessary. What this will do is it will cause packages you installed with Portage to be acknowledged by Entropy, as otherwise Entropy has no clue as to their existence. After this you may also wish to mask packages you installed with Portage, so as to prevent Entropy from attempting to upgrade or remove software installed with Portage. To do this run:
@@ -547,11 +548,9 @@ To prevent Entropy from downgrading emerged packages you need to edit
 and uncomment (removing the hashtag `#`) the line
 <div class="code">ignore-spm-downgrades = enable</div>
 Packages installed with Entropy are almost always safer (less likely to lead to system breaks or have bugs) than their Portage-installed counterparts, so when you install a package with Portage that has several non-installed dependencies I would suggest you install as many of these dependencies as possible with Entropy before you merge the remaining dependencies and the package itself with Portage.
-<h2>Further Reading</h2>
-<ul>
-	<li><a href="https://wiki.sabayon.org/index.php?title=HOWTO:_Safely_mix_Entropy_and_Portage">"HOWTO: Safely mix Entropy and Portage" @ Sabayon Wiki</a></li>
-</ul>
-<h1>The Algorithm</h1>
+##Further Reading
+* ["HOWTO: Safely mix Entropy and Portage" @ Sabayon Wiki](https://wiki.sabayon.org/index.php?title=HOWTO:_Safely_mix_Entropy_and_Portage)
+#The Algorithm
 Occasionally, while browsing the internet, I find a program I would like to install on my Sabayon machine. Here is the algorithm I follow to install it:
 <ol>
 <ol>
@@ -575,8 +574,8 @@ While if the source code is written in Python I look for a setup.py file and run
 <div class="code"><span class="coder">root #</span>  python setup.py install</div></li>
 	<li>If errors are encountered at any of these steps (by errors I do not include the absence of available software packages as errors) I also attempt to seek support. For example, if the failure happened with an added unofficial overlay I often find the GitHub repository that houses the overlay and create a new issue for said repository. This process of getting support often occurs quite slowly, taking several days, at least, to get any solution to the problem, so often if failures happen I move onto the next step of this algorithm (if there are any steps left) before I report the failures.</li>
 </ol>
-<h1>Examples</h1>
-<h2>OpenRA</h2>
+#Examples
+##OpenRA
 [caption id="attachment_575" align="alignnone" width="1920"]<a href="http://media.moddb.com/images/downloads/1/65/64841/OpenRA_2014-01-26_15-41-01-09.jpg"><img class="wp-image-575 size-full" src="http://media.moddb.com/images/downloads/1/65/64841/OpenRA_2014-01-26_15-41-01-09.jpg" alt="OpenRA_2014-01-26_15-41-01-09" width="1920" height="1080" /></a> **An example of OpenRA running**[/caption]
 
 **OpenRA** (`games-strategy/openra`) is a free and open-source futuristic strategy game. For me, it reminds me of one of my favourite Windows games, <a href="https://en.wikipedia.org/wiki/Outlive" target="_blank">Outlive</a>. OpenRA is unusual in that it is not available in the Entropy Store, although a <a href="https://packages.gentoo.org/packages/games-strategy/openra">few ebuilds</a> for it do exist in the Portage Tree, although it is worthwhile mentioning that these ebuilds are often out of date. For example, as of 12 October 2015 the latest ebuild available in the Portage Tree is for version 20141029 (note how this number represents the date of the release, 29 October 2014), while the latest release is 20150919 (released 19 September 2015). There are unofficial overlays (such as <span class="overlay"><a href="https://github.com/hasufell/games-overlay">games-overlay</a></span>) that contain more recent versions of OpenRA, although as of 12 October 2015 they still do not contain the latest release of OpenRA.
@@ -602,36 +601,29 @@ This does not add an executable of OpenRA to `/usr/games/bin/` and hence running
 <div class="code"><span class="coder">root #</span>  nano /usr/games/bin/openra</div>
 ) with the line `mono --debug /path/to/OpenRA.Game.exe` where `/path/to` is replaced with the path to where you built OpenRA from source code (which for me is `/home/fusion809/Programs/OpenRA-release-20150919`).</li>
 </ol>
-<h3>External links</h3>
-<ul>
-	<li><a href="http://www.openra.net/download/">Download Page</a></li>
-	<li><a href="https://github.com/OpenRA/OpenRA/wiki/FAQ">Frequently Ask Questions</a></li>
-	<li><a href="https://github.com/OpenRA/OpenRA">GitHub Repository</a></li>
-	<li><a href="http://www.sleipnirstuff.com/forum/viewforum.php?f=80">Official Forums</a></li>
-	<li><a href="http://www.openra.net/">Official Website</a></li>
-	<li><a href="https://github.com/OpenRA/OpenRA/wiki">Official Wiki</a></li>
-</ul>
-<h2>SuperTux</h2>
+###External links
+* [Download Page](http://www.openra.net/download/)
+* [Frequently Ask Questions](https://github.com/OpenRA/OpenRA/wiki/FAQ)
+* [GitHub Repository](https://github.com/OpenRA/OpenRA)
+* [Official Forums](http://www.sleipnirstuff.com/forum/viewforum.php?f=80)
+* [Official Website](http://www.openra.net/)
+* [Official Wiki](https://github.com/OpenRA/OpenRA/wiki)
+##SuperTux
 [caption id="attachment_588" align="alignnone" width="800"]<a href="https://upload.wikimedia.org/wikipedia/commons/4/4a/Supertux-checkpoint.png"><img class="size-full wp-image-588" src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Supertux-checkpoint.png" alt="SuperTux 0.3.3" width="800" height="600" /></a> **SuperTux 0.3.3**[/caption]
 
 **SuperTux** (`games-arcade/supertux`) is a free and open-source (licensed under GNU GPLv3) 2D platform game that was first released in April 2003. Its gameplay is very similar to that of the proprietary game, Super Mario Bros. The initial 2003 release was called "Milestone 1" (or if you would prefer a version number 0.1.3) and is the version of SuperTux available in the Entropy Store and the Official Gentoo Overlay (OGO). I have installed this version with Entropy, using:
 <div class="code"><span class="coder">root #</span>  equo i games-arcade/supertux</div>
 This game is enjoyable, giving several hours of entertainment for me at least. Despite this, due to my preoccupation with using the latest software available, I looked to install the latest version of SuperTux (which are developmental, but still fairly stable, versions of Milestone 2 (or SuperTux 2) which is due to be released in December 2015). I tried installing it using the unofficial <span class="overlay"><a title="undefined" href="https://github.com/yarikmsu/yarik-overlay">yarik-overlay</a></span> and while this succeeded I found the most stable version provided by it (0.3.4) plagued by bugs. To do this I ran:
-<div class="code"><span class="coder">root #</span>  layman -a yarik-overlay
-<span class="coder">root #</span>  emerge --sync &amp;&amp; layman -S
-<span class="coder">root #</span>  emerge -av supertux</div>
+{% include coder.html line1="layman -a yarik-overlay" line2="emerge --sync && layman -S" line3="emerge -av supertux" %}
 So after this, I decided to give manually building and installing it myself, a go. Then I got the <a title="undefined" href="https://github.com/SuperTux/supertux/releases/download/v0.3.5a/supertux-0.3.5a.tar.bz2">latest tarball source code release</a> (`tar -xvf supertux-0.3.5a.tar.bz2` should do this from the command-line), decompressed it, changed into the supertux-0.3.5a directory and ran:
-<div class="code"><span class="codeu">user $</span>  mkdir build
-<span class="codeu">user $</span>  cd build
-<span class="codeu">user $</span>  cmake ..
-<span class="codeu">user $</span>  make
-<span class="codeu">user $</span>  sudo make install</div>
+{% include codeu.html line1="mkdir build" line2="cd build" line3="cmake .. -DCMAKE_INSTALL_PREFIX=/usr" line4="make" line5="sudo make install" %}
 this ran without error and the resulting SuperTux 2 installation (which by-the-way I have managed to keep on my system despite never removing my SuperTux 1 Entropy installation) was less buggy, in fact, I do not believe any bugs are left.
-<h3>External links</h3>
+###External links
 <ul>
 	<li><a href="https://github.com/SuperTux/supertux">GitHub Repository</a></li>
 	<li><a href="http://supertux.github.io/">Official Website</a></li>
 	<li><a href="http://gpo.zugaina.org/games-arcade/supertux">SuperTux @ gpo.zugaina.org</a></li>
 	<li><a href="https://github.com/SuperTux/supertux/wiki/User-Manual">User Manual</a></li>
 </ul>
-<h1>Footnotes</h1>
+#Footnotes
+[^1]: Specifically the <a href="https://dev.gentoo.org/~zmedico/portage/doc/man/emerge.1.html" target="_blank">emerge(1)</a> manpage
