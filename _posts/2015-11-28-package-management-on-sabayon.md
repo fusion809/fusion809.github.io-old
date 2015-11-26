@@ -561,7 +561,7 @@ To install the latest version available of OpenRA on Sabayon one has four main o
 <ol>
 <li>Emerge the package from the Portage Tree. This will get you release 20141029, at best. I have not tried this due to how old a version this package is. To do this simply run:
 {% include coder.html line1="emerge games-strategy/openra" %}</li>
-<li>Add the <code>games-overlay with Layman and emerge the latest version available from it, 20150919. To do this run:
+<li>Add the <code>games-overlay</code> with Layman and emerge the latest version available from it, 20150919. To do this run:
 {% include coder.html line1="layman -a games-overlay" line2="emerge --sync && layman -S" line3="emerge games-strategy/openra-20150919::games-overlay" %}</li>
 <li>Add the <code><a href="https://github.com/cerebrum/dr">dr</a></code> overlay (not available with Layman) and emerge the latest version, 20150919. This option I have not done, due to the fact it needs freetype unmerged and that would break my system. To do this run:
 {% include coder.html line1="layman -o http://github.com/cerebrum/dr/raw/master/repo.xml -f -a dr" line2="emerge --sync && layman -S" line3="emerge games-strategy/openra::dr" %}</li>
