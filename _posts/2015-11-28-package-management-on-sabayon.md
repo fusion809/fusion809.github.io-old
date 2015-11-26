@@ -448,73 +448,73 @@ where `<REPO>` is the name of an Entropy repository (e.g., `sabayonlinux.org`, `
 <td class="green"><code>cleanup</code></td>
 <td class="green">N/A</td>
 <td class="green">Remove downloaded packages and clean temporary directories.</td>
-<td class="green"><a href="/man/equo-cleanup.1.html">equo-cleanup.1</a></td>
+<td class="green">{% include man.html man="equo-cleanup.1.html" %}</td>
 </tr>
 <tr class="green">
 <td class="green"><code>config</code></td>
 <td class="green">N/A</td>
 <td class="green">Configure installed packages.</td>
-<td class="green"><a href="/man/equo-config.1.html">equo-config.1</a></td>
+<td class="green">{% include man.html man="equo-config.1.html" %}</td>
 </tr>
 <tr class="green">
 <td class="green"><code>deptest</code></td>
 <td class="green"><code>dt</code></td>
 <td class="green">Look for unsatisfied dependencies.</td>
-<td class="green"><a href="/man/equo-deptest.1.html">equo-deptest.1</a></td>
+<td class="green">{% include man.html man="equo-deptest.1.html" %}</td>
 </tr>
 <tr class="green">
 <td class="green"><code>install</code></td>
 <td class="green"><code>i</code></td>
 <td class="green">Install software.</td>
-<td class="green"><a href="/man/equo-install.1.html">equo-install.1</a></td>
+<td class="green">{% include man.html man="equo-install.1.html" %}</td>
 </tr>
 <tr class="green">
 <td class="green"><code>libtest</code></td>
 <td class="green"><code>lt</code></td>
 <td class="green">Look for missing libraries required by other packages.</td>
-<td class="green"><a href="/man/equo-libtest.1.html">equo-libtest.1</a></td>
+<td class="green">{% include man.html man="equo-libtest.1.html" %}</td>
 </tr>
 <tr class="green">
 <td class="green"><code>mask</code></td>
 <td class="green">N/A</td>
 <td class="green">Mask packages given as input.</td>
-<td class="green"><a href="/man/equo-mask.1.html">equo-mask.1</a></td>
+<td class="green">{% include man.html man="equo-mask.1.html" %}</td>
 </tr>
 <tr class="green">
 <td class="green"><code>remove</code></td>
 <td class="green"><code>rm</code></td>
 <td class="green">Remove packages given as input.</td>
-<td class="green"><a href="/man/equo-remove.1.html">equo-remove.1</a></td>
+<td class="green">{% include man.html man="equo-remove.1.html" %}</td>
 </tr>
 <tr class="green">
 <td class="green"><code>rescue</code></td>
 <td class="green">N/A</td>
 <td class="green">Tools to rescue system</td>
-<td class="green"><a href="/man/equo-rescue.1.html">equo-rescue.1</a></td>
+<td class="green">{% include man.html man="equo-rescue.1.html" %}</td>
 </tr>
 <tr class="green">
 <td class="green"><code>search</code></td>
 <td class="green"><code>s</code></td>
 <td class="green">Search for packages in repositories.</td>
-<td class="green"><a href="/man/equo-search.1.html">equo-search.1</a></td>
+<td class="green">{% include man.html man="equo-search.1.html" %}</td>
 </tr>
 <tr class="green">
 <td class="green"><code>unmask</code></td>
 <td class="green">N/A</td>
 <td class="green">Unmask packages given as input.</td>
-<td class="green"><a href="/man/equo-unmask.1.html">equo-unmask.1</a></td>
+<td class="green">{% include man.html man="equo-unmask.1.html" %}</td>
 </tr>
 <tr class="green">
 <td class="green"><code>update</code></td>
 <td class="green"><code>up</code></td>
 <td class="green">Update repositories.</td>
-<td class="green"><a href="/man/equo-update.1.html">equo-update.1</a></td>
+<td class="green">{% include man.html man="equo-update.1.html" %}</td>
 </tr>
 <tr class="green">
 <td class="green"><code>upgrade</code></td>
 <td class="green"><code>u</code></td>
 <td class="green">Upgrade packages that have been updated (in the software repositories) since they were installed, or since you last ran this command.</td>
-<td class="green"><a href="/man/equo-upgrade.1.html">equo-upgrade.1</a></td>
+<td class="green">{% include man.html man="equo-upgrade.1.html" %}</td>
 </tr>
 </tbody>
 </table>
@@ -561,13 +561,13 @@ To install the latest version available of OpenRA on Sabayon one has four main o
 <ol>
 <li>Emerge the package from the Portage Tree. This will get you release 20141029, at best. I have not tried this due to how old a version this package is. To do this simply run:
 {% include coder.html line1="emerge games-strategy/openra" %}</li>
-<li>Add the <code>games-overlay</code> with Layman and emerge the latest version available from it, 20150919. To do this run:
+<li>Add the <code>games-overlay with Layman and emerge the latest version available from it, 20150919. To do this run:
 {% include coder.html line1="layman -a games-overlay" line2="emerge --sync && layman -S" line3="emerge games-strategy/openra-20150919::games-overlay" %}</li>
 <li>Add the <code><a href="https://github.com/cerebrum/dr">dr</a></code> overlay (not available with Layman) and emerge the latest version, 20150919. This option I have not done, due to the fact it needs freetype unmerged and that would break my system. To do this run:
 {% include coder.html line1="layman -o http://github.com/cerebrum/dr/raw/master/repo.xml -f -a dr" line2="emerge --sync && layman -S" line3="emerge games-strategy/openra::dr" %}</li>
 <li>Compile the source code yourself and install OpenRA from that (which will get you the latest version of OpenRA, 20150919). This option I have succeeded in doing and is how OpenRA is currently installed on my system. To do this I ran:
 {% include codeu.html line1="wget -c https://github.com/OpenRA/OpenRA/archive/release-20150919.tar.gz | tar -xz" line2="cd OpenRA-release-20150919" line3="make dependencies && make all" %}
-This does not add an executable of OpenRA to <code>/usr/games/bin/</code> and hence running <code>openra</code> from the command-line will not start the game. So after this I also created a shell script file called <code>/usr/games/bin/openra</code> with nano (that is, I ran
+This does not add an executable of OpenRA to <code>/usr/games/bin/</code> and hence running `openra` from the command-line will not start the game. So after this I also created a shell script file called <code>/usr/games/bin/openra</code> with nano (that is, I ran
 {% include coder.html line1="nano /usr/games/bin/openra" %}
 ) with the line <code>mono --debug /path/to/OpenRA.Game.exe</code> where <code>/path/to</code> is replaced with the path to where you built OpenRA from source code (which for me is <code>/home/fusion809/Programs/OpenRA-release-20150919)</code>.</li>
 </ol>
