@@ -609,6 +609,7 @@ function chrootb {
   sudo umount /root2/sys
 }
 
+# Select Sabayon mirrors from which to download the release tarball
 function sabayon-mirror {
   ## Declare the associative array
   declare -A L=(
@@ -673,7 +674,7 @@ function sabayon-chrootn {
       mkdir $HOME/chroots
       # Enter the chroots directory
       pushd "$HOME/chroots"
-        # Select a mirror from which to download the tarball.
+        # Select a mirror from which to download the tarball, using sabayon-mirror
         # These tarballs are usually >500 MB in size, so closer
         # the mirror, the better.
         wget -c $MIRROR/iso/daily/Sabayon_Linux_DAILY_amd64_tarball.tar.gz
