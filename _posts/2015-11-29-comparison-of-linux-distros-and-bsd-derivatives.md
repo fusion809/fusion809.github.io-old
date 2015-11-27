@@ -64,4 +64,4 @@ Each operating system (OS) review will have the format:
 {% include image.html image="Arch-Linux-DDE-menu.png" width="1200px" float="none" description="Arch Linux running the Deepin Desktop Environment" %}
 
 ## Background
-{% include distros.html distro="Arch Linux" dw="arch" wp="Arch Linux" url="https://www.archlinux.org/" wiki="https://wiki.archlinux.org/" forum="https://bbs.archlinux.org/" %}
+{% include distros.html distro="Arch Linux" dw="arch" wp="Arch Linux" url="https://www.archlinux.org/" wiki="https://wiki.archlinux.org/" forum="https://bbs.archlinux.org/" %} is an independent Linux distribution that was first founded in 2002 and has since become one of the most popular Linux distributions that is geared towards experienced users. It aims to adhere to the "Keep It Simple, Stupid" principle. 
