@@ -321,7 +321,7 @@ To add a new overlay that is not within the reference list, run:
 <table class="green" style="width: 100%; border: 1px; padding: 1em; vertical-align: middle;"><caption><strong>Table 4: Actions for Layman</strong></caption>
 <tbody>
 <tr class="green">
-<td class="title" style="width: 130px;">Long</td>
+<td class="title" style="width: 150px;">Long</td>
 <td class="title">Short</td>
 <td class="title">Meaning</td>
 </tr>
@@ -535,42 +535,16 @@ Packages installed with Entropy are almost always safer (less likely to lead to 
 
 #The Algorithm
 Occasionally, while browsing the internet, I find a program I would like to install on my Sabayon machine. Here is the algorithm I follow to install it:
-<ol>
-	<li>I search for whether or not said software is available in the <a href="https://packages.sabayon.org" target="_blank">Entropy Store</a>. If it is there I install it with Equo (e.g., via running {% include coders.html line1="equo i &lt;PACKAGE&gt;" %}), if not I proceed to the next step.</li>
-	<li>I search for whether or not said software is available in the main <a href="https://packages.gentoo.org" target="_blank">Gentoo Overlay</a>. If it is there I install it with Emerge (e.g., via running {% include coders.html line1="emerge -av &lt;PACKAGE&gt;" %}), otherwise I move onto the next step.</li>
-	<li>I search for whether or not the software is available in any <a href="http://gpo.zugaina.org/" target="_blank">unofficial overlays</a>. If it is, and the version number is acceptable (usually I prefer the latest stable version of a software, but sometimes I will settle for fairly recent stable versions) I may add the containing overlay with
-{% include coder.html line1="layman -a &lt;OVERLAY&gt;" %}
-then sync both Portage and Layman with (I also have this added as a function called <code>sync</code> in my <code>~/.bashrc</code> script)
-{% include coder.html line1="emerge --sync && layman -S" %}
-and then emerge the package with
-{% include coder.html line1="emerge -av &lt;PACKAGE&gt;" %}</li>
-otherwise I proceed to the next step. If the package has several dependencies I try to install as many as possible with Entropy, before I emerge the remaining dependencies and <code>&lt;PACKAGE&gt;</code> itself. Often using pretend instead of ask options (<code>emerge -pv...</code> instead of <code>emerge -av...</code>) will be helpful if you want a list of packages to install with Entropy. Sometimes emerge will say you need to adjust your USE flags (stored in <code>/etc/portage/package.use/</code>), package keywords (stored in <code>/etc/portage/package.keywords</code>), list of accepted software licenses (stored in <code>/etc/portage/make.conf</code>) and alike to install the package you want.
-	<li>If all else fails I get the source code and try compiling and installing it myself. This step is last, because this step is very error prone if, like me, you do not know an awful lot about compiling software or programming, in general. This step depends on the instructions in any INSTALL or README file included with the source code. If these files do not exist I use my knowledge on common compiling methods to install the software. For example, if the source code is written in C/C++ often there will be an autogen.sh or configure file somewhere in the source code base directory, which I will run (usually by opening up a terminal emulator and running {% include codeus.html line1="./&lt;FILE&gt;" %} where &lt;FILE&gt; is either autogen.sh or configure)) and read the output of. If the output includes an error, concerning some missing dependency, I will try to install said dependency (following the same algorithm outlined here) and re-run the autogen.sh/configure script or if the dependency is on my PC already I will try giving the autogen.sh or configure file a PATH variable pointing to the dependency's location on my system when I re-execute them. If no errors are encountered when running these scripts, or I manage to fix them with the methods I just mentioned I then run
-{% include codeu.html line1="make" line2="sudo make install" %}
-While if the source code is written in Python I look for a setup.py file and run
-{% include coder.html line1="python setup.py install" %}</li>
-	<li>If errors are encountered at any of these steps (by errors I do not include the absence of available software packages as errors) I also attempt to seek support. For example, if the failure happened with an added unofficial overlay I often find the GitHub repository that houses the overlay and create a new issue for said repository. This process of getting support often occurs quite slowly, taking several days, at least, to get any solution to the problem, so often if failures happen I move onto the next step of this algorithm (if there are any steps left) before I report the failures.</li>
-</ol>
+{% include algorithm.html %}
 #Examples
+
 ##OpenRA
 {% include image.html image="OpenRA.jpg" description="An example of OpenRA running" width="1920" height="1080" float="none" %}
 
 {% include links.html package="games-strategy/openra" program="OpenRA" link="http://www.openra.net/" wp="OpenRA" gr="OpenRA/OpenRA" wiki="https://github.com/OpenRA/OpenRA/wiki" %} is a free and open-source futuristic strategy game. For me, it reminds me of one of my favourite Windows games, [Outlive](https://en.wikipedia.org/wiki/Outlive). OpenRA is unusual in that it is not available in the Entropy Store, although a [few ebuilds](https://packages.gentoo.org/packages/games-strategy/openra) for it do exist in the Portage Tree, although it is worthwhile mentioning that these ebuilds are often out of date. For example, as of 26 November 2015 the latest ebuild available in the Portage Tree is for version 20141029 (note how this number represents the date of the release, 29 October 2014), while the latest release is 20150919 (released 19 September 2015). There are unofficial overlays (such as [games-overlay](https://github.com/hasufell/games-overlay)) that contain more recent versions of OpenRA, although it was not until 19 October 2015 that an ebuild for 20150919 was added to this overlay.
 
 To install the latest version available of OpenRA on Sabayon one has four main options:
-<ol>
-<li>Emerge the package from the Portage Tree. This will get you release 20141029, at best. I have not tried this due to how old a version this package is. To do this simply run:
-{% include coder.html line1="emerge games-strategy/openra" %}</li>
-<li>Add the <code>games-overlay</code> with Layman and emerge the latest version available from it, 20150919. To do this run:
-{% include coder.html line1="layman -a games-overlay" line2="emerge --sync && layman -S" line3="emerge games-strategy/openra-20150919::games-overlay" %}</li>
-<li>Add the <code><a href="https://github.com/cerebrum/dr">dr</a></code> overlay (not available with Layman) and emerge the latest version, 20150919. This option I have not done, due to the fact it needs freetype unmerged and that would break my system. To do this run:
-{% include coder.html line1="layman -o http://github.com/cerebrum/dr/raw/master/repo.xml -f -a dr" line2="emerge --sync && layman -S" line3="emerge games-strategy/openra::dr" %}</li>
-<li>Compile the source code yourself and install OpenRA from that (which will get you the latest version of OpenRA, 20150919). This option I have succeeded in doing and is how OpenRA is currently installed on my system. To do this I ran:
-{% include codeu.html line1="wget -c https://github.com/OpenRA/OpenRA/archive/release-20150919.tar.gz | tar -xz" line2="cd OpenRA-release-20150919" line3="make dependencies && make all" %}
-This does not add an executable of OpenRA to <code>/usr/games/bin/</code> and hence running `openra` from the command-line will not start the game. So after this I also created a shell script file called <code>/usr/games/bin/openra</code> with nano (that is, I ran
-{% include coder.html line1="nano /usr/games/bin/openra" %}
-) with the line <code>mono --debug /path/to/OpenRA.Game.exe</code> where <code>/path/to</code> is replaced with the path to where you built OpenRA from source code (which for me is <code>/home/fusion809/Programs/OpenRA-release-20150919)</code>.</li>
-</ol>
+{% include openra.html %}
 
 ###External links
 * [Download Page](http://www.openra.net/download/)
@@ -579,7 +553,7 @@ This does not add an executable of OpenRA to <code>/usr/games/bin/</code> and he
 ##SuperTux
 {% include image.html image="Supertux-checkpoint.png" description="SuperTux 0.3.3" float="none" width="800" height="600" %}
 
-{% include links.html package="games-arcade/supertux" program="SuperTux" link="http://supertux.github.io/" wp="SuperTux" gr="SuperTux/supertux" %} is a free and open-source (licensed under GNU GPLv3) 2D platform game that was first released in April 2003. Its gameplay is very similar to that of the proprietary game, Super Mario Bros. The initial 2003 release was called "Milestone 1" (or if you would prefer a version number 0.1.3) and is the version of SuperTux available in the Entropy Store and the Portage Tree I have installed this version with Entropy, using:
+{% include links.html package="games-arcade/supertux" program="SuperTux" link="http://supertux.github.io/" wp="SuperTux" gr="SuperTux/supertux" %} is a free and open-source (licensed under GNU GPLv3) 2D platform game that was first released in April 2003. Its gameplay is very similar to that of the proprietary game, Super Mario Bros. The initial 2003 release was called "Milestone 1" (or if you would prefer a version number 0.1.3) and is the version of SuperTux that is currently available in the Entropy Store and the Portage Tree. I have installed this version with Entropy, using:
 {% include coder.html line1="equo i games-arcade/supertux" %}
 This game is enjoyable, giving several hours of entertainment for me at least. Despite this, due to my preoccupation with using the latest software available, I looked to install the latest version of SuperTux (which are developmental, but still fairly stable, versions of Milestone 2 (or SuperTux 2) which is due to be released in December 2015). I tried installing it using the unofficial [`yarik-overlay`](https://github.com/yarikmsu/yarik-overlay) and while this succeeded I found the most stable version provided by it (0.3.4) plagued by bugs. To do this I ran:
 {% include coder.html line1="layman -a yarik-overlay" line2="emerge --sync && layman -S" line3="emerge -av supertux" %}
