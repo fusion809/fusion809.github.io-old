@@ -48,7 +48,7 @@ Each operating system (OS) review will have the format:
   * I also provide a numerical rating from 1-10 for the extent of my experience with the system (MEWI), 1 in this context indicates <1 hour, 2 for ~1-2 hours and 3 for 2-3 hours, 4 for 3-6 hours, ..., 10 for >100 hours.
   * Additionally I provide an overall satisfaction score for the system, from 1 to 10.
 
-#antiX
+# antiX
 {% include image.html url="/images/antiX-15.png" width = "768px" float="none" description="antiX 15 running in VirtualBox, with its default desktop" %}
 
 ## Background
@@ -60,8 +60,8 @@ Each operating system (OS) review will have the format:
 
 {% include distro-ratings.html BF="8. Fairly beginner-friendly." CMB="8. A core-libre version is available, which contains the bare minimum software, on it you can build your own custom system." doc="2. Very little original documentation exists for antiX." sup="? I've never had to use their support." pm="7. Uses tools it borrows from Debian, which in my opinion are not very impressive." oa="8. It is OK, but I always feel it is like using a treehouse for your office &mdash; it is too minimalistic for it to be appropriate. Although, if I had the time and inclination to install all the software I wanted, I could make it more to my liking." sru="9. Fairly lightweight, by default." sb="7-8. I have never had any stability issues with it myself, probably because I have not used it enough to, but it is based on the testing branch of Debian, hence it is inevitable that it will be more buggy than Debian (Stable)."  mewi="2." %}
 
-#Arch Linux
+# Arch Linux
 {% include image.html image="Arch-Linux-DDE-menu.png" width="1200px" float="none" description="Arch Linux running the Deepin Desktop Environment" %}
 
 ## Background
-{% include distros.html distro="Arch Linux" dw="arch" wp="Arch Linux" url="https://www.archlinux.org/" wiki="https://wiki.archlinux.org/" forum="https://bbs.archlinux.org/" %} is an independent Linux distribution that was first founded in 2002 and has since become one of the most popular Linux distributions that is geared towards experienced users. It aims to adhere to the "Keep It Simple, Stupid" principle. Its take on this principle is that no automation should be done and that a fresh install of Arch should have as little software on it as possible, rather it should be up to the user to add as much or as little software to their system as they want. 
+{% include distros.html distro="Arch Linux" dw="arch" wp="Arch Linux" url="https://www.archlinux.org/" wiki="https://wiki.archlinux.org/" forum="https://bbs.archlinux.org/" %} is an independent Linux distribution that was first founded in 2002 and has since become one of the most popular Linux distributions that is geared towards experienced users. It aims to adhere to the "Keep It Simple, Stupid" principle. Its take on this principle is that no automation should be done and that a fresh install of Arch should have as little software on it as possible. The purpose of this minimalism is that it gives the user as much control over their system as possible. Arch uses its own package management system too, pacman. pacman installs software from binary packages with the file extension `.pkg.tar.xz`. On top of pacman, for package management Arch Linux also has yaourt which is a wrapper for pacman that can compile and install software from source code by following instructions contained in specialized Bash scripts called PKGBUILDs that are hosted by the [Arch User Repository](https://aur.archlinux.org/) (AUR).  
