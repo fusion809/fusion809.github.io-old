@@ -147,7 +147,7 @@ $.fn.toc = function(options) {
 jQuery.fn.toc.defaults = {
   container: 'body',
   listType: '<ul/>',
-  selectors: 'h1,h2,h3',
+  selectors: 'h1',
   smoothScrolling: function(target, options, callback) {
     $(target).smoothScroller({
       offset: options.scrollToOffset
@@ -193,11 +193,11 @@ jQuery.fn.toc.defaults = {
 
 $(document).ready(function() {
   $('#toc').toc({
-      'selectors': 'h1,h2,h3', //elements to use as headings
+      'selectors': 'h1', //elements to use as headings
       'container': 'body', //element to find all selectors in
       'listType': '<ul/>', //use unordered list. If you need ordered one instead pass: '<ol/>'
       'smoothScrolling': true, //enable or disable smooth scrolling on click
-      'prefix': 'toc', //prefix for anchor tags and class names
+      'prefix': 'toc2', //prefix for anchor tags and class names
       'onHighlight': function(el) {}, //called when a new section is highlighted
       'highlightOnScroll': true, //add class to heading that is currently in focus
       'highlightOffset': 100, //offset to trigger the next headline

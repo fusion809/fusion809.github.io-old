@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: post2
 title:  "Bash Scripting and the Command-Line: an Introduction for Sabayon Users"
 date:   2015-11-26
 categories: sabayon, bash, shell-scripting, command-line
@@ -10,7 +10,7 @@ redirect_from:
   - /2015/11/24/bash-scripting-and-the-command-line-an-introduction-for-sabayon-users/
 ---
 
-{% include image.html image="optipng2.png" description="OptiPNG 0.7.5 running under Bash 4.3.39 in LXTerminal 0.2.0" width = "1240px" float = "none" %}
+{% include image.html image="optipng2.png" description="OptiPNG 0.7.5 running under Bash 4.3.39 in LXTerminal 0.2.0" width = "1150px" float = "none" %}
 {% include note.html note1="Links to Wiki articles are provided in this post for those that wish to learn more, but it is important to note that I cannot guarantee their accuracy." %}
 
 On **Sabayon Linux** and other [Linux distributions](https://en.wikipedia.org/wiki/Linux_distribution), along with other [Unix](https://en.wikipedia.org/wiki/Unix)/[Unix-like](https://en.wikipedia.org/wiki/Unix-like) systems,[^1] the command-line is a pivotal way by which users can interact with the operating system, the files stored on it and the system's various components. The command-line on such systems is usually accessed via so called &ldquo;**[terminal emulators](https://en.wikipedia.org/wiki/Terminal_emulator)**&rdquo;, which start and allow users to interact with their [Unix shell](https://en.wikipedia.org/wiki/Unix_shell). It is Unix shells that really serve as the command-line of &#42;nix systems and from within them various command-line programs can be called and used to perform specific tasks. Examples of such programs include `cp`, `find`, `ls`, `rm`, *etc.* In fact, one of the defining properties of all &#42;nix systems is that they share a set of basic command-line utilities that perform specific and usually singular tasks. On Linux platforms such as Sabayon these basic utilities are usually provided by the [**GNU Core Utilities**](https://en.wikipedia.org/wiki/GNU_Core_Utilities) ([sys-apps/coreutils](https://packages.sabayon.org/show/coreutils,156043,sabayon-weekly,amd64,5,standard)) package and the Unix shell used is usually **[Bash](https://en.wikipdia.org/wiki/Bash_(Unix_shell))**.
@@ -19,7 +19,7 @@ On **Sabayon Linux** and other [Linux distributions](https://en.wikipedia.org/wi
 
 In this post I will give provide an introduction to the &#42;nix command-line, including some available terminal emulators, Unix shells, with some focus on Bash and how all this relates to Sabayon users. It is important to remember I am not an expert on Bash, Bash scripting or programming in general, I have even had doubts I could even write this blog post. It is important to note too that this post is nowhere near *comprehensive* on this topic, as the only type of text I, or anyone, could write that would be comprehensive on this topic would be an entire several-hundred page book, not a dozen-or-so-page blog post. This post just gives you some of the tools to do many of the basic things a novice or intermediate user of Sabayon would like to be able to do with Bash.
 
-<div id="toc" class="toc"></div>
+<div id="toc"></div>
 
 # Background on Unix Shells
 {% include image.html image="BrianJFox.png" width="300px" height="401px" description="Brian J. Fox (1959-), the original developer of Bash" %}

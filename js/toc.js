@@ -1,3 +1,4 @@
+// Simple Table of Contents
 (function($){
   $.fn.toc = function(options) {
     var defaults = {
