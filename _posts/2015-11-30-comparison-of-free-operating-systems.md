@@ -29,10 +29,11 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
 
 {% include toc.html %}
 
-## Preliminaries
-### Acronyms/Notation
+## Glossary
 * <b>&#42;nix</b>
   * Unix/Unix-like operating system.
+* <b>BE</b>
+  * <b>B</b>leeding <b>e</b>dge
 * <b>BSD</b>
   * <b>B</b>erkeley <b>S</b>oftware <b>D</b>istribution.
 * <b>BSDs</b>
@@ -47,11 +48,13 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
   * <b>O</b>perating <b>s</b>ystem.
 * <b>OSs</b>
   * <b>O</b>perating <b>s</b>ystem<b>s</b>.
+* <b>RRM</b>
+  * <b>R</b>olling <b>r</b>elease <b>m</b>odel. A type of operating system development model in which the system is continually developing, this is as opposed to standard release models (SRMs) which uses distinct OS versions that must be reinstalled over the previous version.
 
-### Review Format
+## Review Format
 Each OS review will have the format:
 * **OS Name**
-  * **Screenshot of the OS running**.
+  * &lt;Screenshot of the OS running&gt;
 
 
   * **Background**
@@ -93,4 +96,4 @@ Arch Linux also has its own online repository of PKGBUILDs, that is called the [
 
 I would personally rate pacman as Yaourt as two of my favourite package managers, because of how simple, yet flexible they are. Most package managers will install software from either binary packages or from source code, unlike Yaourt which can install from both. pacman and Yaourt are also fairly fast compared to equivalent package managers operating on other systems. For example, Yaourt will most of the time take less time to install a software package than Portage will take to install the same package. I suspect the reason behind this is that Portage is written in Python and Bash script, while pacman is written in C and Yaourt, being a wrapper for pacman, is written in C and Bash script.
 
-Arch Linux also follows a bleeding-edge rolling release model, which means that users almost always have the latest software and never need to perform a traditional system upgrade. By "traditional" system upgrade I mean that with Arch and other systems that follow a rolling release model, you never need to delete an existing outdated installation of the operating system and install the latest release of the OS
+Arch Linux also follows a bleeding-edge rolling release model, which means that users almost always have the latest software and never need to perform a traditional system upgrade. By "traditional" system upgrade I mean that with Arch and other systems that follow a RRM, you never need to delete an existing outdated installation of the operating system and install the latest release of the OS
