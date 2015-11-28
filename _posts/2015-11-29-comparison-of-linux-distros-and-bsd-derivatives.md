@@ -40,7 +40,7 @@ Each operating system (OS) review will have the format:
 
 
 * H2 heading: Specifications.
-  * A list of specifications, including OS type, its parent, its package management system, default user interface and architecture support.
+  * A list of specifications, including OS type, its parent, its package management system (PMS), default user interface and architecture support.
 
 
 * H2 heading: Ratings
@@ -64,4 +64,6 @@ Each operating system (OS) review will have the format:
 {% include image.html image="Arch-Linux-DDE-menu.png" width="1200px" float="none" description="Arch Linux running the Deepin Desktop Environment" %}
 
 ## Background
-{% include distros.html distro="Arch Linux" dw="arch" wp="Arch Linux" url="https://www.archlinux.org/" wiki="https://wiki.archlinux.org/" forum="https://bbs.archlinux.org/" %} is an independent Linux distribution that was first founded in 2002 and has since become one of the most popular Linux distributions that is geared towards experienced users. It aims to adhere to the "Keep It Simple, Stupid" principle. Its take on this principle is that no automation should be done and that a fresh install of Arch should have as little software on it as possible. The purpose of this minimalism is that it gives the user as much control over their system as possible. Arch uses its own package management system too, pacman. pacman installs software from binary packages with the file extension `.pkg.tar.xz`. On top of pacman, for package management Arch Linux also has yaourt which is a wrapper for pacman that can compile and install software from source code by following instructions contained in specialized Bash scripts called PKGBUILDs that are hosted by the [Arch User Repository](https://aur.archlinux.org/) (AUR).  
+{% include distros.html distro="Arch Linux" dw="arch" wp="Arch Linux" url="https://www.archlinux.org/" wiki="https://wiki.archlinux.org/" forum="https://bbs.archlinux.org/" %} is an independent Linux distribution that was first founded in 2002 and has since become one of the most popular Linux distributions that is geared towards experienced users. It aims to adhere to the "Keep It Simple, Stupid" principle. Its take on this principle is that no automation should be done and that a fresh install of Arch should have as little software on it as possible. The purpose of this minimalism is that it gives the user as much control over their system as possible. Arch uses its own package management system too, pacman.
+
+pacman is a PMS written in C that installs software from binary packages with the file extension `.pkg.tar.xz`. The [`pacman`](https://www.archlinux.org/packages/core/x86_64/pacman/) package provides a number of different commands that can be executed from the command-line, including, but not limited to: `makepkg`, `pacman` and `pactree`. `makepkg` is used to build pacman binary packages (in `.pkg.tar.xz`) from instructions contained in a specialized type of Bash script called a PKGBUILD. On top of pacman, for package management Arch Linux also has yaourt which is a wrapper for pacman that can compile and install software from source code by following instructions contained in specialized Bash scripts called PKGBUILDs that are hosted by the [Arch User Repository](https://aur.archlinux.org/) (AUR).  
