@@ -9,7 +9,7 @@ redirect_from:
 ---
 {% include draft.html %}
 
-{% include image.html url="/images/VirtualBox-5.0.10-screenshot.png" width = "1000px" float="none" description="Oracle VM VirtualBox 5.0.10" %}
+{% include image.html url="/images/Oracle-VM-VirtualBox-5.0.10-29-11-2015.png" width = "1150px" float="none" description="Oracle VM VirtualBox 5.0.10" %}
 
 As is mentioned in the [About Me](/about-me/) section of this website, I have tried quite a few Linux distributions using **Oracle VM VirtualBox**. Some I have only spent less than an hour using, but those I have spent over an hour with and feel fairly confident in my ability to review, include:
 
@@ -32,22 +32,24 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
 
 # Review Format
 Each operating system (OS) review will have the format:
-* H1 heading, with the OS's name.
-  * Screenshot of the OS running.
+* **OS Name**
+  * **Screenshot of the OS running**.
 
 
-* H2 heading: Background.
-  * Background information on the OS, such as its history, an overview of its features that distinguish it from other operating systems and how user-friendly it is.
+  * **Background**
+     * Background information on the OS, such as its history, an overview of its features that distinguish it from other operating systems and how user-friendly it is.
 
 
-* H2 heading: Specifications.
-  * A list of specifications, including OS type, its parent, its package management system (PMS), default user interface and architecture support.
+  * **Specifications**
+     * A list of specifications, including OS type, its parent, its package management system (PMS), default user interface and architecture support.
+     * **Minimum Requirements**
+         * Minimum required <abbr title="Central Processing Unit">CPU</abbr>, <abbr title="Hard Disk Drive">HDD</abbr>, <abbr title="Installation Medium Size">IMS</abbr> and <abbr title="Random Access Memory">RAM</abbr>.
 
 
-* H2 heading: Ratings
-  * Where I give approximate numerical ratings (from 1-10. 1 being terrible/non-existent and 10 being perfect) for the quality of the various features and characteristics of the OS.
-  * I also provide a numerical rating from 1-10 for the extent of my experience with the system (MEWI), 1 in this context indicates <1 hour, 2 for ~1-2 hours and 3 for 2-3 hours, 4 for 3-6 hours, ..., 10 for >100 hours.
-  * Additionally I provide an overall satisfaction score for the system, from 1 to 10.
+  * **Ratings**
+     * Where I give approximate numerical ratings (from 1-10. 1 being terrible/non-existent and 10 being perfect) for the quality of the various features and characteristics of the OS.
+     * I also provide a numerical rating from 1-10 for the extent of my experience with the system (MEWI), 1 in this context indicates <1 hour, 2 for ~1-2 hours and 3 for 2-3 hours, 4 for 3-6 hours, ..., 10 for >100 hours.
+     * Additionally I provide an overall satisfaction score for the system, from 1 to 10.
 
 # antiX
 {% include image.html url="/images/antiX-15.png" width = "768px" float="none" description="antiX 15 running in VirtualBox, with its default desktop" %}
@@ -67,4 +69,4 @@ Each operating system (OS) review will have the format:
 ## Background
 {% include distros.html distro="Arch Linux" dw="arch" wp="Arch Linux" url="https://www.archlinux.org/" wiki="https://wiki.archlinux.org/" forum="https://bbs.archlinux.org/" %} is an independent Linux distribution that was first founded in 2002 and has since become one of the most popular Linux distributions that is geared towards experienced users. It aims to adhere to the "Keep It Simple, Stupid" principle. Its take on this principle is that no automation should be done and that a fresh install of Arch should have as little software on it as possible. The purpose of this minimalism is that it gives the user as much control over their system as possible. Arch uses its own package management system too, pacman.
 
-pacman is a PMS written in C that installs software from binary packages with the file extension `.pkg.tar.xz`. These binary packages are stored in the pacman repositories, which contain over 18,000 packages as of November 2015. One can search the official repositories [here](https://packages.archlinux.org/). The [`pacman`](https://www.archlinux.org/packages/core/x86_64/pacman/) package provides a number of different commands (which are all contained in the `/usr/bin` directory and a complete list of the files included by the pacman package may be found [here](https://www.archlinux.org/packages/core/x86_64/pacman/files/)) that can be executed from the command-line, including, but not limited to: `makepkg`, `pacman` and `pactree`. `makepkg` is used to build pacman binary packages (in `.pkg.tar.xz`) from instructions contained in a specialized type of Bash script called a PKGBUILD. On top of pacman, for package management Arch Linux also has yaourt which is a wrapper for pacman that can compile and install software from source code by following instructions contained in specialized Bash scripts called PKGBUILDs that are hosted by the [Arch User Repository](https://aur.archlinux.org/) (AUR).
+pacman is a PMS written in C that installs software from binary packages with the file extension `.pkg.tar.xz`. These binary packages are stored in the pacman repositories, which contain over 13,600 packages as of November 2015. One can search the official repositories [here](https://packages.archlinux.org/). The [`pacman`](https://www.archlinux.org/packages/core/x86_64/pacman/) package provides a number of different commands (which are all contained in the `/usr/bin` directory and a complete list of the files included by the pacman package may be found [here](https://www.archlinux.org/packages/core/x86_64/pacman/files/)) that can be executed from the command-line, including, but not limited to: `makepkg`, `pacman` and `pactree`. `makepkg` is used to build pacman binary packages (in `.pkg.tar.xz`) from instructions contained in a specialized type of Bash script called a PKGBUILD. On top of pacman, for package management Arch Linux also has yaourt which is a wrapper for pacman that can compile and install software from source code by following instructions contained in specialized Bash scripts called PKGBUILDs that are hosted by the [Arch User Repository](https://aur.archlinux.org/) (AUR).
