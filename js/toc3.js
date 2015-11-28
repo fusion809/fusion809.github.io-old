@@ -1,30 +1,35 @@
-var Contents,
-    contents,
-    newHeading;
+window.onload = function () {
+    var toc = "";
+    var level = 0;
 
-Contents = require('contents');
+    document.getElementById("body").innerHTML =
+        document.getElementById("body").innerHTML.replace(
+            /<h([\d])>([^<]+)<\/h([\d])>/gi,
+            function (str, openLevel, titleText, closeLevel) {
+                if (openLevel != closeLevel) {
+                    return str;
+                }
 
-// If you are using ./dist/ version, then Contents is available under "gajus" global property, i.e.
-// Contents = gajus.Contents;
+                if (openLevel > level) {
+                    toc += (new Array(openLevel - level + 1)).join("<ul>");
+                } else if (openLevel < level) {
+                    toc += (new Array(level - openLevel + 1)).join("</ul>");
+                }
 
-// This example generates a table of contents for all of the headings in the document.
-// Table of contents is an ordered list element.
-contents = Contents();
+                level = parseInt(openLevel);
 
-// Append the generated list element (table of contents) to the container.
-document.querySelector('#toc').appendChild(contents.list());
+                var anchor = titleText.replace(/ /g, "_");
+                toc += "<li><a href=\"#" + anchor + "\">" + titleText
+                    + "</a></li>";
 
-// Attach event listeners:
-contents.eventEmitter().on('change', function () {
-    console.log('User has navigated to a new section of the page.');
-});
+                return "<h" + openLevel + "><a name=\"" + anchor + "\">"
+                    + titleText + "</a></h" + closeLevel + ">";
+            }
+        );
 
-// The rest of the code illustrates firing "resize" event after you have
-// added new content after generating the table of contents.
-newHeading = document.createElement('h2');
-hewHeading.innerHTML = 'Dynamically generated title';
+    if (level) {
+        toc += (new Array(level + 1)).join("</ul>");
+    }
 
-document.body.appendChild(newHeading);
-
-// Firing the "resize" event will regenerate the table of contents.
-contents.eventEmitter().trigger('resize');
+    document.getElementById("toc").innerHTML += toc;
+};

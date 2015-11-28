@@ -1,93 +1,214 @@
-// Simple Table of Contents
-(function($){
-  $.fn.toc = function(options) {
-    var defaults = {
-      noBackToTopLinks: false,
-      title: '<div class="title">Table of Contents</div>',
-      minimumHeaders: 3,
-      headers: 'h1, h2, h3, h4, h5, h6',
-      listType: 'ul', // values: [ol|ul]
-      showEffect: 'show', // values: [show|slideDown|fadeIn|none]
-      showSpeed: 'slow' // set to 0 to deactivate effect
-    },
-    settings = $.extend(defaults, options);
+/*!
+ * toc - jQuery Table of Contents Plugin
+ * v0.3.2
+ * http://projects.jga.me/toc/
+ * copyright Greg Allen 2014
+ * MIT License
+*/
+/*!
+ * smooth-scroller - Javascript lib to handle smooth scrolling
+ * v0.1.2
+ * https://github.com/firstandthird/smooth-scroller
+ * copyright First+Third 2014
+ * MIT License
+*/
+//smooth-scroller.js
 
-    function fixedEncodeURIComponent (str) {
-      return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
-        return '%' + c.charCodeAt(0).toString(16);
-      });
-    }
+(function($) {
+  $.fn.smoothScroller = function(options) {
+    options = $.extend({}, $.fn.smoothScroller.defaults, options);
+    var el = $(this);
 
-    var headers = $(settings.headers).filter(function() {
-      // get all headers with an ID
-      var previousSiblingName = $(this).prev().attr( "name" );
-      if (!this.id && previousSiblingName) {
-        this.id = $(this).attr( "id", previousSiblingName.replace(/\./g, "-") );
-      }
-      return this.id;
-    }), output = $(this);
-    if (!headers.length || headers.length < settings.minimumHeaders || !output.length) {
-      $(this).hide();
-      return;
-    }
+    $(options.scrollEl).animate({
+      scrollTop: el.offset().top - $(options.scrollEl).offset().top - options.offset
+    }, options.speed, options.ease, function() {
+      var hash = el.attr('id');
 
-    if (0 === settings.showSpeed) {
-      settings.showEffect = 'none';
-    }
-
-    var render = {
-      show: function() { output.hide().html(html).show(settings.showSpeed); },
-      slideDown: function() { output.hide().html(html).slideDown(settings.showSpeed); },
-      fadeIn: function() { output.hide().html(html).fadeIn(settings.showSpeed); },
-      none: function() { output.html(html); }
-    };
-
-    var get_level = function(ele) { return parseInt(ele.nodeName.replace("H", ""), 10); }
-    var highest_level = headers.map(function(_, ele) { return get_level(ele); }).get().sort()[0];
-    var return_to_top = '<i class="icon-arrow-up back-to-top"> </i>';
-
-    var level = get_level(headers[0]),
-      this_level,
-      html = settings.title + " <"+settings.listType+">";
-    headers.on('click', function() {
-      if (!settings.noBackToTopLinks) {
-        window.location.hash = this.id;
-      }
-    })
-    .addClass('clickable-header')
-    .each(function(_, header) {
-      this_level = get_level(header);
-      if (!settings.noBackToTopLinks && this_level === highest_level) {
-        $(header).addClass('top-level-header').after(return_to_top);
-      }
-      if (this_level === level) // same level as before; same indenting
-        html += "<li><a href='#" + fixedEncodeURIComponent(header.id) + "'>" + header.innerHTML + "</a>";
-      else if (this_level <= level){ // higher level than before; end parent ol
-        for(i = this_level; i < level; i++) {
-          html += "</li></"+settings.listType+">"
+      if(hash.length) {
+        if(history.pushState) {
+          history.pushState(null, null, '#' + hash);
+        } else {
+          document.location.hash = hash;
         }
-        html += "<li><a href='#" + fixedEncodeURIComponent(header.id) + "'>" + header.innerHTML + "</a>";
       }
-      else if (this_level > level) { // lower level than before; expand the previous to contain a ol
-        for(i = this_level; i > level; i--) {
-          html += "<"+settings.listType+"><li>"
-        }
-        html += "<a href='#" + fixedEncodeURIComponent(header.id) + "'>" + header.innerHTML + "</a>";
-      }
-      level = this_level; // update for the next one
+
+      el.trigger('smoothScrollerComplete');
     });
-    html += "</"+settings.listType+">";
-    if (!settings.noBackToTopLinks) {
-      $(document).on('click', '.back-to-top', function() {
-        $(window).scrollTop(0);
-        window.location.hash = '';
-      });
+
+    return this;
+  };
+
+  $.fn.smoothScroller.defaults = {
+    speed: 400,
+    ease: 'swing',
+    scrollEl: 'body,html',
+    offset: 0
+  };
+
+  $('body').on('click', '[data-smoothscroller]', function(e) {
+    e.preventDefault();
+    var href = $(this).attr('href');
+
+    if(href.indexOf('#') === 0) {
+      $(href).smoothScroller();
+    }
+  });
+}(jQuery));
+
+(function($) {
+var verboseIdCache = {};
+$.fn.toc = function(options) {
+  var self = this;
+  var opts = $.extend({}, jQuery.fn.toc.defaults, options);
+
+  var container = $(opts.container);
+  var headings = $(opts.selectors, container);
+  var headingOffsets = [];
+  var activeClassName = opts.activeClass;
+
+  var scrollTo = function(e, callback) {
+    if (opts.smoothScrolling && typeof opts.smoothScrolling === 'function') {
+      e.preventDefault();
+      var elScrollTo = $(e.target).attr('href');
+
+      opts.smoothScrolling(elScrollTo, opts, callback);
+    }
+    $('li', self).removeClass(activeClassName);
+    $(e.target).parent().addClass(activeClassName);
+  };
+
+  //highlight on scroll
+  var timeout;
+  var highlightOnScroll = function(e) {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(function() {
+      var top = $(window).scrollTop(),
+        highlighted, closest = Number.MAX_VALUE, index = 0;
+
+      for (var i = 0, c = headingOffsets.length; i < c; i++) {
+        var currentClosest = Math.abs(headingOffsets[i] - top);
+        if (currentClosest < closest) {
+          index = i;
+          closest = currentClosest;
+        }
+      }
+
+      $('li', self).removeClass(activeClassName);
+      highlighted = $('li:eq('+ index +')', self).addClass(activeClassName);
+      opts.onHighlight(highlighted);
+    }, 50);
+  };
+  if (opts.highlightOnScroll) {
+    $(window).bind('scroll', highlightOnScroll);
+    highlightOnScroll();
+  }
+
+  return this.each(function() {
+    //build TOC
+    var el = $(this);
+    var ul = $(opts.listType);
+
+    headings.each(function(i, heading) {
+      var $h = $(heading);
+      headingOffsets.push($h.offset().top - opts.highlightOffset);
+
+      var anchorName = opts.anchorName(i, heading, opts.prefix);
+
+      //add anchor
+      if(heading.id !== anchorName) {
+        var anchor = $('<span/>').attr('id', anchorName).insertBefore($h);
+      }
+
+      //build TOC item
+      var a = $('<a/>')
+        .text(opts.headerText(i, heading, $h))
+        .attr('href', '#' + anchorName)
+        .bind('click', function(e) {
+          $(window).unbind('scroll', highlightOnScroll);
+          scrollTo(e, function() {
+            $(window).bind('scroll', highlightOnScroll);
+          });
+          el.trigger('selected', $(this).attr('href'));
+        });
+
+      var li = $('<li/>')
+        .addClass(opts.itemClass(i, heading, $h, opts.prefix))
+        .append(a);
+
+      ul.append(li);
+    });
+    el.html(ul);
+  });
+};
+
+
+jQuery.fn.toc.defaults = {
+  container: 'body',
+  listType: '<ul/>',
+  selectors: 'h1,h2,h3,h4',
+  smoothScrolling: function(target, options, callback) {
+    $(target).smoothScroller({
+      offset: options.scrollToOffset
+    }).on('smoothScrollerComplete', function() {
+      callback();
+    });
+  },
+  scrollToOffset: 0,
+  prefix: 'toc',
+  activeClass: 'toc-active',
+  onHighlight: function() {},
+  highlightOnScroll: true,
+  highlightOffset: 100,
+  anchorName: function(i, heading, prefix) {
+    if(heading.id.length) {
+      return heading.id;
     }
 
-    render[settings.showEffect]();
-  };
+    var candidateId = $(heading).text().replace(/[^a-z0-9]/ig, ' ').replace(/\s+/g, '-').toLowerCase();
+    if (verboseIdCache[candidateId]) {
+      var j = 2;
+
+      while(verboseIdCache[candidateId + j]) {
+        j++;
+      }
+      candidateId = candidateId + '-' + j;
+
+    }
+    verboseIdCache[candidateId] = true;
+
+    return prefix + '-' + candidateId;
+  },
+  headerText: function(i, heading, $heading) {
+    return $heading.text();
+  },
+  itemClass: function(i, heading, $heading, prefix) {
+    return prefix + '-' + $heading[0].tagName.toLowerCase();
+  }
+
+};
+
 })(jQuery);
 
 $(document).ready(function() {
-    $('#toc').toc({ showEffect: 'slideDown' });
+  $('#toc').toc({
+      'selectors': 'h2', //elements to use as headings
+      'container': 'body', //element to find all selectors in
+      'listType': '<ul/>', //use unordered list. If you need ordered one instead pass: '<ol/>'
+      'smoothScrolling': true, //enable or disable smooth scrolling on click
+      'prefix': 'toc', //prefix for anchor tags and class names
+      'onHighlight': function(el) {}, //called when a new section is highlighted
+      'highlightOnScroll': true, //add class to heading that is currently in focus
+      'highlightOffset': 100, //offset to trigger the next headline
+      'anchorName': function(i, heading, prefix) { //custom function for anchor name
+          return prefix+i;
+      },
+      'headerText': function(i, heading, $heading) { //custom function building the header-item text
+          return $heading.data('toc-title') || $heading.text();
+      },
+      'itemClass': function(i, heading, $heading, prefix) { // custom function for item class
+          return $heading[0].tagName.toLowerCase();
+      }
+  });
 });

@@ -29,9 +29,27 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
 
 {% include toc.html %}
 
+## Preliminaries
+### Acronyms/Notation
+* <b>&#42;nix</b>
+  * Unix/Unix-like operating system.
+* <b>BSD</b>
+  * <b>B</b>erkeley <b>S</b>oftware <b>D</b>istribution.
+* <b>BSDs</b>
+  * <b>B</b>erkeley <b>S</b>oftware <b>D</b>istribution derivative<b>s</b>.
+* <b>FOSS</b>
+  * <b>F</b>ree and <b>o</b>pen-<b>s</b>ource <b>s</b>oftware.
+* <b>LD</b>
+  * <b>L</b>inux <b>d</b>istribution.
+* <b>LDs</b>
+  * <b>L</b>inux <b>d</b>istribution<b>s</b>.
+* <b>OS</b>
+  * <b>O</b>perating <b>s</b>ystem.
+* <b>OSs</b>
+  * <b>O</b>perating <b>s</b>ystem<b>s</b>.
 
-## Review Format
-Each operating system (OS) review will have the format:
+### Review Format
+Each OS review will have the format:
 * **OS Name**
   * **Screenshot of the OS running**.
 
@@ -69,4 +87,10 @@ Each operating system (OS) review will have the format:
 ### Background
 {% include distros.html distro="Arch Linux" dw="arch" wp="Arch Linux" url="https://www.archlinux.org/" wiki="https://wiki.archlinux.org/" forum="https://bbs.archlinux.org/" %} is an independent Linux distribution that was first founded in 2002 and has since become one of the most popular Linux distributions that is geared towards experienced users. It aims to adhere to the "Keep It Simple, Stupid" principle. Its take on this principle is that no automation should be done and that a fresh install of Arch should have as little software on it as possible. The purpose of this minimalism is that it gives the user as much control over their system as possible. Arch uses its own package management system too, pacman.
 
-pacman is a PMS written in C that installs software from binary packages with the file extension `.pkg.tar.xz`. These binary packages are stored in the pacman repositories, which contain over 13,600 packages as of November 2015. One can search the official repositories [here](https://packages.archlinux.org/). The [`pacman`](https://www.archlinux.org/packages/core/x86_64/pacman/) package provides a number of different commands (which are all contained in the `/usr/bin` directory and a complete list of the files included by the pacman package may be found [here](https://www.archlinux.org/packages/core/x86_64/pacman/files/)) that can be executed from the command-line, including, but not limited to: `makepkg`, `pacman` and `pactree`. `makepkg` is used to build pacman binary packages (in `.pkg.tar.xz`) from instructions contained in a specialized type of Bash script called a PKGBUILD. On top of pacman, for package management Arch Linux also has yaourt which is a wrapper for pacman that can compile and install software from source code by following instructions contained in specialized Bash scripts called PKGBUILDs that are hosted by the [Arch User Repository](https://aur.archlinux.org/) (AUR).
+pacman is a PMS written in C that installs software from binary packages with the file extension `.pkg.tar.xz`. These binary packages are stored in the pacman repositories, which contain over 13,600 packages as of November 2015. One can search the official repositories [here](https://packages.archlinux.org/). The [`pacman`](https://www.archlinux.org/packages/core/x86_64/pacman/) package provides a number of different commands (which are all contained in the `/usr/bin` directory and a complete list of the files included by the pacman package on 64-bit systems may be found [here](https://www.archlinux.org/packages/core/x86_64/pacman/files/)) that can be executed from the command-line, including, but not limited to: `makepkg`, `pacman` and `pactree`. `makepkg` is used to build pacman binary packages (in `.pkg.tar.xz`) from instructions contained in a specialized type of Bash script called a PKGBUILD.
+
+Arch Linux also has its own online repository of PKGBUILDs, that is called the [**Arch User Repository**](https://aur.archlinux.org/) (**AUR**). The AUR actually contains more packages than there are in pacman's official repositories. If one wants to install software from the PKGBUILDS contained in the AUR one has two choices: either do so manually, using `git` (as the AUR uses git as its version control system), `makepkg` (to compile the package using PKGBUILD instructions) and `pacman` (to install the package build with makepkg) command-line tools or use a wrapper for pacman that is called Yaourt (`yaourt` from the command-line). Yaourt has the same syntax as pacman, but unlike pacman which when asked to install a program will only search for the program in the Arch binary package repositories, Yaourt will look at both Arch's binary package repositories and the AUR.
+
+I would personally rate pacman as Yaourt as two of my favourite package managers, because of how simple, yet flexible they are. Most package managers will install software from either binary packages or from source code, unlike Yaourt which can install from both. pacman and Yaourt are also fairly fast compared to equivalent package managers operating on other systems. For example, Yaourt will most of the time take less time to install a software package than Portage will take to install the same package. I suspect the reason behind this is that Portage is written in Python and Bash script, while pacman is written in C and Yaourt, being a wrapper for pacman, is written in C and Bash script.
+
+Arch Linux also follows a bleeding-edge rolling release model, which means that users almost always have the latest software and never need to perform a traditional system upgrade. By "traditional" system upgrade I mean that with Arch and other systems that follow a rolling release model, you never need to delete an existing outdated installation of the operating system and install the latest release of the OS
