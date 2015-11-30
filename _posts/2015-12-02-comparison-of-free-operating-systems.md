@@ -132,10 +132,15 @@ function aurin {
     git clone https://aur.archlinux.org/$i.git
     pushd $i
     makepkg -s
-    sudo pacman -U $i*.pkg.tar.xz
+    paclin $i
     popd
     rm -rf $i
   done
+}
+
+# `paclin` installs software with pacman from a local package.
+function paclin {
+  sudo pacman -U $@*.pkg.tar.xz
 }
 
 # `pacin` installs software with pacman, without asking for confirmation
@@ -189,7 +194,7 @@ function yarm {
 
 {% include os-min.html cpu="i686." ims="659 MB." ram="256 MB." hdd="<800 MB." %}
 
-{% include os-ratings.html bf="4." cmd=">8." doc="8. Has some of the best documentation out there." sup="? Never really had to use their support forums and channels, except once when I was trying to install it manually on a VM. When I did then, there were plenty of responses to the forum post I wrote, but the general consensus of opinion was that I should not be using the system until I was a more competent Linux user." pm=">8." sru=">8." sb="7. I have found Arch disturbingly easy to inadvertently break and make unusable, but most of the time it is stable enough to use." mewi=">5. I have a decent amount of experience with this system and its more newbie-friendly derivative, Manjaro Linux." oa="8." %}
+{% include os-ratings.html bf="4." cmb=">8." doc="8. Has some of the best documentation out there." sup="? Never really had to use their support forums and channels, except once when I was trying to install it manually on a VM. When I did then, there were plenty of responses to the forum post I wrote, but the general consensus of opinion was that I should not be using the system until I was a more competent Linux user." pm=">8." sru=">8." sb="7. I have found Arch disturbingly easy to inadvertently break and make unusable, but most of the time it is stable enough to use." mewi=">5. I have a decent amount of experience with this system and its more newbie-friendly derivative, Manjaro Linux." oa="8." %}
 
 ## CentOS
 {% include image.html image="CentOS-7.png" width="1000px" float="none" description="CentOS 7 running GNOME 3" %}
@@ -233,10 +238,15 @@ function yrm {
 
 {% include specs.html arch="x86_64." shell="Bash." type="Linux." PMS="yum" ui="GNOME, KDE." IM="Manual from the command-line or via unofficial shell script installers" date="2004." country="U.S.A." rm="Fixed." tm="Individuals and organizations that place great importance on system stability, yet either cannot afford or do not want paid support from Red Hat." %}
 
-{% include os-min.html cpu="x86_64." ims="360 MB." ram="1,000 MB." hdd="10 GB. 20 GB recommended." %}
+{% include os-min.html cpu="x86_64." ims="360 MB." ram="1,024 MB." hdd="10 GB. 20 GB recommended." %}
 
-{% include os-ratings.html bf="8." cmd="5." doc=">6. Has reasonable documentation, that I have little experience with, hence why I am giving it such a broad rating." sup="? Never really had to use their support forums and channels." pm="6. Yum is definitely not my favourite PMS." sru="<5. Default DEs, GNOME and KDE, are fairly heavy on SRU." sb=">9. Very stable, never had stability issues with it myself." mewi="3-4. Some experience, not an awful lot though." oa="7. As previously mentioned I dislike outdated software in an OS." %}
+{% include os-ratings.html bf="8." cmb="5." doc=">6. Has reasonable documentation, that I have little experience with, hence why I am giving it such a broad rating." sup="? Never had to use their support forums or IRC channels." pm="6. Yum is definitely not my favourite PMS." sru="<5. Default DEs, GNOME and KDE, are fairly heavy on SRU." sb=">9. Very stable, never had stability issues with it myself." mewi="3-4. Some experience, not an awful lot though." oa="7. As previously mentioned I dislike outdated software in an OS." %}
 
+## Debian
+{% include galleria.html image1="Debian-8.2-KDE-appmenu.png" width1="1366px" description1="Debian 8.2 running KDE Plasma 4" image2="Debian-8.2-TDE-appmenu.png" width2="1000px" description2="Debian 8.2 running the Trinity Desktop Environment (TDE)" %}
+<br/>
+### Background
+{% include os.html bugs="https://www.debian.org/Bugs/" wiki="https://wiki.debian.org/" ml="https://www.debian.org/MailingLists/" irc="https://wiki.debian.org/IRC" forum="http://forums.debian.net/" wp="Debian" os="Debian" docs="https://www.debian.org/doc/" dw="debian" d="https://www.debian.org/distrib/" gr="Debian" %} was one of the first Linux distributions to be founded and was founded back in 1993, by a then Purdue University student, named Ian Murdock. He named Debian as a portmanteau of his first name and the first name of his then girlfriend, Debra Lynn.
 
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)
