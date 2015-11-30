@@ -14,7 +14,7 @@ redirect_from:
 As is mentioned in the [About Me](/about-me/) section of this website, I have tried quite a few Linux distributions using **Oracle VM VirtualBox**. Some I have only spent less than an hour using, but those I have spent over an hour with and feel fairly confident in my ability to review, include:
 
 {% include oslist.html %}
-3. [CentOS](https://www.centos.org/)
+<!--
 4. [Debian](http://debian.org/)
 5. [Fedora](https://getfedora.org/)
 6. [Gentoo Linux](https://www.gentoo.org/)
@@ -26,7 +26,7 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
 12. [PCLinuxOS](http://www.pclinuxos.com/)
 13. [Sabayon Linux](http://www.sabayon.org/)
 14. [Ubuntu](http://www.ubuntu.com/)
-
+-->
 {% include toc.html %}
 
 ## Glossary
@@ -126,7 +126,7 @@ Arch Linux also follows a bleeding-edge rolling release model (BE-RRM), which me
 {% include image.html image="CentOS-7.png" width="1000px" float="none" description="CentOS 7 running GNOME 3" %}
 
 ### Background
-{% include os.html bugs="https://bugs.centos.org/my_view_page.php" d="https://www.centos.org/download/" dw="centos" os="CentOS" forum="https://www.centos.org/forums/" wiki="https://wiki.centos.org/" ml="https://wiki.centos.org/GettingHelp/ListInfo" docs="https://www.centos.org/docs/" irc="https://wiki.centos.org/irc" wp="CentOS" gr="centos" %}, which is an acronym for <b>C</b>ommunity <b>E</b>nterprise <b>O</b>perating <b>S</b>ystem, is a Linux distribution that is based on Fedora, but unlike Fedora values stability over having bleeding-edge software. 
+{% include os.html bugs="https://bugs.centos.org/my_view_page.php" d="https://www.centos.org/download/" dw="centos" os="CentOS" forum="https://www.centos.org/forums/" wiki="https://wiki.centos.org/" ml="https://wiki.centos.org/GettingHelp/ListInfo" docs="https://www.centos.org/docs/" irc="https://wiki.centos.org/irc" wp="CentOS" gr="centos" %}, which is an acronym for <b>C</b>ommunity <b>E</b>nterprise <b>O</b>perating <b>S</b>ystem, is a Linux distribution that is based on Fedora, that unlike Fedora, values stability over bleeding-edge software. See it is designed for individuals or organizations that do not require commercial support (that is, paid support), but still require the system stability of an enterprise-class operating system. 
 
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)
