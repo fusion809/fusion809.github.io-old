@@ -125,6 +125,19 @@ pacman and Yaourt both have very unusual syntax, see most command-line BSD/Linux
 
 Here is an example `~/.bashrc` file one can use on Arch VMs.
 ```bash
+# A less powerful replacement for Yaourt, I use when Yaourt is somehow inappropriate
+function aurin {
+  for i in "$@"
+  do
+    git clone https://aur.archlinux.org/$i.git
+    pushd $i
+    makepkg -s
+    sudo pacman -U $i*.pkg.tar.xz
+    popd
+    rm -rf $i
+  done
+}
+
 # `pacin` installs software with pacman, without asking for confirmation
 # to get this command to ask for confirmation first remove the --noconfirm
 # option
@@ -222,7 +235,7 @@ function yrm {
 
 {% include os-min.html cpu="x86_64." ims="360 MB." ram="1,000 MB." hdd="10 GB. 20 GB recommended." %}
 
-{% include os-ratings.html bf="8." cmd="5." doc=">6. Has reasonable documentation, that I have little experience with, hence why I am giving it such a broad rating." sup="? Never really had to use their support forums and channels." pm="6. Yum is definitely not my favourite PMS." sru="<5. Default DEs, GNOME and KDE, are fairly heavy on SRU." sb=">9. Very stable, never had stability issues with it myself." mewi="3-4. Some experience, not an awful lot though." oa="7. As previously mentioned I dislike outdated software on an OS." %}
+{% include os-ratings.html bf="8." cmd="5." doc=">6. Has reasonable documentation, that I have little experience with, hence why I am giving it such a broad rating." sup="? Never really had to use their support forums and channels." pm="6. Yum is definitely not my favourite PMS." sru="<5. Default DEs, GNOME and KDE, are fairly heavy on SRU." sb=">9. Very stable, never had stability issues with it myself." mewi="3-4. Some experience, not an awful lot though." oa="7. As previously mentioned I dislike outdated software in an OS." %}
 
 
 ## Footnotes
