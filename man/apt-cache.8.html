@@ -1,0 +1,677 @@
+<!-- Creator     : groff version 1.22.2 -->
+<!-- CreationDate: Tue Dec  1 08:35:31 2015 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       h1      { text-align: center }
+</style>
+<title>APT&minus;CACHE</title>
+
+</head>
+<body>
+
+<h1 align="center">APT&minus;CACHE</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#FILES">FILES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#DIAGNOSTICS">DIAGNOSTICS</a><br>
+<a href="#BUGS">BUGS</a><br>
+<a href="#AUTHORS">AUTHORS</a><br>
+<a href="#NOTES">NOTES</a><br>
+
+<hr>
+
+
+<h2>NAME
+<a name="NAME"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">apt-cache
+&minus; query the APT cache</p>
+
+<h2>SYNOPSIS
+<a name="SYNOPSIS"></a>
+</h2>
+
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>apt&minus;cache</b>
+[<b>&minus;agipns</b>]
+[<b>&minus;o=</b><i>config_string</i>]
+[<b>&minus;c=</b><i>config_file</i>] {gencaches |
+showpkg&nbsp;<i>pkg</i>... | showsrc&nbsp;<i>pkg</i>... |
+stats | dump | dumpavail | unmet |
+search&nbsp;<i>regex</i>... |
+show&nbsp;<i>pkg&nbsp;</i>[{=<i>pkg_version_number&nbsp;</i>|&nbsp;/<i>target_release</i>}]...
+|
+depends&nbsp;<i>pkg&nbsp;</i>[{=<i>pkg_version_number&nbsp;</i>|&nbsp;/<i>target_release</i>}]...
+|
+rdepends&nbsp;<i>pkg&nbsp;</i>[{=<i>pkg_version_number&nbsp;</i>|&nbsp;/<i>target_release</i>}]...
+| pkgnames&nbsp;[<i>prefix</i>] |
+dotty&nbsp;<i>pkg&nbsp;</i>[{=<i>pkg_version_number&nbsp;</i>|&nbsp;/<i>target_release</i>}]...
+|
+xvcg&nbsp;<i>pkg&nbsp;</i>[{=<i>pkg_version_number&nbsp;</i>|&nbsp;/<i>target_release</i>}]...
+| policy&nbsp;[<i>pkg</i>...] | madison&nbsp;<i>pkg</i>... |
+{&minus;v&nbsp;|&nbsp;&minus;&minus;version} |
+{&minus;h&nbsp;|&nbsp;&minus;&minus;help}}</p> </td></tr>
+</table>
+
+<h2>DESCRIPTION
+<a name="DESCRIPTION"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>apt&minus;cache</b>
+performs a variety of operations on APT's package cache.
+<b>apt&minus;cache</b> does not manipulate the state of the
+system but does provide operations to search and generate
+interesting output from the package metadata.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Unless the
+<b>&minus;h</b>, or <b>&minus;&minus;help</b> option is
+given, one of the commands below must be present.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>gencaches</b></p>
+
+<p style="margin-left:17%;">gencaches creates APT's package
+cache. This is done implicitly by all commands needing this
+cache if it is missing or outdated.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>showpkg</b>
+<i>pkg</i><b>...</b></p>
+
+<p style="margin-left:17%;">showpkg displays information
+about the packages listed on the command line. Remaining
+arguments are package names. The available versions and
+reverse dependencies of each package listed are listed, as
+well as forward dependencies for each version. Forward
+(normal) dependencies are those packages upon which the
+package in question depends; reverse dependencies are those
+packages that depend upon the package in question. Thus,
+forward dependencies must be satisfied for a package, but
+reverse dependencies need not be. For instance,
+<b>apt&minus;cache showpkg libreadline2</b> would produce
+output similar to the following:</p>
+
+<p style="margin-left:23%; margin-top: 1em">Package:
+libreadline2 <br>
+Versions: 2.1&minus;12(/var/state/apt/lists/foo_Packages),
+<br>
+Reverse Depends: <br>
+libreadlineg2,libreadline2 <br>
+libreadline2&minus;altdev,libreadline2 <br>
+Dependencies: <br>
+2.1&minus;12 &minus; libc5 (2 5.4.0&minus;0) ncurses3.0 (0
+(null)) <br>
+Provides: <br>
+2.1&minus;12 &minus; <br>
+Reverse Provides:</p>
+
+<p style="margin-left:17%;">Thus it may be seen that
+libreadline2, version 2.1&minus;12, depends on libc5 and
+ncurses3.0 which must be installed for libreadline2 to work.
+In turn, libreadlineg2 and libreadline2&minus;altdev depend
+on libreadline2. If libreadline2 is installed, libc5 and
+ncurses3.0 (and ldso) must also be installed; libreadlineg2
+and libreadline2&minus;altdev do not have to be installed.
+For the specific meaning of the remainder of the output it
+is best to consult the apt source code.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>stats</b></p>
+
+<p style="margin-left:17%;">stats displays some statistics
+about the cache. No further arguments are expected.
+Statistics reported are:</p>
+
+<p style="margin-left:23%; margin-top: 1em">&bull; Total
+package names is the number of package names found in the
+cache.</p>
+
+<p style="margin-left:23%; margin-top: 1em">&bull; Normal
+packages is the number of regular, ordinary package names;
+these are packages that bear a one&minus;to&minus;one
+correspondence between their names and the names used by
+other packages for them in dependencies. The majority of
+packages fall into this category.</p>
+
+<p style="margin-left:23%; margin-top: 1em">&bull; Pure
+virtual packages is the number of packages that exist only
+as a virtual package name; that is, packages only
+&quot;provide&quot; the virtual package name, and no package
+actually uses the name. For instance,
+&quot;mail&minus;transport&minus;agent&quot; in the Debian
+system is a pure virtual package; several packages provide
+&quot;mail&minus;transport&minus;agent&quot;, but there is
+no package named
+&quot;mail&minus;transport&minus;agent&quot;.</p>
+
+<p style="margin-left:23%; margin-top: 1em">&bull; Single
+virtual packages is the number of packages with only one
+package providing a particular virtual package. For example,
+in the Debian system,
+&quot;X11&minus;text&minus;viewer&quot; is a virtual
+package, but only one package, xless, provides
+&quot;X11&minus;text&minus;viewer&quot;.</p>
+
+<p style="margin-left:23%; margin-top: 1em">&bull; Mixed
+virtual packages is the number of packages that either
+provide a particular virtual package or have the virtual
+package name as the package name. For instance, in the
+Debian system, &quot;debconf&quot; is both an actual
+package, and provided by the debconf&minus;tiny package.</p>
+
+<p style="margin-left:23%; margin-top: 1em">&bull; Missing
+is the number of package names that were referenced in a
+dependency but were not provided by any package. Missing
+packages may be an evidence if a full distribution is not
+accessed, or if a package (real or virtual) has been dropped
+from the distribution. Usually they are referenced from
+Conflicts or Breaks statements.</p>
+
+<p style="margin-left:23%; margin-top: 1em">&bull; Total
+distinct versions is the number of package versions found in
+the cache; this value is therefore at least equal to the
+number of total package names. If more than one distribution
+is being accessed (for instance, &quot;stable&quot; and
+&quot;unstable&quot;), this value can be considerably larger
+than the number of total package names.</p>
+
+<p style="margin-left:23%; margin-top: 1em">&bull; Total
+dependencies is the number of dependency relationships
+claimed by all of the packages in the cache.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>showsrc</b>
+<i>pkg</i><b>...</b></p>
+
+<p style="margin-left:17%;">showsrc displays all the source
+package records that match the given package names. All
+versions are shown, as well as all records that declare the
+name to be a binary package.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>dump</b></p>
+
+<p style="margin-left:17%;">dump shows a short listing of
+every package in the cache. It is primarily for
+debugging.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>dumpavail</b></p>
+
+<p style="margin-left:17%;">dumpavail prints out an
+available list to stdout. This is suitable for use with
+<b>dpkg</b>(1) and is used by the <b>dselect</b>(1)
+method.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>unmet</b></p>
+
+<p style="margin-left:17%;">unmet displays a summary of all
+unmet dependencies in the package cache.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>show</b>
+<i>pkg</i><b>...</b></p>
+
+<p style="margin-left:17%;">show performs a function
+similar to <b>dpkg &minus;&minus;print&minus;avail</b>; it
+displays the package records for the named packages.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>search</b>
+<i>regex</i><b>...</b></p>
+
+<p style="margin-left:17%;">search performs a full text
+search on all available package lists for the POSIX regex
+pattern given, see <b>regex</b>(7). It searches the package
+names and the descriptions for an occurrence of the regular
+expression and prints out the package name and the short
+description, including virtual package names. If
+<b>&minus;&minus;full</b> is given then output identical to
+show is produced for each matched package, and if
+<b>&minus;&minus;names&minus;only</b> is given then the long
+description is not searched, only the package name is.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Separate
+arguments can be used to specify multiple search patterns
+that are and'ed together.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>depends</b>
+<i>pkg</i><b>...</b></p>
+
+<p style="margin-left:17%;">depends shows a listing of each
+dependency a package has and all the possible other packages
+that can fulfill that dependency.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rdepends</b>
+<i>pkg</i><b>...</b></p>
+
+<p style="margin-left:17%;">rdepends shows a listing of
+each reverse dependency a package has.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>pkgnames</b>
+[<i>prefix</i>]</p>
+
+<p style="margin-left:17%;">This command prints the name of
+each package APT knows. The optional argument is a prefix
+match to filter the name list. The output is suitable for
+use in a shell tab complete function and the output is
+generated extremely quickly. This command is best used with
+the <b>&minus;&minus;generate</b> option.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Note that a
+package which APT knows of is not necessarily available to
+download, installable or installed, e.g. virtual packages
+are also listed in the generated list.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>dotty</b>
+<i>pkg</i><b>...</b></p>
+
+<p style="margin-left:17%;">dotty takes a list of packages
+on the command line and generates output suitable for use by
+dotty from the <b><font color="#0000FF">GraphViz</font></b>
+<small><font color="#000000">[1]</font></small>
+<font color="#000000">package. The result will be a set of
+nodes and edges representing the relationships between the
+packages. By default the given packages will trace out all
+dependent packages; this can produce a very large graph. To
+limit the output to only the packages listed on the command
+line, set the APT::Cache::GivenOnly option.</font></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><font color="#000000">The
+resulting nodes will have several shapes; normal packages
+are boxes, pure virtual packages are triangles, mixed
+virtual packages are diamonds, missing packages are
+hexagons. Orange boxes mean recursion was stopped (leaf
+packages), blue lines are pre&minus;depends, green lines are
+conflicts.</font></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><font color="#000000">Caution,
+dotty cannot graph larger sets of packages.</font></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000"><b>xvcg</b>
+<i>pkg</i><b>...</b></font></p>
+
+<p style="margin-left:17%;"><font color="#000000">The same
+as dotty, only for xvcg from the</font>
+<b><font color="#0000FF">VCG tool</font></b>
+<small><font color="#000000">[2]</font></small>
+<font color="#000000">.</font></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000"><b>policy</b>
+[<i>pkg</i>...]</font></p>
+
+<p style="margin-left:17%;"><font color="#000000">policy is
+meant to help debug issues relating to the preferences file.
+With no arguments it will print out the priorities of each
+source. Otherwise it prints out detailed information about
+the priority selection of the named package.</font></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000"><b>madison</b>
+<i>pkg</i><b>...</b></font></p>
+
+
+<p style="margin-left:17%;"><font color="#000000">apt&minus;cache's
+madison command attempts to mimic the output format and a
+subset of the functionality of the Debian archive management
+tool, madison. It displays available versions of a package
+in a tabular format. Unlike the original madison, it can
+only display information for the architecture for which APT
+has retrieved package lists (APT::Architecture).</font></p>
+
+<h2>OPTIONS
+<a name="OPTIONS"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000">All
+command line options may be set using the configuration
+file, the descriptions indicate the configuration option to
+set. For boolean options you can override the config file by
+using something like
+<b>&minus;f&minus;</b>,<b>&minus;&minus;no&minus;f</b>,
+<b>&minus;f=no</b> or several other variations.</font></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000"><b>&minus;p</b>,
+<b>&minus;&minus;pkg&minus;cache</b></font></p>
+
+<p style="margin-left:17%;"><font color="#000000">Select
+the file to store the package cache. The package cache is
+the primary cache used by all operations. Configuration
+Item: Dir::Cache::pkgcache.</font></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000"><b>&minus;s</b>,
+<b>&minus;&minus;src&minus;cache</b></font></p>
+
+<p style="margin-left:17%;"><font color="#000000">Select
+the file to store the source cache. The source is used only
+by gencaches and it stores a parsed version of the package
+information from remote sources. When building the package
+cache the source cache is used to avoid reparsing all of the
+package files. Configuration Item:
+Dir::Cache::srcpkgcache.</font></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000"><b>&minus;q</b>,
+<b>&minus;&minus;quiet</b></font></p>
+
+<p style="margin-left:17%;"><font color="#000000">Quiet;
+produces output suitable for logging, omitting progress
+indicators. More q's will produce more quietness up to a
+maximum of 2. You can also use <b>&minus;q=#</b> to set the
+quietness level, overriding the configuration file.
+Configuration Item: quiet.</font></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000"><b>&minus;i</b>,
+<b>&minus;&minus;important</b></font></p>
+
+<p style="margin-left:17%;"><font color="#000000">Print
+only important dependencies; for use with unmet and depends.
+Causes only Depends and Pre&minus;Depends relations to be
+printed. Configuration Item:
+APT::Cache::Important.</font></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000"><b>&minus;&minus;no&minus;pre&minus;depends</b>,
+<b>&minus;&minus;no&minus;depends</b>,
+<b>&minus;&minus;no&minus;recommends</b>,
+<b>&minus;&minus;no&minus;suggests</b>,
+<b>&minus;&minus;no&minus;conflicts</b>,
+<b>&minus;&minus;no&minus;breaks</b>,
+<b>&minus;&minus;no&minus;replaces</b>,
+<b>&minus;&minus;no&minus;enhances</b></font></p>
+
+<p style="margin-left:17%;"><font color="#000000">Per
+default the depends and rdepends print all dependencies.
+This can be tweaked with these flags which will omit the
+specified dependency type. Configuration Item:
+APT::Cache::Show<i>DependencyType</i> e.g.
+APT::Cache::ShowRecommends.</font></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000"><b>&minus;f</b>,
+<b>&minus;&minus;full</b></font></p>
+
+<p style="margin-left:17%;"><font color="#000000">Print
+full package records when searching. Configuration Item:
+APT::Cache::ShowFull.</font></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000"><b>&minus;a</b>,
+<b>&minus;&minus;all&minus;versions</b></font></p>
+
+<p style="margin-left:17%;"><font color="#000000">Print
+full records for all available versions. This is the
+default; to turn it off, use
+<b>&minus;&minus;no&minus;all&minus;versions</b>. If
+<b>&minus;&minus;no&minus;all&minus;versions</b> is
+specified, only the candidate version will be displayed (the
+one which would be selected for installation). This option
+is only applicable to the show command. Configuration Item:
+APT::Cache::AllVersions.</font></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000"><b>&minus;g</b>,
+<b>&minus;&minus;generate</b></font></p>
+
+<p style="margin-left:17%;"><font color="#000000">Perform
+automatic package cache regeneration, rather than use the
+cache as it is. This is the default; to turn it off, use
+<b>&minus;&minus;no&minus;generate</b>. Configuration Item:
+APT::Cache::Generate.</font></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000"><b>&minus;&minus;names&minus;only</b>,
+<b>&minus;n</b></font></p>
+
+<p style="margin-left:17%;"><font color="#000000">Only
+search on the package names, not the long descriptions.
+Configuration Item: APT::Cache::NamesOnly.</font></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000"><b>&minus;&minus;all&minus;names</b></font></p>
+
+<p style="margin-left:17%;"><font color="#000000">Make
+pkgnames print all names, including virtual packages and
+missing dependencies. Configuration Item:
+APT::Cache::AllNames.</font></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000"><b>&minus;&minus;recurse</b></font></p>
+
+<p style="margin-left:17%;"><font color="#000000">Make
+depends and rdepends recursive so that all packages
+mentioned are printed once. Configuration Item:
+APT::Cache::RecurseDepends.</font></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000"><b>&minus;&minus;installed</b></font></p>
+
+<p style="margin-left:17%;"><font color="#000000">Limit the
+output of depends and rdepends to packages which are
+currently installed. Configuration Item:
+APT::Cache::Installed.</font></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000"><b>&minus;h</b>,
+<b>&minus;&minus;help</b></font></p>
+
+<p style="margin-left:17%;"><font color="#000000">Show a
+short usage summary.</font></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000"><b>&minus;v</b>,
+<b>&minus;&minus;version</b></font></p>
+
+<p style="margin-left:17%;"><font color="#000000">Show the
+program version.</font></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000"><b>&minus;c</b>,
+<b>&minus;&minus;config&minus;file</b></font></p>
+
+
+<p style="margin-left:17%;"><font color="#000000">Configuration
+File; Specify a configuration file to use. The program will
+read the default configuration file and then this
+configuration file. If configuration settings need to be set
+before the default configuration files are parsed specify a
+file with the <b>APT_CONFIG</b> environment variable. See
+<b>apt.conf</b>(5) for syntax information.</font></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000"><b>&minus;o</b>,
+<b>&minus;&minus;option</b></font></p>
+
+<p style="margin-left:17%;"><font color="#000000">Set a
+Configuration Option; This will set an arbitrary
+configuration option. The syntax is <b>&minus;o
+Foo::Bar=bar</b>. <b>&minus;o</b> and
+<b>&minus;&minus;option</b> can be used multiple times to
+set different options.</font></p>
+
+<h2>FILES
+<a name="FILES"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000">/etc/apt/sources.list</font></p>
+
+
+<p style="margin-left:17%;"><font color="#000000">Locations
+to fetch packages from. Configuration Item:
+Dir::Etc::SourceList.</font></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000">/etc/apt/sources.list.d/</font></p>
+
+<p style="margin-left:17%;"><font color="#000000">File
+fragments for locations to fetch packages from.
+Configuration Item: Dir::Etc::SourceParts.</font></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000">/var/lib/apt/lists/</font></p>
+
+<p style="margin-left:17%;"><font color="#000000">Storage
+area for state information for each package resource
+specified in <b>sources.list</b>(5) Configuration Item:
+Dir::State::Lists.</font></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000">/var/lib/apt/lists/partial/</font></p>
+
+<p style="margin-left:17%;"><font color="#000000">Storage
+area for state information in transit. Configuration Item:
+Dir::State::Lists (partial will be implicitly
+appended)</font></p>
+
+<h2>SEE ALSO
+<a name="SEE ALSO"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000"><b>apt.conf</b>(5),
+<b>sources.list</b>(5), <b>apt-get</b>(8)</font></p>
+
+<h2>DIAGNOSTICS
+<a name="DIAGNOSTICS"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000"><b>apt&minus;cache</b>
+returns zero on normal operation, decimal 100 on
+error.</font></p>
+
+<h2>BUGS
+<a name="BUGS"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b><font color="#0000FF">APT
+bug page</font></b>
+<small><font color="#000000">[3]</font></small>
+<font color="#000000">. If you wish to report a bug in APT,
+please see /usr/share/doc/debian/bug&minus;reporting.txt or
+the <b>reportbug</b>(1) command.</font></p>
+
+<h2>AUTHORS
+<a name="AUTHORS"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000"><b>Jason
+Gunthorpe</b></font></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><font color="#000000"><b>APT
+team</b></font></p>
+
+<h2>NOTES
+<a name="NOTES"></a>
+</h2>
+
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="12%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em"><font color="#000000">1.</font></p> </td>
+<td width="2%"></td>
+<td width="12%">
+
+
+
+<p style="margin-top: 1em"><font color="#000000">GraphViz</font></p> </td>
+<td width="71%">
+</td></tr>
+</table>
+
+
+<p style="margin-left:17%;"><font color="#000000">http://www.research.att.com/sw/tools/graphviz/</font></p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="12%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em"><font color="#000000">2.</font></p> </td>
+<td width="2%"></td>
+<td width="12%">
+
+
+<p style="margin-top: 1em"><font color="#000000">VCG
+tool</font></p> </td>
+<td width="71%">
+</td></tr>
+</table>
+
+
+<p style="margin-left:17%;"><font color="#000000">http://rw4.cs.uni-sb.de/users/sander/html/gsvcg1.html</font></p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="12%"></td>
+<td width="3%">
+
+
+
+<p style="margin-top: 1em"><font color="#000000">3.</font></p> </td>
+<td width="2%"></td>
+<td width="18%">
+
+
+<p style="margin-top: 1em"><font color="#000000">APT bug
+page</font></p> </td>
+<td width="65%">
+</td></tr>
+</table>
+
+
+<p style="margin-left:17%;"><font color="#000000">http://bugs.debian.org/src:apt</font></p>
+<hr>
+</body>
+</html>
