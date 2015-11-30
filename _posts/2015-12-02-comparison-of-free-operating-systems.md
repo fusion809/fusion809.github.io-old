@@ -246,7 +246,7 @@ function yrm {
 {% include galleria.html image1="Debian-8.2-KDE-appmenu.png" width1="1366px" description1="Debian 8.2 running KDE Plasma 4" image2="Debian-8.2-TDE-appmenu.png" width2="1000px" description2="Debian 8.2 running the Trinity Desktop Environment (TDE)" %}
 <br/>
 ### Background
-{% include os.html bugs="https://www.debian.org/Bugs/" wiki="https://wiki.debian.org/" ml="https://www.debian.org/MailingLists/" irc="https://wiki.debian.org/IRC" forum="http://forums.debian.net/" wp="Debian" os="Debian" docs="https://www.debian.org/doc/" dw="debian" d="https://www.debian.org/distrib/" gr="Debian" %} was one of the first Linux distributions to be founded and was founded back in 1993, by a then Purdue University student, named Ian Murdock. He named Debian as a portmanteau of his first name and the first name of his then girlfriend, Debra Lynn.
+{% include os.html bugs="https://www.debian.org/Bugs/" wiki="https://wiki.debian.org/" ml="https://www.debian.org/MailingLists/" irc="https://wiki.debian.org/IRC" forum="http://forums.debian.net/" wp="Debian" os="Debian" docs="https://www.debian.org/doc/" dw="debian" d="https://www.debian.org/distrib/" gr="Debian" %} was one of the first Linux distributions to be founded and was founded back in 1993, by a then [Purdue University](https://en.wikipedia.org/wiki/Purdue_University) student, named [Ian Murdock](https://en.wikipedia.org/wiki/Ian_Murdock). He named Debian as a portmanteau of his first name and the first name of his then girlfriend, Debra Lynn.
 
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)
