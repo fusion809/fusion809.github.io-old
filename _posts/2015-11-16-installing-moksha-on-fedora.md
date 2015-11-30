@@ -3,6 +3,7 @@ layout: post
 title:  "Installing Moksha on Fedora 23"
 date:   2015-11-16 06:47:50 +1000
 categories: fedora, moksha, installation-guides
+redirect_from:
 ---
 {% include image.html url="/images/Fedora-23-Moksha-desktop.png" description="Moksha running under Fedora 23, with the default Fedora 23 wallpaper" id="1" width = "1034px" %}
 

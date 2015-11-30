@@ -1,11 +1,12 @@
 ---
 layout: post
 title:  "A Comparison of Free Operating Systems"
-date:   2015-11-30 +1000
+date:   2015-12-02 +1000
 categories: bsd, linux, comparisons
 redirect_from:
   - /2015/11/10/comparison-of-linux-distros/
   - /2015/11/29/comparison-of-linux-distros-and-bsd-derivatives/
+  - /2015/11/30/comparison-of-free-operating-systems/
 ---
 {% include draft.html %}
 
@@ -131,7 +132,10 @@ Arch Linux also follows a bleeding-edge rolling release model (BE-RRM), which me
 I, with my love of using the latest software, have not really taken a liking for CentOS. Rather, if I ever have to use a Linux distribution derived from Red Hat, I usually use the latest release of Fedora (currently Fedora 23). Unlike Fedora, CentOS is also more restricted in its architecture support, see Fedora can run on 32-bit and 64-bit machines, while CentOS can only run on 64-bit machines.
 
 ### Package Management
-CentOS uses the **Yellowdog Updater, Modified** (**Yum**) package manager that was once used by Fedora. Yum's development has since been discontinued, in favour of its successor Dandified Yum (**DNF**), which resolves package dependencies faster and more efficiently than Yum does, by using ZYpp's libsolv library, hence it is likely that in the future CentOS will start using DNF as well. Yum is considered one of the least efficient of widely-used Linux package managers presently available and the cause is likely the fact that unlike APT or ZYpp it is written in Python. 
+CentOS uses the **Yellowdog Updater, Modified** (**Yum**) package manager that was once used by Fedora. Yum's development has since been discontinued, in favour of its successor Dandified Yum (**DNF**), which resolves package dependencies faster and more efficiently than Yum does, by using ZYpp's libsolv library, hence it is likely that in the future CentOS will start using DNF as well. Yum is widely considered one of the least efficient widely-used Linux package managers presently available and the cause is likely the fact that unlike APT or ZYpp it is written in Python. To install software with yum one would issue the command:
+```bash
+sudo yum install $@
+```
 
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)
