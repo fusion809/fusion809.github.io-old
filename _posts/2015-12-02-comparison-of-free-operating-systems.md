@@ -57,6 +57,10 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
   * <b>O</b>perating <b>s</b>ystem.
 * <b>OSs</b>
   * <b>O</b>perating <b>s</b>ystem<b>s</b>.
+* <b>PMS</b>
+  * <b>P</b>ackage <b>m</b>agement <b>s</b>ystem.
+* <b>PMSs</b>
+  * <b>P</b>ackage <b>m</b>agement <b>s</b>ystem<b>s</b>.
 * <b>RRM</b>
   * <b>R</b>olling <b>r</b>elease <b>m</b>odel. A type of operating system development model in which the system is continually developing, this is as opposed to standard release models (SRMs) which uses distinct OS versions that must be reinstalled over the previous version.
 
@@ -71,7 +75,7 @@ Each OS review will have the format:
 
 
   * **Package Management**
-    * Not all OSs will have this section, but if they do, here I will discuss the OS's default package manager(s) and their features.
+    * Not all OSs will have this section, but if they do, here I will discuss the OS's default PMSs and their features. Including some basic usage of the PMSs.
 
 
   * **Specifications**
@@ -117,8 +121,9 @@ I would personally rate pacman and Yaourt as two of my favourite package manager
 
 Arch Linux also follows a bleeding-edge rolling release model (BE-RRM), which means that users almost always have the latest software and never need to perform a standard system upgrade. Although it is worthwhile noting that not all software on Arch is bleeding-edge, some can be a few releases behind. For example, as of {{ page.date | date: "%d %B %y" }} [e_dbus 1.7.9](https://www.archlinux.org/packages/extra/x86_64/e_dbus/) is still in their official pacman repositories, even though version 1.7.10 was released on 6 January 2014.[^3]
 
-pacman and Yaourt both have very unusual syntax, see most command-line BSD/Linux package managers use the `install` option to install software, `remove` to remove software, `update` to update software repositories and `upgrade` to updated all installed software. pacman instead uses `-S`, `-R`, `-Sy` and `-Syu` options, respectively. 
-Here is an example `~/.bashrc` file I use on Arch VMs:
+pacman and Yaourt both have very unusual syntax, see most command-line BSD/Linux package managers use the `install` option to install software, `remove` to remove software, `update` to update software repositories and `upgrade` to updated all installed software. pacman instead uses `-S`, `-R`, `-Sy` and `-Syu` options, respectively. Further details of its syntax can be found [here](https://wiki.archlinux.org/index.php/Pacman_Rosetta).
+
+Here is an example `~/.bashrc` file one can use on Arch VMs.
 ```bash
 # `pacin` installs software with pacman, without asking for confirmation
 function pacin {
@@ -126,6 +131,8 @@ function pacin {
 }
 
 # `pacrm` removes software with pacman, without asking for confirmation
+# -Rsc option is used to get pacman to remove reverse dependencies of the target
+# package, as needed.
 function pacrm {
   sudo pacman -Rsc $@ --noconfirm
 }
@@ -140,6 +147,18 @@ function pacup {
 # without asking for confirmation
 function update {
   yaourt -Syua --noconfirm
+}
+
+alias yaup=update
+
+# `yain` installs software using Yaourt, without asking for confirmation
+function yain {
+  yaourt -S $@ --noconfirm
+}
+
+# `yarm` removes software using Yaourt
+function yarm {
+  yaourt -Rsc $@ --noconfirm
 }
 ```
 
