@@ -1,0 +1,990 @@
+<!-- Creator     : groff version 1.22.2 -->
+<!-- CreationDate: Wed Dec  2 02:54:12 2015 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       h1      { text-align: center }
+</style>
+<title>URPMI</title>
+
+</head>
+<body>
+
+<h1 align="center">URPMI</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#FILES">FILES</a><br>
+<a href="#EXIT CODES">EXIT CODES</a><br>
+<a href="#BUG REPORTS">BUG REPORTS</a><br>
+<a href="#CONTRIBUTING">CONTRIBUTING</a><br>
+<a href="#AUTHOR">AUTHOR</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<h2>NAME
+<a name="NAME"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">urpmi &minus;
+rpm downloader, installer and dependency solver</p>
+
+<h2>SYNOPSIS
+<a name="SYNOPSIS"></a>
+</h2>
+
+
+<pre style="margin-left:11%; margin-top: 1em">    urpmi [options] [package_names | rpm_files...]
+    urpmi [options] &minus;&minus;auto&minus;select</pre>
+
+
+<h2>DESCRIPTION
+<a name="DESCRIPTION"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The purpose of
+urpmi is to install rpm packages, including all their
+dependencies. You can also use it to install the build
+dependencies of an srpm (an rpm source package), or the
+build dependencies read from a plain rpm spec file; or to
+install a source package itself in order to rebuild it
+afterwards.</p>
+
+<p style="margin-left:11%; margin-top: 1em">You can compare
+rpm vs. urpmi with insmod vs. modprobe or dpkg vs apt-get.
+Just run urpmi followed by what you think is the name of the
+package(s), and urpmi will:</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="5%"></td>
+<td width="83%">
+
+
+<p>Propose different package names if the name was
+ambiguous, and quit.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="5%"></td>
+<td width="83%">
+
+
+<p>If only one corresponding package is found, check
+whether its dependencies are already installed.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="5%"></td>
+<td width="83%">
+
+
+<p>If not, propose to install the dependencies, and on a
+positive answer, proceed.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="5%"></td>
+<td width="83%">
+
+
+<p>Finish by installing the requested package(s).</p></td></tr>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em">Note that urpmi
+handles installations from various types of media (ftp,
+http, https, rsync, ssh, local and nfs volumes, and
+removable media such as CDROMs or DVDs) and is able to
+install dependencies from a medium different from the
+original package&rsquo;s media. For removable media, urpmi
+may ask you to insert the appropriate disk, if
+necessary.</p>
+
+<p style="margin-left:11%; margin-top: 1em">To add a new
+medium containing rpms, run
+<tt>&quot;urpmi.addmedia&quot;</tt>. To remove an existing
+medium, use <tt>&quot;urpmi.removemedia&quot;</tt>. To
+update the package list (for example when the ftp archive
+changes) use <tt>&quot;urpmi.update&quot;</tt>.</p>
+
+<h2>OPTIONS
+<a name="OPTIONS"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;h</b>,
+<b>&minus;?</b>, <b>&minus;&minus;help</b></p>
+
+<p style="margin-left:17%;">Prints a help message and
+exit.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;force</b></p>
+
+<p style="margin-left:17%;">Assume yes on all
+questions.</p>
+
+<p style="margin-left:11%;"><b>&minus;q</b>,
+<b>&minus;&minus;quiet</b></p>
+
+<p style="margin-left:17%;">Quiet mode: when calling rpm no
+upgrade status is printed.</p>
+
+<p style="margin-left:11%;"><b>&minus;v</b>,
+<b>&minus;&minus;verbose</b></p>
+
+<p style="margin-left:17%;">Proposes a verbose mode with
+various messages.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Media
+Selection <br>
+&minus;&minus;media</b> <i>media1,...,mediaN</i></p>
+
+<p style="margin-left:17%;">Select specific media to be
+used, instead of defaulting to all available media (or all
+update media if <b>&minus;&minus;update</b> is used). No rpm
+will be fetched from other media.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;excludemedia</b>
+<i>media1,...,mediaN</i></p>
+
+<p style="margin-left:17%;">Do not use the specified
+media.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;searchmedia</b>
+<i>media1,...,mediaN</i></p>
+
+<p style="margin-left:17%;">Use only the specified media to
+search for packages that are specified on the command-line,
+or which are found when using
+<b>&minus;&minus;auto&minus;select</b>. Dependencies of
+those packages can still be found in other media.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;sortmedia</b>
+<i>media1,...,mediaN</i></p>
+
+<p style="margin-left:17%;">Sort the specified media.
+Substrings may be used to simplify grouping. This way,
+<tt>&quot;media1&quot;</tt> will be taken into account
+first, then <tt>&quot;media2&quot;</tt>, and so on. Media
+which aren&rsquo;t listed are taken into account after the
+others.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;update</b></p>
+
+<p style="margin-left:17%;">Use only update media. This
+means that urpmi will search packages and resolve
+dependencies only in media marked as containing updates.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;synthesis</b>
+<i>file</i></p>
+
+<p style="margin-left:17%;">Use the specified synthesis
+file instead of the urpmi database for searching packages
+and resolving dependencies. This option is mostly designed
+for internal use.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;use&minus;distrib</b>
+<i>directory</i></p>
+
+<p style="margin-left:17%;">Configure urpmi on the fly from
+a distrib tree, useful to install a chroot with the
+<b>&minus;&minus;root</b> option. See the description of the
+<b>&minus;&minus;distrib</b> option in the
+<tt>&quot;urpmi.addmedia&quot;</tt> manpage.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Operation
+Modes <br>
+&minus;&minus;auto&minus;select</b></p>
+
+<p style="margin-left:17%;">Select all packages that can be
+upgraded, according to already installed packages and
+packages listed in various registered media.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;auto&minus;update</b></p>
+
+<p style="margin-left:17%;">Like
+<b>&minus;&minus;auto&minus;select</b>, but also updates all
+relevant media before selection of upgradeable packages is
+made. This avoids a previous call to
+<tt>&quot;urpmi.update&quot;</tt>.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;auto&minus;orphans</b></p>
+
+<p style="margin-left:17%;">Remove all orphans without
+asking (see also <tt>&quot;urpme
+&minus;&minus;auto&minus;orphans&quot;</tt>)</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Package
+Selection <br>
+&minus;&minus;auto</b></p>
+
+<p style="margin-left:17%;">Install all required
+dependencies without asking.</p>
+
+<p style="margin-left:11%;"><b>&minus;y</b>,
+<b>&minus;&minus;fuzzy</b></p>
+
+<p style="margin-left:17%;">Disable fast search on exact
+package name; that means that urpmi will propose all
+packages matching part of the name, even if one of them
+matches exactly the specified name.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;buildrequires</b></p>
+
+<p style="margin-left:17%;">Select all the
+<tt>&quot;BuildRequires&quot;</tt> of the wanted source
+packages. (You can also install the build dependencies read
+directly from an rpm spec file.)</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;install&minus;src</b></p>
+
+<p style="margin-left:17%;">Install only the source package
+(that is, no binary packages will be installed). You
+don&rsquo;t need to be root to use this option (if you have
+write access to your rpm build top directory).</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;no&minus;recommends</b></p>
+
+<p style="margin-left:17%;">With this option, urpmi will
+not install &quot;suggested&quot; packages. By default,
+urpmi will install (newly) suggested packages.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;allow&minus;suggests</b></p>
+
+<p style="margin-left:17%;">With this option, urpmi will
+install &quot;suggested&quot; packages. This is useful if
+you have <tt>&quot;no&minus;recommends&quot;</tt> in
+urpmi.cfg.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;strict&minus;arch</b></p>
+
+<p style="margin-left:17%;">Upgrade only packages if the
+newer version has the same architecture as the one
+installed. Mostly useful on machines that support several
+architectures (32 and 64 bit).</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p><b>&minus;a</b></p></td>
+<td width="3%"></td>
+<td width="83%">
+
+
+<p>If multiple packages match the given substring, install
+them all.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p><b>&minus;p</b></p></td>
+<td width="3%"></td>
+<td width="83%">
+
+
+<p>Allow search in provides to find the package (this is
+the default).</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p><b>&minus;P</b></p></td>
+<td width="3%"></td>
+<td width="83%">
+
+
+<p>Do not search in provides to find package (this is the
+opposite of <b>&minus;p</b>).</p></td></tr>
+</table>
+
+<p style="margin-left:11%;"><b>&minus;&minus;skip</b>
+<i>pattern,...</i></p>
+
+<p style="margin-left:17%;">You can specify a list of
+packages which installation should be skipped. You can also
+include patterns between //, just like in
+<i>/etc/urpmi/skip.list</i> (see <i>urpmi.files</i>(5)).</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;prefer</b>
+<i>pattern,...</i></p>
+
+<p style="margin-left:17%;">You can specify a list of
+packages which installation should be preferred (especially
+useful with <b>&minus;&minus;auto</b>). You can also include
+patterns between //, just like in
+<i>/etc/urpmi/prefer.list</i> (see
+<i>urpmi.files</i>(5)).</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;more&minus;choices</b></p>
+
+<p style="margin-left:17%;">When several packages are
+found, propose more choices than the default.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Package
+Processing <br>
+&minus;&minus;no&minus;md5sum</b></p>
+
+<p style="margin-left:17%;">Disable <small>MD5SUM</small>
+file checking when updating media.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;force&minus;key</b></p>
+
+<p style="margin-left:17%;">Force update of
+<small>GPG</small> key when updating media.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;no&minus;install</b></p>
+
+<p style="margin-left:17%;">Only download packages,
+don&rsquo;t install them. After operation, you&rsquo;ll find
+them in <i>/var/cache/urpmi/rpms</i>.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;no&minus;uninstall</b></p>
+
+<p style="margin-left:17%;">Never ask to uninstall a
+package but prefer aborting instead. This can be safer in
+auto mode.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;keep</b></p>
+
+<p style="margin-left:17%;">When some dependencies cannot
+be satisfied, change the selection of packages to try to
+keep existing packages instead of removing them. This
+behaviour generally rejects the upgrade of packages given on
+command line (or when using
+<b>&minus;&minus;auto&minus;select</b>) when a dependency
+error occurs.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;split&minus;level</b>
+<i>number</i></p>
+
+<p style="margin-left:17%;">Split urpmi&rsquo;s operation
+in small transactions when the total number of packages to
+upgrade is greater than the given <i>number</i>. This option
+is activated by default, and the default value of
+<i>number</i> is 20.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;split&minus;length</b>
+<i>count</i></p>
+
+<p style="margin-left:17%;">Split urpmi&rsquo;s operation
+in small transactions of at least <i>count</i> packages. The
+default is 8 and setting this value to 0 just disables
+splitting in small transactions.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;clean</b></p>
+
+<p style="margin-left:17%;">Remove all packages from the
+cache in directory <i>/var/cache/urpmi/rpms</i>.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;noclean</b></p>
+
+<p style="margin-left:17%;">Do not remove any package from
+the cache in directory <i>/var/cache/urpmi/rpms</i>.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;justdb</b></p>
+
+<p style="margin-left:17%;">Update only the database, not
+the filesystem.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;downgrade</b></p>
+
+<p style="margin-left:17%;">Force installing the packages
+even though they are already installed.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;replacepkgs</b></p>
+
+<p style="margin-left:17%;">Force installing the packages
+even though they are already installed.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;allow&minus;nodeps</b></p>
+
+<p style="margin-left:17%;">With this option, urpmi will
+ask the user on error whether it should continue the
+installation without checking dependencies. By default,
+urpmi exits immediately in this case.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;allow&minus;force</b></p>
+
+<p style="margin-left:17%;">With this option, urpmi will
+ask the user on error whether it should proceed to a forced
+installation. By default, urpmi exits immediately in this
+case.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;allow&minus;medium&minus;change</b></p>
+
+<p style="margin-left:17%;">When used when
+<b>&minus;&minus;auto</b>, do not suppress all questions,
+but still ask the user for medium changes (e.g. insertion of
+CD-ROMs).</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;download&minus;all</b>
+<i>dest-dir</i></p>
+
+<p style="margin-left:17%;">By default, urpmi will download
+packages when they are needed. This can be problematic when
+connection failures happen during a big upgrade. When this
+option is set, urpmi will first download all the needed
+packages and proceed to install them if it managed to
+download them all. You can optionally specify a directory
+where the files should be downloaded (default is
+/var/cache/urpmi which could be too small to hold all the
+files).</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;verify&minus;rpm
+<br>
+&minus;&minus;no&minus;verify&minus;rpm</b></p>
+
+<p style="margin-left:17%;">Activate or deactivate rpm
+signature checking. It&rsquo;s activated by default, and can
+be overriden in global configuration.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;test</b></p>
+
+<p style="margin-left:17%;">Test the installation of
+packages but do not actually install anything or modify the
+system. (That&rsquo;s the same as <tt>&quot;rpm
+&minus;&minus;test&quot;</tt>).</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;excludepath</b>
+<i>string</i></p>
+
+<p style="margin-left:17%;">Do not install files of which
+the names begin with the given <i>string</i> (same as
+<tt>&quot;rpm &minus;&minus;excludepath&quot;</tt>).</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;excludedocs</b></p>
+
+<p style="margin-left:17%;">Do not install documents files
+(same as <tt>&quot;rpm
+&minus;&minus;excludedocs&quot;</tt>).</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;ignorearch</b></p>
+
+<p style="margin-left:17%;">Allow to install packages whose
+architecture does not match the architecture of the host.
+This is equivalent to <tt>&quot;rpm
+&minus;&minus;ignorearch&quot;</tt>.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;ignoresize</b></p>
+
+<p style="margin-left:17%;">Don&rsquo;t check file systems
+for sufficient disk space before installation. This is
+equivalent to <tt>&quot;rpm
+&minus;&minus;ignoresize&quot;</tt>.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;noscripts</b></p>
+
+<p style="margin-left:17%;">Don&rsquo;t execute the
+scriptlets. This is equivalent to <tt>&quot;rpm
+&minus;&minus;noscripts&quot;</tt>.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;replacefiles</b></p>
+
+<p style="margin-left:17%;">Ignore file conflicts. This is
+equivalent to <tt>&quot;rpm
+&minus;&minus;replacefiles&quot;</tt>.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Database
+Options <br>
+&minus;&minus;root</b> <i>directory</i></p>
+
+<p style="margin-left:17%;">Use the file system tree rooted
+for rpm install. All operations and scripts will run after
+<i>chroot</i>(2). The rpm database that lies in the rooted
+tree will be used, but the urpmi configuration comes from
+the normal system.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;urpmi&minus;root</b>
+<i>directory</i></p>
+
+<p style="margin-left:17%;">Use the file system tree rooted
+for urpmi database and rpm install. Contrary to
+<b>&minus;&minus;root</b>, the urpmi configuration comes
+from the rooted tree.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;nolock</b></p>
+
+<p style="margin-left:17%;">Don&rsquo;t lock urpmi and rpm
+db. This can be useful in conjunction with
+<b>&minus;&minus;root</b>.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;wait&minus;lock</b></p>
+
+<p style="margin-left:17%;">If the urpmi or rpm db is busy,
+wait until it is available</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Download
+Options <br>
+&minus;&minus;parallel</b> <i>alias</i></p>
+
+<p style="margin-left:17%;">Activate distributed execution
+of urpmi to other machines (it is mandatory that urpmi is
+installed, but it is not necessary to have media defined on
+any machines). <i>alias</i> defines which extension module
+is to be used by urpmi (currently,
+<tt>&quot;urpmi&minus;parallel&minus;ka&minus;run&quot;</tt>
+or <tt>&quot;urpmi&minus;parallel&minus;ssh&quot;</tt> are
+available) and which machines should be updated. This alias
+is defined in the file <i>/etc/urpmi/parallel.cfg</i> as
+described in the urpmi.files manpage.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;downloader</b>
+<i>program name</i></p>
+
+<p style="margin-left:17%;">Use a specific program for
+downloading distant files via http or ftp. By default curl
+is used if available, or wget instead.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;curl&minus;options</b>
+<i>&rsquo;options&rsquo;</i> <b><br>
+&minus;&minus;rsync&minus;options</b>
+<i>&rsquo;options&rsquo;</i> <b><br>
+&minus;&minus;wget&minus;options</b>
+<i>&rsquo;options&rsquo;</i></p>
+
+<p style="margin-left:17%;">Specify additional command-line
+options to be passed to curl, rsync or wget when retrieving
+files. If several options are to be passed, separate them
+with spaces and enclose them in quotes.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Note that the
+rsync options will also be used for ssh media (since
+it&rsquo;s actually rsync over ssh).</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;limit&minus;rate</b>
+<i>rate</i></p>
+
+<p style="margin-left:17%;">Try to limit the download
+speed. <i>rate</i> is given in bytes/sec. This option is not
+active by default.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;resume</b></p>
+
+<p style="margin-left:17%;">Resume transfer of
+partially-downloaded files.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;retry</b>
+<i>times</i></p>
+
+<p style="margin-left:17%;">Retries to download files over
+<small>FTP</small> or <small>HTTP</small> the specified
+number of times.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;proxy</b>
+<i>proxyhost[:port]</i></p>
+
+<p style="margin-left:17%;">Use specified
+<small>HTTP</small> proxy.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;proxy&minus;user</b>
+<i>user:password</i></p>
+
+<p style="margin-left:17%;">Use specified user and password
+to use for proxy authentication. Specifying
+<b>&minus;&minus;proxy&minus;user=ask</b> will cause urpmi
+to prompt for a username and a password.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Debugging
+Options <br>
+&minus;&minus;debug</b></p>
+
+<p style="margin-left:17%;">Proposes a very verbose
+mode.</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;debug&minus;librpm</b></p>
+
+<p style="margin-left:17%;">Proposes a very verbose mode
+(similar to rpm &minus;vv)</p>
+
+
+<p style="margin-left:11%;"><b>&minus;&minus;deploops</b></p>
+
+<p style="margin-left:17%;">Print warnings when packages
+cannot be ordered properly due to dependancy loops.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;bug</b>
+<i>directory</i></p>
+
+<p style="margin-left:17%;">Create a bug report in
+<i>directory</i>. You have to send a compressed archive of
+the directory to the urpmi maintainer for the bug being
+(probably) reproduced. See &quot; <small>BUG
+REPORTS&quot;</small> below.</p>
+
+<p style="margin-left:11%;"><b>&minus;&minus;env</b>
+<i>directory</i></p>
+
+<p style="margin-left:17%;">Use a different environment
+directly from a bug report to replay a bug. The argument is
+the same argument given to <b>&minus;&minus;bug</b>
+option.</p>
+
+<h2>EXAMPLES
+<a name="EXAMPLES"></a>
+</h2>
+
+
+<pre style="margin-left:11%; margin-top: 1em">    urpmi ssh://foo@bar.net/home/foo/test.rpm</pre>
+
+
+<p style="margin-left:11%; margin-top: 1em">Fetch
+<i>/home/foo/test.rpm</i> from server bar.net over ssh using
+user foo. You can use a public key or enter your
+password.</p>
+
+<pre style="margin-left:11%; margin-top: 1em">    urpmi &minus;&minus;media foo&minus; &minus;&minus;auto&minus;select</pre>
+
+
+<p style="margin-left:11%; margin-top: 1em">Fetch all the
+updates from media containing
+<tt>&quot;foo&minus;&quot;</tt> in their name.</p>
+
+<h2>FILES
+<a name="FILES"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">See
+<i>urpmi.files</i>(5).</p>
+
+<h2>EXIT CODES
+<a name="EXIT CODES"></a>
+</h2>
+
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p style="margin-top: 1em">1.</p></td>
+<td width="2%"></td>
+<td width="83%">
+
+
+<p style="margin-top: 1em">Command line inconsistency.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p>2.</p></td>
+<td width="2%"></td>
+<td width="83%">
+
+
+<p>Problem registering local packages.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p>3.</p></td>
+<td width="2%"></td>
+<td width="83%">
+
+
+<p>Source packages not retrievable.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p>4.</p></td>
+<td width="2%"></td>
+<td width="83%">
+
+
+<p>Medium is not selected.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p>5.</p></td>
+<td width="2%"></td>
+<td width="83%">
+
+
+<p>Medium already exists.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p>6.</p></td>
+<td width="2%"></td>
+<td width="83%">
+
+
+<p>Unable to save configuration.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p>7.</p></td>
+<td width="2%"></td>
+<td width="83%">
+
+
+<p>urpmi database locked.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p>8.</p></td>
+<td width="2%"></td>
+<td width="83%">
+
+
+<p>Unable to read or create bug report.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p>9.</p></td>
+<td width="2%"></td>
+<td width="83%">
+
+
+<p>Unable to open rpmdb.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p>10.</p></td>
+<td width="2%"></td>
+<td width="83%">
+
+
+<p>Some files are missing for installation.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p>11.</p></td>
+<td width="2%"></td>
+<td width="83%">
+
+
+<p>Some transactions failed but not all.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p>12.</p></td>
+<td width="2%"></td>
+<td width="83%">
+
+
+<p>All transactions failed.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p>13.</p></td>
+<td width="2%"></td>
+<td width="83%">
+
+
+<p>Some files are missing and some transactions failed but
+not all.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p>14.</p></td>
+<td width="2%"></td>
+<td width="83%">
+
+
+<p>Some files are missing and all transactions failed.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p>15.</p></td>
+<td width="2%"></td>
+<td width="83%">
+
+
+<p>No package installed (when using
+&minus;&minus;expect&minus;install)</p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p>16.</p></td>
+<td width="2%"></td>
+<td width="83%">
+
+
+<p>Bad signature</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="4%">
+
+
+<p>17.</p></td>
+<td width="2%"></td>
+<td width="83%">
+
+
+<p>Some packages couldn&rsquo;t be installed or
+upgraded</p> </td></tr>
+</table>
+
+<h2>BUG REPORTS
+<a name="BUG REPORTS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">If you find a
+bug in urpmi please report it using the command:</p>
+
+<pre style="margin-left:11%; margin-top: 1em">    urpmi &minus;&minus;bug bug_name_as_directory &lt;other arguments&gt;</pre>
+
+
+<p style="margin-left:11%; margin-top: 1em">This will
+automatically create a directory called
+<i>bug_name_as_directory</i> containing necessary files to
+reproduce it if possible. <i>&lt;other arguments&gt;</i>
+represent the command-line arguments you noticed the bug
+with (e.g.
+<tt>&quot;&minus;&minus;auto&minus;select&quot;</tt> or a
+list of rpm names). Please test the report using</p>
+
+<pre style="margin-left:11%; margin-top: 1em">    urpmi &minus;&minus;env bug_name_as_directory &lt;other arguments&gt;</pre>
+
+
+<p style="margin-left:11%; margin-top: 1em">to check that
+the bug is still here. Obviously, only reproducible bugs can
+be resolved. For sending the report, make a tarball of this
+directory and send it directly to the current maintainer
+with a description of what you think is wrong.</p>
+
+<h2>CONTRIBUTING
+<a name="CONTRIBUTING"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">One can find
+the git repository / version-control repository (
+<small>VCS</small> ) here:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em">&lt;http://gitweb.mageia.org/software/rpm/urpmi/&gt;
+.</p>
+
+<h2>AUTHOR
+<a name="AUTHOR"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Pascal Rigaux
+&lt;pixel@mandriva.com&gt; (original author and current
+maintainer), Francois Pons, Rafael Garcia-Suarez</p>
+
+<h2>SEE ALSO
+<a name="SEE ALSO"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i>urpmi.addmedia</i>(8),
+<i>urpmi.update</i>(8), <i>urpmi.removemedia</i>(8),
+<i>urpme</i>(8), <i>urpmf</i>(8), <i>urpmq</i>(8),
+<i>urpmi.cfg</i>(5), <i>urpmi.files</i>(5).</p>
+<hr>
+</body>
+</html>
