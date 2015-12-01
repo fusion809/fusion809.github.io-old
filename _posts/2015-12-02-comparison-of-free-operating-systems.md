@@ -101,7 +101,7 @@ Each OS review will have the format:
 ### Background
 {% include os.html os="antiX" d="http://antix.mepis.org/index.php?title=Main_Page#Downloads" url="http://antix.mepis.org/index.php?title=Main_Page" forum="http://antix.freeforums.org/" dw="antix" wp="antiX" %} is a lightweight Linux distribution based on Debian's 'Testing' branch for 32-bit (i486 or better) and 64-bit systems. It is essentially designed to be a lightweight distribution as it uses the IceWM window manager as its default user interface. I have found it fairly user-friendly with a graphical installer and a fresh install takes up less than 3 GB hard disk drive (HDD) space. A fresh install can also work with as little as 128 MB RAM, although a minimum of 256 MB is recommended. Compared to more popular Linux distributions such as its parent Debian, its own documentation is fairly minimal, although as it is a Debian derivative the documentation of Debian should suffice in most cases. Since it is built on the testing branch of Debian its system software is usually bleeding edge, in terms of how up-to-date it is.
 
-{% include specs.html arch="x86 (i486 or better), x86_64." shell="Bash." type="Linux." PMS="APT and dpkg." ui="IceWM." IM="Booting from live medium and then using the Debian-Installer." date="2010." country="Greece." rm="Rolling." tm="Old computers and users that like to have the latest software." %}
+{% include specs.html arch="x86 (i486 or better), x86_64." shell="Bash." type="Linux." PMS="APT." ui="IceWM." IM="Booting from live medium and then using the Debian-Installer." date="2010." country="Greece." rm="Rolling." tm="Old computers and users that like to have the latest software." %}
 
 {% include os-min.html cpu="i486." ims="222 MB." ram="128 MB. &geq;256 MB preferable." hdd="~2.5 GB." %}
 
@@ -241,7 +241,7 @@ function yrm {
 }
 ```
 
-{% include specs.html arch="x86_64." shell="Bash." type="Linux." PMS="yum" ui="GNOME, KDE." IM="Manual from the command-line or via unofficial shell script installers" date="2004." country="U.S.A." rm="Fixed." tm="Individuals and organizations that place great importance on system stability, yet either cannot afford or do not want paid support from Red Hat." %}
+{% include specs.html arch="x86_64." shell="Bash." type="Linux." PMS="yum" ui="GNOME, KDE." IM="From live media." date="2004." country="U.S.A." rm="Fixed." tm="Individuals and organizations that place great importance on system stability, yet either cannot afford or do not want paid support from Red Hat." %}
 
 {% include os-min.html cpu="x86_64." ims="360 MB." ram="1,024 MB." hdd="10 GB. 20 GB recommended." %}
 
@@ -259,6 +259,57 @@ Debian uses the [**Advanced Packaging Tool**](https://en.wikipedia.org/wiki/Adva
 These different repositories cannot be used safely, simultaneously, on the same Debian installation, I know this well as I have tried to do this before (namely mix unstable and stable branches) and I ended up breaking my system. Despite this some unofficial APT repositories can be used along with one of the official Debian repositories relatively safely. This too, I know from experience as I often add the [Trinity Desktop Environment](https://wiki.trinitydesktop.org/DebianInstall) (TDE) repositories to my Debian VMs.
 
 APT is a command-line front-end for dpkg. dpkg is what does the actual software installation, while APT manages repositories and software dependencies. APT is written in C++, while dpkg is written in C, C++ and Perl. APT by default installs software from binary packages found in the repositories specified in the text file `/etc/apt/sources.list`, although it can be used to install software from source code too. From the command-line APT is called by a variety of slightly different commands, including [`add-apt-repository`](/man/add-apt-repository.1.html), [`apt-cache`](/man/apt-cache.8.html), [`apt-config`](/man/apt-config.8.html) and [`apt-get`](/man/apt-get.8.html).
+
+```bash
+# Upgrade installed software
+function update {
+  sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get autoremove -y && sudo apt-get autoclean
+}
+
+# Search for software
+function sacs {
+  sudo apt-cache search $@
+}
+
+# Show package details
+function sacsp {
+  sudo apt-cache showpkg $@
+}
+
+# Install software dependencies only
+function sagdb {
+  sudo apt-get build-dep -y $@
+}
+
+# Install software
+function sagi {
+  sudo apt-get install -y $@
+}
+
+alias install=sagi
+
+# Install local software package(s)
+function sagli {
+  sudo dpkg -i $@
+}
+
+# Remove software
+function sagr {
+  sudo apt-get remove -y $@
+}
+
+# Build Debian package from Debian sources, which are specified in
+# /etc/apt/sources.list. The package will NOT be installed, however.  
+function sagsb {
+  sudo apt-get source -b $@
+}
+```
+
+{% include specs.html arch="arm64, armel, armhf, i386, mips, mipsel, powerpc, ppc64el, s390x, x86_64." shell="Bash." type="Linux." PMS="APT" ui="Cinnamon, GNOME, KDE, LXDE, MATE, Xfce, <i>etc</i>." IM="Live CD, DVD or USB" date="2004." country="U.S.A." rm="Fixed, approximately once every 1-3 years." tm="Individuals/organizations with a reasonable skill set, that do not require commercial support, but greatly favour system stability over how up-to-date software." %}
+
+{% include os-min.html cpu="i386." ims="<280 MB." ram="128 MB. >512 MB recommended." hdd="2 GB. 10 GB with a desktop environment." %}
+
+{% include os-ratings.html bf="8." cmb="5." doc=">6. Has reasonable documentation, that I have little experience with, hence why I am giving it such a broad rating." sup="? Never had to use their support forums or IRC channels." pm="6. Yum is definitely not my favourite PMS." sru="<5. Default DEs, GNOME and KDE, are fairly heavy on SRU." sb=">9. Very stable, never had stability issues with it myself." mewi="3-4. Some experience, not an awful lot though." oa="7. As previously mentioned I dislike outdated software in an OS." %}
 
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)
