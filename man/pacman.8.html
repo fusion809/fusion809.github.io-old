@@ -1,0 +1,912 @@
+<!-- Creator     : groff version 1.22.3 -->
+<!-- CreationDate: Tue Dec  1 23:24:51 2015 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       h1      { text-align: center }
+</style>
+<title>PACMAN</title>
+
+</head>
+<body>
+
+<h1 align="center">PACMAN</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPERATIONS">OPERATIONS</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#TRANSACTION OPTIONS (APPLY TO &minus;S, &minus;R AND &minus;U)">TRANSACTION OPTIONS (APPLY TO &minus;S, &minus;R AND &minus;U)</a><br>
+<a href="#UPGRADE OPTIONS (APPLY TO &minus;S AND &minus;U)">UPGRADE OPTIONS (APPLY TO &minus;S AND &minus;U)</a><br>
+<a href="#QUERY OPTIONS">QUERY OPTIONS</a><br>
+<a href="#REMOVE OPTIONS">REMOVE OPTIONS</a><br>
+<a href="#SYNC OPTIONS">SYNC OPTIONS</a><br>
+<a href="#HANDLING CONFIG FILES">HANDLING CONFIG FILES</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#CONFIGURATION">CONFIGURATION</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#BUGS">BUGS</a><br>
+<a href="#AUTHORS">AUTHORS</a><br>
+
+<hr>
+
+
+<h2>NAME
+<a name="NAME"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">pacman &minus;
+package manager utility</p>
+
+<h2>SYNOPSIS
+<a name="SYNOPSIS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i>pacman</i>
+&lt;operation&gt; [options] [targets]</p>
+
+<h2>DESCRIPTION
+<a name="DESCRIPTION"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Pacman is a
+package management utility that tracks installed packages on
+a Linux system. It features dependency support, package
+groups, install and uninstall scripts, and the ability to
+sync your local machine with a remote repository to
+automatically upgrade packages. Pacman packages are a zipped
+tar format.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Since version
+3.0.0, pacman has been the front&minus;end to
+<b>libalpm</b>(3), the &ldquo;Arch Linux Package
+Management&rdquo; library. This library allows alternative
+front&minus;ends to be written (for instance, a GUI
+front&minus;end).</p>
+
+<p style="margin-left:11%; margin-top: 1em">Invoking pacman
+involves specifying an operation with any potential options
+and targets to operate on. A <i>target</i> is usually a
+package name, file name, URL, or a search string. Targets
+can be provided as command line arguments. Additionally, if
+stdin is not from a terminal and a single hyphen (&minus;)
+is passed as an argument, targets will be read from
+stdin.</p>
+
+<h2>OPERATIONS
+<a name="OPERATIONS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;D,
+&minus;&minus;database</b></p>
+
+<p style="margin-left:17%;">Modify the package database.
+This operation allows you to modify certain attributes of
+the installed packages in pacman&rsquo;s database. At the
+moment, you can only change the install reason using
+<i>&minus;&minus;asdeps</i> and
+<i>&minus;&minus;asexplicit</i> options.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;Q,
+&minus;&minus;query</b></p>
+
+<p style="margin-left:17%;">Query the package database.
+This operation allows you to view installed packages and
+their files, as well as meta&minus;information about
+individual packages (dependencies, conflicts, install date,
+build date, size). This can be run against the local package
+database or can be used on individual package files. In the
+first case, if no package names are provided in the command
+line, all installed packages will be queried. Additionally,
+various filters can be applied on the package list. See
+Query Options below.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;R,
+&minus;&minus;remove</b></p>
+
+<p style="margin-left:17%;">Remove package(s) from the
+system. Groups can also be specified to be removed, in which
+case every package in that group will be removed. Files
+belonging to the specified package will be deleted, and the
+database will be updated. Most configuration files will be
+saved with a <i>.pacsave</i> extension unless the
+<i>&minus;&minus;nosave</i> option is used. See Remove
+Options below.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;S,
+&minus;&minus;sync</b></p>
+
+<p style="margin-left:17%;">Synchronize packages. Packages
+are installed directly from the remote repositories,
+including all dependencies required to run the packages. For
+example, pacman &minus;S qt will download and install qt and
+all the packages it depends on. If a package name exists in
+more than one repository, the repository can be explicitly
+specified to clarify the package to install: pacman &minus;S
+testing/qt. You can also specify version requirements:
+pacman &minus;S &quot;bash&gt;=3.2&quot;. Quotes are needed,
+otherwise the shell interprets &quot;&gt;&quot; as
+redirection to a file.</p>
+
+<p style="margin-left:17%; margin-top: 1em">In addition to
+packages, groups can be specified as well. For example, if
+gnome is a defined package group, then pacman &minus;S gnome
+will provide a prompt allowing you to select which packages
+to install from a numbered list. The package selection is
+specified using a space&minus; and/or comma&minus;separated
+list of package numbers. Sequential packages may be selected
+by specifying the first and last package numbers separated
+by a hyphen (&minus;). Excluding packages is achieved by
+prefixing a number or range of numbers with a caret (^).</p>
+
+<p style="margin-left:17%; margin-top: 1em">Packages that
+provide other packages are also handled. For example, pacman
+&minus;S foo will first look for a foo package. If foo is
+not found, packages that provide the same functionality as
+foo will be searched for. If any package is found, it will
+be installed. A selection prompt is provided if multiple
+packages providing foo are found.</p>
+
+<p style="margin-left:17%; margin-top: 1em">You can also
+use pacman &minus;Su to upgrade all packages that are
+out&minus;of&minus;date. See Sync Options below. When
+upgrading, pacman performs version comparison to determine
+which packages need upgrading. This behavior operates as
+follows:</p>
+
+<p style="margin-left:23%; margin-top: 1em">Alphanumeric:
+<br>
+1.0a &lt; 1.0b &lt; 1.0beta &lt; 1.0p &lt; 1.0pre &lt; 1.0rc
+&lt; 1.0 &lt; 1.0.a &lt; 1.0.1 <br>
+Numeric: <br>
+1 &lt; 1.0 &lt; 1.1 &lt; 1.1.1 &lt; 1.2 &lt; 2.0 &lt;
+3.0.0</p>
+
+<p style="margin-left:17%; margin-top: 1em">Additionally,
+version strings can have an <i>epoch</i> value defined that
+will overrule any version comparison, unless the epoch
+values are equal. This is specified in an
+epoch:version&minus;rel format. For example, 2:1.0&minus;1
+is always greater than 1:3.6&minus;1.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;T,
+&minus;&minus;deptest</b></p>
+
+<p style="margin-left:17%;">Check dependencies; this is
+useful in scripts such as makepkg to check installed
+packages. This operation will check each dependency
+specified and return a list of dependencies that are not
+currently satisfied on the system. This operation accepts no
+other options. Example usage: pacman &minus;T qt
+&quot;bash&gt;=3.2&quot;.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;U,
+&minus;&minus;upgrade</b></p>
+
+<p style="margin-left:17%;">Upgrade or add package(s) to
+the system and install the required dependencies from sync
+repositories. Either a URL or file path can be specified.
+This is a &ldquo;remove&minus;then&minus;add&rdquo; process.
+See Upgrade Options below; also see Handling Config Files
+for an explanation on how pacman takes care of configuration
+files.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;V,
+&minus;&minus;version</b></p>
+
+<p style="margin-left:17%;">Display version and exit.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;h,
+&minus;&minus;help</b></p>
+
+<p style="margin-left:17%;">Display syntax for the given
+operation. If no operation was supplied, then the general
+syntax is shown.</p>
+
+<h2>OPTIONS
+<a name="OPTIONS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;b,
+&minus;&minus;dbpath</b> &lt;path&gt;</p>
+
+<p style="margin-left:17%;">Specify an alternative database
+location (a typical default is /var/lib/pacman). This should
+not be used unless you know what you are doing. <b>NOTE</b>:
+If specified, this is an absolute path, and the root path is
+not automatically prepended.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;r,
+&minus;&minus;root</b> &lt;path&gt;</p>
+
+<p style="margin-left:17%;">Specify an alternative
+installation root (default is /). This should not be used as
+a way to install software into /usr/local instead of /usr.
+This option is used if you want to install a package on a
+temporarily mounted partition that is &quot;owned&quot; by
+another system. <b>NOTE</b>: If database path or log file
+are not specified on either the command line or in
+<b>pacman.conf</b>(5), their default location will be inside
+this root path.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;v,
+&minus;&minus;verbose</b></p>
+
+<p style="margin-left:17%;">Output paths such as as the
+Root, Conf File, DB Path, Cache Dirs, etc.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;arch</b>
+&lt;arch&gt;</p>
+
+<p style="margin-left:17%;">Specify an alternate
+architecture.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;cachedir</b>
+&lt;dir&gt;</p>
+
+<p style="margin-left:17%;">Specify an alternative package
+cache location (a typical default is /var/cache/pacman/pkg).
+Multiple cache directories can be specified, and they are
+tried in the order they are passed to pacman. <b>NOTE</b>:
+This is an absolute path, and the root path is not
+automatically prepended.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;color</b>
+&lt;when&gt;</p>
+
+<p style="margin-left:17%;">Specify when to enable
+coloring. Valid options are <i>always</i>, <i>never</i>, or
+<i>auto</i>. <i>always</i> forces colors on; <i>never</i>
+forces colors off; and <i>auto</i> only automatically
+enables colors when outputting onto a tty.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;config</b>
+&lt;file&gt;</p>
+
+<p style="margin-left:17%;">Specify an alternate
+configuration file.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;debug</b></p>
+
+<p style="margin-left:17%;">Display debug messages. When
+reporting bugs, this option is recommended to be used.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;gpgdir</b>
+&lt;dir&gt;</p>
+
+<p style="margin-left:17%;">Specify a directory of files
+used by GnuPG to verify package signatures (a typical
+default is /etc/pacman.d/gnupg). This directory should
+contain two files: pubring.gpg and trustdb.gpg. pubring.gpg
+holds the public keys of all packagers. trustdb.gpg contains
+a so&minus;called trust database, which specifies that the
+keys are authentic and trusted. <b>NOTE</b>: This is an
+absolute path, and the root path is not automatically
+prepended.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;logfile</b>
+&lt;file&gt;</p>
+
+<p style="margin-left:17%;">Specify an alternate log file.
+This is an absolute path, regardless of the installation
+root setting.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;noconfirm</b></p>
+
+<p style="margin-left:17%;">Bypass any and all &ldquo;Are
+you sure?&rdquo; messages. It&rsquo;s not a good idea to do
+this unless you want to run pacman from a script.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;confirm</b></p>
+
+<p style="margin-left:17%;">Cancels the effects of a
+previous <i>&minus;&minus;noconfirm</i>.</p>
+
+<h2>TRANSACTION OPTIONS (APPLY TO &minus;S, &minus;R AND &minus;U)
+<a name="TRANSACTION OPTIONS (APPLY TO &minus;S, &minus;R AND &minus;U)"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;d,
+&minus;&minus;nodeps</b></p>
+
+<p style="margin-left:17%;">Skips dependency version
+checks. Package names are still checked. Normally, pacman
+will always check a package&rsquo;s dependency fields to
+ensure that all dependencies are installed and there are no
+package conflicts in the system. Specify this option twice
+to skip all dependency checks.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;assume&minus;installed</b>
+&lt;package=version&gt;</p>
+
+<p style="margin-left:17%;">Add a virtual package
+&quot;package&quot; with version &quot;version&quot; to the
+transaction to satisfy dependencies. This allows to disable
+specific dependency checks without affecting all dependency
+checks. To disable all dependency checking, see the
+<i>&minus;&minus;nodeps</i> option.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;dbonly</b></p>
+
+<p style="margin-left:17%;">Adds/removes the database entry
+only, leaving all files in place.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;noprogressbar</b></p>
+
+<p style="margin-left:17%;">Do not show a progress bar when
+downloading files. This can be useful for scripts that call
+pacman and capture the output.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;noscriptlet</b></p>
+
+<p style="margin-left:17%;">If an install scriptlet exists,
+do not execute it. Do not use this unless you know what you
+are doing.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;p,
+&minus;&minus;print</b></p>
+
+<p style="margin-left:17%;">Only print the targets instead
+of performing the actual operation (sync, remove or
+upgrade). Use <i>&minus;&minus;print&minus;format</i> to
+specify how targets are displayed. The default format string
+is &quot;%l&quot;, which displays URLs with <i>&minus;S</i>,
+file names with <i>&minus;U</i>, and pkgname&minus;pkgver
+with <i>&minus;R</i>.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;print&minus;format</b>
+&lt;format&gt;</p>
+
+<p style="margin-left:17%;">Specify a printf&minus;like
+format to control the output of the
+<i>&minus;&minus;print</i> operation. The possible
+attributes are: &quot;%n&quot; for pkgname, &quot;%v&quot;
+for pkgver, &quot;%l&quot; for location, &quot;%r&quot; for
+repository, and &quot;%s&quot; for size. Implies
+<i>&minus;&minus;print</i>.</p>
+
+<h2>UPGRADE OPTIONS (APPLY TO &minus;S AND &minus;U)
+<a name="UPGRADE OPTIONS (APPLY TO &minus;S AND &minus;U)"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;force</b></p>
+
+<p style="margin-left:17%;">Bypass file conflict checks and
+overwrite conflicting files. If the package that is about to
+be installed contains files that are already installed, this
+option will cause all those files to be overwritten. Using
+<i>&minus;&minus;force</i> will not allow overwriting a
+directory with a file or installing packages with
+conflicting files and directories. This option should be
+used with care, ideally not at all.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;asdeps</b></p>
+
+<p style="margin-left:17%;">Install packages
+non&minus;explicitly; in other words, fake their install
+reason to be installed as a dependency. This is useful for
+makepkg and other build&minus;from&minus;source tools that
+need to install dependencies before building the
+package.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;asexplicit</b></p>
+
+<p style="margin-left:17%;">Install packages explicitly; in
+other words, fake their install reason to be explicitly
+installed. This is useful if you want to mark a dependency
+as explicitly installed so it will not be removed by the
+<i>&minus;&minus;recursive</i> remove operation.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;ignore</b>
+&lt;package&gt;</p>
+
+<p style="margin-left:17%;">Directs pacman to ignore
+upgrades of package even if there is one available. Multiple
+packages can be specified by separating them with a
+comma.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;ignoregroup</b>
+&lt;group&gt;</p>
+
+<p style="margin-left:17%;">Directs pacman to ignore
+upgrades of all packages in <i>group</i>, even if there is
+one available. Multiple groups can be specified by
+separating them with a comma.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;needed</b></p>
+
+<p style="margin-left:17%;">Do not reinstall the targets
+that are already up&minus;to&minus;date.</p>
+
+<h2>QUERY OPTIONS
+<a name="QUERY OPTIONS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;c,
+&minus;&minus;changelog</b></p>
+
+<p style="margin-left:17%;">View the ChangeLog of a package
+if it exists.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;d,
+&minus;&minus;deps</b></p>
+
+<p style="margin-left:17%;">Restrict or filter output to
+packages installed as dependencies. This option can be
+combined with <i>&minus;t</i> for listing real orphans
+&minus; packages that were installed as dependencies but are
+no longer required by any installed package.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;e,
+&minus;&minus;explicit</b></p>
+
+<p style="margin-left:17%;">Restrict or filter output to
+explicitly installed packages. This option can be combined
+with <i>&minus;t</i> to list explicitly installed packages
+that are not required by any other package.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;g,
+&minus;&minus;groups</b></p>
+
+<p style="margin-left:17%;">Display all packages that are
+members of a named group. If a name is not specified, list
+all grouped packages.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;i,
+&minus;&minus;info</b></p>
+
+<p style="margin-left:17%;">Display information on a given
+package. The <i>&minus;p</i> option can be used if querying
+a package file instead of the local database. Passing two
+<i>&minus;&minus;info</i> or <i>&minus;i</i> flags will also
+display the list of backup files and their modification
+states.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;k
+&minus;&minus;check</b></p>
+
+<p style="margin-left:17%;">Check that all files owned by
+the given package(s) are present on the system. If packages
+are not specified or filter flags are not provided, check
+all installed packages. Specifying this option twice will
+perform more detailed file checking (including permissions,
+file sizes, and modification times) for packages that
+contain the needed mtree file.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;l,
+&minus;&minus;list</b></p>
+
+<p style="margin-left:17%;">List all files owned by a given
+package. Multiple packages can be specified on the command
+line.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;m,
+&minus;&minus;foreign</b></p>
+
+<p style="margin-left:17%;">Restrict or filter output to
+packages that were not found in the sync database(s).
+Typically these are packages that were downloaded manually
+and installed with <i>&minus;&minus;upgrade</i>.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;n,
+&minus;&minus;native</b></p>
+
+<p style="margin-left:17%;">Restrict or filter output to
+packages that are found in the sync database(s). This is the
+inverse filter of <i>&minus;&minus;foreign</i>.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;o,
+&minus;&minus;owns</b> &lt;file&gt;</p>
+
+<p style="margin-left:17%;">Search for packages that own
+the specified file(s). The path can be relative or absolute,
+and one or more files can be specified.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;p,
+&minus;&minus;file</b></p>
+
+<p style="margin-left:17%;">Signifies that the package
+supplied on the command line is a file and not an entry in
+the database. The file will be decompressed and queried.
+This is useful in combination with <i>&minus;&minus;info</i>
+and <i>&minus;&minus;list</i>.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;q,
+&minus;&minus;quiet</b></p>
+
+<p style="margin-left:17%;">Show less information for
+certain query operations. This is useful when pacman&rsquo;s
+output is processed in a script. Search will only show
+package names and not version, group, and description
+information; owns will only show package names instead of
+&quot;file is owned by pkg&quot; messages; group will only
+show package names and omit group names; list will only show
+files and omit package names; check will only show pairs of
+package names and missing files; a bare query will only show
+package names rather than names and versions.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;s,
+&minus;&minus;search</b> &lt;regexp&gt;</p>
+
+<p style="margin-left:17%;">Search each
+locally&minus;installed package for names or descriptions
+that match regexp. When including multiple search terms,
+only packages with descriptions matching ALL of those terms
+are returned.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;t,
+&minus;&minus;unrequired</b></p>
+
+<p style="margin-left:17%;">Restrict or filter output to
+packages not required or optionally required by any
+currently installed package. Specify this option twice to
+only filter packages that are direct dependencies (i.e. do
+not filter optional dependencies).</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;u,
+&minus;&minus;upgrades</b></p>
+
+<p style="margin-left:17%;">Restrict or filter output to
+packages that are out&minus;of&minus;date on the local
+system. Only package versions are used to find outdated
+packages; replacements are not checked here. This option
+works best if the sync database is refreshed using
+<i>&minus;Sy</i>.</p>
+
+<h2>REMOVE OPTIONS
+<a name="REMOVE OPTIONS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;c,
+&minus;&minus;cascade</b></p>
+
+<p style="margin-left:17%;">Remove all target packages, as
+well as all packages that depend on one or more target
+packages. This operation is recursive and must be used with
+care, since it can remove many potentially needed
+packages.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;n,
+&minus;&minus;nosave</b></p>
+
+<p style="margin-left:17%;">Instructs pacman to ignore file
+backup designations. Normally, when a file is removed from
+the system, the database is checked to see if the file
+should be renamed with a <i>.pacsave</i> extension.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;s,
+&minus;&minus;recursive</b></p>
+
+<p style="margin-left:17%;">Remove each target specified
+including all of their dependencies, provided that (A) they
+are not required by other packages; and (B) they were not
+explicitly installed by the user. This operation is
+recursive and analogous to a backwards
+<i>&minus;&minus;sync</i> operation, and it helps keep a
+clean system without orphans. If you want to omit condition
+(B), pass this option twice.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;u,
+&minus;&minus;unneeded</b></p>
+
+<p style="margin-left:17%;">Removes targets that are not
+required by any other packages. This is mostly useful when
+removing a group without using the <i>&minus;c</i> option,
+to avoid breaking any dependencies.</p>
+
+<h2>SYNC OPTIONS
+<a name="SYNC OPTIONS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;c,
+&minus;&minus;clean</b></p>
+
+<p style="margin-left:17%;">Remove packages that are no
+longer installed from the cache as well as currently unused
+sync databases to free up disk space. When pacman downloads
+packages, it saves them in a cache directory. In addition,
+databases are saved for every sync DB you download from and
+are not deleted even if they are removed from the
+configuration file <b>pacman.conf</b>(5). Use one
+<i>&minus;&minus;clean</i> switch to only remove packages
+that are no longer installed; use two to remove all files
+from the cache. In both cases, you will have a yes or no
+option to remove packages and/or unused downloaded
+databases.</p>
+
+<p style="margin-left:17%; margin-top: 1em">If you use a
+network shared cache, see the <i>CleanMethod</i> option in
+<b>pacman.conf</b>(5).</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;g,
+&minus;&minus;groups</b></p>
+
+<p style="margin-left:17%;">Display all the members for
+each package group specified. If no group names are
+provided, all groups will be listed; pass the flag twice to
+view all groups and their members.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;i,
+&minus;&minus;info</b></p>
+
+<p style="margin-left:17%;">Display information on a given
+sync database package. Passing two <i>&minus;&minus;info</i>
+or <i>&minus;i</i> flags will also display those packages in
+all repositories that depend on this package.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;l,
+&minus;&minus;list</b></p>
+
+<p style="margin-left:17%;">List all packages in the
+specified repositories. Multiple repositories can be
+specified on the command line.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;q,
+&minus;&minus;quiet</b></p>
+
+<p style="margin-left:17%;">Show less information for
+certain sync operations. This is useful when pacman&rsquo;s
+output is processed in a script. Search will only show
+package names and not repository, version, group, and
+description information; list will only show package names
+and omit databases and versions; group will only show
+package names and omit group names.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;s,
+&minus;&minus;search</b> &lt;regexp&gt;</p>
+
+<p style="margin-left:17%;">This will search each package
+in the sync databases for names or descriptions that match
+regexp. When you include multiple search terms, only
+packages with descriptions matching ALL of those terms will
+be returned.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;u,
+&minus;&minus;sysupgrade</b></p>
+
+<p style="margin-left:17%;">Upgrades all packages that are
+out&minus;of&minus;date. Each currently&minus;installed
+package will be examined and upgraded if a newer package
+exists. A report of all packages to upgrade will be
+presented, and the operation will not proceed without user
+confirmation. Dependencies are automatically resolved at
+this level and will be installed/upgraded if necessary.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Pass this
+option twice to enable package downgrades; in this case,
+pacman will select sync packages whose versions do not match
+with the local versions. This can be useful when the user
+switches from a testing repository to a stable one.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Additional
+targets can also be specified manually, so that <i>&minus;Su
+foo</i> will do a system upgrade and install/upgrade the
+&quot;foo&quot; package in the same operation.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;w,
+&minus;&minus;downloadonly</b></p>
+
+<p style="margin-left:17%;">Retrieve all packages from the
+server, but do not install/upgrade anything.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;y,
+&minus;&minus;refresh</b></p>
+
+<p style="margin-left:17%;">Download a fresh copy of the
+master package list from the server(s) defined in
+<b>pacman.conf</b>(5). This should typically be used each
+time you use <i>&minus;&minus;sysupgrade</i> or
+<i>&minus;u</i>. Passing two <i>&minus;&minus;refresh</i> or
+<i>&minus;y</i> flags will force a refresh of all package
+lists, even if they appear to be up&minus;
+to&minus;date.</p>
+
+<h2>HANDLING CONFIG FILES
+<a name="HANDLING CONFIG FILES"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Pacman uses the
+same logic as <i>rpm</i> to determine action against files
+that are designated to be backed up. During an upgrade,
+three MD5 hashes are used for each backup file to determine
+the required action: one for the original file installed,
+one for the new file that is about to be installed, and one
+for the actual file existing on the file system. After
+comparing these three hashes, the follow scenarios can
+result:</p>
+
+<p style="margin-left:11%; margin-top: 1em">original=X,
+current=X, new=X</p>
+
+<p style="margin-left:17%;">All three files are the same,
+so overwrites are not an issue. Install the new file.</p>
+
+<p style="margin-left:11%; margin-top: 1em">original=X,
+current=X, new=Y</p>
+
+<p style="margin-left:17%;">The current file is the same as
+the original, but the new one differs. Since the user did
+not ever modify the file, and the new one may contain
+improvements or bug fixes, install the new file.</p>
+
+<p style="margin-left:11%; margin-top: 1em">original=X,
+current=Y, new=X</p>
+
+<p style="margin-left:17%;">Both package versions contain
+the exact same file, but the one on the file system has been
+modified. Leave the current file in place.</p>
+
+<p style="margin-left:11%; margin-top: 1em">original=X,
+current=Y, new=Y</p>
+
+<p style="margin-left:17%;">The new file is identical to
+the current file. Install the new file.</p>
+
+<p style="margin-left:11%; margin-top: 1em">original=X,
+current=Y, new=Z</p>
+
+<p style="margin-left:17%;">All three files are different,
+so install the new file with a <i>.pacnew</i> extension and
+warn the user. The user must then manually merge any
+necessary changes into the original file.</p>
+
+<p style="margin-left:11%; margin-top: 1em">original=NULL,
+current=Y, new=Z</p>
+
+<p style="margin-left:17%;">The package was not previously
+installed, and the file already exists on the file system.
+Save the current file with a <i>.pacorig</i> extension,
+install the new file, and warn the user.</p>
+
+<h2>EXAMPLES
+<a name="EXAMPLES"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">pacman
+&minus;Ss ne.hack</p>
+
+<p style="margin-left:17%;">Search for regexp
+&quot;ne.hack&quot; in package database.</p>
+
+<p style="margin-left:11%; margin-top: 1em">pacman &minus;S
+gpm</p>
+
+<p style="margin-left:17%;">Download and install gpm
+including dependencies.</p>
+
+<p style="margin-left:11%; margin-top: 1em">pacman &minus;U
+/home/user/ceofhack&minus;0.6&minus;1&minus;x86_64.pkg.tar.gz</p>
+
+<p style="margin-left:17%;">Install
+ceofhack&minus;0.6&minus;1 package from a local file.</p>
+
+<p style="margin-left:11%; margin-top: 1em">pacman
+&minus;Syu</p>
+
+<p style="margin-left:17%;">Update package list and upgrade
+all packages afterwards.</p>
+
+<p style="margin-left:11%; margin-top: 1em">pacman
+&minus;Syu gpm</p>
+
+<p style="margin-left:17%;">Update package list, upgrade
+all packages, and then install gpm if it wasn&rsquo;t
+already installed.</p>
+
+<h2>CONFIGURATION
+<a name="CONFIGURATION"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">See
+<b>pacman.conf</b>(5) for more details on configuring pacman
+using the <i>pacman.conf</i> file.</p>
+
+<h2>SEE ALSO
+<a name="SEE ALSO"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>pacman.conf</b>(5),
+<b>makepkg</b>(8), <b>libalpm</b>(3)</p>
+
+<p style="margin-left:11%; margin-top: 1em">See the pacman
+website at https://www.archlinux.org/pacman/ for current
+information on pacman and its related tools.</p>
+
+<h2>BUGS
+<a name="BUGS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Bugs? You must
+be kidding; there are no bugs in this software. But if we
+happen to be wrong, send us an email with as much detail as
+possible to pacman&minus;dev@archlinux.org.</p>
+
+<h2>AUTHORS
+<a name="AUTHORS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Current
+maintainers:</p>
+
+<p style="margin-left:17%; margin-top: 1em">&bull; Allan
+McRae &lt;allan@archlinux.org&gt;</p>
+
+<p style="margin-left:17%; margin-top: 1em">&bull; Andrew
+Gregory &lt;andrew.gregory.8@gmail.com&gt;</p>
+
+<p style="margin-left:17%; margin-top: 1em">&bull; Dan
+McGee &lt;dan@archlinux.org&gt;</p>
+
+<p style="margin-left:17%; margin-top: 1em">&bull; Dave
+Reisner &lt;dreisner@archlinux.org&gt;</p>
+
+<p style="margin-left:11%; margin-top: 1em">Past major
+contributors:</p>
+
+<p style="margin-left:17%; margin-top: 1em">&bull; Judd
+Vinet &lt;jvinet@zeroflux.org&gt;</p>
+
+<p style="margin-left:17%; margin-top: 1em">&bull; Aurelien
+Foret &lt;aurelien@archlinux.org&gt;</p>
+
+<p style="margin-left:17%; margin-top: 1em">&bull; Aaron
+Griffin &lt;aaron@archlinux.org&gt;</p>
+
+<p style="margin-left:17%; margin-top: 1em">&bull; Xavier
+Chantry &lt;shiningxc@gmail.com&gt;</p>
+
+<p style="margin-left:17%; margin-top: 1em">&bull; Nagy
+Gabor &lt;ngaba@bibl.u&minus;szeged.hu&gt;</p>
+
+<p style="margin-left:11%; margin-top: 1em">For additional
+contributors, use git shortlog &minus;s on the pacman.git
+repository.</p>
+<hr>
+</body>
+</html>
