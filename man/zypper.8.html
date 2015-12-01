@@ -1,0 +1,4028 @@
+<!-- Creator     : groff version 1.22.3 -->
+<!-- CreationDate: Wed Dec  2 00:37:00 2015 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       h1      { text-align: center }
+</style>
+<title>ZYPPER</title>
+
+</head>
+<body>
+
+<h1 align="center">ZYPPER</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#CONCEPTS">CONCEPTS</a><br>
+<a href="#COMMANDS">COMMANDS</a><br>
+<a href="#GLOBAL OPTIONS">GLOBAL OPTIONS</a><br>
+<a href="#SUBCOMMANDS">SUBCOMMANDS</a><br>
+<a href="#FILES">FILES</a><br>
+<a href="#EXIT CODES">EXIT CODES</a><br>
+<a href="#HOMEPAGE">HOMEPAGE</a><br>
+<a href="#AUTHORS">AUTHORS</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<h2>NAME
+<a name="NAME"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">zypper &minus;
+Command&minus;line interface to ZYpp system management
+library (libzypp)</p>
+
+<h2>SYNOPSIS
+<a name="SYNOPSIS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>zypper</b>
+[<i>&minus;&minus;global&minus;opts</i>] <i>command</i>
+[<i>&minus;&minus;command&minus;opts</i>]
+[<i>command&minus;arguments</i>]</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>zypper</b>
+<i>subcommand</i> [<i>&minus;&minus;command&minus;opts</i>]
+[<i>command&minus;arguments</i>]</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>zypper
+help</b> <i>command</i></p>
+
+<h2>DESCRIPTION
+<a name="DESCRIPTION"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">zypper is a
+command&minus;line interface to ZYpp system management
+library (libzypp). It can be used to install, update, remove
+software, manage repositories, perform various queries, and
+more.</p>
+
+<h2>CONCEPTS
+<a name="CONCEPTS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Most of the
+following concepts are common for all applications based on
+the libzypp package management library, but there are some
+zypper specifics.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>Repositories</b>
+<br>
+Libzypp works with package metadata, that is information
+about packages and their relations extracted from RPM
+packages and other data like patch information, pattern
+definitions, etc. These data are stored together with the
+RPM files in folders called <i>repositories</i>.
+Repositories can be placed on various media like an HTTP or
+FTP server, DVD, or a folder on a local disc.</p>
+
+<p style="margin-left:11%; margin-top: 1em">There is a
+special set of commands in zypper intended to manipulate
+repositories. Also many commands and options take a
+repository as an argument. See section <b>COMMANDS</b>,
+subsection <b>Repository Management</b> for more
+details.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>GPG
+checks</b> <br>
+Zypp verifies the authenticity of repository metadata by
+checking their GPG signature. If the repository metadata are
+signed with a trusted key and and successfully verified,
+packages from that repository are accepted for installation
+if they match the checksum provided in the metadata. If the
+repository metadata are not signed, the signature of each
+downloaded rpm package is checked before accepting it for
+installation.</p>
+
+<p style="margin-left:11%; margin-top: 1em">This default
+behavior can be tuned by explicitly setting the variables
+<b>repo_gpgcheck</b> and/or <b>pkg_gpgcheck</b> in the ZYpp
+configuration file (<b>/etc/zypp/zypp.conf</b>) to perform
+those checks always (if <i>on</i>) or never (if
+<i>off</i>).</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Disabling
+GPG checks is not recommended.</b> Signing data enables the
+recipient to verify that no modifications occurred after the
+data were signed. Accepting data with no, wrong or unknown
+signature can lead to a corrupted system and in extreme
+cases even to a system compromise.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Resource
+Identifiers (URI)</b> <br>
+To specify locations of repositories or other resources (RPM
+files, .repo files) you can use any type of URIs supported
+by libzypp. See section <b>COMMANDS</b>, subsection
+<b>Repository Management</b> for a complete list and usage
+examples.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Zypper also
+accepts special URIs identifying openSUSE Build Service
+(OBS) repositories in the <b>addrepo</b> command. These URIs
+have the form of
+<b>obs://</b><i>project</i><b>/</b>[<i>platform</i>], where
+<i>project</i> is the name of the OBS project and
+<i>platform</i> is the target platform (OS) for which the
+repository is intended. If <i>platform</i> is omitted, the
+<b>obs.platform</b> value from zypper.conf is used. See also
+other options in the [obs] section of zypper.conf.</p>
+
+<p style="margin-left:11%; margin-top: 1em">For example:
+<b>obs://server:http/openSUSE_11.3</b>.</p>
+
+<p style="margin-left:11%; margin-top: 1em">In addition to
+these URIs you can use plain directory and file paths in
+which case zypper automatically treats them as
+<b>dir:/</b><i>path</i> URI.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Refresh</b>
+<br>
+Refreshing a repository means downloading metadata of
+packages from the medium (if needed), storing it in local
+cache (typically under
+<b>/var/cache/zypp/raw/</b><i>alias</i> directory) and
+preparsing the metadata into <i>.solv</i> files (building
+the solv cache), typically under
+<b>/var/cache/zypp/solv/</b><i>alias</i>.</p>
+
+<p style="margin-left:11%; margin-top: 1em">The metadata
+get refreshed either automatically or on user request. An
+<i>automatic refresh</i> takes place right before reading
+metadata from the database if the <b>auto&minus;refresh is
+enabled</b> for the repository and the metadata is reported
+to be out of date. If the <i>auto&minus;refresh is
+disabled</i>, the repository will only be refreshed on user
+request. You can request a refresh by calling <b>zypper
+refresh</b> (see the documentation of the <b>refresh</b>
+command for details).</p>
+
+<p style="margin-left:11%; margin-top: 1em">The repository
+metadata are checked for changes before actually doing the
+refresh. A change is detected by downloading one or two
+metadata index files (small files) and comparing the
+checksums of the cached ones and the remote ones. If the
+files differ, the repository is out of date and will be
+refreshed.</p>
+
+<p style="margin-left:11%; margin-top: 1em">To delay the
+up&minus;to&minus;date check (and thus the automatic
+refresh) for a certain number of minutes, edit the value of
+the <b>repo.refresh.delay</b> attribute of ZYpp config file
+(<b>/etc/zypp/zypp.conf</b>). This means, zypper will not
+even try to download and check the index files, and you will
+be able to use zypper for operations like search or info
+without internet access or root privileges.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>Services</b>
+<br>
+Services are one level above repositories and serve to
+manage repositories or to do some special tasks. Libzypp
+currently supports <i>Repository Index Service</i> (RIS) and
+<i>Plugin Service</i>.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Repository
+Index Service (RIS) is a special type of repository which
+contains a list of other repositories. This list can be
+generated dynamically by the server according to some URI
+parameters or user name, or can be static. Once such service
+is added to your system, zypper takes care of adding,
+modifying, or removing these repositories on your system to
+reflect the current list. See section <b>Service
+Management</b> and
+http://old&minus;en.opensuse.org/Standards/Repository_Index_Service
+for more details.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Package
+Types</b> <br>
+Zypper works with several types of resource objects, called
+<i>resolvables</i>. A resolvable might be a <b>package</b>,
+<b>patch</b>, <b>pattern</b>, <b>product</b>; basically any
+<i>kind of object</i> with dependencies to other
+objects.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>package</b></p>
+
+<p style="margin-left:17%;">An ordinary RPM package.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>patch</b></p>
+
+<p style="margin-left:17%;">A released patch conflicts with
+the affected/vulnerable versions of a collection of
+packages. As long as any of these affected/vulnerable
+versions are installed, the conflict triggers and the patch
+is classified as <b>needed</b>. Selecting the patch, the
+conflict is resolved by updating all installed and
+affected/vulnerable packages to a version providing the fix.
+When updating the packages zypper always aims for the latest
+available version.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Depending on
+the kind of defect, patches are classified by
+<i>category</i> and <i>severity</i>. Commonly used values
+for <i>category</i> are <b>security</b>, <b>recommended</b>,
+<b>optional</b>, <b>feature</b>, <b>document</b> or
+<b>yast</b>. Commonly used values for <i>severity</i> are
+<b>critical</b>, <b>important</b>, <b>moderate</b>,
+<b>low</b> or <b>unspecified</b>.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>pattern</b></p>
+
+<p style="margin-left:17%;">A group of packages required or
+recommended to install some functionality.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>product</b></p>
+
+<p style="margin-left:17%;">A group of packages which are
+necessary to install a product.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>srcpackage</b></p>
+
+<p style="margin-left:17%;">Source code package (.src.rpm).
+This type works in <b>search</b> and <b>install</b>
+commands.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>application</b></p>
+
+<p style="margin-left:17%;">Focuses on packages a user
+might want to install and hide away supporting packages
+which are selected via package dependencies anyway (see
+<i>http://people.freedesktop.org/~hughsient/appdata/</i>)</p>
+
+<p style="margin-left:11%; margin-top: 1em">Throughout this
+manual we will often refer to resolvables simply as
+<i>packages</i> and to resolvable types as <i>package
+type</i> or <i>kind</i>. These type names can be used as
+arguments of <b>&minus;&minus;type</b> option in several
+commands like <b>install</b>, <b>info</b>, or <b>search</b>.
+Commands should also allow to specify resolvables as
+<i>KIND</i><b>:</b><i>NAME</i> (e.g.
+<b>patch:openSUSE&minus;2014&minus;7</b>).</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Package
+Dependencies</b> <br>
+Software packages depend on each other in various ways.
+Packages usually <i>require</i> or <i>recommend</i> other
+packages, but they can also <i>conflict</i> with other
+packages. Packages can also support specific hardware or
+language settings. Zypper uses a <i>dependency solver</i> to
+find out what packages need to be installed to satisfy the
+user&rsquo;s request. See
+http://old&minus;en.opensuse.org/Software_Management/Dependencies
+for more information.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Package File
+Conflicts</b> <br>
+File conflicts happen when two packages attempt to install
+files with the same name but different contents. This may
+happen if you are installing a newer version of a package
+without erasing the older version, of if two unrelated
+packages each install a file with the same name.</p>
+
+<p style="margin-left:11%; margin-top: 1em">As checking for
+file conflicts requires access to the full filelist of each
+package being installed, zypper will check for file conflict
+only if all packages are downloaded in advance (see
+<b>&minus;&minus;download&minus;in&minus;advance</b>).</p>
+
+<p style="margin-left:11%; margin-top: 1em">As the reason
+for file conflicts usually is a poor package design or lack
+of coordination between the the people building the
+packages, they are not easy to resolve. By using the
+<b>&minus;&minus;replacefiles</b> option you can force
+zypper to replace the conflicting files. Nevertheless this
+may damage the package whose file gets replaced.</p>
+
+<h2>COMMANDS
+<a name="COMMANDS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">zypper provides
+a number of <i>commands</i>. Each command accepts the
+options listed in the <b>GLOBAL OPTIONS</b> section. These
+options must be specified <i>before</i> the command name. In
+addition, many commands have specific options, which are
+listed in this section. These command&minus;specific options
+must be specified <i>after</i> the name of the command and
+<i>before</i> any of the command arguments.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Zypper also
+provides limited support for writing extensions/subcommands
+in any language. See section <b>SUBCOMMANDS</b> for
+details.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>General
+Commands <br>
+help</b> [<i>command</i>]</p>
+
+<p style="margin-left:17%;">Shows help texts. If invoked
+without any argument (just <b>zypper</b> or <b>zypper
+help</b>), zypper displays global help text which lists all
+available global options and commands.</p>
+
+<p style="margin-left:17%; margin-top: 1em">If invoked with
+a <i>command</i> name argument, zypper displays help for the
+specified command, if such command exists. Long as well as
+short variants of the command names can be used.</p>
+
+<p style="margin-left:17%; margin-top: 1em">For your
+convenience, <b>zypper help</b> can also be invoked in any
+of the following ways:</p>
+
+
+<p align="center" style="margin-top: 1em"><img src="grohtml-76981.png" alt="Image grohtml-76981.png"></p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>shell</b>
+(<b>sh</b>)</p>
+
+<p style="margin-left:17%;">Starts a shell for entering
+multiple commands in one session. Exit the shell using
+<b>exit</b>, <b>quit</b>, or <i>Ctrl&minus;D</i>.</p>
+
+<p style="margin-left:17%; margin-top: 1em">The shell
+support is not complete so expect bugs there. However,
+there&rsquo;s no urgent need to use the shell since libzypp
+became so fast thanks to the SAT solver and its tools
+(openSUSE 11.0), but still, you&rsquo;re welcome to
+experiment with it.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Package
+Management Commands <br>
+info</b> (<b>if</b>) [<i>options</i>] <i>name</i>...</p>
+
+<p style="margin-left:17%;">Displays detailed information
+about the specified packages.</p>
+
+<p style="margin-left:17%; margin-top: 1em">For each
+specified package, zypper finds the best available version
+in defined repositories and shows information for this
+package.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;r</b>,
+<b>&minus;&minus;repo</b>
+<i>alias</i>|<i>name</i>|<i>#</i>|<i>URI</i></p>
+
+<p style="margin-left:23%;">Work only with the repository
+specified by the alias, name, number or URI. This option can
+be used multiple times.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;t</b>,
+<b>&minus;&minus;type</b> <i>type</i></p>
+
+<p style="margin-left:23%;">Type of package (default:
+package). See section <b>Package Types</b> for list of
+available package types.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;provides</b></p>
+
+<p style="margin-left:23%;">Show symbols the package
+provides.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;requires</b></p>
+
+<p style="margin-left:23%;">Show symbols the package
+requires.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;conflicts</b></p>
+
+<p style="margin-left:23%;">Show symbols the package
+conflicts with.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;obsoletes</b></p>
+
+<p style="margin-left:23%;">Show symbols the package
+obsoletes.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;recommends</b></p>
+
+<p style="margin-left:23%;">Show symbols the package
+recommends.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;suggests</b></p>
+
+<p style="margin-left:23%;">Show symbols the package
+suggests.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Examples:</p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper
+info workrave</b></p>
+
+<p style="margin-left:29%;">Show information about
+<i>package workrave</i></p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper
+info &minus;t patch libzypp</b></p>
+
+<p style="margin-left:29%;">Show information about <i>patch
+libzypp</i></p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper
+info &minus;t pattern lamp_server</b></p>
+
+<p style="margin-left:29%;">Show information about
+<i>pattern lamp_server</i></p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>install</b>
+(<b>in</b>) [<i>options</i>]
+<i>name</i>|<i>capability</i>|<i>rpm_file_uri</i>...</p>
+
+<p style="margin-left:17%;">Install or update packages.</p>
+
+<p style="margin-left:17%; margin-top: 1em">The packages
+can be selected by their <i>name</i> or by a
+<i>capability</i> they provide.</p>
+
+<p style="margin-left:23%; margin-top: 1em">A
+<i>capability</i> is formed by
+&quot;<i>NAME</i>[<b>.</b><i>ARCH</i>][ <i>OP
+EDITION</i>]&quot;, where <i>ARCH</i> is an architecture
+code, <i>OP</i> is one of <b>&lt;</b>, <b>&lt;=</b>,
+<b>=</b>, <b>&gt;=</b>, or <b>&gt;</b> and <i>EDITION</i> is
+&quot;<i>VERSION</i>[<b>&minus;</b><i>RELEASE</i>]&quot;.
+For example: <b>zypper=0.8.8&minus;2</b> The <i>NAME</i>
+component of a capability is not only a package name but any
+symbol provided by packages: <b>/bin/vi</b>,
+<b>libcurl.so.3</b>, <b>perl(Time::ParseDate)</b>. Just
+remember to quote to protect the special characters from the
+shell, for example: <b>zypper\&gt;0.8.10</b> or
+<b>'zypper&gt;0.8.10'</b>.</p>
+
+<p style="margin-left:23%; margin-top: 1em">If
+<i>EDITION</i> is not specified, the newest installable
+version will be installed. This also means that if the
+package is already installed and newer versions are
+available, it will get upgraded to the newest installable
+version.</p>
+
+<p style="margin-left:23%; margin-top: 1em">If <i>ARCH</i>
+is not specified, or the last dot of the capability name
+string is not followed by known architecture, the solver
+will treat the whole string as a capability name. If the
+ARCH is known, the solver will select a package matching
+that architecture and complain if such package cannot be
+found.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Zypper is also
+able to install <i>plain RPM files</i> while trying to
+satisfy their dependencies using packages from defined
+repositories. You can install a plain RPM file by specifying
+its location in the install command arguments either as a
+local path or an URI. E.g.:</p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper
+install ~/rpms/foo.rpm http://some.site/bar.rpm</b>.</p>
+
+<p style="margin-left:23%; margin-top: 1em">Zypper will
+report packages that it cannot find. Further, in interactive
+mode, zypper proceeds with installation of the rest of
+requested packages, and it will abort immediately in
+non&minus;interactive mode. In both cases zypper returns
+<b>ZYPPER_EXIT_INF_CAP_NOT_FOUND</b> after finishing the
+operation.</p>
+
+<p style="margin-left:23%; margin-top: 1em">Zypper will
+download the files into its cache directory
+(/var/cache/zypper/RPMS), add this directory as a temporary
+<b>plaindir</b> repository and mark the respective packages
+for installation.</p>
+
+<p style="margin-left:17%; margin-top: 1em">In the install
+command, you can specify also packages you wish to remove in
+addition to the packages you wish to install, by prepending
+their names by a <i>&minus;</i> or <i>~</i> character. For
+example:</p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper
+install vim &minus;emacs&nbsp;</b></p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper
+remove emacs +vim&nbsp;</b></p>
+
+<p style="margin-left:23%; margin-top: 1em">will both
+<i>install vim</i> and <i>remove emacs</i>. Note that if you
+choose to use <b>&minus;</b> with the first package you
+specify, you need to write <b>&minus;&minus;</b> before it
+to prevent its interpretation as a command option:</p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper
+install &mdash; &minus;boring&minus;game great&minus;game
+great&minus;game&minus;manual&nbsp;</b></p>
+
+<p style="margin-left:17%; margin-top: 1em">&minus;r,
+&minus;&minus;repo alias|name|#|URI</p>
+
+<p style="margin-left:23%;">Work only with the repository
+specified by the alias, name, number or URI. This option can
+be used multiple times.</p>
+
+<p style="margin-left:23%; margin-top: 1em">Using
+&minus;&minus;repo is <i>discouraged</i> as it currently
+hides unmentioned repositories from the resolver, leading to
+inexpertly decisions. In the future &minus;&minus;repo will
+become an alias for <b>&minus;&minus;from</b>.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;t</b>,
+<b>&minus;&minus;type</b> <i>type</i></p>
+
+<p style="margin-left:23%;">Type of package to install
+(default: package). See section <b>Package Types</b> for
+list of available package types. Use <b>zypper se
+&minus;t</b> <i>type</i> [<i>name</i>] to look for available
+items of this type and <b>zypper info &minus;t</b> <i>type
+name</i> to display more detailed information about the
+item.</p>
+
+<p style="margin-left:23%; margin-top: 1em">If <i>patch</i>
+is specified, zypper will install and/or remove packages to
+satisfy specified patch. This is a way to ensure that
+specific bug fix is installed. Use <b>zypper
+list&minus;patches</b> to look for available <i>needed</i>
+patches.</p>
+
+<p style="margin-left:23%; margin-top: 1em">If
+<i>product</i> or <i>pattern</i> are specified, zypper
+ensures that all required (and optionally recommended)
+packages are installed.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;n</b>,
+<b>&minus;&minus;name</b></p>
+
+<p style="margin-left:23%;">Select packages by their name,
+don&rsquo;t try to select by capabilities.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;f</b>,
+<b>&minus;&minus;force</b></p>
+
+<p style="margin-left:23%;">Install even if the item is
+already installed (reinstall), downgraded or changes vendor
+or architecture.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;oldpackage</b></p>
+
+<p style="margin-left:23%;">Allow to replace a newer item
+with an older one. Handy if you are doing a rollback. Unlike
+&minus;&minus;force it will not enforce a reinstall, if the
+item is already installed with the requested version.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;from</b>
+<i>alias|name|#|URI</i></p>
+
+<p style="margin-left:23%;">Select packages from specified
+repository. If strings specified as arguments to the install
+command match packages in repositories specified in this
+option, they will be marked for installation. This option
+currently implies <b>&minus;&minus;name</b>, but allows
+using wildcards for specifying packages.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;C</b>,
+<b>&minus;&minus;capability</b></p>
+
+<p style="margin-left:23%;">Select packages by
+capabilities.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;l</b>,
+<b>&minus;&minus;auto&minus;agree&minus;with&minus;licenses</b></p>
+
+<p style="margin-left:23%;">Automatically say <i>yes</i> to
+third party license confirmation prompt. By using this
+option, you choose to agree with licenses of all
+third&minus;party software this command will install. This
+option is particularly useful for administrators installing
+the same set of packages on multiple machines (by an
+automated process) and have the licenses confirmed
+before.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;debug&minus;solver</b></p>
+
+<p style="margin-left:23%;">Create solver test case for
+debugging. Use this option, if you think the dependencies
+were not solved all right and attach the resulting
+/var/log/zypper.solverTestCase directory to your bug report.
+To use this option, simply add it to the problematic install
+or remove command.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;no&minus;recommends</b></p>
+
+<p style="margin-left:23%;">By default, zypper installs
+also packages recommended by the requested ones. This option
+causes the recommended packages to be ignored and only the
+required ones to be installed.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;replacefiles</b></p>
+
+<p style="margin-left:23%;">Install the packages even if
+they replace files from other, already installed, packages.
+Default is to treat file conflicts as an error.
+<b>&minus;&minus;download&minus;as&minus;needed</b> disables
+the file conflict check because access to all packages file
+lists is needed in advance in order to perform the
+check.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;R</b>,
+<b>&minus;&minus;no&minus;force&minus;resolution</b></p>
+
+<p style="margin-left:23%;">Do not force the solver to find
+a solution. Instead, report dependency problems and prompt
+the user to resolve them manually.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;force&minus;resolution</b></p>
+
+<p style="margin-left:23%;">Force the solver to find a
+solution by allowing to remove packages with unfulfilled
+requirements. This is the default when removing packages
+(<b>zypper remove *). This option overrides
+*&minus;&minus;no&minus;force&minus;resolution</b> in case
+both are specified on the command line.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;D</b>,
+<b>&minus;&minus;dry&minus;run</b></p>
+
+<p style="margin-left:23%;">Test the installation, do not
+actually install any package. This option will add the
+<b>&minus;&minus;test</b> option to the rpm commands run by
+the install command.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;details</b></p>
+
+<p style="margin-left:23%;">Show the detailed installation
+summary.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em">Download&minus;and&minus;install
+mode options:</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;d</b>,
+<b>&minus;&minus;download&minus;only</b></p>
+
+<p style="margin-left:23%;">Only download the packages for
+later installation.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;download&minus;in&minus;advance</b></p>
+
+<p style="margin-left:23%;">First download all packages,
+then start installing.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;download&minus;in&minus;heaps</b></p>
+
+<p style="margin-left:23%;">Download a minimal set of
+packages that can be installed without leaving the system in
+broken state, and install them. Then download and install
+another heap until all are installed. This helps to keep the
+system in consistent state without the need to download
+<i>all</i> packages in advance, which combines the
+advantages of
+<b>&minus;&minus;download&minus;in&minus;advance</b> and
+<b>&minus;&minus;download&minus;as&minus;needed</b>. This is
+the default mode.</p>
+
+<p style="margin-left:23%; margin-top: 1em">NOTE: While the
+resolver is not capable of building heaps, this behaves the
+same as
+<b>&minus;&minus;download&minus;in&minus;advance</b>.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;download&minus;as&minus;needed</b></p>
+
+<p style="margin-left:23%;">Download one package, install
+it immediately, and continue with the rest until all are
+installed.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;download</b>
+<i>mode</i></p>
+
+<p style="margin-left:23%;">Use the specified
+download&minus;and&minus;install mode. Available modes are:
+<b>only</b>, <b>in&minus;advance</b>, <b>in&minus;heaps</b>,
+<b>as&minus;needed</b>. See corresponding
+<b>&minus;&minus;download&minus;</b><i>mode</i> options for
+their description.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Examples:</p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper
+install &minus;t pattern lamp_server</b></p>
+
+<p style="margin-left:29%;">Install lamp_server
+pattern.</p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper
+install &minus;&minus;no&minus;recommends gv</b></p>
+
+<p style="margin-left:29%;">Install GhostScript viewer, but
+ignore recommended packages.</p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper
+install virtualbox&minus;ose&minus;2.0.6</b></p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper
+install virtualbox&minus;ose=2.0.6</b></p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper
+install virtualbox&minus;ose = 2.0.6</b></p>
+
+<p style="margin-left:29%;">Install version 2.0.6 of
+virtualbox&minus;ose package.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>source&minus;install</b>
+(<b>si</b>) <i>name</i>...</p>
+
+<p style="margin-left:17%;">Install specified source
+packages and their build dependencies. If the name of a
+binary package is given, the corresponding source package is
+looked up and installed instead.</p>
+
+<p style="margin-left:17%; margin-top: 1em">This command
+will try to find the newest available versions of the source
+packages and uses <b>rpm &minus;i</b> to install them and
+the packages that are required to build the source
+package.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Note that the
+source packages must be available in repositories you are
+using. You can check whether a repository contains any
+source packages using the following command:</p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper
+search &minus;t srcpackage &minus;r</b>
+<i>alias</i>|<i>name</i>|<i>#</i>|<i>URI</i></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;d</b>,
+<b>&minus;&minus;build&minus;deps&minus;only</b></p>
+
+<p style="margin-left:23%;">Install only build dependencies
+of specified packages.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;D</b>,
+<b>&minus;&minus;no&minus;build&minus;deps</b></p>
+
+<p style="margin-left:23%;">Don&rsquo;t install build
+dependencies.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;r</b>,
+<b>&minus;&minus;repo</b>
+<i>alias</i>|<i>name</i>|<i>#</i>|<i>URI</i></p>
+
+<p style="margin-left:23%;">Work only with the repository
+specified by the alias, name, number, or URI. This option
+can be used multiple times.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;download&minus;only</b></p>
+
+<p style="margin-left:23%;">Only download the packages, do
+not install.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Examples:</p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper si
+&minus;d dbus&minus;1</b></p>
+
+<p style="margin-left:29%;">Install build dependencies of
+dbus&minus;1 source package.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>verify</b>
+(<b>ve</b>) [<i>options</i>]</p>
+
+<p style="margin-left:17%;">Check whether dependencies of
+installed packages are satisfied.</p>
+
+<p style="margin-left:17%; margin-top: 1em">In case that
+any dependency problems are found, zypper suggests packages
+to install or remove to fix them.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;no&minus;recommends</b></p>
+
+<p style="margin-left:23%;">By default, zypper installs
+also packages recommended by the requested ones (the ones
+needed to fix broken dependencies in this case). This option
+causes the recommended packages to be ignored and only the
+required ones to be installed.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;D</b>,
+<b>&minus;&minus;dry&minus;run</b></p>
+
+<p style="margin-left:23%;">Test the repair, do not
+actually do anything to the system.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;details</b></p>
+
+<p style="margin-left:23%;">Show the detailed installation
+summary.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;r</b>,
+<b>&minus;&minus;repo</b>
+<i>alias</i>|<i>name</i>|<i>#</i>|<i>URI</i></p>
+
+<p style="margin-left:23%;">Work only with the repository
+specified by the alias, name, number, or URI. This option
+can be used multiple times.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;debug&minus;solver</b></p>
+
+<p style="margin-left:23%;">Create solver test case for
+debugging. See the install command for details.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>install&minus;new&minus;recommends</b>
+(<b>inr</b>) [<i>options</i>]</p>
+
+<p style="margin-left:17%;">Install newly added packages
+recommended by already installed ones. This can typically be
+used to install language packages recently added to
+repositories or drivers for newly added hardware.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;r</b>,
+<b>&minus;&minus;repo</b>
+<i>alias</i>|<i>name</i>|<i>#</i>|<i>URI</i></p>
+
+<p style="margin-left:23%;">Work only with the repository
+specified by the alias, name, number, or URI. This option
+can be used multiple times.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;D</b>,
+<b>&minus;&minus;dry&minus;run</b></p>
+
+<p style="margin-left:23%;">Test the installation, do not
+actually install anything.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;details</b></p>
+
+<p style="margin-left:23%;">Show the detailed installation
+summary.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;debug&minus;solver</b></p>
+
+<p style="margin-left:23%;">Create solver test case for
+debugging. See the install command for details.</p>
+
+<p style="margin-left:17%; margin-top: 1em">This command
+also accepts the <b>Download&minus;and&minus;install mode
+options</b> described in the <b>install</b> command.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>remove</b>
+(<b>rm</b>) [<i>options</i>] <i>name</i>...</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>remove</b>
+(<b>rm</b>) [<i>options</i>] <b>&minus;&minus;capability</b>
+<i>capability</i>...</p>
+
+<p style="margin-left:17%;">Remove (uninstall)
+packages.</p>
+
+<p style="margin-left:17%; margin-top: 1em">The packages
+can be selected by their name or by a capability they
+provide. For details on package selection see the
+<b>install</b> command description.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;r</b>,
+<b>&minus;&minus;repo</b>
+<i>alias</i>|<i>name</i>|<i>#</i>|<i>URI</i></p>
+
+<p style="margin-left:23%;">Work only with the repository
+specified by the alias, name, number, or URI. This option
+can be used multiple times.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;t</b>,
+<b>&minus;&minus;type</b> <i>type</i></p>
+
+<p style="margin-left:23%;">Type of package (default:
+package). See section <b>Package Types</b> for list of
+available package types.</p>
+
+<p style="margin-left:23%; margin-top: 1em">Since
+<b>patches</b> are not installed in sense of copying files
+or recording a database entry, they cannot be uninstalled,
+even though zypper shows them as installed. The installed
+status is determined solely based on the installed status of
+its required dependencies. If these dependencies are
+satisfied, the patch is rendered installed.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;n</b>,
+<b>&minus;&minus;name</b></p>
+
+<p style="margin-left:23%;">Select packages by their name
+(default).</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;C</b>,
+<b>&minus;&minus;capability</b></p>
+
+<p style="margin-left:23%;">Select packages by
+capabilities.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;debug&minus;solver</b></p>
+
+<p style="margin-left:23%;">Create solver test case for
+debugging. See the install command for details.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;R</b>,
+<b>&minus;&minus;no&minus;force&minus;resolution</b></p>
+
+<p style="margin-left:23%;">Do not force the solver to find
+a solution. Instead, report dependency problems and prompt
+the user to resolve them manually.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;force&minus;resolution</b></p>
+
+<p style="margin-left:23%;">Force the solver to find a
+solution by allowing to remove packages with unfulfilled
+requirements. This is the default when removing packages
+(<b>zypper remove *). This option overrides
+*&minus;&minus;no&minus;force&minus;resolution</b> in case
+both are specified on the command line.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;u</b>,
+<b>&minus;&minus;clean&minus;deps</b></p>
+
+<p style="margin-left:23%;">Automatically remove
+dependencies which become unneeded after removal of
+requested packages.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;U</b>,
+<b>&minus;&minus;no&minus;clean&minus;deps</b></p>
+
+<p style="margin-left:23%;">No automatic removal of
+unneeded dependencies.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;D</b>,
+<b>&minus;&minus;dry&minus;run</b></p>
+
+<p style="margin-left:23%;">Test the removal of packages,
+do not actually remove anything. This option will add the
+<b>&minus;&minus;test</b> option to the rpm commands run by
+the remove command.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;details</b></p>
+
+<p style="margin-left:23%;">Show the detailed installation
+summary.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Update
+Management Commands <br>
+list&minus;updates</b> (<b>lu</b>) [<i>options</i>]</p>
+
+<p style="margin-left:17%;">List available updates.</p>
+
+<p style="margin-left:17%; margin-top: 1em">This command
+will list only installable updates, i.e. updates which have
+no dependency problems, or which do not change package
+vendor. This list is what the <b>update</b> command will
+propose to install. To list all packages for which newer
+version are available, use <b>&minus;&minus;all</b>
+option.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;t</b>,
+<b>&minus;&minus;type</b> <i>type</i></p>
+
+<p style="margin-left:23%;">Type of package (default:
+package). See section <b>Package Types</b> for list of
+available package types.</p>
+
+<p style="margin-left:23%; margin-top: 1em">If <b>patch</b>
+is specified, zypper acts as if the
+<b>list&minus;patches</b> command was executed.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;r</b>,
+<b>&minus;&minus;repo</b>
+<i>alias</i>|<i>name</i>|<i>#</i>|<i>URI</i></p>
+
+<p style="margin-left:23%;">Work only with the repository
+specified by the alias, name, number, or URI. This option
+can be used multiple times.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;a</b>,
+<b>&minus;&minus;all</b></p>
+
+<p style="margin-left:23%;">List all packages for which
+newer versions are available, regardless whether they are
+installable or not.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;best&minus;effort</b></p>
+
+<p style="margin-left:23%;">See the <b>update</b> command
+for description.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>update</b>
+(<b>up</b>) [<i>options</i>] [<i>packagename</i>]...</p>
+
+<p style="margin-left:17%;">Update installed packages with
+newer versions, where possible.</p>
+
+<p style="margin-left:17%; margin-top: 1em">This command
+will not update packages which would require change of
+package vendor unless the vendor is specified in
+<b>/etc/zypp/vendors.d</b>, or which would require manual
+resolution of problems with dependencies. Such
+non&minus;installable updates will then be listed in
+separate section of the summary as &quot;<i>The following
+package updates will NOT be installed:</i>&quot;.</p>
+
+<p style="margin-left:17%; margin-top: 1em">To update
+individual packages, specify one or more package names. You
+can use the <b>*</b> and <b>?</b> wildcard characters in the
+package names to specify multiple packages matching the
+pattern.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;t</b>,
+<b>&minus;&minus;type</b> <i>type</i></p>
+
+<p style="margin-left:23%;">Type of package (default:
+package). See section <b>Package Types</b> for list of
+available package types.</p>
+
+<p style="margin-left:23%; margin-top: 1em">If <b>patch</b>
+is specified, zypper acts as if the <b>patches</b> command
+was executed.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;r</b>,
+<b>&minus;&minus;repo</b>
+<i>alias</i>|<i>name</i>|<i>#</i>|<i>URI</i></p>
+
+<p style="margin-left:23%;">Work only with the repository
+specified by the alias, name, number, or URI. This option
+can be used multiple times.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;skip&minus;interactive</b></p>
+
+<p style="margin-left:23%;">This will skip interactive
+patches, that is, those that need reboot, contain a message,
+or update a package whose license needs to be confirmed.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;with&minus;interactive</b></p>
+
+<p style="margin-left:23%;">Avoid skipping of interactive
+patches when in non&minus;interactive mode.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;l</b>,
+<b>&minus;&minus;auto&minus;agree&minus;with&minus;licenses</b></p>
+
+<p style="margin-left:23%;">Automatically say <i>yes</i> to
+third party license confirmation prompt. By using this
+option, you choose to agree with licenses of all
+third&minus;party software this command will install. This
+option is particularly useful for administrators installing
+the same set of packages on multiple machines (by an
+automated process) and have the licenses confirmed
+before.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;debug&minus;solver</b></p>
+
+<p style="margin-left:23%;">Create solver test case for
+debugging. See the install command for details.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;no&minus;recommends</b></p>
+
+<p style="margin-left:23%;">By default, zypper installs
+also packages recommended by the requested ones. This option
+causes the recommended packages to be ignored and only the
+required ones to be installed.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;replacefiles</b></p>
+
+<p style="margin-left:23%;">Install the packages even if
+they replace files from other, already installed, packages.
+Default is to treat file conflicts as an error.
+<b>&minus;&minus;download&minus;as&minus;needed</b> disables
+the fileconflict check because access to all packages
+filelists is needed in advance in order to perform the
+check.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;R</b>,
+<b>&minus;&minus;no&minus;force&minus;resolution</b></p>
+
+<p style="margin-left:23%;">Do not force the solver to find
+a solution. Instead, report dependency problems and prompt
+the user to resolve them manually.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;force&minus;resolution</b></p>
+
+<p style="margin-left:23%;">Force the solver to find a
+solution by allowing to remove packages with unfulfilled
+requirements. This is the default when removing packages
+(<b>zypper remove *). This option overrides
+*&minus;&minus;no&minus;force&minus;resolution</b> in case
+both are specified on the command line.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;D</b>,
+<b>&minus;&minus;dry&minus;run</b></p>
+
+<p style="margin-left:23%;">Test the update, do not
+actually install or update any package. This option will add
+the <b>&minus;&minus;test</b> option to the rpm commands run
+by the update command.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;details</b></p>
+
+<p style="margin-left:23%;">Show the detailed installation
+summary.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;best&minus;effort</b></p>
+
+<p style="margin-left:23%;">Do a <i>best effort</i>
+approach to update. This method does not explicitly select
+packages with best version and architecture, but instead
+requests installation of a package with higher version than
+the installed one and leaves the rest on the dependency
+solver. This method is always used for packages, and is
+optional for products and patterns. It is not applicable to
+patches.</p>
+
+<p style="margin-left:17%; margin-top: 1em">This command
+also accepts the download&minus;and&minus;install mode
+options described in the <b>install</b> command
+description.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>list&minus;patches</b>
+(<b>lp</b>) [<i>options</i>]</p>
+
+<p style="margin-left:17%;">List all available needed
+patches.</p>
+
+<p style="margin-left:17%; margin-top: 1em">This command is
+similar to <b>zypper list&minus;updates &minus;t
+patch</b>.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Note that
+<i>optional arguments</i> of some of the following options
+must be specified using <b>=</b> instead of a space.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;b</b>,
+<b>&minus;&minus;bugzilla</b>[<b>=</b><i>#</i>[,<i>...</i>]]</p>
+
+<p style="margin-left:23%;">List available needed patches
+for all Bugzilla issues, or issues whose number matches the
+given string.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;cve</b>[<b>=</b><i>#</i>[,<i>...</i>]]</p>
+
+<p style="margin-left:23%;">List available needed patches
+for all CVE issues, or issues whose number matches the given
+string.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;date</b>
+<i>YYYY&minus;MM&minus;DD</i>[,<i>...</i>]</p>
+
+<p style="margin-left:23%;">List only patches issued up to,
+but not including, the specified date.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;g</b>,
+<b>&minus;&minus;category</b>
+<i>category</i>[,<i>...</i>]</p>
+
+<p style="margin-left:23%;">List only patches with this
+category. See section <b>Package Types</b> for a list of
+commonly used <i>category</i> values.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;severity</b>
+<i>severity</i>[,<i>...</i>]</p>
+
+<p style="margin-left:23%;">List only patches with this
+severity. See section <b>Package Types</b> for a list of
+commonly used <i>severity</i> values.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;issues</b>[<b>=</b><i>string</i>[,<i>...</i>]]</p>
+
+<p style="margin-left:23%;">Look for issues whose number,
+summary, or description matches the specified <i>string</i>.
+Issues found by number are displayed separately from those
+found by descriptions. In the latter case, use <b>zypper
+patch&minus;info</b> <i>patchname</i> to get information
+about issues the patch fixes.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;a</b>,
+*&minus;&minus;all</p>
+
+<p style="margin-left:23%;">By default, only patches that
+are relevant and needed on your system are listed. This
+option causes all available released patches to be listed.
+This option can be combined with all the rest of the
+<b>list&minus;updates</b> command options.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;r</b>,
+<b>&minus;&minus;repo</b>
+<i>alias</i>|<i>name</i>|<i>#</i>|<i>URI</i></p>
+
+<p style="margin-left:23%;">Work only with the repository
+specified by the alias, name, number, or URI. This option
+can be used multiple times.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>patch&minus;check</b>
+(<b>pchk</b>)</p>
+
+<p style="margin-left:17%;">Check for patches. Displays a
+count of applicable patches and how many of them have the
+security category.</p>
+
+<p style="margin-left:17%; margin-top: 1em">See also the
+<b>EXIT CODES</b> section for details on exit status of
+<b>0</b>, <b>100</b>, and <b>101</b> returned by this
+command.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;updatestack&minus;only</b></p>
+
+<p style="margin-left:23%;">Check only for patches which
+affect the package management itself.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;r</b>,
+<b>&minus;&minus;repo</b>
+<i>alias</i>|<i>name</i>|<i>#</i>|<i>URI</i></p>
+
+<p style="margin-left:23%;">Check for patches only in the
+repository specified by the alias, name, number, or URI.
+This option can be used multiple times.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>patch</b>
+[<i>options</i>]</p>
+
+<p style="margin-left:17%;">Install all available needed
+patches.</p>
+
+<p style="margin-left:17%; margin-top: 1em">If there are
+patches that affect the package management itself, those
+will be installed first and you will be asked to run the
+<b>patch</b> command again.</p>
+
+<p style="margin-left:17%; margin-top: 1em">This command is
+similar to <b>zypper update &minus;t patch</b>.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;updatestack&minus;only</b></p>
+
+<p style="margin-left:23%;">Install only patches which
+affect the package management itself and exit.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;b</b>,
+<b>&minus;&minus;bugzilla</b> <i>#</i>[,<i>...</i>]</p>
+
+<p style="margin-left:23%;">Install patch fixing a Bugzilla
+issue specified by number. Use <b>list&minus;patches
+&minus;&minus;bugzilla</b> command to get a list of
+available needed patches for specific issues.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;cve</b>
+<i>#</i>[,<i>...</i>]</p>
+
+<p style="margin-left:23%;">Install patch fixing a
+MITRE&rsquo;s CVE issue specified by number. Use
+<b>list&minus;patches &minus;&minus;cve</b> command to get a
+list of available needed patches for specific issues.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;date</b>
+<i>YYYY&minus;MM&minus;DD</i>[,<i>...</i>]</p>
+
+<p style="margin-left:23%;">Install only patches issued up
+to, but not including, the specified date.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;g</b>,
+<b>&minus;&minus;category</b>
+<i>category</i>[,<i>...</i>]</p>
+
+<p style="margin-left:23%;">Install only patches with this
+category. Use <b>list&minus;patches
+&minus;&minus;category</b> command to get a list of
+available patches with a specific category. See section
+<b>Package Types</b> for a list of commonly used
+<i>category</i> values.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;severity</b>
+<i>severity</i>[,<i>...</i>]</p>
+
+<p style="margin-left:23%;">Install only patches with this
+severity. Use <b>list&minus;patches
+&minus;&minus;severity</b> command to get a list of
+available patches with a specific severity. See section
+<b>Package Types</b> for a list of commonly used
+<i>severity</i> values.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;r</b>,
+<b>&minus;&minus;repo</b>
+<i>alias</i>|<i>name</i>|<i>#</i>|<i>URI</i></p>
+
+<p style="margin-left:23%;">Work only with the repository
+specified by the alias, name, number, or URI. This option
+can be used multiple times.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;skip&minus;interactive</b></p>
+
+<p style="margin-left:23%;">Skip interactive patches.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;with&minus;interactive</b></p>
+
+<p style="margin-left:23%;">Avoid skipping of interactive
+patches when in non&minus;interactive mode.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;l</b>,
+<b>&minus;&minus;auto&minus;agree&minus;with&minus;licenses</b></p>
+
+<p style="margin-left:23%;">See the <b>update</b> command
+for description of this option.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;no&minus;recommends</b></p>
+
+<p style="margin-left:23%;">By default, zypper installs
+also packages recommended by the requested ones. This option
+causes the recommended packages to be ignored and only the
+required ones to be installed.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;replacefiles</b></p>
+
+<p style="margin-left:23%;">Install the packages even if
+they replace files from other, already installed, packages.
+Default is to treat file conflicts as an error.
+<b>&minus;&minus;download&minus;as&minus;needed</b> disables
+the fileconflict check because access to all packages
+filelists is needed in advance in order to perform the
+check.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;debug&minus;solver</b></p>
+
+<p style="margin-left:23%;">Create test case for debugging
+of dependency resolver.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;D</b>,
+<b>&minus;&minus;dry&minus;run</b></p>
+
+<p style="margin-left:23%;">Test the update, do not
+actually update.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;details</b></p>
+
+<p style="margin-left:23%;">Show the detailed installation
+summary.</p>
+
+<p style="margin-left:17%; margin-top: 1em">This command
+also accepts the <b>download&minus;and&minus;install</b>
+mode options described in the <b>install</b> command
+description.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>dist&minus;upgrade</b>
+(<b>dup</b>) [<i>options</i>]</p>
+
+<p style="margin-left:17%;">Perform a distribution upgrade.
+This command applies the state of (specified) repositories
+onto the system; upgrades (or even downgrades) installed
+packages to versions found in repositories, removes packages
+that are no longer in the repositories and pose a dependency
+problem for the upgrade, handles package splits and renames,
+etc.</p>
+
+<p style="margin-left:17%; margin-top: 1em">If no
+repositories are specified via the <b>&minus;&minus;from</b>
+option, zypper will do the upgrade with all defined
+repositories. This can be a problem if the system contains
+conflicting repositories, like repositories for two
+different distribution releases. This often happens if one
+forgets to remove an older release repository after adding a
+new one, say openSUSE 13.1 and openSUSE 13.2.</p>
+
+<p style="margin-left:17%; margin-top: 1em">For all
+repositories which have the distribution version within
+their URL (like
+http://download.opensuse.org/distribution/<i>13.1</i>/repo/oss)
+using the <b>$releasever</b> variable instead may be helpful
+(http://download.opensuse.org/distribution/<b>$releasever</b>/repo/oss).
+The variable is per default substituted by the current
+distributions version (<i>13.1</i>) This value can be
+overwritten using the <b>&minus;&minus;releasever</b> global
+option. Calling <b>zypper &minus;&minus;releasever
+13.2</b><i>...</i> will cause these repos to use the new
+location
+(http://download.opensuse.org/distribution/<i>13.2</i>/repo/oss)
+without need to add/remove anything. Once the <b>dup</b> is
+performed, <b>$releasever</b> will default to the new
+distribution version. See section <b>Repository
+Management</b> for more info about variable
+substitution.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Note:
+distribution upgrades in openSUSE are currently only
+supported between consecutive releases. To upgrade multiple
+releases, upgrade each consecutive release one at a time.
+For more details see
+<b>http://en.opensuse.org/SDB:System_upgrade</b> and the
+<i>openSUSE release notes</i> at
+<b>http://doc.opensuse.org/release&minus;notes/</b>.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;from</b>
+<i>alias</i>|<i>name</i>|<i>#</i>|<i>URI</i></p>
+
+<p style="margin-left:23%;">Restricts the upgrade to the
+specified repositories (the option can be used multiple
+times) only, but can satisfy dependencies also from the rest
+of enabled repositories.</p>
+
+<p style="margin-left:17%; margin-top: 1em">&minus;r,
+&minus;&minus;repo alias|name|#|URI</p>
+
+<p style="margin-left:23%;">Work only with the repository
+specified by the alias, name, number, or URI.</p>
+
+<p style="margin-left:23%; margin-top: 1em">Using
+&minus;&minus;repo is <i>discouraged</i> as it currently
+hides unmentioned repositories from the resolver, leading to
+inexpertly decisions. In the future &minus;&minus;repo will
+become an alias for <b>&minus;&minus;from</b>.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;l</b>,
+<b>&minus;&minus;auto&minus;agree&minus;with&minus;licenses</b></p>
+
+<p style="margin-left:23%;">Automatically say <i>yes</i> to
+third party license confirmation prompt. By using this
+option, you choose to agree with licenses of all
+third&minus;party software this command will install. This
+option is particularly useful for administrators installing
+the same set of packages on multiple machines (by an
+automated process) and have the licenses confirmed
+before.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;no&minus;recommends</b></p>
+
+<p style="margin-left:23%;">By default, zypper installs
+also packages recommended by the requested ones. This option
+causes the recommended packages to be ignored and only the
+required ones to be installed.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;replacefiles</b></p>
+
+<p style="margin-left:23%;">Install the packages even if
+they replace files from other, already installed, packages.
+Default is to treat file conflicts as an error.
+<b>&minus;&minus;download&minus;as&minus;needed</b> disables
+the fileconflict check because access to all packages
+filelists is needed in advance in order to perform the
+check.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;debug&minus;solver</b></p>
+
+<p style="margin-left:23%;">Create solver test case for
+debugging. See the install command for details.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;D</b>,
+<b>&minus;&minus;dry&minus;run</b></p>
+
+<p style="margin-left:23%;">Test the upgrade, do not
+actually install or update any package. This option will add
+the <b>&minus;&minus;test</b> option to the rpm commands run
+by the dist&minus;upgrade command.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;details</b></p>
+
+<p style="margin-left:23%;">Show the detailed installation
+summary.</p>
+
+<p style="margin-left:17%; margin-top: 1em">This command
+also accepts the download&minus;and&minus;install mode
+options described in the <b>install</b> command
+description.</p>
+
+<p style="margin-left:17%; margin-top: 1em"><b>Expert
+Options:</b></p>
+
+<p style="margin-left:23%;">Don&rsquo;t use them unless you
+know you need them.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;</b>[<b>no&minus;</b>]<b>allow&minus;downgrade</b></p>
+
+<p style="margin-left:23%;">Whether to allow downgrading
+installed resolvables
+[zypp.conf:solver.dupAllowDowngrade].</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;</b>[<b>no&minus;</b>]<b>allow&minus;name&minus;change</b></p>
+
+<p style="margin-left:23%;">Whether to allow changing the
+names of installed resolvables
+[zypp.conf:solver.dupAllowNameChange]. Setting this to
+<b>no</b> will not replace packages which have been
+renamed.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;</b>[<b>no&minus;</b>]<b>allow&minus;arch&minus;change</b></p>
+
+<p style="margin-left:23%;">Whether to allow changing the
+architecture of installed resolvables
+[zypp.conf:solver.dupAllowArchChange].</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;</b>[<b>no&minus;</b>]<b>allow&minus;vendor&minus;change</b></p>
+
+<p style="margin-left:23%;">Whether to allow changing the
+vendor of installed resolvables
+[zypp.conf:solver.dupAllowVendorChange]. Setting this to
+<b>no</b> might be useful if you do not want packages from
+foreign repos being dup&rsquo;ed to the distributions
+version (or vice versa).</p>
+
+<p style="margin-left:17%; margin-top: 1em">Examples:</p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper dup
+&minus;&minus;from factory &minus;&minus;from
+packman</b></p>
+
+<p style="margin-left:29%;">Upgrade the system to the
+latest versions provided by the <i>factory</i> and
+<i>packman</i> repositories.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Query
+Commands <br>
+search</b> (<b>se</b>) [<i>options</i>]
+[<i>querystring</i>|<i>capability</i>]...</p>
+
+<p style="margin-left:17%;">Search for packages matching
+any of the given search strings. <b>*</b> and <b>?</b>
+<i>wildcard</i> characters can be used within search
+strings. If the search string is enclosed in <b>/</b> (e.g.
+<b>/^k.*e$/</b>) it&rsquo;s interpreted as a <i>regular
+expression</i>. See the <b>install</b> command for details
+about how to specify a <i>capability</i>.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Results of the
+search are printed in a table. with columns <b>S</b>tatus,
+<b>Name</b>, <b>Type</b> of package, <b>Version</b>,
+<b>Arch</b>itecture and <b>Repository</b>. The <b>S</b>tatus
+column can contain the following values:</p>
+
+
+<p align="center" style="margin-top: 1em"><img src="grohtml-76982.png" alt="Image grohtml-76982.png"></p>
+
+<p style="margin-left:17%; margin-top: 1em">The <b>v</b>
+status is only shown if the version or the repository
+matters (see <b>&minus;&minus;details</b> or
+<b>&minus;&minus;repo</b>), and the installed version
+differs from the one listed or is from a repository other
+than specified.</p>
+
+<p style="margin-left:17%; margin-top: 1em">This command
+accepts the following options:</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;match&minus;substrings</b></p>
+
+<p style="margin-left:23%;">Matches for search strings may
+be partial words (default).</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;match&minus;words</b></p>
+
+<p style="margin-left:23%;">Matches for search strings may
+only be whole words.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;match&minus;exact</b></p>
+
+<p style="margin-left:23%;">Searches for an exact name of
+the package.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;provides</b></p>
+
+<p style="margin-left:23%;">Search for packages which
+provide the search strings.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;requires</b></p>
+
+<p style="margin-left:23%;">Search for packages which
+require the search strings.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;recommends</b></p>
+
+<p style="margin-left:23%;">Search for packages which
+recommend the search strings.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;suggests</b></p>
+
+<p style="margin-left:23%;">Search for packages which
+suggest the search strings.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;conflicts</b></p>
+
+<p style="margin-left:23%;">Search for packages conflicting
+with the search strings.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;obsoletes</b></p>
+
+<p style="margin-left:23%;">Search for packages which
+obsolete the search strings.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;n</b>,
+<b>&minus;&minus;name</b></p>
+
+<p style="margin-left:23%;">Useful together with dependency
+options, otherwise searching in package name is default.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;f</b>,
+<b>&minus;&minus;file&minus;list</b></p>
+
+<p style="margin-left:23%;">Search in file list of
+packages.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;d</b>,
+<b>&minus;&minus;search&minus;descriptions</b></p>
+
+<p style="margin-left:23%;">Search also in summaries and
+descriptions.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;C</b>,
+<b>&minus;&minus;case&minus;sensitive</b></p>
+
+<p style="margin-left:23%;">Perform case&minus;sensitive
+search.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;i</b>,
+<b>&minus;&minus;installed&minus;only</b></p>
+
+<p style="margin-left:23%;">Show only packages that are
+already installed.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;u</b>,
+<b>&minus;&minus;uninstalled&minus;only</b></p>
+
+<p style="margin-left:23%;">Show only packages that are not
+currently installed.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;t</b>,
+<b>&minus;&minus;type</b> <i>type</i></p>
+
+<p style="margin-left:23%;">Search only for packages of
+specified type. See section <b>Package Types</b> for a list
+of available package types. Multiple
+<b>&minus;&minus;type</b> options are allowed.</p>
+
+<p style="margin-left:23%; margin-top: 1em">See also the
+type&minus;specific query commands like <b>packages</b>,
+<b>patterns</b>, etc.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;r</b>,
+<b>&minus;&minus;repo</b>
+<i>alias</i>|<i>name</i>|<i>#</i>|<i>URI</i></p>
+
+<p style="margin-left:23%;">Work only with the repository
+specified by the alias, name, number, or URI. This option
+can be used multiple times.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;sort&minus;by&minus;name</b></p>
+
+<p style="margin-left:23%;">Sort packages by name
+(default).</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;sort&minus;by&minus;repo</b></p>
+
+<p style="margin-left:23%;">Sort packages by repository,
+not by name.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;s</b>,
+<b>&minus;&minus;details</b></p>
+
+<p style="margin-left:23%;">Show all available versions of
+matching packages, each version in each repository on a
+separate line.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;v</b>,
+<b>&minus;&minus;verbose</b></p>
+
+<p style="margin-left:23%;">Like
+<b>&minus;&minus;details</b> with additional information
+where the search has matched (useful when searching for
+dependencies, e.g. <b>&minus;&minus;provides</b>).</p>
+
+<p style="margin-left:17%; margin-top: 1em">Examples:</p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper se
+'yast*'</b></p>
+
+<p style="margin-left:29%;">Search for YaST packages (quote
+the string to prevent the shell from expanding the
+wildcard).</p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper se
+&minus;s &minus;&minus;match&minus;exact
+kernel&minus;default</b></p>
+
+<p style="margin-left:29%;">Show all available versions of
+package kernel&minus;default</p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper se
+&minus;dC &minus;&minus;match&minus;words RSI</b></p>
+
+<p style="margin-left:29%;">Look for RSI acronym
+(case&minus;sensitively), also in summaries and
+descriptions.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>packages</b>
+(<b>pa</b>) [<i>options</i>] [<i>repository</i>]...</p>
+
+<p style="margin-left:17%;">List all available packages or
+all packages from specified repositories. Similar to
+<b>zypper search &minus;s &minus;t package</b>.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;r</b>,
+<b>&minus;&minus;repo</b>
+<i>alias</i>|<i>name</i>|<i>#</i>|<i>URI</i></p>
+
+<p style="margin-left:23%;">Just another means to specify
+repositories.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;i</b>,
+<b>&minus;&minus;installed&minus;only</b></p>
+
+<p style="margin-left:23%;">Show only installed
+packages.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;u</b>,
+<b>&minus;&minus;uninstalled&minus;only</b></p>
+
+<p style="margin-left:23%;">Show only packages which are
+not installed.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;orphaned</b></p>
+
+<p style="margin-left:23%;">Show packages which are
+orphaned (without repository).</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;suggested</b></p>
+
+<p style="margin-left:23%;">Show packages which are
+suggested.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;recommended</b></p>
+
+<p style="margin-left:23%;">Show packages which are
+recommended.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;unneeded</b></p>
+
+<p style="margin-left:23%;">Show packages which are
+unneeded.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>patches</b>
+(<b>pch</b>) [<i>options</i>] [<i>repository</i>]...</p>
+
+<p style="margin-left:17%;">List all available patches from
+specified repositories, including those not needed. Similar
+to <b>zypper search &minus;s &minus;t patch</b>.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;r</b>,
+<b>&minus;&minus;repo</b>
+<i>alias</i>|name'|<i>#</i>|<i>URI</i></p>
+
+<p style="margin-left:23%;">Just another means to specify
+repositories.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>patterns</b>
+(<b>pt</b>) [<i>options</i>] [<i>repository</i>]...</p>
+
+<p style="margin-left:17%;">List all available patterns or
+all patterns from specified repositories. Similar to
+<b>zypper search &minus;s &minus;t pattern</b>.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;r</b>,
+<b>&minus;&minus;repo</b>
+<i>alias</i>|<i>name</i>|<i>#</i>|<i>URI</i></p>
+
+<p style="margin-left:23%;">Just another means to specify
+repositories.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;i</b>,
+<b>&minus;&minus;installed&minus;only</b></p>
+
+<p style="margin-left:23%;">Show only installed
+patterns.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;u</b>,
+<b>&minus;&minus;uninstalled&minus;only</b></p>
+
+<p style="margin-left:23%;">Show only patterns which are
+not installed.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>products</b>
+(<b>pd</b>) [<i>options</i>] [<i>repository</i>]...</p>
+
+<p style="margin-left:17%;">List all available products or
+all products from specified repositories. Similar to
+<b>zypper search &minus;s &minus;t product</b>, but shows
+also the type of the product (<b>base</b>,
+<b>add&minus;on</b>).</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;r</b>,
+<b>&minus;&minus;repo</b>
+<i>'alias</i>|<i>name</i>|<i>#</i>|<i>URI</i></p>
+
+<p style="margin-left:23%;">Just another means to specify
+repositories.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;i</b>,
+<b>&minus;&minus;installed&minus;only</b></p>
+
+<p style="margin-left:23%;">Show only installed
+products.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;u</b>,
+<b>&minus;&minus;uninstalled&minus;only</b></p>
+
+<p style="margin-left:23%;">Show only products which are
+not installed.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>what&minus;provides</b>
+(<b>wp</b>) <i>capability</i></p>
+
+<p style="margin-left:17%;">List all packages providing the
+specified capability. See also the <b>install</b> command
+for info about specifying <i>capabilities</i>.</p>
+
+<p style="margin-left:17%; margin-top: 1em">The command
+line is automatically transformed into the appropriate
+<b>search</b> command, e.g.:</p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper
+what&minus;provides 'zypper&gt;1.6'</b></p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper se
+&minus;&minus;provides &minus;&minus;match&minus;exact
+'zypper&gt;1.6'</b></p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Repository
+Management</b> <br>
+Zypper is able to work with YaST, RPM&minus;MD (yum)
+software repositories, and plain directories containing .rpm
+files.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Repositories
+are primarily identified using their <i>URI</i> or
+<i>alias</i>. Alias serves as a shorthand for the long URI
+or name of the repository. The <i>name</i> of the repository
+should briefly describe the repository and is shown to the
+user in tables and messages. The name is not required, and
+if not known, the alias is shown instead. The alias is
+required and uniquely identifies the repository on the
+system.</p>
+
+<p style="margin-left:11%; margin-top: 1em">The
+<i>alias</i>, <i>name</i>, <i>URI</i>, or the <i>number</i>
+from <b>zypper repos</b> list can be used to specify a
+repository as an argument of various zypper commands and
+options like <b>refresh</b>, <b>&minus;&minus;repo</b>, or
+<b>&minus;&minus;from</b>.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Apart from the
+above, repositories have several other properties which can
+be set using the commands described in this section below,
+or by manually editing the repository definition files
+(<b>.repo</b> files, see section <b>FILES</b>).</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b><big>Variable
+substitution:</big></b></p>
+
+<p style="margin-left:17%;">You can use the following
+built&minus;in variables within a <b>.repo</b> or
+<b>.service</b> files <i>name</i> and <i>URI</i> values:</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>$arch</b></p>
+
+<p style="margin-left:23%;">Use this variable to refer to
+the system&rsquo;s CPU architecture.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>$basearch</b></p>
+
+<p style="margin-left:23%;">Use this variable to refer to
+the base architecture of the system. For example, iX86
+machines have a base architecture of <b>i386</b>, while
+AMD64 and Intel64 have <b>x86_64</b>.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>$releasever</b>,
+<b>$releasever_major</b>, <b>$releasever_minor</b></p>
+
+<p style="margin-left:23%;">Use this variable to refer to
+the version of your openSUSE or SUSE Linux. The value is
+obtained from the <i>/product/version</i> XML&minus;node in
+<b>/etc/products.d/baseproduct</b>.</p>
+
+<p style="margin-left:23%; margin-top: 1em">This is useful
+for related repositories like packman
+(<b>http://ftp.gwdg.de/pub/linux/packman/suse/$releasever</b>),
+which shall always fit the installed distribution, even
+after a distribution upgrade. To help performing a
+distribution upgrade, the value of <b>$releasever</b> can be
+overwritten using the <b>&minus;&minus;releasever</b> global
+option. This way you can easily switch all repositories
+using <b>$releasever</b> to the new version (provided the
+server layouts did not change and new repos are already
+available).</p>
+
+<p style="margin-left:23%; margin-top: 1em">In addition
+<b>$releasever_major</b> will be set to the leading portion
+up to (but not including) the 1st dot;
+<b>$releasever_minor</b> to the trailing portion after the
+1st dot. If there&rsquo;s no dot in <b>$releasever</b>,
+<b>$releasever_major</b> is the same as <b>$releasever</b>
+and <b>$releasever_minor</b> is empty.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Remember to
+protect the <b>$</b> when using these variables on a shell
+command line:</p>
+
+<p style="margin-left:23%;">zypper ar &minus;f
+http://ftp.gwdg.de/pub/linux/packman/suse/<b>\$</b>releasever
+packman</p>
+
+<p style="margin-left:17%; margin-top: 1em">If a variable
+is followed by an alphanumeric character or underscore it
+needs to be enclosed in <b>{}</b>:</p>
+
+<p style="margin-left:23%;">zypper ar &minus;f
+http://ftp.gwdg.de/pub/linux/packman/suse/<b>\${</b><i>releasever</i><b>}</b>_packman</p>
+
+<p style="margin-left:17%; margin-top: 1em">Bash style
+definition of default
+<b>${</b><i>variable</i><b>:&minus;</b><i>word</i><b>}</b>
+and alternate
+<b>${</b><i>variable</i><b>:+</b><i>word</i><b>}</b>
+values:</p>
+
+
+<p style="margin-left:23%;">SLE&minus;<b>${</b><i>releasever_major</i><b>}${</b><i>releasever_minor</i><b>:+</b>&minus;SP&minus;<i>$releasever_minor</i><b>}</b></p>
+
+<p style="margin-left:17%; margin-top: 1em">To check where
+you already use <b>$releasever</b> call:</p>
+
+<p style="margin-left:23%;"><b>zypper
+&minus;&minus;releasever @&minus;&minus;HERE&minus;&minus;@
+lr &minus;u</b></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b><big>Supported
+URI formats:</big></b></p>
+
+<p style="margin-left:17%;"><i>scheme</i><b>:</b>
+[<b>//</b>[<i>user</i>[<b>:</b><i>password</i>]<b>@</b>]<i>host</i>[<b>:</b><i>port</i>]]
+<b>/</b><i>path</i> [<b>?</b><i>query</i>]
+[<b>#</b><i>fragment</i>]</p>
+
+<p style="margin-left:23%;">Special characters occurring in
+URI components (like a <b>@</b> in a password) must be
+%&minus;encoded (<b>%40</b>).</p>
+
+<p style="margin-left:17%; margin-top: 1em">CD or DVD
+drive</p>
+
+<p style="margin-left:23%;">Optionally with <i>devices</i>
+list for probing.</p>
+
+
+<p align="center" style="margin-top: 1em"><img src="grohtml-76983.png" alt="Image grohtml-76983.png"></p>
+
+<p style="margin-left:17%; margin-top: 1em">FTP/HTTP/HTTPS
+directory tree</p>
+
+<p style="margin-left:23%;">The ftp URL scheme supports
+absolute and relative paths to the default ftp server
+directory (RFC1738, Section 3.2.2). To use an absolute path,
+you have to prepend the path with an additional slash, what
+results in a <b>/%2f</b> combination (second <b>/</b>
+encoded to <b>%2f</b>) at the begin of the URL path. This is
+important, especially in user authenticated ftp, where the
+users home is usually the default directory of the server
+(except when the server chroots into the users home
+directory).</p>
+
+<p style="margin-left:23%; margin-top: 1em">Explicit proxy
+settings may be passed via optional parameters <i>proxy</i>,
+<i>proxyport</i>, <i>proxyuser</i> and <i>proxypass</i>.</p>
+
+<p style="margin-left:23%; margin-top: 1em">HTTP
+authentication methods to use can be defined as comma
+separated list via optional parameter <i>auth</i>. Valid
+methods are e.g. <i>basic</i>, <i>digest</i>, <i>ntlm</i>,
+<i>negotiate</i>. Note, that this list depends on the list
+of methods supported by the curl library.</p>
+
+
+<p align="center" style="margin-top: 1em"><img src="grohtml-76984.png" alt="Image grohtml-76984.png"></p>
+
+<p style="margin-left:17%; margin-top: 1em">Disk volume
+(partition)</p>
+
+<p style="margin-left:23%;">Mandatory <b>device</b>
+parameter specifying the name of the block device to mount.
+The name of the optional <i>filesystem</i> defaults to
+&quot;auto&quot;.</p>
+
+
+<p style="margin-left:29%; margin-top: 1em"><b>hd:/subdir?device=/dev/sda1</b><i>&amp;filesystem=reiserfs</i></p>
+
+<p style="margin-left:17%; margin-top: 1em">Local directory
+tree</p>
+
+
+<p style="margin-left:29%; margin-top: 1em"><b>dir:/directory/name</b></p>
+
+<p style="margin-left:17%; margin-top: 1em">Media in an ISO
+image (loopback mounted)</p>
+
+<p style="margin-left:23%; margin-top: 1em">Mandatory
+<b>iso</b> parameter specifying the name of the iso file.
+Optional <i>url</i> parameter specifying the URL to the
+directory containing the iso file. Optional <i>mnt</i>
+parameter specifying the preferred attach point for the
+source media url. Optional <i>filesystem</i> name of the
+filesystem used in the iso file. Defaults to
+&quot;auto&quot;.</p>
+
+
+<p align="center" style="margin-top: 1em"><img src="grohtml-76985.png" alt="Image grohtml-76985.png"></p>
+
+<p style="margin-left:17%; margin-top: 1em">NFS exported
+directory tree</p>
+
+<p style="margin-left:23%;">To use NFSv4 either use schema
+<i>tnfsv4://</i> or pass an optional parameter
+<i>type=nfs4</i>. Additional <i>mountoptions</i> can be
+passed as comma separated list. Defaults to
+&quot;ro&quot;.</p>
+
+
+<p align="center" style="margin-top: 1em"><img src="grohtml-76986.png" alt="Image grohtml-76986.png"></p>
+
+<p style="margin-left:17%; margin-top: 1em">CIFS/SMB
+directory tree</p>
+
+<p style="margin-left:23%;">There is no difference between
+cifs and smb scheme (any more). In both cases the
+<i>cifs</i> filesystem is used. Additional
+<i>mountoptions</i> can be passed as comma separated list.
+Defaults to &quot;ro,guest&quot;. Specify
+&quot;noguest&quot; to turn off &quot;guest&quot;. This is
+necessary if Samba is configured to reject guest
+connections.</p>
+
+<p style="margin-left:23%; margin-top: 1em">Optional
+<i>workgroup</i> or <i>domain</i> parameter set the name of
+the workgroup. As alternative to passing
+<i>username:password</i> in the URI authority the parameters
+<i>user</i> and <i>pass</i> can be used.</p>
+
+
+<p align="center" style="margin-top: 1em"><img src="grohtml-76987.png" alt="Image grohtml-76987.png"></p>
+
+<p style="margin-left:17%; margin-top: 1em">OpenSUSE Build
+Build Service (OBS) repositories</p>
+
+<p style="margin-left:23%;">Zypper also accepts special
+URIs identifying openSUSE Build Service (OBS) repositories
+in the <b>addrepo</b> command. These URIs have the form of
+<b>obs://</b><i>project</i><b>/</b>[<i>platform</i>], where
+<i>project</i> is the name of the OBS project and
+<i>platform</i> is the target platform (OS) for which the
+repository is intended.</p>
+
+<p style="margin-left:23%; margin-top: 1em">If
+<i>platform</i> is omitted, <b>openSUSE_$releasever</b> is
+used unless a value for <b>obs.platform</b> is defined in
+zypper.conf. If you are following <b>openSUSE_Factory</b> or
+<b>openSUSE_Tumbleweed</b> you may need to set these as your
+default platform. But we can only guess, how the directory
+containing the repository that fits your distribution is
+named on the server. In case of doubt you need to look up
+the right URL in a browser.</p>
+
+
+<p align="center" style="margin-top: 1em"><img src="grohtml-76988.png" alt="Image grohtml-76988.png"></p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>addrepo</b>
+(<b>ar</b>) [<i>options</i>] <i>URI alias</i></p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>addrepo</b>
+(<b>ar</b>) [<i>options</i>] <i>FILE</i><b>.repo</b></p>
+
+<p style="margin-left:17%;">Add a new repository specified
+by URI and assign specified alias to it or specify URI to a
+.repo file.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Newly added
+repositories have auto&minus;refresh disabled by default
+(except for repositories imported from a .repo, having the
+auto&minus;refresh enabled). To enable auto&minus;refresh,
+use the <b>&minus;&minus;refresh</b> option of the
+<b>modifyrepo</b> command.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Also, this
+command does not automatically refresh the newly added
+repositories. The repositories will get refreshed when used
+for the first time, or you can use the <b>refresh</b>
+command after finishing your modifications with <b>*repo</b>
+commands. See also <b>METADATA REFRESH POLICY</b> section
+for more details.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;r</b>,
+<b>&minus;&minus;repo</b> <i>file</i><b>.repo</b></p>
+
+<p style="margin-left:23%;">Read URI and alias from
+specified .repo file</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;t</b>,
+<b>&minus;&minus;type</b> <i>type</i></p>
+
+<p style="margin-left:23%;">Type of repository (yast2,
+rpm&minus;md, or plaindir) in case the autodetection fails.
+There are several aliases defined for these types:</p>
+
+
+<p align="center" style="margin-top: 1em"><img src="grohtml-76989.png" alt="Image grohtml-76989.png"></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;d</b>,
+<b>&minus;&minus;disable</b></p>
+
+<p style="margin-left:23%;">Add the repository as disabled.
+Repositories are added as enabled by default.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;c</b>,
+<b>&minus;&minus;check</b></p>
+
+<p style="margin-left:23%;">Probe given URI.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;C</b>,
+<b>&minus;&minus;nocheck</b></p>
+
+<p style="margin-left:23%;">Don&rsquo;t probe URI, probe
+later during refresh.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;n</b>,
+<b>&minus;&minus;name</b></p>
+
+<p style="margin-left:23%;">Specify descriptive name for
+the repository.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;k</b>,
+<b>&minus;&minus;keep&minus;packages</b></p>
+
+<p style="margin-left:23%;">Enable RPM files caching for
+the repository.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;K</b>,
+<b>&minus;&minus;no&minus;keep&minus;packages</b></p>
+
+<p style="margin-left:23%;">Disable RPM files caching.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;f</b>,
+<b>&minus;&minus;refresh</b></p>
+
+<p style="margin-left:23%;">Enable autorefresh of the
+repository. The autorefresh is disabled by default when
+adding new repositories.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Examples:</p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper ar
+&minus;c &minus;n 'Packman 11.1 repo'
+http://packman.iu&minus;bremen.de/suse/11.1 packman</b></p>
+
+<p style="margin-left:29%;">Add a HTTP repository, probe
+it, name it <i>Packman 11.1 repo</i>, and use <i>packman</i>
+as alias.</p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper ar
+http://download.opensuse.org/repositories/zypp:/svn/openSUSE_Factory/zypp:svn.repo</b></p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper ar
+myreposbackup.repo</b></p>
+
+<p style="margin-left:29%;">Add repositories from a .repo
+file.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>removerepo</b>
+(<b>rr</b>) [<i>options</i>]
+<i>alias</i>|<i>name</i>|<i>#</i>|<i>URI</i>...</p>
+
+<p style="margin-left:17%;">Delete repositories specified
+by aliases, names, numbers or URIs.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;loose&minus;auth</b></p>
+
+<p style="margin-left:23%;">Ignore user authentication data
+in the URI</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;loose&minus;query</b></p>
+
+<p style="margin-left:23%;">Ignore query string in the
+URI</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>repos</b>
+(<b>lr</b>) [<i>options</i>] [<i>repo</i>]...</p>
+
+<p style="margin-left:17%;">List all defined repositories
+or show detailed information about those specified as
+arguments</p>
+
+<p style="margin-left:17%; margin-top: 1em">The following
+data can be printed for each repository found on the system:
+<i>#</i> (repository number), <i>Alias</i> (unique
+identifier), <i>Name</i>, <i>Enabled</i> (whether the
+repository is enabled), <i>GPG Check</i> (whether GPG check
+for repository metadata (<b>r</b>) and/or downloaded rpm
+packages (<b>p</b>) is enabled), <i>Refresh</i> (whether
+auto&minus;refresh is enabled for the repository),
+<i>Priority</i>, <i>Type</i> (repository meta&minus;data
+type: rpm&minus;md, yast2, plaindir). Which of the data is
+shown is determined by command line options listed below and
+the main.repoListColumns setting from zypper.conf. By
+default, #, Alias, Name, Enabled, GPG Check and Refresh is
+shown.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Repository
+number is a unique identifier of the repository in current
+set of repositories. If you add, remove or change a
+repository, the numbers may change. Keep that in mind when
+using the numbers with the repository handling commands. On
+the other hand, using the alias instead of the number is
+always safe.</p>
+
+<p style="margin-left:17%; margin-top: 1em">To show
+detailed information about specific repositories, specify
+them as arguments, either by alias, name, number from simple
+<b>zypper lr</b>, or by URI; e.g. fB <b>zypper lr
+factory</b>, or <b>zypper lr 2</b>.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;e</b>,
+<b>&minus;&minus;export</b>
+<i>FILE</i><b>.repo</b>|<i>&minus;</i></p>
+
+<p style="margin-left:23%;">This option causes zypper to
+write repository definition of all defined repositories into
+a single file in repo file format. If <b>&minus;</b> is
+specified instead of a file name, the repositories will be
+written to the standard output.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;a</b>,
+<b>&minus;&minus;alias</b></p>
+
+<p style="margin-left:23%;">Add alias column to the
+output.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;n</b>,
+<b>&minus;&minus;name</b></p>
+
+<p style="margin-left:23%;">Add name column to the
+output.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;u</b>,
+<b>&minus;&minus;uri</b></p>
+
+<p style="margin-left:23%;">Add base URI column to the
+output.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;p</b>,
+<b>&minus;&minus;priority</b></p>
+
+<p style="margin-left:23%;">Add repository priority column
+to the output.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;r</b>,
+<b>&minus;&minus;refresh</b></p>
+
+<p style="margin-left:23%;">Add the autorefresh column to
+the output.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;d</b>,
+<b>&minus;&minus;details</b></p>
+
+<p style="margin-left:23%;">Show more information like URI,
+priority, type, etc.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;E</b>,
+<b>&minus;&minus;show&minus;enabled&minus;only</b></p>
+
+<p style="margin-left:23%;">Show enabled repositories
+only.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;U</b>,
+<b>&minus;&minus;sort&minus;by&minus;uri</b></p>
+
+<p style="margin-left:23%;">Add base URI column and sort
+the list it.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;P</b>,
+<b>&minus;&minus;sort&minus;by&minus;priority</b></p>
+
+<p style="margin-left:23%;">Add repository priority column
+and sort the list by it.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;A</b>,
+<b>&minus;&minus;sort&minus;by&minus;alias</b></p>
+
+<p style="margin-left:23%;">Sort the list by alias.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;N</b>,
+<b>&minus;&minus;sort&minus;by&minus;name</b></p>
+
+<p style="margin-left:23%;">Sort the list by name.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Examples:</p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper
+repos &minus;e myreposbackup.repo</b></p>
+
+<p style="margin-left:29%;">Backup your repository
+setup:</p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper lr
+&minus;pu</b></p>
+
+<p style="margin-left:29%;">List repositories with their
+URIs and priorities:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>renamerepo</b>
+(<b>nr</b>) <i>alias</i>|<i>name</i>|<i>#</i>|<i>URI
+new&minus;alias</i></p>
+
+<p style="margin-left:17%;">Assign new alias to the
+repository specified by alias, name, number, or URI.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Examples:</p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper nr
+8 myrepo</b></p>
+
+<p style="margin-left:29%;">Rename repository <i>number
+8</i> to <b>myrepo</b> (useful if the repo has some dreadful
+alias which is not usable on the command line).</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>modifyrepo</b>
+(<b>mr</b>) <i>options
+alias</i>|<i>name</i>|<i>#</i>|<i>URI</i>...</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>modifyrepo</b>
+(<b>mr</b>) <i>options</i>
+<b>&minus;&minus;all</b>|<b>&minus;&minus;remote</b>|<b>&minus;&minus;local</b>|<b>&minus;&minus;medium&minus;type</b></p>
+
+<p style="margin-left:17%;">Modify properties of
+repositories specified by alias, name, number, or URI or one
+of the aggregate options.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;e</b>,
+<b>&minus;&minus;enable</b></p>
+
+<p style="margin-left:23%;">Enable the repository.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;d</b>,
+<b>&minus;&minus;disable</b></p>
+
+<p style="margin-left:23%;">Disable the repository.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;r</b>,
+<b>&minus;&minus;refresh</b></p>
+
+<p style="margin-left:23%;">Enable auto&minus;refresh for
+the repository.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;R</b>,
+<b>&minus;&minus;no&minus;refresh</b></p>
+
+<p style="margin-left:23%;">Disable auto&minus;refresh for
+the repository.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;p</b>,
+<b>&minus;&minus;priority</b>
+<i>positive&minus;integer</i></p>
+
+<p style="margin-left:23%;">Set priority of the repository.
+Priority of 1 is the highest, the higher the number the
+lower the priority. Default priority is 99. Packages from
+repositories with higher priority will be preferred even in
+case there is a higher installable version available in the
+repository with a lower priority.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;n</b>,
+<b>&minus;&minus;name</b></p>
+
+<p style="margin-left:23%;">Set a descriptive name for the
+repository.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;k</b>,
+<b>&minus;&minus;keep&minus;packages</b></p>
+
+<p style="margin-left:23%;">Enable RPM files caching.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;K</b>,
+<b>&minus;&minus;no&minus;keep&minus;packages</b></p>
+
+<p style="margin-left:23%;">Disable RPM files caching.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;a</b>,
+<b>&minus;&minus;all</b></p>
+
+<p style="margin-left:23%;">Apply changes to all
+repositories.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;l</b>,
+<b>&minus;&minus;local</b></p>
+
+<p style="margin-left:23%;">Apply changes to all local
+repositories.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;t</b>,
+<b>&minus;&minus;remote</b></p>
+
+<p style="margin-left:23%;">Apply changes to all remote
+repositories (http/https/ftp).</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;m</b>,
+<b>&minus;&minus;medium&minus;type</b> <i>type</i></p>
+
+<p style="margin-left:23%;">Apply changes to repositories
+of specified type. The type corresponds to the repository
+URI scheme identifier like http, dvd, etc. You can find
+complete list of valid types at
+http://en.opensuse.org/openSUSE:Libzypp_URIs.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Examples:</p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper mr
+&minus;kt</b></p>
+
+<p style="margin-left:29%;">Enable keeping of packages for
+all remote repositories.</p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper mr
+&minus;er updates</b></p>
+
+<p style="margin-left:29%;">Enable repository
+<i>updates</i> and switch on autorefresh for the repo.</p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper mr
+&minus;da</b></p>
+
+<p style="margin-left:29%;">Disable all repositories.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>refresh</b>
+(<b>ref</b>)
+[<i>alias</i>|<i>name</i>|<i>#</i>|<i>URI</i>]...</p>
+
+<p style="margin-left:17%;">Refresh repositories specified
+by their alias, name, number, or URI. If no repositories are
+specified, all enabled repositories will be refreshed.</p>
+
+<p style="margin-left:17%; margin-top: 1em">See also
+<b>METADATA REFRESH POLICY</b> section for more details.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;f</b>,
+<b>&minus;&minus;force</b></p>
+
+<p style="margin-left:23%;">Force a complete refresh of
+specified repositories. This option will cause both the
+download of raw metadata and parsing of the metadata to be
+forced even if everything indicates a refresh is not
+needed.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;b</b>,
+<b>&minus;&minus;force&minus;build</b></p>
+
+<p style="margin-left:23%;">Force only reparsing of cached
+metadata and rebuilding of the database. Raw metadata
+download will not be forced.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;d</b>,
+<b>&minus;&minus;force&minus;download</b></p>
+
+<p style="margin-left:23%;">Force only download of current
+copy of repository metadata. Parsing and rebuild of the
+database will not be forced.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;B</b>,
+<b>&minus;&minus;build&minus;only</b></p>
+
+<p style="margin-left:23%;">Only parse the metadata and
+build the database, don&rsquo;t download raw metadata into
+the cache. This will enable you to repair damaged database
+from cached data without accessing network at all.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;D</b>,
+<b>&minus;&minus;download&minus;only</b></p>
+
+<p style="margin-left:23%;">Only download the raw metadata,
+don&rsquo;t parse it or build the database.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;s</b>,
+<b>&minus;&minus;services</b></p>
+
+<p style="margin-left:23%;">Refresh also services before
+refreshing repositories.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>clean</b>
+(<b>cc</b>) [<i>options</i>]
+[<i>alias</i>|<i>name</i>|<i>#</i>|<i>URI</i>]...</p>
+
+<p style="margin-left:17%;">Clean the local caches for all
+known or specified repositories. By default, only caches of
+downloaded packages are cleaned.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;m</b>,
+<b>&minus;&minus;metadata</b></p>
+
+<p style="margin-left:23%;">Clean repository metadata cache
+instead of package cache.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;M</b>,
+<b>&minus;&minus;raw&minus;metadata</b></p>
+
+<p style="margin-left:23%;">Clean repository raw metadata
+cache instead of package cache.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;a</b>,
+<b>&minus;&minus;all</b></p>
+
+<p style="margin-left:23%;">Clean both repository metadata
+and package caches.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Service
+Management</b> <br>
+The <b>services</b>, <b>addservice</b>,
+<b>removeservice</b>, <b>modifyservice</b>, and
+<b>refresh&minus;services</b> commands serve for
+manipulating services. A service is specified by its URI and
+needs to have a unique alias defined (among both services
+and repositories).</p>
+
+<p style="margin-left:11%; margin-top: 1em">Standalone
+repositories (not belonging to any service) are treated like
+services, too. The <b>ls</b> command will list them,
+<b>ms</b> command will modify them, etc. Repository specific
+options, like <b>&minus;&minus;keep&minus;packages</b> are
+not available here, though. You can use repository handling
+commands to manipulate them.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>addservice</b>
+(<b>as</b>) [<i>options</i>] <i>URI alias</i></p>
+
+<p style="margin-left:17%;">Adds a service specified by
+<b>URI</b> to the system. The <i>alias</i> must be unique
+and serves to identify the service.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Newly added
+services are not refreshed automatically. Use the
+<b>refresh&minus;services</b> command to refresh them.
+Zypper does not access the service URI when adding the
+service, so the type of the services is unknown until it is
+refreshed.</p>
+
+<p style="margin-left:17%; margin-top: 1em">This command
+also allows one to add also ordinary repositories when used
+with <b>&minus;&minus;type</b> option, where you specify the
+type of the repository. See the addrepo command for the list
+of supported repository types.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;t</b>,
+<b>&minus;&minus;type</b> <i>type</i></p>
+
+<p style="margin-left:23%;">Type of the service (possible
+values: <b>ris</b>) in case the autodetection fails. There
+are several aliases defined for this type:</p>
+
+
+<p align="center" style="margin-top: 1em"><img src="grohtml-769810.png" alt="Image grohtml-769810.png"></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;d</b>,
+<b>&minus;&minus;disable</b></p>
+
+<p style="margin-left:23%;">Add the service as
+disabled.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;n</b>,
+<b>&minus;&minus;name</b></p>
+
+<p style="margin-left:23%;">Specify descriptive name for
+the service.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>removeservice</b>
+(<b>rs</b>) [<i>options</i>]
+<i>alias</i>|<i>name</i>|<i>#</i>|<i>URI</i>...</p>
+
+<p style="margin-left:17%;">Remove specified service from
+the system. Removing a service will also remove of all of
+its repositories.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;loose&minus;auth</b></p>
+
+<p style="margin-left:23%;">Ignore user authentication data
+in the URI.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;loose&minus;query</b></p>
+
+<p style="margin-left:23%;">Ignore query string in the
+URI.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>modifyservice</b>
+(<b>ms</b>) <i>options
+alias</i>|<i>name</i>|<i>#</i>|<i>URI</i></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>modifyservice</b>
+(<b>ms</b>) <i>options</i>
+<b>&minus;&minus;all</b>|<b>&minus;&minus;remote</b>|<b>&minus;&minus;local</b>|<b>&minus;&minus;medium&minus;type</b></p>
+
+<p style="margin-left:17%;">Modify properties of specified
+services.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Common
+Options</p>
+
+<p style="margin-left:23%;">These options are common to all
+types of services and repositories.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;d</b>,
+<b>&minus;&minus;disable</b></p>
+
+<p style="margin-left:23%;">Disable the service (but
+don&rsquo;t remove it).</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;e</b>,
+<b>&minus;&minus;enable</b></p>
+
+<p style="margin-left:23%;">Enable a disabled service.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;r</b>,
+<b>&minus;&minus;refresh</b></p>
+
+<p style="margin-left:23%;">Enable auto&minus;refresh of
+the service.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;R</b>,
+<b>&minus;&minus;no&minus;refresh</b></p>
+
+<p style="margin-left:23%;">Disable auto&minus;refresh of
+the service.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;n</b>,
+<b>&minus;&minus;name</b></p>
+
+<p style="margin-left:23%;">Set a descriptive name for the
+service.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;a</b>,
+<b>&minus;&minus;all</b></p>
+
+<p style="margin-left:23%;">Apply changes to all
+services.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;l</b>,
+<b>&minus;&minus;local</b></p>
+
+<p style="margin-left:23%;">Apply changes to all local
+services.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;t</b>,
+<b>&minus;&minus;remote</b></p>
+
+<p style="margin-left:23%;">Apply changes to all remote
+services.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;m</b>,
+<b>&minus;&minus;medium&minus;type</b> <i>type</i></p>
+
+<p style="margin-left:23%;">Apply changes to services of
+specified type.</p>
+
+<p style="margin-left:17%; margin-top: 1em">RIS Service
+Specific Options</p>
+
+<p style="margin-left:23%;">These options are ignored by
+services other than Repository Index Services.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;i</b>,
+<b>&minus;&minus;ar&minus;to&minus;enable</b>
+<i>alias</i></p>
+
+<p style="margin-left:23%;">Schedule an RIS service
+repository to be enabled at next service refresh.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;I</b>,
+<b>&minus;&minus;ar&minus;to&minus;disable</b>
+<i>alias</i></p>
+
+<p style="margin-left:23%;">Schedule an RIS service
+repository to be disabled at next service refresh.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;j</b>,
+<b>&minus;&minus;rr&minus;to&minus;enable</b>
+<i>alias</i></p>
+
+<p style="margin-left:23%;">Remove a RIS service repository
+to enable.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;J</b>,
+<b>&minus;&minus;rr&minus;to&minus;disable</b>
+&quot;alias'</p>
+
+<p style="margin-left:23%;">Remove a RIS service repository
+to disable.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;k</b>,
+<b>&minus;&minus;cl&minus;to&minus;enable</b></p>
+
+<p style="margin-left:23%;">Clear the list of RIS
+repositories to enable.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;K</b>,
+<b>&minus;&minus;cl&minus;to&minus;disable</b></p>
+
+<p style="margin-left:23%;">Clear the list of RIS
+repositories to disable.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>services</b>
+(<b>ls</b>) [<i>options</i>]</p>
+
+<p style="margin-left:17%;">List services defined on the
+system.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;u</b>,
+<b>&minus;&minus;uri</b></p>
+
+<p style="margin-left:23%;">Show also base URI of
+repositories.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;p</b>,
+<b>&minus;&minus;priority</b></p>
+
+<p style="margin-left:23%;">Show also repository
+priority.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;d</b>,
+<b>&minus;&minus;details</b></p>
+
+<p style="margin-left:23%;">Show more information like URI,
+priority, type.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;r</b>,
+<b>&minus;&minus;with&minus;repos</b></p>
+
+<p style="margin-left:23%;">Show also repositories
+belonging to the services.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;P</b>,
+<b>&minus;&minus;sort&minus;by&minus;priority</b></p>
+
+<p style="margin-left:23%;">Sort the list by repository
+priority.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;E</b>,
+<b>&minus;&minus;show&minus;enabled&minus;only</b></p>
+
+<p style="margin-left:23%;">Show enabled services only. If
+used together with <b>&minus;&minus;with&minus;repos</b> a
+disabled services owning (manually) enabled repositories are
+shown as well.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;U</b>,
+<b>&minus;&minus;sort&minus;by&minus;uri</b></p>
+
+<p style="margin-left:23%;">Sort the list by URI.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;N</b>,
+<b>&minus;&minus;sort&minus;by&minus;name</b></p>
+
+<p style="margin-left:23%;">Sort the list by name.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>refresh&minus;services</b>
+(<b>refs</b>) [<i>options</i>]
+<i>alias</i>|<i>name</i>|<i>#</i>|<i>URI</i>...</p>
+
+<p style="margin-left:17%;">Refreshing a service means
+executing the service&rsquo;s special task.</p>
+
+<p style="margin-left:17%; margin-top: 1em">RIS services
+add, remove, or modify repositories on your system based on
+current content of the repository index. A differing
+enabled/disabled state caused by manually calling
+<b>modify&minus;repo</b> on a service repository however
+will not be reverted unless the
+<b>&minus;&minus;restore&minus;status</b> option is used, or
+the repository index explicitly requests the change.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Services only
+manage defined repositories, they do not refresh them. To
+refresh also repositories, use
+<b>&minus;&minus;with&minus;repos</b> option or the
+<b>refresh</b> command.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;f</b>,
+<b>&minus;&minus;force</b></p>
+
+<p style="margin-left:23%;">Force a complete refresh of
+specified services. This option will cause both the download
+of raw metadata and parsing of the metadata to be forced
+even if everything indicates a refresh is not needed.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;r</b>,
+<b>&minus;&minus;with&minus;repos</b></p>
+
+<p style="margin-left:23%;">Refresh also the service
+repositories.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;R</b>,
+<b>&minus;&minus;restore&minus;status</b></p>
+
+<p style="margin-left:23%;">Also restore service
+repositories enabled/disabled state to the repository index
+default. Useful after you manually changed some service
+repositories enabled state.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Package
+Locks Management</b> <br>
+Package locks serve the purpose of preventing changes to the
+set of installed packages on the system. The locks are
+stored in form of a <i>query</i> in /etc/zypp/locks file
+(see also locks(5)). Packages matching this query are then
+forbidden to change their installed status; an installed
+package can&rsquo;t be removed, not installed package
+can&rsquo;t be installed. When requesting to install or
+remove such locked package, you will get a dependency
+problem dialog.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>locks</b>
+(<b>ll</b>)</p>
+
+<p style="margin-left:17%;">List currently active package
+locks.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;m</b>,
+<b>&minus;&minus;matches</b></p>
+
+<p style="margin-left:23%;">Show the number of resolvables
+matched by each lock. This option requires loading the
+repositories.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;s</b>,
+<b>&minus;&minus;solvables</b></p>
+
+<p style="margin-left:23%;">List the resolvables matched by
+each lock. This option requires loading the
+repositories.</p>
+
+<p style="margin-left:23%; margin-top: 1em">Add a package
+lock. Specify packages to lock by exact name or by a glob
+pattern using *** and '*?*' wildcard characters.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;r</b>,
+<b>&minus;&minus;repo</b>
+<i>alias</i>|<i>name</i>|<i>#</i>|<i>URI</i></p>
+
+<p style="margin-left:23%;">Restrict the lock to the
+specified repository.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;t</b>,
+<b>&minus;&minus;type</b> <i>type</i></p>
+
+<p style="margin-left:23%;">Lock only packages of specified
+type (default: package). See section <b>Package Types</b>
+for list of available package types.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>removelock</b>
+(<b>rl</b>) [<i>options</i>]
+<i>lock&minus;number</i>|<i>package&minus;name</i>...</p>
+
+<p style="margin-left:17%;">Remove specified package lock.
+Specify the lock to remove by its number obtained with
+<b>zypper locks</b> or by the package name.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;r</b>,
+<b>&minus;&minus;repo</b>
+<i>alias</i>|<i>name</i>|<i>#</i>|<i>URI</i></p>
+
+<p style="margin-left:23%;">Restrict the lock to the
+specified repository.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;t</b>,
+<b>&minus;&minus;type</b> <i>type</i></p>
+
+<p style="margin-left:23%;">Restrict the lock to packages
+of specified type (default: package). See section <b>Package
+Types</b> for list of available package types.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>cleanlocks</b>
+(<b>cl</b>)</p>
+
+<p style="margin-left:17%;">Remove unused locks.</p>
+
+<p style="margin-left:17%; margin-top: 1em">This command
+looks for locks that do not currently (with regard to
+repositories used) lock any package and for each such lock
+it asks user whether to remove it.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Other
+Commands <br>
+versioncmp</b> (<b>vcmp</b>) <i>version1 version2</i></p>
+
+<p style="margin-left:17%;">Compare the versions supplied
+as arguments and tell whether version1 is older or newer
+than version2 or the two version strings match.</p>
+
+<p style="margin-left:17%; margin-top: 1em">The default
+output is in human&minus;friendly form. If
+<b>&minus;&minus;terse</b> global option is used, the result
+is an integer number, negative/positive if version1 is
+older/newer than version2, zero if they match.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;m</b>,
+<b>&minus;&minus;match</b></p>
+
+<p style="margin-left:23%;">Takes missing release number as
+any release.</p>
+
+<p style="margin-left:23%; margin-top: 1em">For
+example:</p>
+
+<p style="margin-left:29%; margin-top: 1em">$ <b>zypper
+vcmp &minus;m 0.15.3 0.15.3&minus;2</b></p>
+
+<p style="margin-left:35%;">0.15.3 <i>matches</i>
+0.15.3&minus;2</p>
+
+<p style="margin-left:29%; margin-top: 1em">$ <b>zypper
+vcmp 0.15.3 0.15.3&minus;2</b></p>
+
+<p style="margin-left:35%;">0.15.3 <i>is older than</i>
+0.15.3&minus;2</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>targetos</b>
+(<b>tos</b>)</p>
+
+<p style="margin-left:17%;">Shows the ID string of the
+target operating system. The string has a form of
+<i>distroname&minus;architecture</i>. The string is
+determined by libzypp, the <i>distroname</i> is read from
+(<i>current&minus;rootdir</i>)<b>/etc/products.d/baseproduct</b>
+and the <i>architecture</i> is determined from <b>uname</b>
+and <i>CPU flags</i>.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>licenses</b></p>
+
+<p style="margin-left:17%;">Prints a report about
+<i>licenses</i> and 'EULA&rsquo;s of installed packages to
+standard output.</p>
+
+<p style="margin-left:17%; margin-top: 1em">First, a list
+of all packages and their licenses and/or EULAs is shown.
+This is followed by a summary, including the total number of
+installed packages, the number of installed packages with
+EULAs that required a confirmation from the user. Since the
+EULAs are not stored on the system and can only be read from
+repository metadata, the summary includes also the number of
+installed packages that have their counterpart in
+repositories. The report ends with a list of all licenses
+uses by the installed packages.</p>
+
+<p style="margin-left:17%; margin-top: 1em">This command
+can be useful for companies redistributing a custom
+distribution (like appliances) to figure out what licenses
+they are bound by.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>download</b></p>
+
+<p style="margin-left:17%;">Download rpms specified on the
+commandline to a local directory.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Per default
+packages are downloaded to the libzypp package cache
+(<b>/var/cache/zypp/packages</b>; for non&minus;root users
+<b>$XDG_CACHE_HOME/zypp/packages</b>), but this can be
+changed by using the global
+<b>&minus;&minus;pkg&minus;cache&minus;dir</b> option.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Parsable
+XML&minus;output produced by <b>zypper
+&minus;&minus;xmlout</b> will include a
+<b>&lt;download&minus;result&gt;</b> node for each package
+zypper tried to download. Upon success the location of the
+downloaded package is found in the <b>path</b> attribute of
+the <b>&lt;localfile&gt;</b> subnode (xpath:
+<b>download&minus;result/localpath@path</b>):</p>
+
+
+<p style="margin-left:17%; margin-top: 1em">&lt;download&minus;result&gt;
+<br>
+&lt;solvable&gt; <br>
+&lt;kind&gt;package&lt;/kind&gt; <br>
+&lt;name&gt;zypper&lt;/name&gt; <br>
+&lt;edition epoch=&quot;0&quot; version=&quot;1.9.17&quot;
+release=&quot;26.1&quot;/&gt; <br>
+&lt;arch&gt;x86_64&lt;/arch&gt; <br>
+&lt;repository name=&quot;repo&minus;oss&minus;update
+(13.1)&quot;
+alias=&quot;openSUSE:repo&minus;oss&minus;update&quot;/&gt;
+<br>
+&lt;/solvable&gt; <br>
+&lt;localfile
+path=&quot;/var/cache/zypp/pac.../zypper&minus;1.9.17&minus;26.1.x86_64.rpm&quot;/&gt;
+<br>
+&lt;/download&minus;result&gt;</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;all&minus;matches</b></p>
+
+<p style="margin-left:17%;">Download all versions matching
+the commandline arguments. Otherwise only the best version
+of each matching package is downloaded.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;dry&minus;run</b></p>
+
+<p style="margin-left:17%;">Don&rsquo;t download any
+package, just report what would be done.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>source&minus;download</b></p>
+
+<p style="margin-left:17%;">Download source rpms for all
+installed packages to a local directory.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;d</b>,
+<b>&minus;&minus;directory</b> <i>dir</i></p>
+
+<p style="margin-left:23%;">Download all source rpms to
+this directory. Default is
+<b>/var/cache/zypper/source&minus;download</b>.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;delete</b></p>
+
+<p style="margin-left:23%;">Delete extraneous source rpms
+in the local directory. This is the default.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;no&minus;delete</b></p>
+
+<p style="margin-left:23%;">Do not delete extraneous source
+rpms.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;status</b></p>
+
+<p style="margin-left:23%;">Don&rsquo;t download any source
+rpms, but show which source rpms are missing or
+extraneous.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>ps</b></p>
+
+<p style="margin-left:17%;">After each upgrade or removal
+of packages, there may be running processes on the system
+which continue to use meanwhile deleted files. <b>zypper
+ps</b> lists all processes using deleted files, together
+with the corresponding files, and a service name hint, in
+case it&rsquo;s a known service. This gives a hint which
+services may need to be restarted after an update. Usually
+programs which continue to use deleted shared libraries. The
+list contains the following information:</p>
+
+
+<p align="center" style="margin-top: 1em"><img src="grohtml-769811.png" alt="Image grohtml-769811.png"></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;s</b>,
+<b>&minus;&minus;short</b></p>
+
+<p style="margin-left:23%;">Create a short table not
+showing the deleted files. Given twice, show only processes
+which are associated with a system service. Given three
+times, list the associated system service names only.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b>&minus;&minus;print</b>
+<i>format</i></p>
+
+<p style="margin-left:23%;">For each associated system
+service print <i>format</i> on the standard output, followed
+by a newline. Any <b>%s</b> directive in <i>format</i> is
+replaced by the the system service name.</p>
+
+<p style="margin-left:17%; margin-top: 1em">Examples:</p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper ps
+&minus;ss</b></p>
+
+<p style="margin-left:29%;">Show only processes associated
+with a system service.</p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper ps
+&minus;sss</b></p>
+
+<p style="margin-left:29%;">Short for <b>zypper ps
+&minus;&minus;print &quot;%s&quot;</b>; list services which
+might need a restart.</p>
+
+<p style="margin-left:23%; margin-top: 1em">$ <b>zypper ps
+&minus;&minus;print &quot;systemctl status %s&quot;</b></p>
+
+<p style="margin-left:29%;">Let zypper print the commands
+to retrieve status information for services which might need
+a restart.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Subommands
+<br>
+subcommand</b></p>
+
+<p style="margin-left:17%;">Lists available subcommands in
+<b>/usr/lib/zypper/commands</b> and from elsewhere on your
+<b>$PATH</b>. See section <b>SUBCOMMANDS</b> for
+details.</p>
+
+<h2>GLOBAL OPTIONS
+<a name="GLOBAL OPTIONS"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;h</b>,
+<b>&minus;&minus;help</b></p>
+
+<p style="margin-left:17%;">Help. If a <i>command</i> is
+specified together with <b>&minus;&minus;help</b> option,
+command specific help is displayed.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;V</b>,
+<b>&minus;&minus;version</b></p>
+
+<p style="margin-left:17%;">Print zypper version number and
+exit.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;c</b>,
+<b>&minus;&minus;config</b> <i>file</i></p>
+
+<p style="margin-left:17%;">Use specified zypper config
+file instead of the default files. Other command line
+options specified together with <b>&minus;&minus;config</b>
+and having their counterpart in the config file are still
+preferred. The order of preference with
+<b>&minus;&minus;config</b> is as follows:</p>
+
+<p style="margin-left:23%; margin-top: 1em">1. Command line
+options</p>
+
+<p style="margin-left:23%; margin-top: 1em">2.
+<b>&minus;&minus;config</b> <i>file</i></p>
+
+<p style="margin-left:23%; margin-top: 1em">3.
+[<b>/etc/zypp/zypp.conf</b>] (system&minus;wide defaults for
+all libzypp based applications)</p>
+
+<p style="margin-left:17%; margin-top: 1em">See also
+<b>FILES</b> section for more information.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;v</b>,
+<b>&minus;&minus;verbose</b></p>
+
+<p style="margin-left:17%;">Increase verbosity. For
+debugging output specify this option twice.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;q</b>,
+<b>&minus;&minus;quiet</b></p>
+
+<p style="margin-left:17%;">Suppress normal output. Brief
+(esp. result notification) messages and error messages will
+still be printed, though. If used together with conflicting
+<b>&minus;&minus;verbose</b> option, the
+<b>&minus;&minus;verbose</b> option takes preference.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;</b>[<b>no&minus;</b>]<b>color</b></p>
+
+<p style="margin-left:17%;">Whether to use colors in output
+if tty supports it. For details see the <b>[color]</b>
+section in <b>zypper.conf</b>.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;A</b>,
+<b>&minus;&minus;no&minus;abbrev</b></p>
+
+<p style="margin-left:17%;">Do not abbreviate text in
+tables. By default zypper will try to abbreviate texts in
+some columns so that the table fits the width of the screen.
+If you need to see the whole text, use this option.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;t</b>,
+<b>&minus;&minus;terse</b></p>
+
+<p style="margin-left:17%;">Terse output for machine
+consumption. Implies <b>&minus;&minus;no&minus;abbrev</b>
+and <b>&minus;&minus;no&minus;color</b>.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;s</b>,
+<b>&minus;&minus;table&minus;style</b></p>
+
+<p style="margin-left:17%;">Specifies table style to use.
+Table style is identified by an integer number. TODO</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;n</b>,
+<b>&minus;&minus;non&minus;interactive</b></p>
+
+<p style="margin-left:17%;">Switches to
+non&minus;interactive mode. In this mode zypper
+doesn&rsquo;t ask user to type answers to various prompts,
+but uses default answers automatically. The behavior of this
+option is somewhat different than that of options like
+<b>&minus;&minus;yes</b>, since zypper can answer different
+answers to different questions. The answers also depend on
+other options like
+<b>&minus;&minus;no&minus;gpg&minus;checks</b>.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;x</b>,
+<b>&minus;&minus;xmlout</b></p>
+
+<p style="margin-left:17%;">Switches to XML output. This
+option is useful for scripts or graphical frontends using
+zypper.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;i</b>,
+<b>&minus;&minus;ignore&minus;unknown</b></p>
+
+<p style="margin-left:17%;">Ignore unknown packages. This
+option is useful for scripts.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;D</b>,
+<b>&minus;&minus;reposd&minus;dir</b> <i>dir</i></p>
+
+<p style="margin-left:17%;">Use the specified directory to
+look for the repository definition (<b>.repo</b>) files. The
+default value is <b>/etc/zypp/repos.d</b>.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;C</b>,
+<b>&minus;&minus;cache&minus;dir</b> <i>dir</i></p>
+
+<p style="margin-left:17%;">Use an alternative root
+directory for all caches. The default value is
+<b>/var/cache/zypp</b>.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;raw&minus;cache&minus;dir</b>
+<i>dir</i></p>
+
+<p style="margin-left:17%;">Use the specified directory for
+storing raw copies of repository metadata files. The default
+value is <b>/var/cache/zypp/raw</b>.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;solv&minus;cache&minus;dir</b>
+<i>dir</i></p>
+
+<p style="margin-left:17%;">Use the specified directory to
+store the repository metadata cache database files (solv
+files). The default value is
+<b>/var/cache/zypp/solv</b>.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;pkg&minus;cache&minus;dir</b>
+<i>dir</i></p>
+
+<p style="margin-left:17%;">Use the specified directory for
+storing downloaded rpm packages. (see <b>addrepo
+&minus;&minus;keep&minus;packages</b>) The default value is
+<b>/var/cache/zypp/packages</b>.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;userdata</b>
+<i>string</i></p>
+
+<p style="margin-left:17%;">User data is expected to be a
+simple string without special chars or embedded newlines and
+may serve as transaction id. It will be written to all
+install history log entries created throughout this specific
+zypper call. It will also be passed on to zypp plugins
+executed during commit. This will enable e.g. a btrfs plugin
+to tag created snapshots with this string. For zypper itself
+this string has no special meaning.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Repository
+Options:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;no&minus;gpg&minus;checks</b></p>
+
+<p style="margin-left:17%;">Ignore GPG check failures and
+continue. If a GPG issue occurs when using this option
+zypper prints and logs a warning and automatically continues
+without interrupting the operation. Use this option with
+caution, as you can easily overlook security problems by
+using it. (see section <b>GPG checks</b>)</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;gpg&minus;auto&minus;import&minus;keys</b></p>
+
+<p style="margin-left:17%;">If new repository signing key
+is found, do not ask what to do; trust and import it
+automatically. This option causes that the new key is
+imported also in non&minus;interactive mode, where it would
+otherwise got rejected.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;p</b>,
+<b>&minus;&minus;plus&minus;repo</b> <i>URI</i></p>
+
+<p style="margin-left:17%;">Use an additional repository
+for this operation. The repository aliased tmp# and named by
+the specified URI will be added for this operation and
+removed at the end. You can specify this option multiple
+times.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;plus&minus;content</b>
+<i>tag</i></p>
+
+<p style="margin-left:17%;">Additionally use disabled
+repositories providing a specific keyword. Disabled
+repositories are refreshed and those providing the specified
+<i>tag</i> keyword are temporarily enabled. To enable for
+example repositories which may provide additional
+<b>&minus;debuginfo</b> or <b>&minus;debugsource</b>
+packages use <b>&minus;&minus;plus&minus;content debug</b>.
+You can specify this option multiple times.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;disable&minus;repositories</b></p>
+
+<p style="margin-left:17%;">Do not read metadata from
+repositories. This option will prevent loading of packages
+from repositories, thus making zypper work only with the
+installed packages (if
+<b>&minus;&minus;disable&minus;system&minus;resolvables</b>
+was not specified).</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;no&minus;refresh</b></p>
+
+<p style="margin-left:17%;">Do not auto&minus;refresh
+repositories (ignore the auto&minus;refresh setting). Useful
+to save time when doing operations like search, if there is
+not a need to have a completely up to date metadata.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;no&minus;cd</b></p>
+
+<p style="margin-left:17%;">Ignore CD/DVD repositories.
+When this option is specified, zypper acts as if the CD/DVD
+repositories were not defined at all.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;no&minus;remote</b></p>
+
+<p style="margin-left:17%;">Ignore remote repositories like
+http, ftp, smb and similar. This makes using zypper easier
+when being offline. When this option is specified, zypper
+acts as if the remote repositories were not defined at
+all.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;releasever</b>
+<i>version</i></p>
+
+<p style="margin-left:17%;">Set the value of the
+<b>$releasever</b> variable in all <b>.repo</b> files
+(default: <i>current distribution version</i>). This can be
+used to switch to new distribution repositories when
+performing a distribution upgrade. See section <b>Repository
+Management</b> and the <b>dist&minus;upgrade</b>
+(<b>dup</b>) command for details.</p>
+
+<p style="margin-left:17%; margin-top: 1em">To check where
+you already use <b>$releasever</b> call:</p>
+
+<p style="margin-left:23%;"><b>zypper
+&minus;&minus;releasever @&minus;&minus;HERE&minus;&minus;@
+lr &minus;u</b></p>
+
+<p style="margin-left:11%; margin-top: 1em">Target
+Options:</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;R</b>,
+<b>&minus;&minus;root</b> <i>dir</i></p>
+
+<p style="margin-left:17%;">Operates on a different root
+directory. This option influences the location of the
+repos.d directory and the metadata cache directory and also
+causes rpm to be run with the <b>&minus;&minus;root</b>
+option to do the actual installation or removal of packages.
+See also the <b>FILES</b> section.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;disable&minus;system&minus;resolvables</b></p>
+
+<p style="margin-left:17%;">This option serves mainly for
+testing purposes. It will cause zypper to act as if there
+were no packages installed in the system. Use with caution
+as you can damage your system using this option.</p>
+
+<h2>SUBCOMMANDS
+<a name="SUBCOMMANDS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Zypper
+subcommands are inspired by <b>git</b>(1). Subcommands are
+standalone executables that live in the zypper_execdir
+(<b>/usr/lib/zypper/commands</b>). For subcommands zypper
+provides a wrapper that knows where the subcommands live,
+and runs them by passing command options and arguments to
+them. If a subcommand is not found in the zypper_execdir,
+the wrapper will look in the rest of your <b>$PATH</b> for
+it. Thus, it&rsquo;s possible to write local zypper
+extensions that don&rsquo;t live in system space.</p>
+
+<p style="margin-left:11%; margin-top: 1em">This is how to
+add your own subcommand <b>zypper</b> <i>mytask</i>:</p>
+
+<p style="margin-left:17%; margin-top: 1em">&bull; The
+executable must be named
+<b>zypper&minus;</b><i>mytask</i>.</p>
+
+<p style="margin-left:17%; margin-top: 1em">&bull; The
+executable must be located your <b>$PATH</b>.</p>
+
+<p style="margin-left:17%; margin-top: 1em">&bull; A
+manpage for <b>zypper&minus;</b><i>mytask</i> should be
+provided and explaining the commands options and return
+values. It will be shown when calling <b>zypper help</b>
+<i>mytask</i>.</p>
+
+<p style="margin-left:17%; margin-top: 1em">&bull; Zypper
+built&minus;in commands take precedence over subcommands
+with the same name.</p>
+
+<p style="margin-left:17%; margin-top: 1em">&bull;
+It&rsquo;s fine to call zypper or use libzypp from within
+your subcommand.</p>
+
+<p style="margin-left:11%; margin-top: 1em">You can use the
+built&minus;in <b>zypper subcommand</b> command to get a
+list of all subcommands in zypper_execdir and from elsewhere
+on your $PATH.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Using zypper
+<i>global&minus;options</i> together with subcommands, as
+well as executing subcommands in <b>zypper shell</b> is
+currently not supported.</p>
+
+<h2>FILES
+<a name="FILES"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>/etc/zypp/zypper.conf</b>,
+<b>$HOME/.zypper.conf</b></p>
+
+<p style="margin-left:17%;">Global (system&minus;wide) and
+user&rsquo;s configuration file for zypper. These files are
+read when zypper starts up and <b>&minus;&minus;config</b>
+option is not used.</p>
+
+<p style="margin-left:17%; margin-top: 1em">User&rsquo;s
+settings are preferred over global settings. Similarly,
+command line options override the settings in either of
+these files. To sum it up, the order of preference is as
+follows (from highest to lowest):</p>
+
+<p style="margin-left:23%; margin-top: 1em">1. <i>Command
+line options</i></p>
+
+<p style="margin-left:23%; margin-top: 1em">2.
+<b>$HOME/.zypper.conf</b></p>
+
+<p style="margin-left:23%; margin-top: 1em">3.
+<b>/etc/zypp/zypper.conf</b></p>
+
+<p style="margin-left:23%; margin-top: 1em">4.
+[<b>/etc/zypp/zypp.conf</b>] (system&minus;wide defaults for
+all libzypp based applications)</p>
+
+<p style="margin-left:17%; margin-top: 1em">See the
+comments in <b>/etc/zypp/zypper.conf</b> for a list and
+description of available options.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>/etc/zypp/zypp.conf</b></p>
+
+<p style="margin-left:17%;">ZYpp configuration file
+affecting all libzypp based applications. See the comments
+in the file for description of configurable properties. Many
+locations of files and directories listed in this section
+are configurable via zypp.conf. The location for this file
+itself can be redefined only by setting <b>$ZYPP_CONF</b> in
+the environment.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>/etc/zypp/locks</b></p>
+
+<p style="margin-left:17%;">File with package lock
+definitions, see <i>locks(5)</i> manual page for details.
+The package lock commands (<b>addlock</b>,
+<b>removelock</b>, etc.) can be used to manipulate this
+file.</p>
+
+<p style="margin-left:17%; margin-top: 1em">This file is
+used by all ZYpp&minus;based applications.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>/etc/zypp/repos.d</b></p>
+
+<p style="margin-left:17%;">Directory containing repository
+definition (<i>*.repo</i>) files. You can use the Repository
+Management commands to manipulate these files, or you can
+edit them yourself. In either case, after doing the
+modifications, executing <b>zypper refresh</b> is strongly
+recommended.</p>
+
+<p style="margin-left:17%; margin-top: 1em">You can use the
+<b>&minus;&minus;reposd&minus;dir</b> global option to use
+an alternative directory for this purpose or the
+<b>&minus;&minus;root</b> option to make this directory
+relative to the specified root directory.</p>
+
+<p style="margin-left:17%; margin-top: 1em">This directory
+is used by all ZYpp&minus;based applications.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>/etc/zypp/services.d</b></p>
+
+<p style="margin-left:17%;">Directory containing service
+definition (<i>*.service</i>) files. You can use the Service
+Management Commands to manipulate these files, or you can
+edit them yourself. Running <b>zypper refs</b> is
+recommended after modifications have been done.</p>
+
+<p style="margin-left:17%; margin-top: 1em">This directory
+is used by all ZYpp&minus;based applications.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>/usr/lib/zypper/commands</b></p>
+
+<p style="margin-left:17%;">System directory containing
+zypper extensions (see section <b>SUBCOMMANDS</b>)</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>/var/cache/zypp/raw</b></p>
+
+<p style="margin-left:17%;">Directory for storing raw
+metadata contained in repositories. Use the
+<b>&minus;&minus;raw&minus;cache&minus;dir</b> global option
+to use an alternative directory for this purpose or the
+<b>&minus;&minus;root</b> option to make this directory
+relative to the specified root directory.</p>
+
+<p style="margin-left:17%; margin-top: 1em">This directory
+is used by all ZYpp&minus;based applications.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>/var/cache/zypp/solv</b></p>
+
+<p style="margin-left:17%;">Directory containing preparsed
+metadata in form of <i>solv</i> files.</p>
+
+<p style="margin-left:17%; margin-top: 1em">This directory
+is used by all ZYpp&minus;based applications.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>/var/cache/zypp/packages</b></p>
+
+<p style="margin-left:17%;">If <b>keeppackages</b> property
+is set for a repository (see the <b>modifyrepo</b> command),
+all the RPM file downloaded during installation will be kept
+here. See also the <b>clean</b> command for cleaning these
+cache directories.</p>
+
+<p style="margin-left:17%; margin-top: 1em">This directory
+is used by all ZYpp&minus;based applications.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>/var/log/zypp/history</b></p>
+
+<p style="margin-left:17%;">Installation history log.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>~/.zypper_history</b></p>
+
+<p style="margin-left:17%;">Command history for the zypper
+shell (see the <b>shell</b> command).</p>
+
+<h2>EXIT CODES
+<a name="EXIT CODES"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">There are
+several exit codes defined for zypper built&minus;in
+commands for use e.g. within scripts. These codes are
+defined in header file src/zypper&minus;main.h found in
+zypper source package. Codes from interval (1&minus;5)
+denote an error, numbers (100&minus;105) provide a specific
+information, 0 represents a normal successful run. Following
+is a list of these codes with descriptions:</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>0</b>
+&minus; <b>ZYPPER_EXIT_OK</b></p>
+
+<p style="margin-left:17%;">Successful run of zypper with
+no special info.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>1</b>
+&minus; <b>ZYPPER_EXIT_ERR_BUG</b></p>
+
+<p style="margin-left:17%;">Unexpected situation occurred,
+probably caused by a bug.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>2</b>
+&minus; <b>ZYPPER_EXIT_ERR_SYNTAX</b></p>
+
+<p style="margin-left:17%;">zypper was invoked with an
+invalid command or option, or a bad syntax.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>3</b>
+&minus; <b>ZYPPER_EXIT_ERR_INVALID_ARGS</b></p>
+
+<p style="margin-left:17%;">Some of provided arguments were
+invalid. E.g. an invalid URI was provided to the
+<b>addrepo</b> command.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>4</b>
+&minus; <b>ZYPPER_EXIT_ERR_ZYPP</b></p>
+
+<p style="margin-left:17%;">A problem is reported by ZYPP
+library.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>5</b>
+&minus; <b>ZYPPER_EXIT_ERR_PRIVILEGES</b></p>
+
+<p style="margin-left:17%;">User invoking zypper has
+insufficient privileges for specified operation.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>6</b>
+&minus; <b>ZYPPER_EXIT_NO_REPOS</b></p>
+
+<p style="margin-left:17%;">No repositories are
+defined.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>7</b>
+&minus; <b>ZYPPER_EXIT_ZYPP_LOCKED</b></p>
+
+<p style="margin-left:17%;">The ZYPP library is locked,
+e.g. packagekit is running.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>8</b>
+&minus; <b>ZYPPER_EXIT_ERR_COMMIT</b></p>
+
+<p style="margin-left:17%;">An error occurred during
+installation or removal of packages. You may run <b>zypper
+verify</b> to repair any dependency problems.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>100</b>
+&minus; <b>ZYPPER_EXIT_INF_UPDATE_NEEDED</b></p>
+
+<p style="margin-left:17%;">Returned by the
+patch&minus;check command if there are patches available for
+installation.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>101</b>
+&minus; <b>ZYPPER_EXIT_INF_SEC_UPDATE_NEEDED</b></p>
+
+<p style="margin-left:17%;">Returned by the
+patch&minus;check command if there are security patches
+available for installation.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>102</b>
+&minus; <b>ZYPPER_EXIT_INF_REBOOT_NEEDED</b></p>
+
+<p style="margin-left:17%;">Returned after a successful
+installation of a patch which requires reboot of
+computer.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>103</b>
+&minus; <b>ZYPPER_EXIT_INF_RESTART_NEEDED</b></p>
+
+<p style="margin-left:17%;">Returned after a successful
+installation of a patch which requires restart of the
+package manager itself. This means that one of patches to be
+installed affects the package manager itself and the command
+used (e.g. <b>zypper update</b>) needs to be executed once
+again to install any remaining patches.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>104</b>
+&minus; <b>ZYPPER_EXIT_INF_CAP_NOT_FOUND</b></p>
+
+<p style="margin-left:17%;">Returned by the <b>install</b>
+and the <b>remove</b> command in case any of the arguments
+does not match any of the available (or installed) package
+names or other capabilities.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>105</b>
+&minus; <b>ZYPPER_EXIT_ON_SIGNAL</b></p>
+
+<p style="margin-left:17%;">Returned upon exiting after
+receiving a SIGINT or SIGTERM.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Zypper
+subcommands (see section <b>SUBCOMMANDS</b>) may return
+<b>different codes</b> which should be described in the
+commands man page. Call <b>zypper help</b> <i>subcommand</i>
+to see the subcommands man page if one is provided.</p>
+
+<h2>HOMEPAGE
+<a name="HOMEPAGE"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em">https://github.com/openSUSE/zypper</p>
+
+<h2>AUTHORS
+<a name="AUTHORS"></a>
+</h2>
+
+
+<p style="margin-left:17%; margin-top: 1em">Martin Vidner
+&lt;mvidner@suse.cz&gt; <br>
+Jan Kupec &lt;&gt; <br>
+Michael Andres &lt;ma@suse.de&gt; <br>
+Duncan Mac&minus;Vicar &lt;dmacvicar@suse.de&gt; <br>
+Josef Reidinger &lt;jreidinger@suse.cz&gt; <br>
+Stanislav Visnovsky &lt;visnov@suse.cz&gt;</p>
+
+<h2>SEE ALSO
+<a name="SEE ALSO"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">locks(5),
+zypper&minus;log(8), YaST2(8)</p>
+<hr>
+</body>
+</html>
