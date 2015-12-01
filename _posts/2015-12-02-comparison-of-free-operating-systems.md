@@ -7,6 +7,7 @@ redirect_from:
   - /2015/11/10/comparison-of-linux-distros/
   - /2015/11/29/comparison-of-linux-distros-and-bsd-derivatives/
   - /2015/11/30/comparison-of-free-operating-systems/
+  - /comparison-of-free-operating-systems/
 ---
 {% include draft.html %}
 
@@ -205,7 +206,7 @@ function yarm {
 I, with my love of using the latest software, have not really taken a liking for CentOS. Rather, if I ever have to use a Linux distribution derived from Red Hat, I usually use the latest release of Fedora (currently Fedora 23). Unlike Fedora, CentOS is also more restricted in its architecture support as of the latest 7.1-1503 release, see Fedora can run on 32-bit and 64-bit machines, while CentOS 7.1-1503 can only run on 64-bit machines.
 
 ### Package Management
-CentOS uses the **Yellowdog Updater, Modified** (**Yum**) package manager that was once used by Fedora. Yum's (or [`yum`](http://linux.die.net/man/8/yum) from the command-line) development has since been discontinued, in favour of its successor Dandified Yum (**DNF**), which resolves package dependencies faster and more efficiently than Yum does, by using ZYpp's libsolv library, hence it is likely that in the future CentOS will start using DNF as well. Yum is widely considered one of the least efficient widely-used Linux package managers presently available and the cause is likely the fact that unlike APT or ZYpp it is written in Python. Python has its advantages and disadvantages as a language for a PMS to be written in and its slow speed is one such disadvantage. Yum and DNF have essentially the same syntax, below is an example `~/.bashrc` for CentOS that shows some of its basic syntax.
+CentOS uses the **Yellowdog Updater, Modified** (**Yum**) package manager that was once used by Fedora. Yum's (or [`yum`](/man/yum.8.html) from the command-line) development has since been discontinued, in favour of its successor Dandified Yum (**DNF**), which resolves package dependencies faster and more efficiently than Yum does, by using ZYpp's libsolv library, hence it is likely that in the future CentOS will start using DNF as well. Yum is widely considered one of the least efficient widely-used Linux package managers presently available and the cause is likely the fact that unlike APT or ZYpp it is written in Python. Python has its advantages and disadvantages as a language for a PMS to be written in and its slow speed is one such disadvantage. Yum and DNF have essentially the same syntax, below is an example `~/.bashrc` for CentOS that shows some of its basic syntax.
 
 ```bash
 # This should update yum's repositories and perform any required package upgrades
