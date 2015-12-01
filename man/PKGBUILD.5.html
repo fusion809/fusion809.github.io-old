@@ -1,0 +1,969 @@
+<!-- Creator     : groff version 1.22.3 -->
+<!-- CreationDate: Wed Dec  2 00:47:23 2015 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       h1      { text-align: center }
+</style>
+<title>PKGBUILD</title>
+
+</head>
+<body>
+
+<h1 align="center">PKGBUILD</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS AND DIRECTIVES">OPTIONS AND DIRECTIVES</a><br>
+<a href="#PACKAGING FUNCTIONS">PACKAGING FUNCTIONS</a><br>
+<a href="#PACKAGE SPLITTING">PACKAGE SPLITTING</a><br>
+<a href="#INSTALL/UPGRADE/REMOVE SCRIPTING">INSTALL/UPGRADE/REMOVE SCRIPTING</a><br>
+<a href="#USING VCS SOURCES">USING VCS SOURCES</a><br>
+<a href="#EXAMPLE">EXAMPLE</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#BUGS">BUGS</a><br>
+<a href="#AUTHORS">AUTHORS</a><br>
+
+<hr>
+
+
+<h2>NAME
+<a name="NAME"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">PKGBUILD
+&minus; Arch Linux package build description file</p>
+
+<h2>SYNOPSIS
+<a name="SYNOPSIS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">PKGBUILD</p>
+
+<h2>DESCRIPTION
+<a name="DESCRIPTION"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">This manual
+page describes general rules about PKGBUILDs. Once a
+PKGBUILD is written, the actual package is built using
+makepkg and installed with pacman.</p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><b><big>Note</big></b>
+<br>
+An example PKGBUILD, useful for reference, is located in
+<i>/usr/share/pacman</i> along with other example files such
+as a ChangeLog and an install script. You can copy the
+provided PKGBUILD.proto file to a new package build
+directory and make customizations to suit your needs.</p>
+
+<h2>OPTIONS AND DIRECTIVES
+<a name="OPTIONS AND DIRECTIVES"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big>The
+following is a list of standard options and directives
+available for use in a PKGBUILD. These are all understood
+and interpreted by makepkg, and most of them will be
+directly transferred to the built package. The mandatory
+fields for a minimally functional PKGBUILD are
+<b>pkgname</b>, <b>pkgver</b>, <b>pkgrel</b> and
+<b>arch</b>.</big></p>
+
+<p style="margin-left:11%; margin-top: 1em"><big>If you
+need to create any custom variables for use in your build
+process, it is recommended to prefix their name with an
+<i>_</i> (underscore). This will prevent any possible name
+clashes with internal makepkg variables. For example, to
+store the base kernel version in a variable, use something
+similar to $_basekernver.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>pkgname
+(array)</b></big></p>
+
+<p style="margin-left:17%;"><big>Either the name of the
+package or an array of names for split packages. Valid
+characters for members of this array are alphanumerics, and
+any of the following characters: &ldquo;@ . _ +
+&minus;&rdquo;. Additionally, names are not allowed to start
+with hyphens or dots.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>pkgver</b></big></p>
+
+<p style="margin-left:17%;"><big>The version of the
+software as released from the author (e.g., <i>2.7.1</i>).
+The variable is not allowed to contain colons or
+hyphens.</big></p>
+
+<p style="margin-left:17%; margin-top: 1em"><big>The pkgver
+variable can be automatically updated by providing a
+pkgver() function in the PKGBUILD that outputs the new
+package version. This is run after downloading and
+extracting the sources so it can use those files in
+determining the new pkgver. This is most useful when used
+with sources from version control systems (see
+below).</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>pkgrel</b></big></p>
+
+<p style="margin-left:17%;"><big>This is the release number
+specific to the Arch Linux release. This allows package
+maintainers to make updates to the package&rsquo;s configure
+flags, for example. This is typically set to <i>1</i> for
+each new upstream software release and incremented for
+intermediate PKGBUILD updates. The variable is not allowed
+to contain hyphens.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>pkgdesc</b></big></p>
+
+<p style="margin-left:17%;"><big>This should be a brief
+description of the package and its functionality. Try to
+keep the description to one line of text and to not use the
+package&rsquo;s name.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>epoch</b></big></p>
+
+<p style="margin-left:17%;"><big>Used to force the package
+to be seen as newer than any previous versions with a lower
+epoch, even if the version number would normally not trigger
+such an upgrade. This value is required to be a positive
+integer; the default value if left unspecified is <i>0</i>.
+This is useful when the version numbering scheme of a
+package changes (or is alphanumeric), breaking normal
+version comparison logic. See <b>pacman</b>(8) for more
+information on version comparisons.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>url</b></big></p>
+
+<p style="margin-left:17%;"><big>This field contains a URL
+that is associated with the software being packaged. This is
+typically the project&rsquo;s web site.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>license
+(array)</b></big></p>
+
+<p style="margin-left:17%;"><big>This field specifies the
+license(s) that apply to the package. Commonly used licenses
+can be found in <i>/usr/share/licenses/common</i>. If you
+see the package&rsquo;s license there, simply reference it
+in the license field (e.g., license=('GPL')). If the package
+provides a license not available in
+<i>/usr/share/licenses/common</i>, then you should include
+it in the package itself and set license=('custom') or
+license=('custom:LicenseName'). The license should be placed
+in <i>$pkgdir/usr/share/licenses/$pkgname/</i> when building
+the package. If multiple licenses are applicable, list all
+of them: license=('GPL' 'FDL').</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>install</b></big></p>
+
+<p style="margin-left:17%;"><big>Specifies a special
+install script that is to be included in the package. This
+file should reside in the same directory as the PKGBUILD and
+will be copied into the package by makepkg. It does not need
+to be included in the source array (e.g.,
+install=$pkgname.install).</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>changelog</b></big></p>
+
+<p style="margin-left:17%;"><big>Specifies a changelog file
+that is to be included in the package. The changelog file
+should end in a single newline. This file should reside in
+the same directory as the PKGBUILD and will be copied into
+the package by makepkg. It does not need to be included in
+the source array (e.g.,
+changelog=$pkgname.changelog).</big></p>
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>source
+(array)</b></big></p>
+
+<p style="margin-left:17%;"><big>An array of source files
+required to build the package. Source files must either
+reside in the same directory as the PKGBUILD, or be a
+fully&minus;qualified URL that makepkg can use to download
+the file. To simplify the maintenance of PKGBUILDs, use the
+$pkgname and $pkgver variables when specifying the download
+location, if possible. Compressed files will be extracted
+automatically unless found in the noextract array described
+below.</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big>Additional
+architecture&minus;specific sources can be added by
+appending an underscore and the architecture name e.g.,
+<i>source_x86_64=()</i>. There must be a corresponding
+integrity array with checksums, e.g.
+<i>md5sums_x86_64=()</i>.</big></p>
+
+<p style="margin-left:17%; margin-top: 1em"><big>It is also
+possible to change the name of the downloaded file, which is
+helpful with weird URLs and for handling multiple source
+files with the same name. The syntax is:
+source=('filename::url').</big></p>
+
+<p style="margin-left:17%; margin-top: 1em"><big>makepkg
+also supports building developmental versions of packages
+using sources downloaded from version control systems (VCS).
+For more information, see Using VCS Sources below.</big></p>
+
+<p style="margin-left:17%; margin-top: 1em"><big>Files in
+the source array with extensions .sig, .sign or, .asc are
+recognized by makepkg as PGP signatures and will be
+automatically used to verify the integrity of the
+corresponding source file.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>validpgpkeys
+(array)</b></big></p>
+
+<p style="margin-left:17%;"><big>An array of PGP
+fingerprints. If this array is non&minus;empty, makepkg will
+only accept signatures from the keys listed here and will
+ignore the trust values from the keyring. If the source file
+was signed with a subkey, makepkg will still use the primary
+key for comparison.</big></p>
+
+<p style="margin-left:17%; margin-top: 1em"><big>Only full
+fingerprints are accepted. They must be uppercase and must
+not contain whitespace characters.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>noextract
+(array)</b></big></p>
+
+<p style="margin-left:17%;"><big>An array of file names
+corresponding to those from the source array. Files listed
+here will not be extracted with the rest of the source
+files. This is useful for packages that use compressed data
+directly.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>md5sums
+(array)</b></big></p>
+
+<p style="margin-left:17%;"><big>This array contains an MD5
+hash for every source file specified in the source array (in
+the same order). makepkg will use this to verify source file
+integrity during subsequent builds. If <i>SKIP</i> is put in
+the array in place of a normal hash, the integrity check for
+that source file will be skipped. To easily generate
+md5sums, run &ldquo;makepkg &minus;g &gt;&gt;
+PKGBUILD&rdquo;. If desired, move the md5sums line to an
+appropriate location.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>sha1sums,
+sha256sums, sha384sums, sha512sums (arrays)</b></big></p>
+
+<p style="margin-left:17%;"><big>Alternative integrity
+checks that makepkg supports; these all behave similar to
+the md5sums option described above. To enable use and
+generation of these checksums, be sure to set up the
+INTEGRITY_CHECK option in <b>makepkg.conf</b>(5).</big></p>
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>groups
+(array)</b></big></p>
+
+<p style="margin-left:17%;"><big>An array of symbolic names
+that represent groups of packages, allowing you to install
+multiple packages by requesting a single target. For
+example, one could install all KDE packages by installing
+the <i>kde</i> group.</big></p>
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>arch
+(array)</b></big></p>
+
+<p style="margin-left:17%;"><big>Defines on which
+architectures the given package is available (e.g.,
+arch=('i686' 'x86_64')). Packages that contain no
+architecture specific files should use
+arch=('any').</big></p>
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>backup
+(array)</b></big></p>
+
+<p style="margin-left:17%;"><big>An array of file names,
+without preceding slashes, that should be backed up if the
+package is removed or upgraded. This is commonly used for
+packages placing configuration files in <i>/etc</i>. See
+&quot;Handling Config Files&quot; in <b>pacman</b>(8) for
+more information.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>depends
+(array)</b></big></p>
+
+<p style="margin-left:17%;"><big>An array of packages this
+package depends on to run. Entries in this list should be
+surrounded with single quotes and contain at least the
+package name. Entries can also include a version requirement
+of the form <i>name&lt;&gt;version</i>, where &lt;&gt; is
+one of five comparisons: &gt;= (greater than or equal to),
+&lt;= (less than or equal to), = (equal to), &gt; (greater
+than), or &lt; (less than).</big></p>
+
+<p style="margin-left:17%; margin-top: 1em"><big>If the
+dependency name appears to be a library (ends with .so),
+makepkg will try to find a binary that depends on the
+library in the built package and append the version needed
+by the binary. Appending the version yourself disables
+automatic detection.</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big>Additional
+architecture&minus;specific depends can be added by
+appending an underscore and the architecture name e.g.,
+<i>depends_x86_64=()</i>.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>makedepends
+(array)</b></big></p>
+
+<p style="margin-left:17%;"><big>An array of packages this
+package depends on to build but are not needed at runtime.
+Packages in this list follow the same format as
+depends.</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big>Additional
+architecture&minus;specific makedepends can be added by
+appending an underscore and the architecture name e.g.,
+<i>makedepends_x86_64=()</i>.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>checkdepends
+(array)</b></big></p>
+
+<p style="margin-left:17%;"><big>An array of packages this
+package depends on to run its test suite but are not needed
+at runtime. Packages in this list follow the same format as
+depends. These dependencies are only considered when the
+check() function is present and is to be run by
+makepkg.</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big>Additional
+architecture&minus;specific checkdepends can be added by
+appending an underscore and the architecture name e.g.,
+<i>checkdepends_x86_64=()</i>.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>optdepends
+(array)</b></big></p>
+
+<p style="margin-left:17%;"><big>An array of packages (and
+accompanying reasons) that are not essential for base
+functionality, but may be necessary to make full use of the
+contents of this package. optdepends are currently for
+informational purposes only and are not utilized by pacman
+during dependency resolution. The format for specifying
+optdepends is:</big></p>
+
+
+<p style="margin-left:23%; margin-top: 1em"><big>optdepends=('python:
+for library bindings')</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big>Additional
+architecture&minus;specific optdepends can be added by
+appending an underscore and the architecture name e.g.,
+<i>optdepends_x86_64=()</i>.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>conflicts
+(array)</b></big></p>
+
+<p style="margin-left:17%;"><big>An array of packages that
+will conflict with this package (i.e. they cannot both be
+installed at the same time). This directive follows the same
+format as depends. Versioned conflicts are supported using
+the operators as described in depends.</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big>Additional
+architecture&minus;specific conflicts can be added by
+appending an underscore and the architecture name e.g.,
+<i>conflicts_x86_64=()</i>.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>provides
+(array)</b></big></p>
+
+<p style="margin-left:17%;"><big>An array of &ldquo;virtual
+provisions&rdquo; this package provides. This allows a
+package to provide dependencies other than its own package
+name. For example, the dcron package can provide
+<i>cron</i>, which allows packages to depend on <i>cron</i>
+rather than <i>dcron OR fcron</i>.</big></p>
+
+<p style="margin-left:17%; margin-top: 1em"><big>Versioned
+provisions are also possible, in the <i>name=version</i>
+format. For example, dcron can provide <i>cron=2.0</i> to
+satisfy the <i>cron&gt;=2.0</i> dependency of other
+packages. Provisions involving the &gt; and &lt; operators
+are invalid as only specific versions of a package may be
+provided.</big></p>
+
+<p style="margin-left:17%; margin-top: 1em"><big>If the
+provision name appears to be a library (ends with .so),
+makepkg will try to find the library in the built package
+and append the correct version. Appending the version
+yourself disables automatic detection.</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big>Additional
+architecture&minus;specific provides can be added by
+appending an underscore and the architecture name e.g.,
+<i>provides_x86_64=()</i>.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>replaces
+(array)</b></big></p>
+
+<p style="margin-left:17%;"><big>An array of packages this
+package should replace. This can be used to handle
+renamed/combined packages. For example, if the <i>j2re</i>
+package is renamed to <i>jre</i>, this directive allows
+future upgrades to continue as expected even though the
+package has moved. Versioned replaces are supported using
+the operators as described in depends.</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big>Sysupgrade
+is currently the only pacman operation that utilizes this
+field. A normal sync or upgrade will not use its
+value.</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big>Additional
+architecture&minus;specific replaces can be added by
+appending an underscore and the architecture name e.g.,
+<i>replaces_x86_64=()</i>.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>options
+(array)</b></big></p>
+
+<p style="margin-left:17%;"><big>This array allows you to
+override some of makepkg&rsquo;s default behavior when
+building packages. To set an option, just include the option
+name in the options array. To reverse the default behavior,
+place an &ldquo;!&rdquo; at the front of the option. Only
+specify the options you specifically want to override, the
+rest will be taken from <b>makepkg.conf</b>(5).
+<b>NOTE:</b><i>force</i> is a now&minus;removed option in
+favor of the top level <i>epoch</i> variable.</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big><b>strip</b></big></p>
+
+<p style="margin-left:23%;"><big>Strip symbols from
+binaries and libraries. If you frequently use a debugger on
+programs or libraries, it may be helpful to disable this
+option.</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big><b>docs</b></big></p>
+
+<p style="margin-left:23%;"><big>Save doc directories. If
+you wish to delete doc directories, specify !docs in the
+array.</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big><b>libtool</b></big></p>
+
+<p style="margin-left:23%;"><big>Leave libtool (.la) files
+in packages. Specify !libtool to remove them.</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big><b>staticlibs</b></big></p>
+
+<p style="margin-left:23%;"><big>Leave static library (.a)
+files in packages. Specify !staticlibs to remove them (if
+they have a shared counterpart).</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big><b>emptydirs</b></big></p>
+
+<p style="margin-left:23%;"><big>Leave empty directories in
+packages.</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big><b>zipman</b></big></p>
+
+<p style="margin-left:23%;"><big>Compress man and info
+pages with gzip.</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big><b>upx</b></big></p>
+
+<p style="margin-left:23%;"><big>Compress binary executable
+files using UPX.</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big><b>ccache</b></big></p>
+
+<p style="margin-left:23%;"><big>Allow the use of ccache
+during build. More useful in its negative form !ccache with
+select packages that have problems building with
+ccache.</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big><b>distcc</b></big></p>
+
+<p style="margin-left:23%;"><big>Allow the use of distcc
+during build. More useful in its negative form !distcc with
+select packages that have problems building with
+distcc.</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big><b>buildflags</b></big></p>
+
+<p style="margin-left:23%;"><big>Allow the use of
+user&minus;specific buildflags (CPPFLAGS, CFLAGS, CXXFLAGS,
+LDFLAGS) during build as specified in
+<b>makepkg.conf</b>(5). More useful in its negative form
+!buildflags with select packages that have problems building
+with custom buildflags.</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big><b>makeflags</b></big></p>
+
+<p style="margin-left:23%;"><big>Allow the use of
+user&minus;specific makeflags during build as specified in
+<b>makepkg.conf</b>(5). More useful in its negative form
+!makeflags with select packages that have problems building
+with custom makeflags such as &minus;j2 (or
+higher).</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big><b>debug</b></big></p>
+
+<p style="margin-left:23%;"><big>Add the
+user&minus;specified debug flags (DEBUG_CFLAGS,
+DEBUG_CXXFLAGS) to their counterpart buildflags as specified
+in <b>makepkg.conf</b>(5). When used in combination with the
+&lsquo;strip&rsquo; option, a separate package containing
+the debug symbols is created.</big></p>
+
+<h2>PACKAGING FUNCTIONS
+<a name="PACKAGING FUNCTIONS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big>In
+addition to the above directives, PKGBUILDs require a set of
+functions that provide instructions to build and install the
+package. As a minimum, the PKGBUILD must contain a package()
+function which installs all the package&rsquo;s files into
+the packaging directory, with optional prepare(), build(),
+and check() functions being used to create those files from
+source.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>package()
+Function</b></big></p>
+
+<p style="margin-left:17%;"><big>The package() function is
+used to install files into the directory that will become
+the root directory of the built package and is run after all
+the optional functions listed below. The packaging stage is
+run using fakeroot to ensure correct file permissions in the
+resulting package. All other functions will be run as the
+user calling makepkg.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>prepare()
+Function</b></big></p>
+
+<p style="margin-left:17%;"><big>An optional prepare()
+function can be specified in which operations to prepare the
+sources for building, such as patching, are performed. This
+function is run after the source extraction and before the
+build() function. The prepare() function is skipped when
+source extraction is skipped.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>build()
+Function</b></big></p>
+
+<p style="margin-left:17%;"><big>The optional build()
+function is use to compile and/or adjust the source files in
+preparation to be installed by the package() function. This
+is directly sourced and executed by makepkg, so anything
+that Bash or the system has available is available for use
+here. Be sure any exotic commands used are covered by the
+makedepends array.</big></p>
+
+<p style="margin-left:17%; margin-top: 1em"><big>If you
+create any variables of your own in the build() function, it
+is recommended to use the Bash local keyword to scope the
+variable to inside the build() function.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>check()
+Function</b></big></p>
+
+<p style="margin-left:17%;"><big>An optional check()
+function can be specified in which a package&rsquo;s
+test&minus;suite may be run. This function is run between
+the build() and package() functions. Be sure any exotic
+commands used are covered by the checkdepends
+array.</big></p>
+
+<p style="margin-left:11%; margin-top: 1em"><big>All of the
+above variables such as $pkgname and $pkgver are available
+for use in the build() function. In addition, makepkg
+defines the following variables for use during the build and
+install process:</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>srcdir</b></big></p>
+
+<p style="margin-left:17%;"><big>This contains the
+directory where makepkg extracts, or copies, all source
+files.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>pkgdir</b></big></p>
+
+<p style="margin-left:17%;"><big>This contains the
+directory where makepkg bundles the installed package. This
+directory will become the root directory of your built
+package. This variable should only be used in the package()
+function.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>startdir</b></big></p>
+
+<p style="margin-left:17%;"><big>This contains the absolute
+path to the directory where the PKGBUILD is located, which
+is usually the output of $(pwd) when makepkg is started. Use
+of this variable is deprecated and strongly
+discouraged.</big></p>
+
+<h2>PACKAGE SPLITTING
+<a name="PACKAGE SPLITTING"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big>makepkg
+supports building multiple packages from a single PKGBUILD.
+This is achieved by assigning an array of package names to
+the pkgname directive. Each split package uses a
+corresponding packaging function with name package_foo(),
+where foo is the name of the split package.</big></p>
+
+<p style="margin-left:11%; margin-top: 1em"><big>All
+options and directives for the split packages default to the
+global values given in the PKGBUILD. Nevertheless, the
+following ones can be overridden within each split
+package&rsquo;s packaging function: pkgdesc, arch, url,
+license, groups, depends, optdepends, provides, conflicts,
+replaces, backup, options, install, and changelog.</big></p>
+
+<p style="margin-left:11%; margin-top: 1em"><big>An
+optional global directive is available when building a split
+package:</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>pkgbase</b></big></p>
+
+<p style="margin-left:17%;"><big>The name used to refer to
+the group of packages in the output of makepkg and in the
+naming of source&minus;only tarballs. If not specified, the
+first element in the pkgname array is used. The variable is
+not allowed to begin with a hyphen.</big></p>
+
+<h2>INSTALL/UPGRADE/REMOVE SCRIPTING
+<a name="INSTALL/UPGRADE/REMOVE SCRIPTING"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big>Pacman has
+the ability to store and execute a package&minus;specific
+script when it installs, removes, or upgrades a package.
+This allows a package to configure itself after installation
+and perform an opposite action upon removal.</big></p>
+
+<p style="margin-left:11%; margin-top: 1em"><big>The exact
+time the script is run varies with each operation, and
+should be self&minus;explanatory. Note that during an
+upgrade operation, none of the install or remove scripts
+will be called.</big></p>
+
+<p style="margin-left:11%; margin-top: 1em"><big>Scripts
+are passed either one or two &ldquo;full version
+strings&rdquo;, where a full version string is either
+<i>pkgver&minus;pkgrel</i> or
+<i>epoch:pkgver&minus;pkgrel</i>, if epoch is
+non&minus;zero.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>pre_install</b></big></p>
+
+<p style="margin-left:17%;"><big>Run right before files are
+extracted. One argument is passed: new package full version
+string.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>post_install</b></big></p>
+
+<p style="margin-left:17%;"><big>Run right after files are
+extracted. One argument is passed: new package full version
+string.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>pre_upgrade</b></big></p>
+
+<p style="margin-left:17%;"><big>Run right before files are
+extracted. Two arguments are passed in this order: new
+package full version string, old package full version
+string.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>post_upgrade</b></big></p>
+
+<p style="margin-left:17%;"><big>Run after files are
+extracted. Two arguments are passed in this order: new
+package full version string, old package full version
+string.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>pre_remove</b></big></p>
+
+<p style="margin-left:17%;"><big>Run right before files are
+removed. One argument is passed: old package full version
+string.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>post_remove</b></big></p>
+
+<p style="margin-left:17%;"><big>Run right after files are
+removed. One argument is passed: old package full version
+string.</big></p>
+
+<p style="margin-left:11%; margin-top: 1em"><big>To use
+this feature, create a file such as <i>pkgname.install</i>
+and put it in the same directory as the PKGBUILD script.
+Then use the install directive:</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big>install=pkgname.install</big></p>
+
+<p style="margin-left:11%; margin-top: 1em"><big>The
+install script does not need to be specified in the source
+array. A template install file is available in
+<i>/usr/share/pacman</i> as <i>proto.install</i> for
+reference with all of the available functions
+defined.</big></p>
+
+<h2>USING VCS SOURCES
+<a name="USING VCS SOURCES"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big>Building a
+developmental version of a package using sources from a
+version control system (VCS) is enabled by specifying the
+source in the form source=('directory::url#fragment').
+Currently makepkg supports the Bazaar, Git, Subversion, and
+Mercurial version control systems. For other version control
+systems, manual cloning of upstream repositories must be
+done in the prepare() function.</big></p>
+
+<p style="margin-left:11%; margin-top: 1em"><big>The source
+URL is divided into three components:</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>directory</b></big></p>
+
+<p style="margin-left:17%;"><big>(optional) Specifies an
+alternate directory name for makepkg to download the VCS
+source into.</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>url</b></big></p>
+
+<p style="margin-left:17%;"><big>The URL to the VCS
+repository. This must include the VCS in the URL protocol
+for makepkg to recognize this as a VCS source. If the
+protocol does not include the VCS name, it can be added by
+prefixing the URL with vcs+. For example, using a Git
+repository over HTTPS would have a source URL in the form:
+git+https://....</big></p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>fragment</b></big></p>
+
+<p style="margin-left:17%;"><big>(optional) Allows
+specifying a revision number or branch for makepkg to
+checkout from the VCS. For example, to checkout a given
+revision, the source line would have the format
+source=(url#revision=123). The available fragments depends
+on the VCS being used:</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big><b>bzr</b></big></p>
+
+<p style="margin-left:23%;"><big>revision (see 'bzr help
+revisionspec' for details)</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big><b>git</b></big></p>
+
+<p style="margin-left:23%;"><big>branch, commit,
+tag</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big><b>hg</b></big></p>
+
+<p style="margin-left:23%;"><big>branch, revision,
+tag</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big><b>svn</b></big></p>
+
+<p style="margin-left:23%;"><big>revision</big></p>
+
+<h2>EXAMPLE
+<a name="EXAMPLE"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big>The
+following is an example PKGBUILD for the <i>patch</i>
+package. For more examples, look through the build files of
+your distribution&rsquo;s packages. For those using Arch
+Linux, consult the Arch Build System (ABS) tree.</big></p>
+
+<p style="margin-left:17%; margin-top: 1em"><big>#
+Maintainer: Joe User &lt;joe.user@example.com&gt;</big></p>
+
+
+<p style="margin-left:17%; margin-top: 1em"><big>pkgname=patch
+<br>
+pkgver=2.7.1 <br>
+pkgrel=1 <br>
+pkgdesc=&quot;A utility to apply patch files to original
+sources&quot; <br>
+arch=('i686' 'x86_64') <br>
+
+url=&quot;https://www.gnu.org/software/patch/patch.html&quot;
+<br>
+license=('GPL') <br>
+groups=('base&minus;devel') <br>
+depends=('glibc') <br>
+makedepends=('ed') <br>
+optdepends=('ed: for &quot;patch &minus;e&quot;
+functionality') <br>
+
+source=(&quot;ftp://ftp.gnu.org/gnu/$pkgname/$pkgname&minus;$pkgver.tar.xz&quot;{,.sig})
+<br>
+md5sums=('e9ae5393426d3ad783a300a338c09b72' <br>
+'SKIP')</big></p>
+
+<p style="margin-left:17%; margin-top: 1em"><big>build() {
+<br>
+cd &quot;$srcdir/$pkgname&minus;$pkgver&quot; <br>
+./configure &minus;&minus;prefix=/usr <br>
+make <br>
+}</big></p>
+
+<p style="margin-left:17%; margin-top: 1em"><big>package()
+{ <br>
+cd &quot;$srcdir/$pkgname&minus;$pkgver&quot; <br>
+make DESTDIR=&quot;$pkgdir/&quot; install <br>
+}</big></p>
+
+<h2>SEE ALSO
+<a name="SEE ALSO"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><big><b>makepkg</b>(8),
+<b>pacman</b>(8), <b>makepkg.conf</b>(5)</big></p>
+
+<p style="margin-left:11%; margin-top: 1em"><big>See the
+pacman website at https://www.archlinux.org/pacman/ for
+current information on pacman and its related
+tools.</big></p>
+
+<h2>BUGS
+<a name="BUGS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big>Bugs? You
+must be kidding; there are no bugs in this software. But if
+we happen to be wrong, send us an email with as much detail
+as possible to pacman&minus;dev@archlinux.org.</big></p>
+
+<h2>AUTHORS
+<a name="AUTHORS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><big>Current
+maintainers:</big></p>
+
+<p style="margin-left:17%; margin-top: 1em"><big>&bull;
+Allan McRae &lt;allan@archlinux.org&gt;</big></p>
+
+<p style="margin-left:17%; margin-top: 1em"><big>&bull;
+Andrew Gregory &lt;andrew.gregory.8@gmail.com&gt;</big></p>
+
+<p style="margin-left:17%; margin-top: 1em"><big>&bull; Dan
+McGee &lt;dan@archlinux.org&gt;</big></p>
+
+<p style="margin-left:17%; margin-top: 1em"><big>&bull;
+Dave Reisner &lt;dreisner@archlinux.org&gt;</big></p>
+
+<p style="margin-left:11%; margin-top: 1em"><big>Past major
+contributors:</big></p>
+
+<p style="margin-left:17%; margin-top: 1em"><big>&bull;
+Judd Vinet &lt;jvinet@zeroflux.org&gt;</big></p>
+
+<p style="margin-left:17%; margin-top: 1em"><big>&bull;
+Aurelien Foret &lt;aurelien@archlinux.org&gt;</big></p>
+
+<p style="margin-left:17%; margin-top: 1em"><big>&bull;
+Aaron Griffin &lt;aaron@archlinux.org&gt;</big></p>
+
+<p style="margin-left:17%; margin-top: 1em"><big>&bull;
+Xavier Chantry &lt;shiningxc@gmail.com&gt;</big></p>
+
+<p style="margin-left:17%; margin-top: 1em"><big>&bull;
+Nagy Gabor &lt;ngaba@bibl.u&minus;szeged.hu&gt;</big></p>
+
+<p style="margin-left:11%; margin-top: 1em"><big>For
+additional contributors, use git shortlog &minus;s on the
+pacman.git repository.</big></p>
+<hr>
+</body>
+</html>

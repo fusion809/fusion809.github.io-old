@@ -1,0 +1,265 @@
+<!-- Creator     : groff version 1.22.3 -->
+<!-- CreationDate: Wed Dec  2 00:47:03 2015 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       h1      { text-align: center }
+</style>
+<title>MAKEPKG&minus;TEMPLATE</title>
+
+</head>
+<body>
+
+<h1 align="center">MAKEPKG&minus;TEMPLATE</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLE PKGBUILD">EXAMPLE PKGBUILD</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#BUGS">BUGS</a><br>
+<a href="#AUTHORS">AUTHORS</a><br>
+
+<hr>
+
+
+<h2>NAME
+<a name="NAME"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em">makepkg-template
+&minus; package build templating utility</p>
+
+<h2>SYNOPSIS
+<a name="SYNOPSIS"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i>makepkg&minus;template</i>
+[options]</p>
+
+<h2>DESCRIPTION
+<a name="DESCRIPTION"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i>makepkg&minus;template</i>
+is a script to ease the work of maintaining multiple similar
+PKGBUILDs. It allows you to move most of the code from the
+PKGBUILD into a template file and uses markers to allow
+in&minus;place updating of existing PKGBUILDs if the
+template has been changed.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Template files
+can contain any code allowed in a PKGBUILD. You can think of
+them like external files included with &quot;.&quot; or
+&quot;source&quot;, but they will be inlined into the
+PKGBUILD by <i>makepkg&minus;template</i> so you do not
+depend on the template file when building the package.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Markers are
+bash comments in the form of:</p>
+
+<p style="margin-left:17%; margin-top: 1em"># template
+start; key=value; key2=value2; ...</p>
+
+<p style="margin-left:11%; margin-top: 1em">and</p>
+
+<p style="margin-left:17%; margin-top: 1em"># template
+end;</p>
+
+<p style="margin-left:11%; margin-top: 1em">Currently used
+keys are: name (mandatory) and version. Template names are
+limited to alphanumerics, &quot;@&quot;, &quot;+&quot;,
+&quot;.&quot;, &quot;&minus;&quot;, and &quot;_&quot;.
+Versions are limited to numbers and &quot;.&quot;.</p>
+
+<p style="margin-left:11%; margin-top: 1em">For initial
+creation there is a one line short cut which does not need
+an end marker:</p>
+
+<p style="margin-left:17%; margin-top: 1em"># template
+input; key=value;</p>
+
+<p style="margin-left:11%; margin-top: 1em">Using this
+short&minus;cut will result in <i>makepkg&minus;template</i>
+replacing it with start and end markers and the template
+code on the first run.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Template files
+should be stored in one directory and filenames should be
+&quot;$template_name&minus;$version.template&quot; with a
+symlink &quot;$template_name.template&quot; pointing to the
+most recent template. If the version is not set in the
+marker, <i>makepkg&minus;template</i> will automatically use
+the most recent version of the template, otherwise the
+specified version will be used. This allows for easier
+verification of untrusted PKGBUILDs if the template is
+trusted. You verify the non&minus;template code and then use
+a command similar to this:</p>
+
+<p style="margin-left:17%; margin-top: 1em">diff &minus;u
+&lt;(makepkg&minus;template &minus;o &minus;) PKGBUILD</p>
+
+<p style="margin-left:11%; margin-top: 1em">Template files
+may also contain markers leading to nested templates in the
+resulting PKGBUILD. If you use markers in a template, please
+set the version you used/tested with in the start/input
+marker so other people can properly recreate from
+templates.</p>
+
+<h2>OPTIONS
+<a name="OPTIONS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;p,
+&minus;&minus;input</b> &lt;build script&gt;</p>
+
+<p style="margin-left:17%;">Read the package script build
+script instead of the default.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;o,
+&minus;&minus;output</b> &lt;build script&gt;</p>
+
+<p style="margin-left:17%;">Write the updated file to build
+script instead of overwriting the input file.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;n,
+&minus;&minus;newest</b></p>
+
+<p style="margin-left:17%;">Always use the newest available
+template file.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;&minus;template&minus;dir</b>
+&lt;dir&gt;</p>
+
+<p style="margin-left:17%;">Change the dir where we are
+looking for template files.</p>
+
+<h2>EXAMPLE PKGBUILD
+<a name="EXAMPLE PKGBUILD"></a>
+</h2>
+
+
+
+<p style="margin-left:17%; margin-top: 1em">pkgname=perl&minus;config&minus;simple
+<br>
+pkgver=4.58 <br>
+pkgrel=1 <br>
+pkgdesc=&quot;simple configuration file class&quot; <br>
+arch=('any') <br>
+license=('PerlArtistic' 'GPL') <br>
+depends=('perl') <br>
+
+source=(&quot;http://search.cpan.org/CPAN/authors/id/S/SH/SHERZODR/Config&minus;Simple&minus;${pkgver}.tar.gz&quot;)
+<br>
+md5sums=('f014aec54f0a1e2e880d317180fce502') <br>
+_distname=&quot;Config&minus;Simple&quot;</p>
+
+<p style="margin-left:17%; margin-top: 1em"># template
+start; name=perl&minus;module; version=1.0; <br>
+_distdir=&quot;${_distname}&minus;${pkgver}&quot; <br>
+url=&quot;https://metacpan.org/release/${_distname}&quot;
+<br>
+options+=('!emptydirs')</p>
+
+<p style="margin-left:17%; margin-top: 1em">build() { <br>
+cd &quot;$srcdir/$_distdir&quot; <br>
+perl Makefile.PL INSTALLDIRS=vendor <br>
+make <br>
+}</p>
+
+<p style="margin-left:17%; margin-top: 1em">check() { <br>
+cd &quot;$srcdir/$_distdir&quot; <br>
+make test <br>
+}</p>
+
+<p style="margin-left:17%; margin-top: 1em">package() {
+<br>
+cd &quot;$srcdir/$_distdir&quot; <br>
+make DESTDIR=&quot;$pkgdir&quot; install <br>
+} <br>
+# template end;</p>
+
+<h2>SEE ALSO
+<a name="SEE ALSO"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>makepkg</b>(8),
+<b>PKGBUILD</b>(5)</p>
+
+<p style="margin-left:11%; margin-top: 1em">See the pacman
+website at https://www.archlinux.org/pacman/ for current
+information on pacman and its related tools.</p>
+
+<h2>BUGS
+<a name="BUGS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Bugs? You must
+be kidding; there are no bugs in this software. But if we
+happen to be wrong, send us an email with as much detail as
+possible to pacman&minus;dev@archlinux.org.</p>
+
+<h2>AUTHORS
+<a name="AUTHORS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Current
+maintainers:</p>
+
+<p style="margin-left:17%; margin-top: 1em">&bull; Allan
+McRae &lt;allan@archlinux.org&gt;</p>
+
+<p style="margin-left:17%; margin-top: 1em">&bull; Andrew
+Gregory &lt;andrew.gregory.8@gmail.com&gt;</p>
+
+<p style="margin-left:17%; margin-top: 1em">&bull; Dan
+McGee &lt;dan@archlinux.org&gt;</p>
+
+<p style="margin-left:17%; margin-top: 1em">&bull; Dave
+Reisner &lt;dreisner@archlinux.org&gt;</p>
+
+<p style="margin-left:11%; margin-top: 1em">Past major
+contributors:</p>
+
+<p style="margin-left:17%; margin-top: 1em">&bull; Judd
+Vinet &lt;jvinet@zeroflux.org&gt;</p>
+
+<p style="margin-left:17%; margin-top: 1em">&bull; Aurelien
+Foret &lt;aurelien@archlinux.org&gt;</p>
+
+<p style="margin-left:17%; margin-top: 1em">&bull; Aaron
+Griffin &lt;aaron@archlinux.org&gt;</p>
+
+<p style="margin-left:17%; margin-top: 1em">&bull; Xavier
+Chantry &lt;shiningxc@gmail.com&gt;</p>
+
+<p style="margin-left:17%; margin-top: 1em">&bull; Nagy
+Gabor &lt;ngaba@bibl.u&minus;szeged.hu&gt;</p>
+
+<p style="margin-left:11%; margin-top: 1em">For additional
+contributors, use git shortlog &minus;s on the pacman.git
+repository.</p>
+<hr>
+</body>
+</html>
