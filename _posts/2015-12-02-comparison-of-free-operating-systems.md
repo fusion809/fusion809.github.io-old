@@ -317,7 +317,7 @@ function sagsb {
 }
 ```
 
-{% include specs.html arch="arm64, armel, armhf, i386, mips, mipsel, powerpc, ppc64el, s390x, x86_64." shell="Bash." type="Linux." PMS="APT" ui="Cinnamon, GNOME, KDE, LXDE, MATE, Xfce, <i>etc</i>." IM="Live CD, DVD or USB." date="2004." country="U.S.A." rm="Fixed, approximately once every 1-3 years." tm="Individuals/organizations with a reasonable skill set, that do not require commercial support, but greatly favour system stability over how up-to-date software." %}
+{% include specs.html arch="arm64, armel, armhf, i386, mips, mipsel, powerpc, ppc64el, s390x, x86_64." shell="Bash." type="Linux." PMS="APT." ui="Cinnamon, GNOME, KDE, LXDE, MATE, Xfce, <i>etc</i>." IM="Live CD, DVD or USB." date="2004." country="U.S.A." rm="Fixed, approximately once every 1-3 years." tm="Individuals/organizations with a reasonable skill set, that do not require commercial support, but greatly favour system stability over how up-to-date software." %}
 
 {% include os-min.html cpu="i386." ims="<280 MB." ram="128 MB. >512 MB recommended." hdd="2 GB. 10 GB with a desktop environment." %}
 
