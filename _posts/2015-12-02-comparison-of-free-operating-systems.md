@@ -260,7 +260,7 @@ These different repositories cannot be used safely, simultaneously, on the same 
 
 APT is a command-line front-end for dpkg. dpkg is what does the actual software installation, while APT manages repositories and software dependencies. APT is written in C++, while dpkg is written in C, C++ and Perl. APT by default installs software from binary packages found in the repositories specified in the text file `/etc/apt/sources.list`, although it can be used to install software from source code too. From the command-line APT is called by a variety of slightly different commands, including [`add-apt-repository`](/man/add-apt-repository.1.html), [`apt-cache`](/man/apt-cache.8.html), [`apt-config`](/man/apt-config.8.html) and [`apt-get`](/man/apt-get.8.html).
 
-APT is fairly unique amongst the major Linux package managers in that it can work with Debian and RPM packages, although when it works with RPM packages it is usually referred to as **APT-RPM**. 
+APT is fairly unique amongst the major Linux package managers in that it can work with Debian and RPM packages, although when it works with RPM packages it is usually referred to as **APT-RPM**.
 
 Something that is worthwhile noting is that like many other popular Linux distributions (including CentOS, Fedora, openSUSE and Ubuntu) it splits many of its programs up into several different packages. For example, components of Lua (the programming language) 5.2 can be found in the following packages:
 ```bash
@@ -322,6 +322,12 @@ function sagsb {
 {% include os-min.html cpu="i386." ims="<280 MB." ram="128 MB. >512 MB recommended." hdd="2 GB. 10 GB with a desktop environment." %}
 
 {% include os-ratings.html bf="7-8." cmb="5." doc=">7. Has pretty good documentation, but I have fairly little experience with said documentation." sup="? Never had to use their support forums or IRC channels." pm="7. Not a big fan of APT myself." sru="7. Lighter than CentOS, but not as minimalistic as Arch" sb=">9. Very stable, never had stability issues with it myself." mewi="4. Some experience, not an awful lot though." oa="7. As previously mentioned I dislike outdated software in an OS." %}
+
+## Fedora
+{% include image.html image="Fedora-23-GNOME.png" width="1000px" float="none" description="Fedora 23 with its default GNOME 3.18 desktop" %}
+
+### Background
+{% include os.html ask="https://ask.fedoraproject.org/" bugs="https://bugzilla.redhat.com/" wiki="https://fedoraproject.org/wiki/Fedora_Project_Wiki" ml="https://fedoraproject.org/wiki/Communicating_and_getting_help#Mailing_Lists" irc="https://fedoraproject.org/wiki/Communicating_and_getting_help#IRC_for_interactive_community_support" forum="http://fedoraforum.org/" wp="Fedora (operating system)" os="Fedora" docs="https://docs.fedoraproject.org/en-US/index.html" dw="fedora" d="https://getfedora.org/" url="http://getfedora.org/" %}
 
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)
