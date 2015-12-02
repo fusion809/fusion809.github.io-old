@@ -17,8 +17,6 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
 
 {% include oslist.html %}
 <!--
-4. [Debian](http://debian.org/)
-5. [Fedora](https://getfedora.org/)
 6. [Gentoo Linux](https://www.gentoo.org/)
 7. [Linux Mint](http://linuxmint.com/)
 8. [Mageia](http://www.mageia.org/en/)
@@ -58,6 +56,8 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
   * <b>O</b>perating <b>s</b>ystem.
 * <b>OSs</b>
   * <b>O</b>perating <b>s</b>ystem<b>s</b>.
+* <b>Out-of-the-box</b>
+  * The property of an operating system of being "out-of-the-box" means that as soon as the default installer (if any) has done its job and installed the system, the system should be ready to be used by the user without any further configuration or installation of software onto the system.
 * <b>PMS</b>
   * <b>P</b>ackage <b>m</b>agement <b>s</b>ystem.
 * <b>PMSs</b>
@@ -361,7 +361,21 @@ function sdyb {
 
 {% include os-min.html cpu=">1 GHz i686." ims="676 MB." ram="1,024 MB." hdd="10 GB." %}
 
-{% include os-ratings.html bf="7-8." cmb="~5." doc="6-7. Its documentation, including the Wiki, are adequate for most actions one may wish to do on Fedora, although the Wiki is quite often out of date and does not dive into more advanced or specialized topics." sup="? Never had to use their support forums or IRC channels. I have used their AskBot website and found it less helpful than what Ask Ubuntu is for Ubuntu questions, but usually (~70% the time) a reasonable answer is obtained within a day." pm="7. Not a big fan of DNF myself. I will admit it does seem marginally better than yum." sru="5-6." sb="7-8. Fairly stable, but it does use the latest kernels and DNF has occasionally given me grief that appears to be bugs." mewi="6. Once I installed it on a removable drive and used it from there for a few weeks." oa="8. Fairly up-to-date software, but less intuitive than Ubuntu and poorer support." %}
+{% include os-ratings.html bf="7-8." cmb="~5." doc="6-7. Its documentation, including the Wiki, are adequate for most actions one may wish to do on Fedora, although the Wiki is quite often out of date and does not dive into more advanced or specialized topics." sup="? Never had to use their support forums or IRC channels. I have used their AskBot website and found it less helpful than what Ask Ubuntu is for Ubuntu questions, but usually (~70% of the time) a reasonable answer is obtained within a day." pm="7. Not a big fan of DNF myself. I will admit it does seem marginally better than yum." sru="5-6." sb="7-8. Fairly stable, but it does use the latest kernels and DNF has occasionally given me grief that appears to be bugs." mewi="6. Once I installed it on a removable drive and used it from there for a few weeks." oa="8. Fairly up-to-date software, but less intuitive than Ubuntu and poorer support." %}
+
+## Gentoo Linux
+{% include image.html image="Gentoo-Linux-12.0.jpg" float="none" description="Gentoo Linux 12.0, taken from Wikimedia Commons" width="1000px" %}
+
+### Background
+{% include os.html os="Gentoo Linux" dw="gentoo" d="https://www.gentoo.org/downloads/" bugs="https://bugs.gentoo.org/" irc="https://www.gentoo.org/get-involved/irc-channels/all-channels.html" ml="https://www.gentoo.org/get-involved/mailing-lists/all-lists.html" wiki="https://wiki.gentoo.org/wiki/Main_Page" wp="Gentoo Linux" docs="https://wiki.gentoo.org/wiki/Main_Page" url="https://www.gentoo.org/" %} is an independent Linux distribution that was originally known as **Enoch Linux** and founded in 2002 by a Canadian-born American computer programmer and software engineer named [Daniel Robbins](https://en.wikipedia.org/wiki/Daniel_Robbins_(computer_programmer)). As far as Linux distributions go, it is, in my limited experience, the most difficult-to-use and to setup Linux distribution around. This is because its package management system, **Portage**, while incredibly powerful is also slow, difficult-to-learn and difficult-to-use. See unlike most package managers Portage installs software primarily (although binary installs are also possible) from source code using instructions found in specialized Bash scripts known as ebuilds. Installing software from source code optimizes the control users have over their system, as it means that features they want they can enable in a package when they configure its source code, while features they do not want they can also disable at the configure stage. Unfortunately, however, compiling software from source code also means that software installation takes longer than it would if one were installing from a binary package instead.
+
+Daniel Robbins later left the project in 2004 to create a new Linux distribution called Funtoo Linux (which is derived from Gentoo) which it is my understanding one must pay for. In its early days Gentoo was actually one of the most popular Linux distributions around, at least according to DistroWatch, but with time its popularity fell as fewer and fewer people had the skill, inclination and time to build their system from the ground up with Portage. In fact, I do not even have the skill to install Gentoo manually, instead I took the easy way out and used [Packer](https://github.com/d11wtq/gentoo-packer) to build a virtual machine with it installed. Even with the assistance of Packer I am struggling to use Gentoo Linux because of Portage-related difficulties (see the package management section for details).
+
+The power and versatility of Portage is best illustrated by the mere fact that Gentoo is second only to Debian in the number of architecture types it has been ported to. Portage has even been ported to &#42;nix operating systems other than Linux including:
+* The &#42;BSDs including FreeBSD, NetBSD and OpenBSD.
+* Darwin
+* GNU (with the Herd kernel)
+* OS X
 
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)
