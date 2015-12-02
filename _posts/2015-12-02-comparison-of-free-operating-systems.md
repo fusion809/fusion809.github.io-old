@@ -210,7 +210,7 @@ function yarm {
 I, with my love of using the latest software, have not really taken a liking for CentOS. Rather, if I ever have to use a Linux distribution derived from Red Hat, I usually use the latest release of Fedora (currently Fedora 23). Unlike Fedora, CentOS is also more restricted in its architecture support as of the latest 7.1-1503 release, see Fedora can run on 32-bit and 64-bit machines, while CentOS 7.1-1503 can only run on 64-bit machines.
 
 ### Package Management
-CentOS uses the **Yellowdog Updater, Modified** (**Yum**) package manager that was once used by Fedora. Yum's (or [`yum`](/man/yum.8.html) from the command-line) development has since been discontinued, in favour of its successor Dandified Yum (**DNF**), which resolves package dependencies faster and more efficiently than Yum does, by using ZYpp's libsolv library, hence it is likely that in the future CentOS will start using DNF as well. Yum is widely considered one of the least efficient widely-used Linux package managers presently available and the cause is likely the fact that unlike APT or ZYpp it is written in Python. Python has its advantages and disadvantages as a language for a PMS to be written in and its slow speed is one such disadvantage. Yum and DNF have essentially the same syntax, below is an example `~/.bashrc` for CentOS that shows some of its basic syntax.
+CentOS uses the **Yellowdog Updater, Modified** (**yum**) package manager that was once used by Fedora. yum's (or [`yum`](/man/yum.8.html) from the command-line) development has since been discontinued, in favour of its successor Dandified yum (**DNF**), which resolves package dependencies faster and more efficiently than yum does, by using ZYpp's libsolv library, hence it is likely that in the future CentOS will start using DNF as well. yum is widely considered one of the least efficient widely-used Linux package managers presently available and the cause is likely the fact that unlike APT or ZYpp it is written in Python. Python has its advantages and disadvantages as a language for a PMS to be written in and its slow speed is one such disadvantage. yum and DNF have essentially the same syntax, below is an example `~/.bashrc` for CentOS that shows some of its basic syntax.
 
 ```bash
 # This should update yum's repositories and perform any required package upgrades
@@ -219,23 +219,23 @@ function update {
   sudo yum update -y
 }
 
-# Install the dependencies for a package with Yum without asking for confirmation
+# Install the dependencies for a package with yum without asking for confirmation
 function ybd {
   sudo yum-builddep -y $@
 }
 
-# Install a package with Yum, without asking for confirmation, from official repositories
+# Install a package with yum, without asking for confirmation, from official repositories
 function yin {
   sudo yum install -y $@
 }
 
 # Install a local (that is, present on one's local system and does not have to be downloaded
-# from Yum's repositories) package with Yum, without asking for confirmation.
+# from yum's repositories) package with yum, without asking for confirmation.
 function ylin {
   sudo yum localinstall -y $@
 }
 
-# Remove a package with Yum, without asking for confirmation
+# Remove a package with yum, without asking for confirmation
 function yrm {
   sudo yum remove -y $@
 }
@@ -245,7 +245,7 @@ function yrm {
 
 {% include os-min.html cpu="x86_64." ims="360 MB." ram="1,024 MB." hdd="10 GB. 20 GB recommended." %}
 
-{% include os-ratings.html bf="8." cmb="5." doc=">6. Has reasonable documentation, that I have little experience with, hence why I am giving it such a broad rating." sup="? Never had to use their support forums or IRC channels." pm="6. Yum is definitely not my favourite PMS." sru="<5. Default DEs, GNOME and KDE, are fairly heavy on SRU." sb=">9. Very stable, never had stability issues with it myself." mewi="3-4. Some experience, not an awful lot though." oa="7. As previously mentioned I dislike outdated software in an OS." %}
+{% include os-ratings.html bf="8." cmb="5." doc=">6. Has reasonable documentation, that I have little experience with, hence why I am giving it such a broad rating." sup="? Never had to use their support forums or IRC channels." pm="6. yum is definitely not my favourite PMS." sru="<5. Default DEs, GNOME and KDE, are fairly heavy on SRU." sb=">9. Very stable, never had stability issues with it myself." mewi="3-4. Some experience, not an awful lot though." oa="7. As previously mentioned I dislike outdated software in an OS." %}
 
 ## Debian
 {% include galleria.html image1="Debian-8.2-KDE-appmenu.png" width1="1366px" description1="Debian 8.2 running KDE Plasma 4" image2="Debian-8.2-TDE-appmenu.png" width2="1000px" description2="Debian 8.2 running the Trinity Desktop Environment (TDE)" %}
@@ -327,7 +327,7 @@ function sagsb {
 {% include image.html image="Fedora-23-GNOME.png" width="1000px" float="none" description="Fedora 23 with its default GNOME 3.18 desktop" %}
 
 ### Background
-{% include os.html ask="https://ask.fedoraproject.org/" bugs="https://bugzilla.redhat.com/" wiki="https://fedoraproject.org/wiki/Fedora_Project_Wiki" ml="https://fedoraproject.org/wiki/Communicating_and_getting_help#Mailing_Lists" irc="https://fedoraproject.org/wiki/Communicating_and_getting_help#IRC_for_interactive_community_support" forum="http://fedoraforum.org/" wp="Fedora (operating system)" os="Fedora" docs="https://docs.fedoraproject.org/en-US/index.html" dw="fedora" d="https://getfedora.org/" url="http://getfedora.org/" %} is a Linux distribution that was 
+{% include os.html ask="https://ask.fedoraproject.org/" bugs="https://bugzilla.redhat.com/" wiki="https://fedoraproject.org/wiki/Fedora_Project_Wiki" ml="https://fedoraproject.org/wiki/Communicating_and_getting_help#Mailing_Lists" irc="https://fedoraproject.org/wiki/Communicating_and_getting_help#IRC_for_interactive_community_support" forum="http://fedoraforum.org/" wp="Fedora (operating system)" os="Fedora" docs="https://docs.fedoraproject.org/en-US/index.html" dw="fedora" d="https://getfedora.org/" url="http://getfedora.org/" %} is a Linux distribution that was first founded in 2003 as a free continuation of the proprietary Red Hat Linux (RHL) distribution. Fedora, like its parent, uses RPM packages and originally used yum as its default package manager, until the release of Fedora 22 in May 2015 when it was replaced with a libsolv-based rewrite of it called DNF. What distinguishes from other Linux distributions, nowadays, is that despite the fact it follows a fixed (or standard) release model, with new releases every 6-12 months, its system and desktop software is nearly always the latest stable versions available. For example, Fedora 23 ships with the 4.2 release of the Linux kernel and the 3.18 release of the GNOME desktop. 
 
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)

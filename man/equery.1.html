@@ -1,0 +1,925 @@
+<HTML><HEAD><TITLE>Manpage of EQUERY</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
+</HEAD><BODY>
+<H1>EQUERY</H1>
+Section:  (1)<BR>Updated: 0.3.0.9-r2<BR><A HREF="#index">Index</A>
+<A HREF="http://localhost/cgi-bin/man/man2html">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>NAME</H2>
+
+equery - Gentoo Package Query Tool
+<P>
+<A NAME="lbAC">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+<B>equery </B><I>[global-options] </I><B>module </B><I>[local-options]</I>
+
+<P>
+<A NAME="lbAD">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+<B>Equery</B>
+
+is a collection of modules for querying the state of Gentoo packages, files and USE flags.
+<P>
+<A NAME="lbAE">&nbsp;</A>
+<H2>GLOBAL OPTIONS</H2>
+
+<DL COMPACT>
+<DT>
+<B>-h, --help</B>
+
+<DD>
+<DD>Output a help message.
+<DT>
+<B>-q, --quiet</B>
+
+<DD>
+<DD>Be less verbose where possible. In some modules, this option can increase the output speed.
+<DT>
+<B>-C, --no-color</B>
+
+<DD>
+<DD>Do not colorize output.
+<DT>
+<B>-N, --no-pipe</B>
+
+<DD>
+<DD>Turn off automatic pipe detection. Use this option if you do not want
+<B>equery</B>
+
+to detect if the output is being directed to the screen or to another program and adjust color and verbosity accordingly.
+<DT>
+<B>-V, --version</B>
+
+<DD>
+<DD>Display <B>Gentoolkit</B>'s version. Please include this in all bug reports. (see
+<B>BUGS</B>
+
+below)
+<P>
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>MODULES</H2>
+
+<B>Equery</B>
+
+uses a system of modules. Each module has both a long and short name. The list below uses the notation &quot;<B>module (m)</B>&quot;, where <I>m</I> is the short name and <I>module</I> is the long name.
+
+You can view the
+<B>help</B>
+
+message for a specific module by using
+<B>-h</B>, <B>--help </B>
+
+as either a global option (after
+<B>equery</B>
+
+and before the module name) or as a local option (after the module name).
+<P>
+<A NAME="lbAG">&nbsp;</A>
+<H3><B>belongs</B><I>(b)</I><B>[OPTIONS]</B><I></I><B>FILE</B>
+
+</H3>
+
+List the package that owns <I>FILE</I>.
+
+<B>Note:</B>
+
+Normally, only one package will own <I>FILE</I>. If multiple packages own the
+same file it should be reported. (see
+<B>BUGS</B>
+
+below)
+<P>
+<I>R LOCAL OPTIONS :</I>
+
+<DL COMPACT>
+<DT>
+<B>-f, --full-regex</B>
+
+<DD>
+<DD>The supplied query is a regular expression.
+<DT>
+<B>-e, --early-out</B>
+
+<DD>
+<DD>Stop when the first match is found. This is generally a safe optimization when searching for the owner of a single file.
+<DT>
+<B>-n, --name-only</B>
+
+<DD>
+<DD>Do not print the version.
+
+<I>R EXAMPLES :</I>
+
+
+<DT>
+<DD>equery belongs --early-out /usr/bin/euse
+
+<BR>
+
+Find out what package installed a certain command.
+
+<DT>
+<DD>emerge -p $(equery -q belongs -nf '^/usr/bin/g?vim.*')
+
+<BR>
+
+Tell
+<B>emerge</B>
+
+to reinstall or update any package that installed a file matching a regular expression.
+<P>
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H3><B>changes</B><I>(c)</I><B>[OPTIONS]</B><I></I><B>PKG</B>
+
+</H3>
+
+Display the Gentoo ChangeLog entry for the latest installable version of <I>PKG</I>.
+<P>
+<I>R LOCAL OPTIONS :</I>
+
+<DL COMPACT>
+<DT>
+<B>-l, --latest</B>
+
+<DD>
+<DD>Display only the latest ChangeLog entry. It's not uncommon for changes to be prepended to the ChangeLog without a version header if the changes did not require a version bump. Use this option to display such entries.
+<DT>
+<B>-f, --full</B>
+
+<DD>
+<DD>Display the full ChangeLog.
+<BR>
+
+<B>Hint</B>: Try piping (|) the output to a pager, like 'less'.
+<DT>
+<B>--limit=</B><I>NUM</I>
+
+<DD>
+<DD>Limit the <I>NUM</I> of entries displayed. Use  this option in conjunction with <B>--full</B>. <B>--limit=3</B> would display the three latest entries.
+<DT>
+<B>--from=</B><I>VER</I>
+
+<DD>
+<DD>Set which <I>VER</I> to display from. Using this option by itself is equivalent to passing <B>changes</B> a ranged package atom, e.g., '&gt;=foo/bar-1.5'. It can be used in conjunction with <B>--to</B> to request a more complex range of entries.
+<DT>
+<B>--to=</B><I>VER</I>
+
+<DD>
+<DD>Set which <I>VER</I> to display to. (See <B>--from</B>)
+
+<I>R EXAMPLES :</I>
+
+
+<DT>
+<DD>equery changes portage
+
+<BR>
+
+Display the Gentoo ChangeLog entry for the latest installable version of Portage.
+
+<DT>
+<DD>equery changes '=sys-apps/portage-2.1.6*'
+
+<BR>
+
+Use Portage's atom syntax. (See <B>man 5 ebuild</B>)
+
+<DT>
+<DD>equery changes portage --from=2.2_rc1 --to=2.2
+
+<BR>
+
+Display any ChangeLog entry within a range of versions.
+<P>
+</DL>
+<A NAME="lbAI">&nbsp;</A>
+<H3><B>check</B><I>(k)</I><B>[OPTIONS]</B><I></I><B>PKG</B>
+
+</H3>
+
+Check timestamps and MD5 sums for files owned by <I>PKG</I>, where <I>PKG</I> is an installed package.
+<P>
+<I>R LOCAL OPTIONS :</I>
+
+<DL COMPACT>
+<DT>
+<B>-f, --full-regex</B>
+
+<DD>
+<DD>The supplied query is a regular expression.
+<DT>
+<B>-o, --only-failures</B>
+
+<DD>
+<DD>Only display packages which don't pass all checks.
+
+<I>R EXAMPLES :</I>
+
+
+<DT>
+<DD>equery check --only-failures '*'
+
+<BR>
+
+Verify timestamps and MD5 sums for all installed packages and show only packages which fail checks.
+
+<DT>
+<DD>equery check 'dev-python/*' dev-lang/python
+
+<BR>
+
+Verify every installed package in the <B>dev-python</B> category, and Python itself.
+<P>
+</DL>
+<A NAME="lbAJ">&nbsp;</A>
+<H3><B>depends</B><I>(d)</I><B>[OPTIONS]</B><I></I><B>PKG</B>
+
+</H3>
+
+List all packages that depend on <I>PKG</I>.
+<P>
+<I>R LOCAL OPTIONS :</I>
+
+<DL COMPACT>
+<DT>
+<B>-a, --all-packages</B>
+
+<DD>
+<DD>Include dependencies that are not installed. This can take a while.
+<DT>
+<B>-D, --indirect</B>
+
+<DD>
+<DD>Search for both direct and indirect dependencies.
+<DT>
+<B>--depth=</B><I>NUM</I>
+
+<DD>
+<DD>Limit the indirect dependency tree to a depth of <I>NUM</I>. <B>--depth=0</B> is equivalent to not using <B>--indirect</B>.
+
+<I>R EXAMPLES :</I>
+
+
+<DT>
+<DD>equery depends --indirect xulrunner
+
+<BR>
+
+Figure out why a package got installed on your system.
+<P>
+</DL>
+<A NAME="lbAK">&nbsp;</A>
+<H3><B>depgraph</B><I>(g)</I><B>[OPTIONS]</B><I></I><B>PKG</B>
+
+</H3>
+
+Display a direct dependency graph for every matching version of <I>PKG</I>. A dependency graph is an
+indented tree showing the relationship between packages and their dependencies.
+<P>
+<I>R LOCAL OPTIONS :</I>
+
+<DL COMPACT>
+<DT>
+<B>-A, --no-atom</B>
+
+<DD>
+<DD>Do not show the dependency atom that match the package.
+<DT>
+<B>-U, --no-useflags</B>
+
+<DD>
+<DD>Do not show USE flags.
+<DT>
+<B>-l, --linear</B>
+
+<DD>
+<DD>Do not format the graph by indenting dependencies. This option will print the
+recursion depth in square brackets before the package name for easier viewing
+in narrow terminals.
+<DT>
+<B>--depth=</B><I>NUM</I>
+
+<DD>
+<DD>Limit the dependency graph to a depth of <I>NUM</I>. <B>--depth=0</B> means no
+maximum depth. Default depth is set to 1.
+
+<I>R EXAMPLES :</I>
+
+
+<DT>
+<DD>equery depgraph --depth=0 portage
+
+<BR>
+
+View a full tree of all direct and indirect compile-time, run-time, and post-merge dependencies for a package.
+<P>
+</DL>
+<A NAME="lbAL">&nbsp;</A>
+<H3><B>files</B><I>(f)</I><B>[OPTIONS]</B><I></I><B>PKG</B>
+
+</H3>
+
+List files and directories installed by <I>PKG</I>.
+<P>
+<I>R LOCAL OPTIONS :</I>
+
+<DL COMPACT>
+<DT>
+<B>-m, --md5sum</B>
+
+<DD>
+<DD>Include the file's MD5 sum in the output.
+<DT>
+<B>-s, --timestamp</B>
+
+<DD>
+<DD>Include the file's timestamp in the output.
+<DT>
+<B>-t, --type</B>
+
+<DD>
+<DD>Include the file type in the output.
+<DT>
+<B>--tree</B>
+
+<DD>
+<DD>Display files in a tree format. This option turns off all other local options.
+<DT>
+<B>-f, --filter=</B><I>RULES</I>
+
+<DD>
+<DD>Filter output by file type.
+<DT>
+<DD>RULES
+<BR>
+
+A comma-separated list (no spaces); choose from:
+<BR>
+
+<B>dir, obj, sym, dev, path, conf, cmd, doc, man, info</B>
+
+
+<I>R EXAMPLES :</I>
+
+
+<DT>
+<DD>equery files --tree vlc
+
+<BR>
+
+View a file tree of all files installed by a package.
+
+<DT>
+<DD>equery files --filter=cmd vlc
+
+<BR>
+
+Find out where a package installed its executables.
+<P>
+</DL>
+<A NAME="lbAM">&nbsp;</A>
+<H3><B>has</B><I>(a)</I><B>[OPTIONS]</B><I></I><B>KEY</B>
+
+</H3>
+
+<BR>&nbsp;VALUE
+List all installed packages that have a given <I>PKG</I> match.
+<P>
+<B>Note</B>: <B>KEY</B> is case sensitive. Also <B>has</B> does not currently have the ability to inteligently compare values dependending on the type of information being looked up.  It performs a simple string match. It can only list which packages have the matching <B>VALUE</B> as given on the command line. It is a general purpose lookup for most information available via portage's dbapi.aux_get() function.  Warning the quality of the results printed is dependant on the quality of the search (given the limited comparison method) and the recorded data available in the vardb. (See <I>EXAMPLES</I>)
+<P>
+<I>R LOCAL OPTIONS :</I>
+
+<DL COMPACT>
+<DT>
+<B>-I, --exclude-installed</B>
+
+<DD>
+<DD>Exclude installed packages from being output.
+<DT>
+<B>-o, --overlay-tree</B>
+
+<DD>
+<DD>Include package from overlays in the search path.
+<DT>
+<B>-p, --portage-tree</B>
+
+<DD>
+<DD>Include all packages from the Portage tree in the search path. Use this option to search through all standard Gentoo packages, including those that are not installed.
+<DT>
+<B>-F, --format=</B><I>TMPL</I>
+
+<DD>
+<DD>Customize the output format of the matched packages using the template string <I>TMPL</I>. See the <B>--format</B> option for <B>list</B> below for a description of the <I>TMPL</I> argument.
+
+<I>R OUTPUT :</I>
+
+<DT>
+(See <I>OUTPUT</I> for <B>list</B> below)
+
+<I>R EXAMPLES :</I>
+
+
+<DT>
+<DD>equery has SLOT 2.4
+
+<BR>
+
+View all installed Gentoo packages that have a recorded SLOT = &quot;2.4&quot;.
+
+<DT>
+<DD>equery has repository sunrise
+
+<BR>
+
+View all installed Gentoo packages that were recorded to be installed from ebuilds from the &quot;sunrise&quot; overlay.
+
+<DT>
+<DD>equery has EAPI 2
+
+<BR>
+
+View all installed Gentoo packages that were installed with ebuilds with a recorded EAPI of &quot;2&quot;.
+<P>
+</DL>
+<A NAME="lbAN">&nbsp;</A>
+<H3><B>hasuse</B><I>(h)</I><B>[OPTIONS]</B><I></I><B>USE</B>
+
+</H3>
+
+List all installed packages that have a given <I>PKG</I> flag.
+<P>
+<B>Note</B>: <B>hasuse</B> does not currently have the ability to display if packages are built with the given USE flag or not. It can only list which packages have the flag as an option. (See <I>EXAMPLES</I>)
+<P>
+<I>R LOCAL OPTIONS :</I>
+
+<DL COMPACT>
+<DT>
+<B>-I, --exclude-installed</B>
+
+<DD>
+<DD>Exclude installed packages from being output.
+<DT>
+<B>-o, --overlay-tree</B>
+
+<DD>
+<DD>Include package from overlays in the search path.
+<DT>
+<B>-p, --portage-tree</B>
+
+<DD>
+<DD>Include all packages from the Portage tree in the search path. Use this option to search through all standard Gentoo packages, including those that are not installed.
+<DT>
+<B>-F, --format=</B><I>TMPL</I>
+
+<DD>
+<DD>Customize the output format of the matched packages using the template string <I>TMPL</I>. See the <B>--format</B> option for <B>list</B> below for a description of the <I>TMPL</I> argument.
+
+<I>R OUTPUT :</I>
+
+<DT>
+(See <I>OUTPUT</I> for <B>list</B> below)
+
+<I>R EXAMPLES :</I>
+
+
+<DT>
+<DD>equery hasuse -pI perl
+
+<BR>
+
+View all Gentoo packages that have the &quot;perl&quot; USE flag, exluding installed packages.
+
+<DT>
+<DD>USE=&quot;perl&quot;; for PKG in $(equery -q hasuse $USE); do echo $PKG: $(equery -q uses $PKG |grep $USE); done
+
+<BR>
+
+This Bash one-liner uses <B>hasuse</B> to find a list of packages that have a certain USE flag, and <B>uses</B> to check whether the flag is enabled or disabled. Modify <B>USE=&quot;perl&quot;</B> to change the query.
+<P>
+</DL>
+<A NAME="lbAO">&nbsp;</A>
+<H3><B><A HREF="http://localhost/cgi-bin/man/man2html?l+list">list</A></B><I>(l)</I><B>[OPTIONS]</B><I></I><B>PKG</B>
+
+</H3>
+
+List installed versions of <I>PKG</I> or all packages matching the query pattern.
+<P>
+<I>R LOCAL OPTIONS :</I>
+
+<DL COMPACT>
+<DT>
+<B>-d, --duplicates</B>
+
+<DD>
+<DD>List only packages with more than one version installed.
+<DT>
+<B>-f, --full-regex</B>
+
+<DD>
+<DD>The supplied query is a regular expression.
+<DT>
+<B>-m, --mask-reason</B>
+
+<DD>
+<DD>Print the reason why a package was masked.
+<DT>
+<B>-I, --exclude-installed</B>
+
+<DD>
+<DD>Exclude installed packages from being output.
+<DT>
+<B>-o, --overlay-tree</B>
+
+<DD>
+<DD>Include package from overlays in the search path.
+<DT>
+<B>-p, --portage-tree</B>
+
+<DD>
+<DD>Include all packages from the Portage tree in the search path. Use this option to search through all standard Gentoo packages, including those that are not installed.
+<DT>
+<B>-F, --format=</B><I>TMPL</I>
+
+<DD>
+<DD>Customize the output format of the matched packages using the template string <I>TMPL</I>. <I>TMPL</I> can contain the following placeholders:
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>$cp</B> - Contains the category and the package name only (e.g 'app-portage/gentoolkit').<DD>
+<DT><B>$cpv</B> - Contains the category, the package name and the full version (e.g. 'app-portage/gentoolkit-0.3.0_rc10-r1').<DD>
+<DT><B>$category</B> - Contains just the category (e.g. 'app-portage').<DD>
+<DT><B>$name</B> - Contains just the package name (e.g. 'gentoolkit').<DD>
+<DT><B>$version</B> - Contains the package version (without the revision) (e.g. '0.3.0_rc10').<DD>
+<DT><B>$revision</B> - Contains the package revision (e.g. 'r1').<DD>
+<DT><B>$fullversion</B> - Contains the package version including its revision (e.g. '0.3.0_rc10-r1').<DD>
+<DT><B>$slot</B> - Contains the package's slot.<DD>
+<DT><B>$repo</B> - Contains the name of the package's repository (e.g. 'gentoo').<DD>
+<DT><B>$mask</B> - The Mask-status field (<B>~M-??</B>), see <I>OUTPUT</I> below for an explanation.<DD>
+<DT><B>$mask2</B> - Contains a verbose description of the packages masking status.<DD>
+<DT><B>$location</B> - The Location field (<B>IPO-</B>), see <I>OUTPUT</I> below for an explanation.<DD>
+
+Apart from the above placeholders the template string can contain arbitrary
+text as desired. Similar to bash variables, curly braces can be used to
+disambiguate the variable names from the enclosing text.
+</DL>
+</DL>
+
+
+<I>R OUTPUT :</I>
+
+<P>
+
+$ equery list binutils
+<BR>&nbsp;*&nbsp;Searching&nbsp;for&nbsp;binutils&nbsp;...
+<BR>&nbsp;[I--]&nbsp;[??]&nbsp;sys-devel/binutils-2.18-r1:i686-pc-linux-gnu-2.18
+<BR>&nbsp;[IP-]&nbsp;[&nbsp;~]&nbsp;sys-devel/binutils-2.19.1-r1:i686-pc-linux-gnu-2.19.1
+
+<DT>
+<DD>Location field (<B>[IPO-]</B>):
+<BR>
+
+The first field shows the location and install status of the package. It consists of three letters in square brackets. <B>I</B> indicates the package is currently installed. <B>P</B> indicates the package is available in the Portage tree. <B>O</B> indicates the package is available in at least one overlay. <B>-</B> is a place holder and has no meaning. <B>[I-O]</B> would mean that the package is installed and available from an overlay, but not available from the Portage tree.
+<DT>
+<DD>Mask-status field (<B>[ ~M-??]</B>):
+<BR>
+
+The second field shows the mask status of the package. Empty brackets indicate that the package is unmasked. A <B>~</B> means the package is masked by keyword, e.g., you are running a stable system and the package is marked testing). <B>M</B> means hard masked, e.g., the package maintainer has determined the package is unfit for widespread usage. <B>-</B> means arch masked, e.g., you are running an amd64 system, but this package only works on x86. Lastly, <B>??</B> only occurs when the location field is <B>[I--]</B>. Together, they indicate that the package was installed from the Portage tree or an overlay, but has since been removed from that tree; therefore <B>equery</B> can not determine a mask status for it.
+<DT>
+<DD>Package name:
+<BR>
+
+The third field is the full package name and version.
+<DT>
+<DD>Slot:
+<BR>
+
+The fourth field, after the colon, is the package's slot. <B>0</B> is the default slot. To find all packages with multiple slots installed, use <B>--duplicates</B>.
+
+<B>Note:</B> Because it takes extra processing time to determine the location, mask status and slot, you can speed up output by passing the <B>--quiet</B> global option to <B>equery</B> when you don't care about the extra information.
+<P>
+<B>Note:</B> Additionally, when using --quiet, if no matches are found, instead of printing an error, the equery list module will return with an exit value of 3.
+<P>
+
+<I>R EXAMPLES :</I>
+
+
+<DT>
+<DD>equery list '*'
+
+<BR>
+
+List all installed packages. This is equivalent to '<B>equery list</B>' in <B>Gentoolkit</B> versions prior to 0.3.0.
+
+<DT>
+<DD>equery list -op mozilla-firefox
+
+<BR>
+
+List all available versions of the package exactly matching 'mozilla-firefox'. This is equivalent to '<B>equery list --exact-name -o -p mozilla-firefox</B>' in <B>Gentoolkit</B> versions prior to 0.3.0.
+
+<DT>
+<DD>equery list '*zilla*'
+
+<BR>
+
+List all packages that contain (fuzzy match) 'zilla'. This is equivalent to '<B>equery list zilla</B>' in <B>Gentoolkit</B> versions prior to 0.3.0.
+
+<DT>
+<DD>equery list 'www-client/*'
+
+<BR>
+
+List all packages in the category <B>www-client</B>. This is equivalent to '<B>equery list --category=www-client</B>' in <B>Gentoolkit</B> versions prior to 0.3.0.
+
+<DT>
+<DD>equery list --duplicates '*'
+
+<BR>
+
+List all packages with more than one version installed. This is equivalent to '<B>equery list --duplicates</B>' in <B>Gentoolkit</B> versions prior to 0.3.0.
+
+<DT>
+<DD>equery list -F '$cp:$slot' '*'
+
+<BR>
+
+Get a list of slotted atoms for all installed packages.
+
+<DT>
+<DD>equery list -po -F '[$location] [$mask] $cpv:$slot [$repo]' '*'
+
+<BR>
+
+Show all packages in the default (verbose) output format but also include their repository name.
+<P>
+</DL>
+<A NAME="lbAP">&nbsp;</A>
+<H3><B>meta</B><I>(m)</I><B>[OPTIONS]</B><I></I><B>PKG</B>
+
+</H3>
+
+Display metadata about <I>PKG</I>.
+<P>
+<B>meta</B> reads a file called metadata.xml which must be included with all Portage tree packages. <B>meta</B> does not read ebuilds, so it can only return version independent metadata. Since until now there had not been an easy way for users to view metadata.xml, and because package maintainers are only required to fill out a very small portion of the file, there are still many packages without detailed metadata available. For more information about metadata.xml, see:
+<BR>
+
+
+<A HREF="http://www.gentoo.org/proj/en/devrel/handbook/handbook.xml?part=2">http://www.gentoo.org/proj/en/devrel/handbook/handbook.xml?part=2</A>&amp;chap=4
+
+<P>
+<I>R LOCAL OPTIONS :</I>
+
+<DL COMPACT>
+<DT>
+<B>-d, --description</B>
+
+<DD>
+<DD>Show an extended package description.
+<DT>
+<B>-H, --herd</B>
+
+<DD>
+<DD>Show the herd(s) for the package. When not piping and not passing <B>--quiet</B> as a global option, also show the herd's email address. (shown by default)
+<DT>
+<B>-k, --keywords</B>
+
+<DD>
+<DD>Show keywords for all matching versions. <B>keywords</B> does not list all keywords for all versions. Instead, it filters the list to make it easier to spot versions that need bumping or are okay to remove from the tree. It filters by slot. For example:
+<BR>
+
+Keywords:    1.35.0-r3:<B>0</B>:
+<BR>
+
+Keywords:    1.35.0-r5:<B>0</B>: amd64 hppa ppc x86 ~alpha ~arm ~ia64 ~mips ~ppc64 ~s390 ~sh ~sparc
+<BR>
+
+In this output from <B>equery meta boost</B>, -r5 is the highest available version in slot 0, so all keywords are listed. The actual keywords for -r3 are &quot;~amd64 ~hppa ~ppc ~x86&quot;, but since a higher version in the same slot has the same or more stable keywording, they are filtered out. Arch mask keywords (-*) are always shown.
+<DT>
+<B>-m, --maintainer</B>
+
+<DD>
+<DD>Show the package maintainer(s) email address. If the metadata is available, also show the maitainer's name and/or job description. (shown by default)
+<DT>
+<B>-u, --useflags</B>
+
+<DD>
+<DD>Show per-package USE flag descriptions. Per-package USE flag descriptions are sometimes added to metadata.xml if the affect of the USE flag is unusual, or if the USE flag is rare enough to be undefined in the global definition file. <B>equery uses</B> now displays these same local descriptions as well, so this option is left in <B>meta</B> for completeness only.
+<DT>
+<B>-U, --upstream</B>
+
+<DD>
+<DD>Show information about the package's upstream project, including the author's email, upstream bug tracker or upstream documentation. At the time of writing, most maintainers do not provide this information. (shown by default)
+<DT>
+<B>-x, --xml</B>
+
+<DD>
+<DD>Dump the plain XML file to the screen.
+
+<I>R EXAMPLES :</I>
+
+
+<DT>
+<DD>equery meta gnucash
+
+<BR>
+
+Show general information about maintainership, including herd, maintainer and upstream.
+
+<DT>
+<DD>equery meta --description app-misc/screen
+
+<BR>
+
+See if the package maintainer has provided an extended description.
+
+<DT>
+<DD>equery -N meta -H gnome |grep -o --color=never '[^( ]*@gentoo.org'
+
+<BR>
+
+Extract the herd's email address to let them know they're doing a great job. Remember, bug reports should go to bugs.gentoo.org. The above example will extract one or more emails if available, or return nothing if the herd is <B>no-herd</B>.
+<P>
+</DL>
+<A NAME="lbAQ">&nbsp;</A>
+<H3><B>size</B><I>(s)</I><B>[OPTIONS]</B><I></I><B>PKG</B>
+
+</H3>
+
+Print total size of files contained in a given <I>PKG</I>.
+<P>
+<I>R LOCAL OPTIONS :</I>
+
+<DL COMPACT>
+<DT>
+<B>-b, --bytes</B>
+
+<DD>
+<DD>Report package size in bytes.
+<DT>
+<B>-f, --full-regex</B>
+
+<DD>
+<DD>The query is a regular expression.
+
+<I>R EXAMPLES :</I>
+
+
+<DT>
+<DD>equery -q size 'www-client/*'
+
+<BR>
+
+Get a one-line summary of the number of files and total size (in bytes) of those files for each installed package in a category.
+<P>
+</DL>
+<A NAME="lbAR">&nbsp;</A>
+<H3><B>uses</B><I>(u)</I><B>[OPTIONS]</B><I></I><B>PKG</B>
+
+</H3>
+
+Display USE flag statuses and descriptions for a given PKG.
+<P>
+<I>R LOCAL OPTIONS :</I>
+
+<DL COMPACT>
+<DT>
+<B>-a, --all</B>
+
+<DD>
+<DD>Display all package versions. Without this option, <B>equery</B> will choose the best available version.
+<DT>
+<B>-i, --ignore-linguas</B>
+
+<DD>
+<DD>Do not show the linguas USE flags
+
+<I>R EXAMPLES :</I>
+
+
+<DT>
+<DD>equery uses app-misc/beagle
+
+<BR>
+
+See which USE flags are enabled for a specific package.
+
+<DT>
+<DD>USE=&quot;perl&quot;; for PKG in $(equery -q hasuse $USE); do echo $PKG: $(equery -q uses $PKG |grep $USE); done
+
+<BR>
+
+This Bash one-liner uses <B>hasuse</B> to find a list of packages that have a certain USE flag, and <B>uses</B> to check whether the flag is enabled or disabled. Modify <B>USE=&quot;perl&quot;</B> to change the query.
+<P>
+</DL>
+<A NAME="lbAS">&nbsp;</A>
+<H3><B>which</B><I>(w)</I><B>[OPTIONS]</B><I></I><B>PKG</B>
+
+</H3>
+
+Display the path to the ebuild that would be used by Portage with the current configuration.
+<P>
+<I>R LOCAL OPTIONS :</I>
+
+<DL COMPACT>
+<DT>
+<B>-m, --include-masked</B>
+
+<DD>
+<DD>Return the path to the hightest version ebuild available.
+<DT>
+<B>-e, --ebuild</B>
+
+<DD>
+<DD>Print the contents of the ebuild
+
+<I>R EXAMPLES :</I>
+
+
+<DT>
+<DD>equery which -e xorg-server
+
+<BR>
+
+View the most recent installable ebuild.
+<P>
+</DL>
+<A NAME="lbAT">&nbsp;</A>
+<H2>BUGS</H2>
+
+Submit bug reports to <A HREF="http://bugs.gentoo.org.">http://bugs.gentoo.org.</A>
+<P>
+<A NAME="lbAU">&nbsp;</A>
+<H2>AUTHORS</H2>
+
+Karl Trygve Kalleberg &lt;karltk@gentoo.org&gt;, 2003
+<BR>
+
+Katerina Barone-Adesi &lt;katerinab@gmail.com&gt;, 2004
+<BR>
+
+Douglas Anderson &lt;douglasjanderson@gmail.com&gt;, 2009
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">NAME</A><DD>
+<DT><A HREF="#lbAC">SYNOPSIS</A><DD>
+<DT><A HREF="#lbAD">DESCRIPTION</A><DD>
+<DT><A HREF="#lbAE">GLOBAL OPTIONS</A><DD>
+<DT><A HREF="#lbAF">MODULES</A><DD>
+<DL>
+<DT><A HREF="#lbAG"><B>belongs</B><I>(b)</I><B>[OPTIONS]</B><I></I><B>FILE</B>
+
+</A><DD>
+<DT><A HREF="#lbAH"><B>changes</B><I>(c)</I><B>[OPTIONS]</B><I></I><B>PKG</B>
+
+</A><DD>
+<DT><A HREF="#lbAI"><B>check</B><I>(k)</I><B>[OPTIONS]</B><I></I><B>PKG</B>
+
+</A><DD>
+<DT><A HREF="#lbAJ"><B>depends</B><I>(d)</I><B>[OPTIONS]</B><I></I><B>PKG</B>
+
+</A><DD>
+<DT><A HREF="#lbAK"><B>depgraph</B><I>(g)</I><B>[OPTIONS]</B><I></I><B>PKG</B>
+
+</A><DD>
+<DT><A HREF="#lbAL"><B>files</B><I>(f)</I><B>[OPTIONS]</B><I></I><B>PKG</B>
+
+</A><DD>
+<DT><A HREF="#lbAM"><B>has</B><I>(a)</I><B>[OPTIONS]</B><I></I><B>KEY</B><I>VALUE</I>
+
+</A><DD>
+<DT><A HREF="#lbAN"><B>hasuse</B><I>(h)</I><B>[OPTIONS]</B><I></I><B>USE</B>
+
+</A><DD>
+<DT><A HREF="#lbAO"><B>list</B><I>(l)</I><B>[OPTIONS]</B><I></I><B>PKG</B>
+
+</A><DD>
+<DT><A HREF="#lbAP"><B>meta</B><I>(m)</I><B>[OPTIONS]</B><I></I><B>PKG</B>
+
+</A><DD>
+<DT><A HREF="#lbAQ"><B>size</B><I>(s)</I><B>[OPTIONS]</B><I></I><B>PKG</B>
+
+</A><DD>
+<DT><A HREF="#lbAR"><B>uses</B><I>(u)</I><B>[OPTIONS]</B><I></I><B>PKG</B>
+
+</A><DD>
+<DT><A HREF="#lbAS"><B>which</B><I>(w)</I><B>[OPTIONS]</B><I></I><B>PKG</B>
+
+</A><DD>
+</DL>
+<DT><A HREF="#lbAT">BUGS</A><DD>
+<DT><A HREF="#lbAU">AUTHORS</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="http://github.com/hamano/man2html/">man2html</A>,
+using the manual pages.<BR>
+Time: 17:47:17 GMT, December 02, 2015
+</BODY>
+</HTML>
