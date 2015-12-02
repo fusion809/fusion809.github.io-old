@@ -1,3013 +1,1990 @@
-<!-- Creator     : groff version 1.22.3 -->
-<!-- CreationDate: Thu Dec  3 00:26:26 2015 -->
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta name="generator" content="groff -Thtml, see www.gnu.org">
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
-<meta name="Content-Style" content="text/css">
-<style type="text/css">
-       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
-       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
-       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
-       h1      { text-align: center }
-</style>
-<title>EBUILD</title>
-
-</head>
-<body>
-
-<h1 align="center">EBUILD</h1>
-
-<a href="#NAME">NAME</a><br>
-<a href="#DESCRIPTION">DESCRIPTION</a><br>
-<a href="#VARIABLES">VARIABLES</a><br>
-<a href="#PORTAGE DECLARATIONS">PORTAGE DECLARATIONS</a><br>
-<a href="#PHASE FUNCTIONS">PHASE FUNCTIONS</a><br>
-<a href="#HELPER FUNCTIONS">HELPER FUNCTIONS</a><br>
-<a href="#EXAMPLES">EXAMPLES</a><br>
-<a href="#FILES">FILES</a><br>
-<a href="#SEE ALSO">SEE ALSO</a><br>
-<a href="#REPORTING BUGS">REPORTING BUGS</a><br>
-<a href="#AUTHORS">AUTHORS</a><br>
-
-<hr>
-
-
-<h2>NAME
-<a name="NAME"></a>
-</h2>
-
-
-<p style="margin-left:11%; margin-top: 1em">ebuild &minus;
-the internal format, variables, and functions in an ebuild
-script</p>
-
-<h2>DESCRIPTION
-<a name="DESCRIPTION"></a>
-</h2>
-
-
-<p style="margin-left:11%; margin-top: 1em">The
-<b>ebuild</b>(1) program accepts a single ebuild script as
-an argument. This script contains variables and commands
-that specify how to download, unpack, patch, compile,
-install and merge a particular software package from its
-original sources. In addition to all of this, the ebuild
-script can also contain pre/post install/remove commands, as
-required. All ebuild scripts are written in bash.</p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><b>Dependencies</b>
-<br>
-A <i>depend atom</i> is simply a dependency that is used by
-portage when calculating relationships between packages.
-Please note that if the atom has not already been emerged,
-then the latest version available is matched. <b><br>
-Atom Bases</b></p>
-
-<p style="margin-left:22%;">The base atom is just a full
-category/packagename.</p>
-
-<p style="margin-left:22%; margin-top: 1em">Examples:</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p><i>sys&minus;apps/sed</i></p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p><i>sys&minus;libs/zlib</i></p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p><i>net&minus;misc/dhcp</i></p></td></tr>
-</table>
-
-<p style="margin-left:11%;"><b>Atom Versions</b></p>
-
-<p style="margin-left:22%;">It is nice to be more specific
-and say that only certain versions of atoms are acceptable.
-Note that versions must be combined with a prefix (see
-below). Hence you may add a version number as a postfix to
-the base.</p>
-
-<p style="margin-left:22%; margin-top: 1em">Examples:</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>sys&minus;apps/sed<i>&minus;4.0.5</i></p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>sys&minus;libs/zlib<i>&minus;1.1.4&minus;r1</i></p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>net&minus;misc/dhcp<i>&minus;3.0_p2</i></p></td></tr>
-</table>
-
-<p style="margin-left:22%; margin-top: 1em">Versions are
-normally made up of two or three numbers separated by
-periods, such as 1.2 or 4.5.2. This string may be followed
-by a character such as 1.2a or 4.5.2z. Note that this letter
-is <i>not</i> meant to indicate alpha, beta, etc... status.
-For that, use the optional suffix; either _alpha, _beta,
-_pre (pre&minus;release), _rc (release candidate), or _p
-(patch). This means for the 3rd pre&minus;release of a
-package, you would use something like 1.2_pre3. The suffixes
-here can be arbitrarily chained without limitation.</p>
-
-<p style="margin-left:11%;"><b>Atom Prefix Operators [&gt;
-&gt;= = &lt;= &lt;]</b></p>
-
-<p style="margin-left:22%;">Sometimes you want to be able
-to depend on general versions rather than specifying exact
-versions all the time. Hence we provide standard boolean
-operators:</p>
-
-<p style="margin-left:22%; margin-top: 1em">Examples:</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p><i>&gt;</i>media&minus;libs/libgd&minus;1.6</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p><i>&gt;=</i>media&minus;libs/libgd&minus;1.6</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p><i>=</i>media&minus;libs/libgd&minus;1.6</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p><i>&lt;=</i>media&minus;libs/libgd&minus;1.6</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p><i>&lt;</i>media&minus;libs/libgd&minus;1.6</p></td></tr>
-</table>
-
-<p style="margin-left:11%;"><b>Extended Atom Prefixes [!~]
-and Postfixes [*]</b></p>
-
-<p style="margin-left:22%;">Now to get even fancier, we
-provide the ability to define blocking packages and version
-range matching. Also note that these extended
-prefixes/postfixes may be combined in any way with the atom
-classes defined above.</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="22%"></td>
-<td width="1%">
-
-
-<p><i>~</i></p></td>
-<td width="9%"></td>
-<td width="68%">
-
-
-<p>means match any revision of the base version specified.
-So in the example below, we would match versions
-&rsquo;1.0.2a&rsquo;, &rsquo;1.0.2a&minus;r1&rsquo;,
-&rsquo;1.0.2a&minus;r2&rsquo;, etc...</p></td></tr>
-</table>
-
-<p style="margin-left:32%; margin-top: 1em">Example:
-<i><br>
-~</i>net&minus;libs/libnet&minus;1.0.2a</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="22%"></td>
-<td width="1%">
-
-
-<p style="margin-top: 1em"><i>!</i></p></td>
-<td width="9%"></td>
-<td width="68%">
-
-
-<p style="margin-top: 1em">means block packages from being
-installed at the same time.</p></td></tr>
-</table>
-
-<p style="margin-left:32%; margin-top: 1em">Example:
-<i><br>
-!</i>app&minus;text/dos2unix</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="22%"></td>
-<td width="3%">
-
-
-<p style="margin-top: 1em"><i>!!</i></p></td>
-<td width="7%"></td>
-<td width="68%">
-
-
-<p style="margin-top: 1em">means block packages from being
-installed at the same time and explicitly disallow them from
-being temporarily installed simultaneously during a series
-of upgrades. This syntax is supported beginning with <b>EAPI
-2</b>.</p> </td></tr>
-</table>
-
-<p style="margin-left:32%; margin-top: 1em">Example:
-<i><br>
-!!</i>&lt;sys&minus;apps/portage&minus;2.1.4_rc1</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="22%"></td>
-<td width="1%">
-
-
-<p style="margin-top: 1em"><i>*</i></p></td>
-<td width="9%"></td>
-<td width="68%">
-
-
-<p style="margin-top: 1em">means match any version of the
-package so long as the specified string prefix is matched.
-So with a version of &rsquo;2*&rsquo;, we can match
-&rsquo;2.1&rsquo;, &rsquo;2.2&rsquo;, &rsquo;2.2.1&rsquo;,
-etc... and not match version &rsquo;1.0&rsquo;,
-&rsquo;3.0&rsquo;, &rsquo;4.1&rsquo;, etc... Beware that,
-due to the string matching nature, &rsquo;20&rsquo; will
-also be matched by &rsquo;2*&rsquo;. The version part that
-comes before the &rsquo;*&rsquo; must be a valid version in
-the absence of the &rsquo;*&rsquo;. For example,
-&rsquo;2&rsquo; is a valid version and &rsquo;2.&rsquo; is
-not. Therefore, &rsquo;2*&rsquo; is allowed and
-&rsquo;2.*&rsquo; is not.</p></td></tr>
-</table>
-
-<p style="margin-left:32%; margin-top: 1em">Examples: <br>
-=dev&minus;libs/glib&minus;2<i>*</i></p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="92%">
-
-
-<p><i>!</i>=net&minus;fs/samba&minus;2<i>*</i></p></td></tr>
-</table>
-
-<p style="margin-left:11%;"><b>Atom Slots</b></p>
-
-<p style="margin-left:22%;">Beginning with <b>EAPI 1</b>,
-any atom can be constrained to match a specific <b>SLOT</b>.
-This is accomplished by appending a colon followed by a
-<b>SLOT</b>:</p>
-
-<p style="margin-left:22%; margin-top: 1em">Examples:</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>x11&minus;libs/qt:3</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p><i>~</i>x11&minus;libs/qt-3.3.8:3</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p><i>&gt;=</i>x11&minus;libs/qt-3.3.8:3</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p><i>=</i>x11&minus;libs/qt-3.3*:3</p></td></tr>
-</table>
-
-<p style="margin-left:11%;"><b>Sub Slots</b></p>
-
-<p style="margin-left:22%;">Beginning with <b>EAPI 5</b>, a
-slot dependency may contain an optional sub&minus;slot part
-that follows the regular slot and is delimited by a <i>/</i>
-character.</p>
-
-<p style="margin-left:22%; margin-top: 1em">Examples:</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>dev&minus;libs/icu:0/0</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>dev&minus;libs/icu:0/49</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>dev&minus;lang/perl:0/5.12</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>dev&minus;libs/glib:2/2.30</p></td></tr>
-</table>
-
-<p style="margin-left:11%;"><b>Atom Slot Operators</b></p>
-
-<p style="margin-left:22%;">Beginning with <b>EAPI 5</b>,
-slot operator dependency consists of a colon followed by one
-of the following operators:</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="22%"></td>
-<td width="1%">
-
-
-<p><i>*</i></p></td>
-<td width="9%"></td>
-<td width="68%">
-
-
-<p>Indicates that any slot value is acceptable. In
-addition, for runtime dependencies, indicates that the
-package will not break if the matched package is uninstalled
-and replaced by a different matching package in a different
-slot.</p> </td></tr>
-</table>
-
-<p style="margin-left:32%; margin-top: 1em">Examples: <br>
-dev&minus;libs/icu:*</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="92%">
-
-
-<p>dev&minus;lang/perl:*</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="92%">
-
-
-<p>dev-libs/glib:*</p></td></tr>
-</table>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="22%"></td>
-<td width="1%">
-
-
-<p style="margin-top: 1em"><i>=</i></p></td>
-<td width="9%"></td>
-<td width="68%">
-
-
-<p style="margin-top: 1em">Indicates that any slot value is
-acceptable. In addition, for runtime dependencies, indicates
-that the package will break unless a matching package with
-slot and sub&minus;slot equal to the slot and sub&minus;slot
-of the best installed version at the time the package was
-installed is available.</p></td></tr>
-</table>
-
-<p style="margin-left:32%; margin-top: 1em">Examples: <br>
-dev&minus;libs/icu:=</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="92%">
-
-
-<p>dev&minus;lang/perl:=</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="92%">
-
-
-<p>dev-libs/glib:=</p></td></tr>
-</table>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="22%"></td>
-<td width="7%">
-
-
-<p style="margin-top: 1em"><i>slot=</i></p></td>
-<td width="3%"></td>
-<td width="68%">
-
-
-<p style="margin-top: 1em">Indicates that only a specific
-slot value is acceptable, and otherwise behaves identically
-to the plain equals slot operator.</p></td></tr>
-</table>
-
-<p style="margin-left:32%; margin-top: 1em">Examples: <br>
-dev&minus;libs/icu:0=</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="92%">
-
-
-<p>dev&minus;lang/perl:0=</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="92%">
-
-
-<p>dev-libs/glib:2=</p></td></tr>
-</table>
-
-<p style="margin-left:22%; margin-top: 1em">To implement
-the equals slot operator, the package manager will need to
-store the slot/sub&minus;slot pair of the best installed
-version of the matching package. This syntax is only for
-package manager use and must not be used by ebuilds. The
-package manager may do this by inserting the appropriate
-slot/sub&minus;slot pair between the colon and equals sign
-when saving the package&rsquo;s dependencies. The
-sub&minus;slot part must not be omitted here (when the SLOT
-variable omits the sub&minus;slot part, the package is
-considered to have an implicit sub&minus;slot which is equal
-to the regular slot).</p>
-
-<p style="margin-left:22%; margin-top: 1em">Examples:</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="92%">
-
-
-<p>dev&minus;libs/icu:0/0=</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="92%">
-
-
-<p>dev&minus;libs/icu:0/49=</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="92%">
-
-
-<p>dev&minus;lang/perl:0/5.12=</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="92%">
-
-
-<p>dev-libs/glib:2/2.30=</p></td></tr>
-</table>
-
-<p style="margin-left:11%;"><b>Atom USE</b></p>
-
-<p style="margin-left:22%;">Beginning with <b>EAPI 2</b>,
-any atom can be constrained to match specific <b>USE</b>
-flag settings. When used together with <b>SLOT</b>
-dependencies, <b>USE</b> dependencies appear on the right
-hand side of <b>SLOT</b> dependencies. <b><br>
-Unconditional USE Dependencies</b></p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="15%"></td>
-<td width="8%"></td>
-<td width="8%"></td>
-<td width="69%">
-</td></tr>
-<tr valign="top" align="left">
-<td width="15%"></td>
-<td width="8%"></td>
-<td width="8%"></td>
-<td width="69%">
-</td></tr>
-<tr valign="top" align="left">
-<td width="15%"></td>
-<td width="8%"></td>
-<td width="8%"></td>
-<td width="69%">
-</td></tr>
-<tr valign="top" align="left">
-<td width="15%"></td>
-<td width="8%"></td>
-<td width="8%"></td>
-<td width="69%">
-</td></tr>
-<tr valign="top" align="left">
-<td width="15%"></td>
-<td width="8%"></td>
-<td width="8%"></td>
-<td width="69%">
-</td></tr>
-</table>
-
-
-<p align="center"><img src="grohtml-19971.png" alt="Image grohtml-19971.png"></p>
-
-<p style="margin-left:22%;"><b>Conditional USE
-Dependencies</b></p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="15%"></td>
-<td width="8%"></td>
-<td width="8%"></td>
-<td width="69%">
-</td></tr>
-<tr valign="top" align="left">
-<td width="15%"></td>
-<td width="8%"></td>
-<td width="8%"></td>
-<td width="69%">
-</td></tr>
-<tr valign="top" align="left">
-<td width="15%"></td>
-<td width="8%"></td>
-<td width="8%"></td>
-<td width="69%">
-</td></tr>
-<tr valign="top" align="left">
-<td width="15%"></td>
-<td width="8%"></td>
-<td width="8%"></td>
-<td width="69%">
-</td></tr>
-<tr valign="top" align="left">
-<td width="15%"></td>
-<td width="8%"></td>
-<td width="8%"></td>
-<td width="69%">
-</td></tr>
-<tr valign="top" align="left">
-<td width="15%"></td>
-<td width="8%"></td>
-<td width="8%"></td>
-<td width="69%">
-</td></tr>
-</table>
-
-
-<p align="center"><img src="grohtml-19972.png" alt="Image grohtml-19972.png"></p>
-
-<p style="margin-left:11%;"><b>Atom USE defaults</b></p>
-
-<p style="margin-left:22%;">Beginning with <b>EAPI 4</b>,
-<b>USE</b> dependencies may specify default assumptions
-about values for flags that may or may not be missing from
-the <b>IUSE</b> of the matched package. Such defaults are
-specified by immediately following a flag with either
-<i>(+)</i> or <i>(&minus;)</i>. Use <i>(+)</i> to behave as
-if a missing flag is present and enabled, or
-<i>(&minus;)</i> to behave as if it is present and
-disabled:</p>
-
-<p style="margin-left:22%; margin-top: 1em">Examples:</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>media&minus;video/ffmpeg[threads(+)]</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>media&minus;video/ffmpeg[-threads(&minus;)]</p></td></tr>
-</table>
-
-<p style="margin-left:11%;"><b>Dynamic Dependencies</b></p>
-
-<p style="margin-left:22%;">Sometimes programs may depend
-on different things depending on the USE variable. Portage
-offers a few options to handle this. Note that when using
-the following syntaxes, each case is considered as 1 Atom in
-the scope it appears. That means that each Atom both
-conditionally include multiple Atoms and be nested to an
-infinite depth. <b><br>
-usevar? ( Atom )</b></p>
-
-<p style="margin-left:32%;">To include the jpeg library
-when the user has jpeg in <b>USE</b>, simply use the
-following syntax:</p>
-
-<p style="margin-left:32%; margin-top: 1em">jpeg? (
-media&minus;libs/jpeg )</p>
-
-<p style="margin-left:22%;"><b>!usevar? ( Atom )</b></p>
-
-<p style="margin-left:32%;">If you want to include a
-package only if the user does not have a certain option in
-their <b>USE</b> variable, then use the following
-syntax:</p>
-
-<p style="margin-left:32%; margin-top: 1em">!nophysfs? (
-dev&minus;games/physfs )</p>
-
-<p style="margin-left:32%; margin-top: 1em">This is often
-useful for those times when you want to want to add optional
-support for a feature and have it enabled by default.</p>
-
-<p style="margin-left:22%;"><b>usevar? ( Atom if true )
-!usevar? ( Atom if false )</b></p>
-
-<p style="margin-left:32%;">For functionality like the
-tertiary operator found in C you must use two statements,
-one normal and one inverted. If a package uses GTK2 or GTK1,
-but not both, then you can handle that like this:</p>
-
-<p style="margin-left:32%; margin-top: 1em">gtk2? (
-=x11&minus;libs/gtk+&minus;2* ) !gtk2? (
-=x11&minus;libs/gtk+&minus;1* )</p>
-
-<p style="margin-left:32%; margin-top: 1em">That way the
-default is the superior GTK2 library.</p>
-
-<p style="margin-left:22%;"><b>|| ( Atom Atom ... )</b></p>
-
-<p style="margin-left:32%;">When a package can work with a
-few different packages but a virtual is not appropriate,
-this syntax can easily be used.</p>
-
-<p style="margin-left:32%; margin-top: 1em">Example: <br>
-|| (</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>app&minus;games/unreal&minus;tournament</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>app&minus;games/unreal&minus;tournament&minus;goty</p></td></tr>
-</table>
-
-<p style="margin-left:32%;">)</p>
-
-<p style="margin-left:32%; margin-top: 1em">Here we see
-that unreal&minus;tournament has a normal version and it has
-a goty version. Since they provide the same base set of
-files, another package can use either. Adding a virtual is
-inappropriate due to the small scope of it.</p>
-
-<p style="margin-left:32%; margin-top: 1em">Another good
-example is when a package can be built with multiple video
-interfaces, but it can only ever have just one.</p>
-
-<p style="margin-left:32%; margin-top: 1em">Example: <br>
-|| (</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="92%">
-
-
-<p>sdl? ( media&minus;libs/libsdl )</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="92%">
-
-
-<p>svga? ( media&minus;libs/svgalib )</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="92%">
-
-
-<p>opengl? ( virtual/opengl )</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="92%">
-
-
-<p>ggi? ( media&minus;libs/libggi )</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="92%">
-
-
-<p>virtual/x11</p></td></tr>
-</table>
-
-<p style="margin-left:32%;">)</p>
-
-<p style="margin-left:32%; margin-top: 1em">Here only one
-of the packages will be chosen, and the order of preference
-is determined by the order in which they appear. So sdl has
-the best chance of being chosen, followed by svga, then
-opengl, then ggi, with a default of X if the user does not
-specify any of the previous choices.</p>
-
-<p style="margin-left:32%; margin-top: 1em">Note that if
-any of the packages listed are already merged, the package
-manager will use that to consider the dependency
-satisfied.</p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><b>Cross-compilation</b>
-<br>
-Portage supports cross-compilation into a subdirectory
-specified by <b>ROOT</b>.</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="11%"></td>
-<td width="6%">
-
-
-<p><b>Host</b></p></td>
-<td width="5%"></td>
-<td width="78%">
-
-
-<p><i>Host</i> in this context means the platform hosting
-the build process, i.e. what autotools calls CBUILD. Its
-packages are contained in the root of the filesystem
-(&quot;<i>/</i>&quot;).</p> </td></tr>
-</table>
-
-<p style="margin-left:22%; margin-top: 1em">If <b>ROOT</b>
-is &quot;<i>/</i>&quot;, all dependency types will be
-installed there. Otherwise, for EAPIs that support
-<b>HDEPEND</b> (experimental <b>EAPI 5-hdepend</b>), only
-<b>HDEPEND</b> is installed into &quot;<i>/</i>&quot;. For
-EAPIs that do not support <b>HDEPEND</b>, the behaviour is
-controlled by the <i>&minus;&minus;root-deps</i> flag to
-<b>emerge</b>(1), defaulting to install only <b>DEPEND</b>
-into the <i>host</i>.</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="11%"></td>
-<td width="9%">
-
-
-<p style="margin-top: 1em"><b>Target</b></p></td>
-<td width="2%"></td>
-<td width="78%">
-
-
-<p style="margin-top: 1em"><i>Target</i> refers to the
-platform that the package will later run on, i.e. what
-autotools calls CHOST. The directory housing this system is
-specified by <b>ROOT</b>. If it is different from
-&quot;<i>/</i>&quot;, i.e. <i>host</i> and <i>target</i> are
-not the same, this variable contains the path to the
-directory housing the <i>target</i> system.</p></td></tr>
-</table>
-
-<p style="margin-left:22%; margin-top: 1em">For EAPIs that
-support <b>HDEPEND</b> (experimental <b>EAPI 5-hdepend</b>),
-<b>DEPEND</b>, <b>RDEPEND</b>, and <b>PDEPEND</b> list the
-<i>target</i> dependencies, i.e. those to be installed into
-<b>ROOT</b>. For EAPIs that do not support <b>HDEPEND</b>,
-the <b>emerge</b>(1) flag <i>&minus;&minus;root-deps</i>
-controls what the package manager installs there. Without
-it, <b>emerge</b> defaults to install only runtime
-dependencies (i.e. <b>RDEPEND</b> and <b>PDEPEND</b>) into
-<b>ROOT</b>.</p>
-
-<p style="margin-left:11%; margin-top: 1em">See section
-<b>VARIABLES</b> for more information about the
-<b>DEPEND</b>, <b>RDEPEND</b> and <b>HDEPEND</b> variables.
-<b><br>
-The targetroot USE flag</b></p>
-
-<p style="margin-left:22%;">For EAPIs that support the
-&quot;<i>targetroot</i>&quot; USE flag, that flag is
-automatically enabled by the package manager if <i>host</i>
-and <i>target</i> system are not the same, i.e. if the
-<b>ROOT</b> is not &quot;<i>/</i>&quot;. This is necessary
-where the package to be built needs an executable copy of
-itself during the build process. A known example is
-dev-lang/python, which needs to run a Python interpreter
-during compilation.</p>
-
-<h2>VARIABLES
-<a name="VARIABLES"></a>
-</h2>
-
-
-<p style="margin-left:11%; margin-top: 1em"><b>Usage
-Notes</b></p>
-
-<p style="margin-left:22%;">&minus; Variables defined in
-<b>make.conf</b>(5) are available for use in ebuilds (except
-Portage&minus;specific variables, which might be not
-supported by other package managers). <br>
-&minus; When assigning values to variables in ebuilds, you
-<i>cannot have a space</i> between the variable name and the
-equal sign. <br>
-&minus; Variable values should only contain characters that
-are members of the <b>ascii</b>(7) character set. This
-requirement is mandated by <b>GLEP 31</b>.</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="11%"></td>
-<td width="1%">
-
-
-<p><b>P</b></p></td>
-<td width="10%"></td>
-<td width="78%">
-
-
-<p>This variable contains the package name without the
-ebuild revision. This variable must NEVER be modified.</p></td></tr>
-</table>
-
-
-<p style="margin-left:22%; margin-top: 1em">xfree&minus;4.2.1&minus;r2.ebuild
-&minus;&minus;&gt; $P==&rsquo;xfree&minus;4.2.1&rsquo;</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="11%"></td>
-<td width="3%">
-
-
-<p style="margin-top: 1em"><b>PN</b></p></td>
-<td width="8%"></td>
-<td width="78%">
-
-
-<p style="margin-top: 1em">Contains the name of the script
-without the version number.</p></td></tr>
-</table>
-
-
-<p style="margin-left:22%; margin-top: 1em">xfree&minus;4.2.1&minus;r2.ebuild
-&minus;&minus;&gt; $PN==&rsquo;xfree&rsquo;</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="11%"></td>
-<td width="3%">
-
-
-<p style="margin-top: 1em"><b>PV</b></p></td>
-<td width="8%"></td>
-<td width="75%">
-
-
-<p style="margin-top: 1em">Contains the version number
-without the revision.</p></td>
-<td width="3%">
-</td></tr>
-</table>
-
-
-<p style="margin-left:22%; margin-top: 1em">xfree&minus;4.2.1&minus;r2.ebuild
-&minus;&minus;&gt; $PV==&rsquo;4.2.1&rsquo;</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="11%"></td>
-<td width="3%">
-
-
-<p style="margin-top: 1em"><b>PR</b></p></td>
-<td width="8%"></td>
-<td width="78%">
-
-
-<p style="margin-top: 1em">Contains the revision number or
-&rsquo;r0&rsquo; if no revision number exists.</p></td></tr>
-</table>
-
-
-<p style="margin-left:22%; margin-top: 1em">xfree&minus;4.2.1&minus;r2.ebuild
-&minus;&minus;&gt; $PR==&rsquo;r2&rsquo;</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="11%"></td>
-<td width="4%">
-
-
-<p style="margin-top: 1em"><b>PVR</b></p></td>
-<td width="7%"></td>
-<td width="70%">
-
-
-<p style="margin-top: 1em">Contains the version number with
-the revision.</p></td>
-<td width="8%">
-</td></tr>
-</table>
-
-
-<p style="margin-left:22%; margin-top: 1em">xfree&minus;4.2.1&minus;r2.ebuild
-&minus;&minus;&gt; $PVR==&rsquo;4.2.1&minus;r2&rsquo;</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="11%"></td>
-<td width="3%">
-
-
-<p style="margin-top: 1em"><b>PF</b></p></td>
-<td width="8%"></td>
-<td width="56%">
-
-
-<p style="margin-top: 1em">Contains the full package name
-<b>PN</b>&minus;<b>PVR</b></p> </td>
-<td width="22%">
-</td></tr>
-</table>
-
-
-<p style="margin-left:22%; margin-top: 1em">xfree&minus;4.2.1&minus;r2.ebuild
-&minus;&minus;&gt;
-$PF==&rsquo;xfree&minus;4.2.1&minus;r2&rsquo;</p>
-
-<p style="margin-left:11%;"><b>CATEGORY</b></p>
-
-<p style="margin-left:22%;">Contains the package category
-name.</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="11%"></td>
-<td width="1%">
-
-
-<p><b>A</b></p></td>
-<td width="10%"></td>
-<td width="78%">
-
-
-<p>Contains all source files required for the package. This
-variable must not be defined. It is autogenerated from the
-<b>SRC_URI</b> variable.</p></td></tr>
-</table>
-
-<p style="margin-left:11%;"><b>WORKDIR</b> =
-<i>&quot;${PORTAGE_TMPDIR}/portage/${CATEGORY}/${PF}/work&quot;</i></p>
-
-<p style="margin-left:22%;">Contains the path to the
-package build root. Do not modify this variable.</p>
-
-<p style="margin-left:11%;"><b>FILESDIR</b> =
-<i>&quot;${repository_location}/${CATEGORY}/${PN}/files&quot;</i></p>
-
-<p style="margin-left:22%;">Contains the path to the
-&rsquo;files&rsquo; subdirectory in the package specific
-location in given repository. Do not modify this
-variable.</p>
-
-<p style="margin-left:11%;"><b>EBUILD_PHASE</b></p>
-
-<p style="margin-left:22%;">Contains the abreviated name of
-the phase function that is currently executing, such as
-&quot;setup&quot;, &quot;unpack&quot;, &quot;compile&quot;,
-or &quot;preinst&quot;.</p>
-
-<p style="margin-left:11%;"><b>EBUILD_PHASE_FUNC</b></p>
-
-<p style="margin-left:22%;">Beginning with <b>EAPI 5</b>,
-contains the full name of the phase function that is
-currently executing, such as &quot;pkg_setup&quot;,
-&quot;src_unpack&quot;, &quot;src_compile&quot;, or
-&quot;pkg_preinst&quot;.</p>
-
-<p style="margin-left:11%;"><b>EPREFIX</b></p>
-
-<p style="margin-left:22%;">Beginning with <b>EAPI 3</b>,
-contains the offset that this Portage was configured for
-during installation. The offset is sometimes necessary in an
-ebuild or eclass, and is available in such cases as
-${EPREFIX}. EPREFIX does not contain a trailing slash,
-therefore an absent offset is represented by the empty
-string. Do not modify this variable.</p>
-
-<p style="margin-left:11%;"><b>S</b> =
-<i>&quot;${WORKDIR}/${P}&quot;</i></p>
-
-<p style="margin-left:22%;">Contains the path to the
-temporary <i>build directory</i>. This variable is used by
-the functions <i>src_compile</i> and <i>src_install</i>.
-Both are executed with <i>S</i> as the current directory.
-This variable may be modified to match the extraction
-directory of a tarball for the package.</p>
-
-<p style="margin-left:11%;"><b>T</b> =
-<i>&quot;${PORTAGE_TMPDIR}/portage/${CATEGORY}/${PF}/temp&quot;</i></p>
-
-<p style="margin-left:22%;">Contains the path to a
-<i>temporary directory</i>. You may use this for whatever
-you like.</p>
-
-<p style="margin-left:11%;"><b>D</b> =
-<i>&quot;${PORTAGE_TMPDIR}/portage/${CATEGORY}/${PF}/image/&quot;</i></p>
-
-<p style="margin-left:22%;">Contains the path to the
-temporary <i>install directory</i>. Every write operation
-that does not involve the helper tools and functions (found
-below) should be prefixed with ${D}. Beginning with <b>EAPI
-3</b>, the offset prefix often needs to be taken into
-account here, for which the variable ${ED} is provided (see
-below). Do not modify this variable.</p>
-
-<p style="margin-left:11%;"><b>ED</b> =
-<i>&quot;${PORTAGE_TMPDIR}/portage/${CATEGORY}/${PF}/image/${EPREFIX}/&quot;</i></p>
-
-<p style="margin-left:22%;">Beginning with <b>EAPI 3</b>,
-contains the path &quot;${D%/}${EPREFIX}/&quot; for
-convenience purposes. For EAPI values prior to <b>EAPI 3</b>
-which do not support ED, helpers use <b>D</b> where they
-would otherwise use ED. Do not modify this variable.</p>
-
-<p style="margin-left:11%;"><b>MERGE_TYPE</b></p>
-
-<p style="margin-left:22%;">Beginning with <b>EAPI 4</b>,
-the MERGE_TYPE variable can be used to query the current
-merge type. This variable will contain one of the following
-possible values:</p>
-
-
-<p align="center" style="margin-top: 1em"><img src="grohtml-19973.png" alt="Image grohtml-19973.png"></p>
-
-<p style="margin-left:11%;"><b>PROVIDES_EXCLUDE</b> =
-<i>[space delimited list of fnmatch patterns]</i></p>
-
-<p style="margin-left:22%;">Sonames and file paths matched
-by these fnmatch patterns will be excluded during genertion
-of <b>PROVIDES</b> metadata (see <b>portage</b>(5)).
-Patterns are delimited by whitespace, and it is possible to
-create patterns containing quoted whitespace.</p>
-
-<p style="margin-left:11%;"><b>PORTAGE_LOG_FILE</b></p>
-
-<p style="margin-left:22%;">Contains the path of the build
-log. If <b>PORT_LOGDIR</b> variable is unset then
-PORTAGE_LOG_FILE=<i>&quot;${T}/build.log&quot;</i>.</p>
-
-
-<p style="margin-left:11%;"><b>PORTAGE_SOCKS5_PROXY</b></p>
-
-<p style="margin-left:22%;">Contains the UNIX socket path
-to SOCKSv5 proxy providing host network access. Available
-only when running inside network&minus;sandbox and a proxy
-is available (see network&minus;sandbox in
-<b>make.conf</b>(5)).</p>
-
-<p style="margin-left:11%;"><b>REPLACED_BY_VERSION</b></p>
-
-<p style="margin-left:22%;">Beginning with <b>EAPI 4</b>,
-the REPLACED_BY_VERSION variable can be used in pkg_prerm
-and pkg_postrm to query the package version that is
-replacing the current package. If there is no replacement
-package, the variable will be empty, otherwise it will
-contain a single version number.</p>
-
-<p style="margin-left:11%;"><b>REPLACING_VERSIONS</b></p>
-
-<p style="margin-left:22%;">Beginning with <b>EAPI 4</b>,
-the REPLACING_VERSIONS variable can be used in pkg_pretend,
-pkg_setup, pkg_preinst and pkg_postinst to query the package
-version(s) that the current package is replacing. If there
-are no packages to replace, the variable will be empty,
-otherwise it will contain a space&minus;separated list of
-version numbers corresponding to the package version(s)
-being replaced. Typically, this variable will not contain
-more than one version, but according to PMS it can contain
-more.</p>
-
-<p style="margin-left:11%;"><b>REQUIRES_EXCLUDE</b> =
-<i>[space delimited list of fnmatch patterns]</i></p>
-
-<p style="margin-left:22%;">Sonames and file paths matched
-by these fnmatch patterns will be excluded during generation
-of <b>REQUIRES</b> metadata (see <b>portage</b>(5)).
-Patterns are delimited by whitespace, and it is possible to
-create patterns containing quoted whitespace.</p>
-
-<p style="margin-left:11%;"><b>ROOT</b> =
-<i>&quot;/&quot;</i></p>
-
-<p style="margin-left:22%;">Contains the path that portage
-should use as the root of the live filesystem. When packages
-wish to make changes to the live filesystem, they should do
-so in the tree prefixed by ${ROOT}. Often the offset prefix
-needs to be taken into account here, for which the variable
-${EROOT} is provided (see below). Do not modify this
-variable.</p>
-
-<p style="margin-left:11%;"><b>EROOT</b> =
-<i>&quot;${ROOT%/}${EPREFIX}/&quot;</i></p>
-
-<p style="margin-left:22%;">Beginning with <b>EAPI 3</b>,
-contains &quot;${ROOT%/}${EPREFIX}/&quot; for convenience
-purposes. Do not modify this variable.</p>
-
-<p style="margin-left:11%;"><b>DESCRIPTION</b> = <i>&quot;A
-happy little package&quot;</i></p>
-
-<p style="margin-left:22%;">Should contain a short
-description of the package.</p>
-
-<p style="margin-left:11%;"><b>EAPI</b> =
-<i>&quot;0&quot;</i></p>
-
-<p style="margin-left:22%;">Defines the ebuild API version
-to which this package conforms. If not defined then it
-defaults to &quot;0&quot;. If portage does not recognize the
-EAPI value then it will mask the package and refuse to
-perform any operations with it since this means that a newer
-version of portage needs to be installed first. For maximum
-backward compatiblity, a package should conform to the
-lowest possible EAPI. Note that anyone who uses the
-<b>ebuild</b>(1) and <b>repoman</b>(1) commands with this
-package will be required to have a version of portage that
-recognizes the EAPI to which this package conforms.</p>
-
-<p style="margin-left:11%;"><b>SRC_URI</b> =
-<i>&quot;http://example.com/path/${P}.tar.gz&quot;</i></p>
-
-<p style="margin-left:22%;">Contains a list of URIs for the
-required source files. It can contain multiple URIs for a
-single source file. The list is processed in order if the
-file was not found on any of the <i>GENTOO_MIRRORS</i>.
-Beginning with <b>EAPI 2</b>, the output file name of a
-given URI may be customized with a &quot;-&gt;&quot;
-operator on the right hand side, followed by the desired
-output file name. All tokens, including the operator and
-output file name, should be separated by whitespace.</p>
-
-<p style="margin-left:11%;"><b>HOMEPAGE</b> =
-<i>&quot;http://example.com/&quot;</i></p>
-
-<p style="margin-left:22%;">Should contain a list of URIs
-for the sources main sites and other further package
-dependent information.</p>
-
-<p style="margin-left:11%;"><b>KEYWORDS</b> =
-<i>[&minus;~][x86,ppc,sparc,mips,alpha,arm,hppa]</i></p>
-
-<p style="margin-left:22%;">Should contain appropriate list
-of arches that the ebuild is know to work/not work. By
-default if you do not know if an ebuild runs under a
-particular arch simply omit that KEYWORD. If the ebuild will
-not work on that arch include it as &minus;ppc for example.
-If the ebuild is being submitted for inclusion, it must have
-~arch set for architectures where it has been PROVEN TO
-WORK. (Packages KEYWORDed this way may be unmasked for
-testing by setting ACCEPT_KEYWORDS=&quot;~arch&quot; on the
-command line, or in <b>make.conf</b>(5)) For an
-authoritative list please review
-/usr/portage/profiles/arch.list. Please keep this list in
-alphabetical order.</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="11%"></td>
-<td width="6%">
-
-
-<p><b>SLOT</b></p></td>
-<td width="5%"></td>
-<td width="78%">
-
-
-<p>This sets the SLOT for packages that may need to have
-multiple versions co&minus;exist. By default you should set
-<b>SLOT</b>=&quot;0&quot;. If you are unsure, then do not
-fiddle with this until you seek some guidance from some
-guru. This value should <i>NEVER</i> be left undefined.</p></td></tr>
-</table>
-
-<p style="margin-left:22%; margin-top: 1em">Beginning with
-<b>EAPI 5</b>, the SLOT variable may contain an optional
-sub&minus;slot part that follows the regular slot and is
-delimited by a / character. The sub&minus;slot must be a
-valid slot name. The sub&minus;slot is used to represent
-cases in which an upgrade to a new version of a package with
-a different sub&minus;slot may require dependent packages to
-be rebuilt. When the sub&minus;slot part is omitted from the
-SLOT definition, the package is considered to have an
-implicit sub&minus;slot which is equal to the regular slot.
-Refer to the <b>Atom Slot Operators</b> section for more
-information about sub&minus;slot usage.</p>
-
-<p style="margin-left:11%;"><b>LICENSE</b></p>
-
-<p style="margin-left:22%;">This should be a space
-delimited list of licenses that the package falls under.
-This <b>_must_</b> be set to a matching license in
-/usr/portage/licenses/. If the license does not exist in
-portage yet, you must add it first.</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="11%"></td>
-<td width="9%">
-
-
-<p><b>IUSE</b></p></td>
-<td width="2%"></td>
-<td width="78%">
-
-
-<p>This should be a list of any and all USE flags that are
-leveraged within your build script. The only USE flags that
-should not be listed here are arch related flags (see
-<b>KEYWORDS</b>). Beginning with <b>EAPI 1</b>, it is
-possible to prefix flags with + or - in order to create
-default settings that respectively enable or disable the
-corresponding <b>USE</b> flags. For details about <b>USE</b>
-flag stacking order, refer to the <b>USE_ORDER</b> variable
-in <b>make.conf</b>(5). Given the default <b>USE_ORDER</b>
-setting, negative IUSE default settings are effective only
-for negation of repo&minus;level USE settings, since profile
-and user configuration settings override them.</p></td></tr>
-<tr valign="top" align="left">
-<td width="11%"></td>
-<td width="9%">
-
-
-<p><b>DEPEND</b></p></td>
-<td width="2%"></td>
-<td width="78%">
-
-
-<p>This should contain a list of all packages that are
-required for the program to compile (aka <i>buildtime</i>
-dependencies). These are usually libraries and headers.</p></td></tr>
-</table>
-
-<p style="margin-left:22%; margin-top: 1em">Starting from
-experimental <b>EAPI 5-hdepend</b>, tools should go into the
-<b>HDEPEND</b> variable instead, as <b>DEPEND</b> will only
-be installed into the <i>target</i> system and hence cannot
-be executed in a cross&minus;compile setting. (See section
-<b>Cross&minus;compilation</b> for more information.)</p>
-
-<p style="margin-left:22%; margin-top: 1em">You may use the
-syntax described above in the <b>Dependencies</b>
-section.</p>
-
-<p style="margin-left:11%;"><b>RDEPEND</b></p>
-
-<p style="margin-left:22%;">This should contain a list of
-all packages that are required for this program to run (aka
-<i>runtime</i> dependencies). These are usually
-libraries.</p>
-
-<p style="margin-left:22%; margin-top: 1em">In <b>EAPI
-3</b> or earlier, if this is not set, then it defaults to
-the value of <b>DEPEND</b>. In <b>EAPI 4</b> or later,
-<b>RDEPEND</b> will never be implicitly set.</p>
-
-<p style="margin-left:22%; margin-top: 1em">You may use the
-syntax described above in the <b>Dependencies</b>
-section.</p>
-
-<p style="margin-left:11%;"><b>HDEPEND</b></p>
-
-<p style="margin-left:22%;">This should contain a list of
-all packages that are required to be executable during
-compilation of this program (aka <i>host</i> buildtime
-dependencies). These are usually tools, like interpreters or
-(cross&minus;)compilers.</p>
-
-<p style="margin-left:22%; margin-top: 1em">This variable
-is new in experimental <b>EAPI 5-hdepend</b> and will be
-installed into the <i>host</i> system. (See section
-<b>Cross-compilation</b> for more information.)</p>
-
-<p style="margin-left:22%; margin-top: 1em">You may use the
-syntax described above in the <b>Dependencies</b>
-section.</p>
-
-<p style="margin-left:11%;"><b>PDEPEND</b></p>
-
-<p style="margin-left:22%;">This should contain a list of
-all packages that should be merged after this one (aka
-<i>post</i> merge dependencies), but which may be installed
-by the package manager at any time, if that is not
-possible.</p>
-
-
-<p style="margin-left:22%; margin-top: 1em"><b>***WARNING***</b>
-<br>
-Use this only as last resort to break cyclic
-dependencies!</p>
-
-<p style="margin-left:22%; margin-top: 1em">You may use the
-syntax described above in the <b>Dependencies</b>
-section.</p>
-
-<p style="margin-left:11%;"><b>REQUIRED_USE</b></p>
-
-<p style="margin-left:22%;">Beginning with <b>EAPI 4</b>,
-the <b>REQUIRED_USE</b> variable can be used to specify
-combinations of <b>USE</b> flags that are allowed or not
-allowed. Elements can be nested when necessary.</p>
-
-
-<p align="center" style="margin-top: 1em"><img src="grohtml-19974.png" alt="Image grohtml-19974.png"></p>
-
-<p style="margin-left:11%;"><b>RESTRICT</b> =
-<i>[strip,mirror,fetch,userpriv]</i></p>
-
-<p style="margin-left:22%;">This should be a space
-delimited list of portage features to restrict. You may use
-conditional syntax to vary restrictions as seen above in
-DEPEND. <i><br>
-binchecks</i></p>
-
-<p style="margin-left:32%;">Disable all QA checks for
-binaries. This should ONLY be used in packages for which
-binary checks make no sense (linux&minus;headers and
-kernel&minus;sources, for example, can safely be skipped
-since they have no binaries). If the binary checks need to
-be skipped for other reasons (such as proprietary binaries),
-see the <b>QA CONTROL VARIABLES</b> section for more
-specific exemptions.</p>
-
-<p style="margin-left:22%;"><i>bindist</i></p>
-
-<p style="margin-left:32%;">Distribution of built packages
-is restricted.</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="22%"></td>
-<td width="7%">
-
-
-<p><i>fetch</i></p></td>
-<td width="3%"></td>
-<td width="68%">
-
-
-<p>like <i>mirror</i> but the files will not be fetched via
-<b>SRC_URI</b> either.</p></td></tr>
-</table>
-
-<p style="margin-left:22%;"><i>installsources</i></p>
-
-<p style="margin-left:32%;">Disables installsources for
-specific packages. This is for packages with binaries that
-are not compatible with debugedit.</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="22%"></td>
-<td width="9%">
-
-
-<p><i>mirror</i></p></td>
-<td width="1%"></td>
-<td width="68%">
-
-
-<p>files in <b>SRC_URI</b> will not be downloaded from the
-<b>GENTOO_MIRRORS</b>.</p> </td></tr>
-</table>
-
-<p style="margin-left:22%;"><i>preserve&minus;libs</i></p>
-
-<p style="margin-left:32%;">Disables preserve&minus;libs
-for specific packages. Note than when a package is merged,
-RESTRICT=preserve&minus;libs applies if either the new
-instance or the old instance sets
-RESTRICT=preserve&minus;libs.</p>
-
-<p style="margin-left:22%;"><i>primaryuri</i></p>
-
-<p style="margin-left:32%;">fetch from URIs in
-<b>SRC_URI</b> before <b>GENTOO_MIRRORS</b>.</p>
-
-<p style="margin-left:22%;"><i>splitdebug</i></p>
-
-<p style="margin-left:32%;">Disables splitdebug for
-specific packages. This is for packages with binaries that
-trigger problems with splitdebug, such as
-file&minus;collisions between symlinks in
-/usr/lib/debug/.build-id (triggered by bundled
-libraries).</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="22%"></td>
-<td width="7%">
-
-
-<p><i>strip</i></p></td>
-<td width="3%"></td>
-<td width="68%">
-
-
-<p>final binaries/libraries will not be stripped of debug
-symbols.</p> </td></tr>
-<tr valign="top" align="left">
-<td width="22%"></td>
-<td width="7%">
-
-
-<p><i>test</i></p></td>
-<td width="3%"></td>
-<td width="68%">
-
-
-<p>do not run src_test even if user has
-<b>FEATURES</b>=test.</p> </td></tr>
-</table>
-
-<p style="margin-left:22%;"><i>userpriv</i></p>
-
-<p style="margin-left:32%;">Disables userpriv for specific
-packages.</p>
-
-<p style="margin-left:11%;"><b>PROPERTIES</b> =
-<i>[interactive]</i></p>
-
-<p style="margin-left:22%;">A space delimited list of
-properties, with conditional syntax support. <i><br>
-interactive</i></p>
-
-<p style="margin-left:32%;">One or more ebuild phases will
-produce a prompt that requires user interaction.</p>
-
-<p style="margin-left:11%;"><b>PROVIDE</b> =
-<i>&quot;virtual/TARGET&quot;</i></p>
-
-<p style="margin-left:22%;">This variable should only be
-used when a package provides a virtual target. For example,
-blackdown&minus;jdk and sun&minus;jdk provide
-<i>virtual/jdk</i>. This allows for packages to depend on
-<i>virtual/jdk</i> rather than on blackdown or sun
-specifically.</p>
-
-<p style="margin-left:22%; margin-top: 1em">The
-<b>PROVIDE</b> variable has been deprecated. See
-<i>http://www.gentoo.org/proj/en/glep/glep-0037.html</i> for
-details.</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="11%"></td>
-<td width="6%">
-
-
-<p><b>DOCS</b></p></td>
-<td width="5%"></td>
-<td width="78%">
-
-
-<p>Beginning with <b>EAPI 4</b>, an array or
-space&minus;delimited list of documentation files for the
-default src_install function to install using dodoc. If
-undefined, a reasonable default list is used. See the
-documentation for src_install below.</p></td></tr>
-</table>
-
-<p style="margin-left:11%; margin-top: 1em"><b>QA Control
-Variables: <br>
-Usage Notes</b></p>
-
-<p style="margin-left:22%;">Several QA variables are
-provided which allow an ebuild to manipulate some of the QA
-checks performed by portage. Use of these variables in
-ebuilds should be kept to an absolute minimum otherwise they
-defeat the purpose of the QA checks, and their use is
-subject to agreement of the QA team. They are primarily
-intended for use by ebuilds that install closed&minus;source
-binary objects that cannot be altered.</p>
-
-<p style="margin-left:22%; margin-top: 1em">Note that
-objects that violate these rules may fail on some
-architectures.</p>
-
-<p style="margin-left:11%;"><b>QA_PREBUILT</b></p>
-
-<p style="margin-left:22%;">This should contain a list of
-file paths, relative to the image directory, of files that
-are pre&minus;built binaries. Paths listed here will be
-appended to each of the QA_* variables listed below. The
-paths may contain fnmatch&minus;like patterns which will be
-internally translated to regular expressions for the QA_*
-variables that support regular expressions instead of
-fnmatch patterns. The translation mechanism simply replaces
-&quot;*&quot; with &quot;.*&quot;.</p>
-
-<p style="margin-left:11%;"><b>QA_TEXTRELS</b></p>
-
-<p style="margin-left:22%;">This variable can be set to a
-list of file paths, relative to the image directory, of
-files that contain text relocations that cannot be
-eliminated. The paths may contain fnmatch patterns.</p>
-
-<p style="margin-left:22%; margin-top: 1em">This variable
-is intended to be used on closed&minus;source binary objects
-that cannot be altered.</p>
-
-<p style="margin-left:11%;"><b>QA_EXECSTACK</b></p>
-
-<p style="margin-left:22%;">This should contain a list of
-file paths, relative to the image directory, of objects that
-require executable stack in order to run. The paths may
-contain fnmatch patterns.</p>
-
-<p style="margin-left:22%; margin-top: 1em">This variable
-is intended to be used on objects that truly need executable
-stack (i.e. not those marked to need it which in fact do
-not).</p>
-
-<p style="margin-left:11%;"><b>QA_WX_LOAD</b></p>
-
-<p style="margin-left:22%;">This should contain a list of
-file paths, relative to the image directory, of files that
-contain writable and executable segments. These are rare.
-The paths may contain fnmatch patterns.</p>
-
-<p style="margin-left:11%;"><b>QA_FLAGS_IGNORED</b></p>
-
-<p style="margin-left:22%;">This should contain a list of
-file paths, relative to the image directory, of files that
-do not contain .GCC.command.line sections or contain .hash
-sections. The paths may contain regular expressions with
-escape&minus;quoted special characters.</p>
-
-<p style="margin-left:22%; margin-top: 1em">This variable
-is intended to be used on files of binary packages which
-ignore CFLAGS, CXXFLAGS, FFLAGS, FCFLAGS, and LDFLAGS
-variables.</p>
-
-<p style="margin-left:11%;"><b>QA_MULTILIB_PATHS</b></p>
-
-<p style="margin-left:22%;">This should contain a list of
-file paths, relative to the image directory, of files that
-should be ignored for the multilib&minus;strict checks. The
-paths may contain regular expressions with
-escape&minus;quoted special characters.</p>
-
-<p style="margin-left:11%;"><b>QA_PRESTRIPPED</b></p>
-
-<p style="margin-left:22%;">This should contain a list of
-file paths, relative to the image directory, of files that
-contain pre-stripped binaries. The paths may contain regular
-expressions with escape&minus;quoted special characters.</p>
-
-<p style="margin-left:11%;"><b>QA_SONAME</b></p>
-
-<p style="margin-left:22%;">This should contain a list of
-file paths, relative to the image directory, of shared
-libraries that lack SONAMEs. The paths may contain regular
-expressions with escape&minus;quoted special characters.</p>
-
-
-<p style="margin-left:11%;"><b>QA_SONAME_NO_SYMLINK</b></p>
-
-<p style="margin-left:22%;">This should contain a list of
-file paths, relative to the image directory, of shared
-libraries that have SONAMEs but should not have a
-corresponding SONAME symlink in the same directory. The
-paths may contain regular expressions with
-escape&minus;quoted special characters.</p>
-
-
-<p style="margin-left:11%;"><b>QA_AM_MAINTAINER_MODE</b></p>
-
-<p style="margin-left:22%;">This should contain a list of
-lines containing automake missing &minus;&minus;run
-commands. The lines may contain regular expressions with
-escape&minus;quoted special characters.</p>
-
-
-<p style="margin-left:11%;"><b>QA_CONFIGURE_OPTIONS</b></p>
-
-<p style="margin-left:22%;">This should contain a list of
-configure options which trigger warnings about unrecognized
-options. The options may contain regular expressions with
-escape&minus;quoted special characters.</p>
-
-<p style="margin-left:11%;"><b>QA_DT_NEEDED</b></p>
-
-<p style="margin-left:22%;">This should contain a list of
-file paths, relative to the image directory, of shared
-libraries that lack NEEDED entries. The paths may contain
-regular expressions with escape&minus;quoted special
-characters.</p>
-
-<p style="margin-left:11%;"><b>QA_DESKTOP_FILE</b></p>
-
-<p style="margin-left:22%;">This should contain a list of
-file paths, relative to the image directory, of desktop
-files which should not be validated. The paths may contain
-regular expressions with escape&minus;quoted special
-characters.</p>
-
-<h2>PORTAGE DECLARATIONS
-<a name="PORTAGE DECLARATIONS"></a>
-</h2>
-
-
-
-<p style="margin-left:11%; margin-top: 1em"><b>inherit</b></p>
-
-<p style="margin-left:22%;">Inherit is portage&rsquo;s
-maintenance of extra classes of functions that are external
-to ebuilds and provided as inheritable capabilities and
-data. They define functions and set data types as
-drop&minus;in replacements, expanded, and simplified
-routines for extremely common tasks to streamline the build
-process. Call to inherit cannot depend on conditions which
-can vary in given ebuild. Specification of the eclasses
-contains only their name and not the <i>.eclass</i>
-extension. Also note that the inherit statement must come
-before other variable declarations unless these variables
-are used in global scope of eclasses.</p>
-
-<h2>PHASE FUNCTIONS
-<a name="PHASE FUNCTIONS"></a>
-</h2>
-
-
-
-<p style="margin-left:11%; margin-top: 1em"><b>pkg_pretend</b></p>
-
-<p style="margin-left:22%;">Beginning with <b>EAPI 4</b>,
-this function can be defined in order to check that
-miscellaneous requirements are met. It is called as early as
-possible, before any attempt is made to satisfy
-dependencies. If the function detects a problem then it
-should call eerror and die. The environment (variables,
-functions, temporary directories, etc..) that is used to
-execute pkg_pretend is not saved and therefore is not
-available in phases that execute afterwards.</p>
-
-<p style="margin-left:11%;"><b>pkg_nofetch</b></p>
-
-<p style="margin-left:22%;">This function will be executed
-when the files in <b>SRC_URI</b> cannot be fetched for any
-reason. If you turn on <i>fetch</i> in <b>RESTRICT</b>, this
-is useful for displaying information to the user on *how* to
-obtain said files. All you have to do is output a message
-and let the function return. Do not end the function with a
-call to <b>die</b>.</p>
-
-<p style="margin-left:11%;"><b>pkg_setup</b></p>
-
-<p style="margin-left:22%;">This function can be used if
-the package needs specific setup actions or checks to be
-preformed before anything else. <br>
-Initial working directory: $PORTAGE_TMPDIR</p>
-
-<p style="margin-left:11%;"><b>src_unpack</b></p>
-
-<p style="margin-left:22%;">This function is used to unpack
-all the sources in <i>A</i> to <i>WORKDIR</i>. If not
-defined in the <i>ebuild script</i> it calls <i>unpack
-${A}</i>. Any patches and other pre configure/compile
-modifications should be done here. <br>
-Initial working directory: $WORKDIR</p>
-
-<p style="margin-left:11%;"><b>src_prepare</b></p>
-
-<p style="margin-left:22%;">All preparation of source code,
-such as application of patches, should be done here. This
-function is supported beginning with <b>EAPI 2</b>. <br>
-Initial working directory: $S</p>
-
-<p style="margin-left:11%;"><b>src_configure</b></p>
-
-<p style="margin-left:22%;">All necessary steps for
-configuration should be done here. This function is
-supported beginning with <b>EAPI 2</b>. <br>
-Initial working directory: $S</p>
-
-<p style="margin-left:11%;"><b>src_compile</b></p>
-
-<p style="margin-left:22%;">With less than <b>EAPI 2</b>,
-all necessary steps for both configuration and compilation
-should be done here. Beginning with <b>EAPI 2</b>, only
-compilation steps should be done here. <br>
-Initial working directory: $S</p>
-
-<p style="margin-left:11%;"><b>src_test</b></p>
-
-<p style="margin-left:22%;">Run all package specific test
-cases. The default is to run &acute;emake check&acute;
-followed &acute;emake test&acute;. Prior to <b>EAPI 5</b>,
-the default src_test implementation will automatically pass
-the &minus;j1 option as the last argument to emake, and
-beginning with <b>EAPI 5</b> it will allow the tests to run
-in parallel. <br>
-Initial working directory: $S</p>
-
-<p style="margin-left:11%;"><b>src_install</b></p>
-
-<p style="margin-left:22%;">Should contain everything
-required to install the package in the temporary <i>install
-directory</i>. <br>
-Initial working directory: $S</p>
-
-<p style="margin-left:22%; margin-top: 1em">Beginning with
-<b>EAPI 4</b>, if src_install is undefined then the
-following default implementation is used:</p>
-
-<p style="margin-left:22%; margin-top: 1em">src_install() {
-<br>
-if [[ &minus;f Makefile || &minus;f GNUmakefile || &minus;f
-makefile ]] ; then <br>
-emake DESTDIR=&quot;${D}&quot; install <br>
-fi</p>
-
-<p style="margin-left:22%; margin-top: 1em">if ! declare -p
-DOCS &amp;&gt;/dev/null ; then <br>
-local d <br>
-for d in README* ChangeLog AUTHORS NEWS TODO CHANGES \ <br>
-THANKS BUGS FAQ CREDITS CHANGELOG ; do <br>
-[[ &minus;s &quot;${d}&quot; ]] &amp;&amp; dodoc
-&quot;${d}&quot; <br>
-done <br>
-elif [[ $(declare &minus;p DOCS) == &quot;declare &minus;a
-&quot;* ]] ; then <br>
-dodoc &quot;${DOCS[@]}&quot; <br>
-else <br>
-dodoc ${DOCS} <br>
-fi <br>
-}</p>
-
-<p style="margin-left:11%;"><b>pkg_preinst
-pkg_postinst</b></p>
-
-<p style="margin-left:22%;">All modifications required on
-the live&minus;filesystem before and after the package is
-merged should be placed here. Also commentary for the user
-should be listed here as it will be displayed last. <br>
-Initial working directory: $PWD</p>
-
-<p style="margin-left:11%;"><b>pkg_prerm pkg_postrm</b></p>
-
-<p style="margin-left:22%;">Like the pkg_*inst functions
-but for unmerge. <br>
-Initial working directory: $PWD</p>
-
-<p style="margin-left:11%;"><b>pkg_config</b></p>
-
-<p style="margin-left:22%;">This function should contain
-optional basic configuration steps. <br>
-Initial working directory: $PWD</p>
-
-<h2>HELPER FUNCTIONS
-<a name="HELPER FUNCTIONS"></a>
-</h2>
-
-
-<p style="margin-left:11%; margin-top: 1em"><b>Phases: <br>
-default</b></p>
-
-<p style="margin-left:22%;">Calls the default phase
-function implementation for the currently executing phase.
-This function is supported beginning with <b>EAPI 2</b>.</p>
-
-<p style="margin-left:11%;"><b>default_*</b></p>
-
-<p style="margin-left:22%;">Beginning with <b>EAPI 2</b>,
-the default pkg_nofetch and src_* phase functions are
-accessible via a function having a name that begins with
-default_ and ends with the respective phase function name.
-For example, a call to a function with the name
-default_src_compile is equivalent to a call to the default
-src_compile implementation.</p>
-
-
-<p align="center" style="margin-top: 1em"><img src="grohtml-19975.png" alt="Image grohtml-19975.png"></p>
-
-<p style="margin-left:11%; margin-top: 1em"><b>General:
-<br>
-assert</b> <i>[reason]</i></p>
-
-<p style="margin-left:22%;">Checks the value of the
-shell&rsquo;s PIPESTATUS array variable, and if any
-component is non-zero (indicating failure), calls die with
-<i>reason</i> as a failure message.</p>
-
-<p style="margin-left:11%;"><b>die</b> <i>[reason]</i></p>
-
-<p style="margin-left:22%;">Causes the current emerge
-process to be aborted. The final display will include
-<i>reason</i>.</p>
-
-<p style="margin-left:22%; margin-top: 1em">Beginning with
-<b>EAPI 4</b>, all helpers automatically call <b>die</b>
-whenever some sort of error occurs. Helper calls may be
-prefixed with the <b>nonfatal</b> helper in order to prevent
-errors from being fatal.</p>
-
-<p style="margin-left:11%;"><b>nonfatal</b>
-<i>&lt;helper&gt;</i></p>
-
-<p style="margin-left:22%;">Execute <i>helper</i> and <i>do
-not</i> call die if it fails. The <b>nonfatal</b> helper is
-available beginning with <b>EAPI 4</b>.</p>
-
-<p style="margin-left:11%;"><b>use</b> <i>&lt;USE
-item&gt;</i></p>
-
-<p style="margin-left:22%;">If <i>USE item</i> is in the
-<b>USE</b> variable, the function will silently return 0
-(aka shell true). If <i>USE item</i> is not in the
-<b>USE</b> variable, the function will silently return 1
-(aka shell false). <b>usev</b> is a verbose version of
-<b>use</b>. <i><br>
-Example:</i></p>
-
-<p style="margin-left:32%;">if use gnome ; then</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>guiconf=&quot;&minus;&minus;enable&minus;gui=gnome
-&minus;&minus;with&minus;x&quot;</p> </td></tr>
-</table>
-
-<p style="margin-left:32%;">elif use gtk ; then</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="92%">
-
-
-<p>guiconf=&quot;&minus;&minus;enable&minus;gui=gtk
-&minus;&minus;with&minus;x&quot;</p> </td></tr>
-</table>
-
-<p style="margin-left:32%;">elif use X ; then</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="92%">
-
-
-<p>guiconf=&quot;&minus;&minus;enable&minus;gui=athena
-&minus;&minus;with&minus;x&quot;</p> </td></tr>
-</table>
-
-<p style="margin-left:32%;">else</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="92%">
-
-
-<p># No gui version will be built</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="92%">
-
-
-<p>guiconf=&quot;&quot;</p></td></tr>
-</table>
-
-<p style="margin-left:32%;">fi</p>
-
-<p style="margin-left:11%;"><b>usev</b> <i>&lt;USE
-item&gt;</i></p>
-
-<p style="margin-left:22%;">Like <b>use</b>, but also
-echoes <i>USE item</i> when <b>use</b> returns true.</p>
-
-<p style="margin-left:11%;"><b>usex</b> <i>&lt;USE flag&gt;
-[true output] [false output] [true suffix] [false <br>
-suffix]</i></p>
-
-<p style="margin-left:22%;">If USE flag is set, echo [true
-output][true suffix] (defaults to &quot;yes&quot;),
-otherwise echo [false output][false suffix] (defaults to
-&quot;no&quot;). The usex helper is available beginning with
-<b>EAPI 5</b>.</p>
-
-<p style="margin-left:11%;"><b>use_with</b> <i>&lt;USE
-item&gt; [configure name] [configure opt]</i></p>
-
-<p style="margin-left:22%;">Useful for creating custom
-options to pass to a configure script. If <i>USE item</i> is
-in the <b>USE</b> variable and a <i>configure opt</i> is
-specified, then the string
-<i>&minus;&minus;with&minus;[configure name]=[configure
-opt]</i> will be echoed. If <i>configure opt</i> is not
-specified, then just <i>&minus;&minus;with&minus;[configure
-name]</i> will be echoed. If <i>USE item</i> is not in the
-<b>USE</b> variable, then the string
-<i>&minus;&minus;without&minus;[configure name]</i> will be
-echoed. If <i>configure name</i> is not specified, then
-<i>USE item</i> will be used in its place. Beginning with
-<b>EAPI 4</b>, an empty <i>configure opt</i> argument is
-recognized. In <b>EAPI 3</b> and earlier, an empty
-<i>configure opt</i> argument is treated as if it
-weren&rsquo;t provided. <i><br>
-Examples:</i></p>
-
-<p style="margin-left:32%;">USE=&quot;opengl&quot; <br>
-myconf=$(use_with opengl) <br>
-(myconf now has the value
-&quot;&minus;&minus;with&minus;opengl&quot;)</p>
-
-
-<p style="margin-left:32%; margin-top: 1em">USE=&quot;jpeg&quot;
-<br>
-myconf=$(use_with jpeg libjpeg) <br>
-(myconf now has the value
-&quot;&minus;&minus;with&minus;libjpeg&quot;)</p>
-
-
-<p style="margin-left:32%; margin-top: 1em">USE=&quot;&quot;
-<br>
-myconf=$(use_with jpeg libjpeg) <br>
-(myconf now has the value
-&quot;&minus;&minus;without&minus;libjpeg&quot;)</p>
-
-
-<p style="margin-left:32%; margin-top: 1em">USE=&quot;sdl&quot;
-<br>
-myconf=$(use_with sdl SDL all&minus;plugins) <br>
-(myconf now has the value
-&quot;&minus;&minus;with&minus;SDL=all&minus;plugins&quot;)</p>
-
-<p style="margin-left:11%;"><b>use_enable</b> <i>&lt;USE
-item&gt; [configure name] [configure opt]</i></p>
-
-<p style="margin-left:22%;">Same as <b>use_with</b> above,
-except that the configure options are
-<i>&minus;&minus;enable&minus;</i> instead of
-<i>&minus;&minus;with&minus;</i> and
-<i>&minus;&minus;disable&minus;</i> instead of
-<i>&minus;&minus;without&minus;</i>. Beginning with <b>EAPI
-4</b>, an empty <i>configure opt</i> argument is recognized.
-In <b>EAPI 3</b> and earlier, an empty <i>configure opt</i>
-argument is treated as if it weren&rsquo;t provided.</p>
-
-<p style="margin-left:11%;"><b>has</b> <i>&lt;item&gt;
-&lt;item list&gt;</i></p>
-
-<p style="margin-left:22%;">If <i>item</i> is in <i>item
-list</i>, then <b>has</b> returns 0. Otherwise, 1 is
-returned. There is another version, <b>hasv</b>, that will
-conditionally echo <i>item</i>. <br>
-The <i>item list</i> is delimited by the <i>IFS</i>
-variable. This variable has a default value of &rsquo;
-&rsquo;, or a space. It is a <b>bash</b>(1) setting.</p>
-
-<p style="margin-left:11%;"><b>hasv</b> <i>&lt;item&gt;
-&lt;item list&gt;</i></p>
-
-<p style="margin-left:22%;">Like <b>has</b>, but also
-echoes <i>item</i> when <b>has</b> returns true.</p>
-
-<p style="margin-left:11%;"><b>has_version</b>
-<i>[&minus;&minus;host&minus;root]
-&lt;category/package&minus;version&gt;</i></p>
-
-<p style="margin-left:22%;">Check to see if
-<i>category/package&minus;version</i> is installed on the
-system. The parameter accepts all values that are acceptable
-in the <b>DEPEND</b> variable. The function returns 0 if
-<i>category/package&minus;version</i> is installed, 1
-otherwise. Beginning with <b>EAPI 5</b>, the
-&minus;&minus;host&minus;root option may be used in order to
-cause the query to apply to the host root instead of
-${ROOT}.</p>
-
-<p style="margin-left:11%;"><b>best_version</b>
-<i>[&minus;&minus;host&minus;root] &lt;package
-name&gt;</i></p>
-
-<p style="margin-left:22%;">This function will look up
-<i>package name</i> in the database of currently installed
-programs and echo the &quot;best version&quot; of the
-package that is currently installed. Beginning with <b>EAPI
-5</b>, the &minus;&minus;host&minus;root option may be used
-in order to cause the query to apply to the host root
-instead of ${ROOT}.</p>
-
-<p style="margin-left:22%; margin-top: 1em">Example:</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%">
-
-
-<p>VERINS=&quot;$(best_version
-net&minus;ftp/glftpd)&quot;</p> </td>
-<td width="100%"></td>
-<td width="-15%">
-</td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%">
-</td>
-<td width="100%"></td>
-<td width="-15%">
-</td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%">
-
-
-<p>(VERINS now has the value
-&quot;net&minus;ftp/glftpd&minus;1.27&quot; if
-glftpd&minus;1.27 is</p></td>
-<td width="100%"></td>
-<td width="-15%">
-
-
-<p>installed)</p></td></tr>
-</table>
-
-<p style="margin-left:11%; margin-top: 1em"><b>Hooks: <br>
-register_die_hook</b> <i>[list of function names]</i></p>
-
-<p style="margin-left:22%;">Register one or more functions
-to call when the ebuild fails for any reason, including file
-collisions with other packages.</p>
-
-<p style="margin-left:11%;"><b>register_success_hook</b>
-<i>[list of function names]</i></p>
-
-<p style="margin-left:22%;">Register one or more functions
-to call when the ebuild builds and/or installs
-successfully.</p>
-
-<p style="margin-left:11%; margin-top: 1em"><b>Output: <br>
-einfo</b> <i>&quot;disposable message&quot;</i></p>
-
-<p style="margin-left:22%;">Same as <b>elog</b>, but should
-be used when the message isn&rsquo;t important to the user
-(like progress or status messages during the build
-process).</p>
-
-<p style="margin-left:11%;"><b>elog</b>
-<i>&quot;informative message&quot;</i></p>
-
-<p style="margin-left:22%;">If you need to display a
-message that you wish the user to read and take notice of,
-then use <b>elog</b>. It works just like <b>echo</b>(1), but
-adds a little more to the output so as to catch the
-user&rsquo;s eye. The message will also be logged by portage
-for later review.</p>
-
-<p style="margin-left:11%;"><b>ewarn</b> <i>&quot;warning
-message&quot;</i></p>
-
-<p style="margin-left:22%;">Same as <b>einfo</b>, but
-should be used when showing a warning to the user.</p>
-
-<p style="margin-left:11%;"><b>eqawarn</b> <i>&quot;QA
-warning message&quot;</i></p>
-
-<p style="margin-left:22%;">Same as <b>einfo</b>, but
-should be used when showing a QA warning to the user.</p>
-
-<p style="margin-left:11%;"><b>eerror</b> <i>&quot;error
-message&quot;</i></p>
-
-<p style="margin-left:22%;">Same as <b>einfo</b>, but
-should be used when showing an error to the user.</p>
-
-<p style="margin-left:11%;"><b>ebegin</b> <i>&quot;helpful
-message&quot;</i></p>
-
-<p style="margin-left:22%;">Like <b>einfo</b>, we output a
-<i>helpful message</i> and then hint that the following
-operation may take some time to complete. Once the task is
-finished, you need to call <b>eend</b>.</p>
-
-<p style="margin-left:11%;"><b>eend</b> <i>&lt;status&gt;
-[&quot;error message&quot;]</i></p>
-
-<p style="margin-left:22%;">Followup the <b>ebegin</b>
-message with an appropriate &quot;OK&quot; or &quot;!!&quot;
-(for errors) marker. If <i>status</i> is non&minus;zero,
-then the additional <i>error message</i> is displayed.</p>
-
-<p style="margin-left:11%; margin-top: 1em"><b>Unpack: <br>
-unpack</b> <i>&lt;source&gt; [list of more sources]</i></p>
-
-<p style="margin-left:22%;">This function uncompresses
-and/or untars a list of sources into the current directory.
-The function will append <i>source</i> to the <b>DISTDIR</b>
-variable.</p>
-
-<p style="margin-left:11%; margin-top: 1em"><b>Compile:
-<br>
-econf</b> <i>[configure options]</i></p>
-
-<p style="margin-left:22%;">This is used as a replacement
-for configure. Performs: <br>
-${<i>ECONF_SOURCE</i>:-.}/configure \</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>${CBUILD:+&minus;&minus;build=${CBUILD}} \</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>&minus;&minus;datadir=&quot;${EPREFIX}&quot;/usr/share
-\</p> </td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>&minus;&minus;host=${CHOST} \</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-
-<p>&minus;&minus;infodir=&quot;${EPREFIX}&quot;/usr/share/info
-\</p> </td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-
-<p>&minus;&minus;localstatedir=&quot;${EPREFIX}&quot;/var/lib
-\</p> </td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>&minus;&minus;prefix=&quot;${EPREFIX}&quot;/usr \</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-
-<p>&minus;&minus;mandir=&quot;${EPREFIX}&quot;/usr/share/man
-\</p> </td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>&minus;&minus;sysconfdir=&quot;${EPREFIX}&quot;/etc
-\</p> </td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>${CTARGET:+&minus;&minus;target=${CTARGET}} \</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>&minus;&minus;disable&minus;dependency&minus;tracking
-\</p> </td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p><i>${EXTRA_ECONF}</i> \</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p><i>configure options</i> || die &quot;econf
-failed&quot;</p> </td></tr>
-</table>
-
-<p style="margin-left:22%;">Note that the
-<i>EXTRA_ECONF</i> is for users only, not for ebuild
-writers. If you wish to pass more options to configure, just
-pass the extra arguments to <b>econf</b>. Also note that
-<b>econf</b> automatically calls <b>die</b> if the configure
-script fails. Beginning with <b>EAPI 3</b>, <b>econf</b>
-uses the <b>${EPREFIX}</b> variable which is disregarded for
-prior <b>EAPI</b> values. Beginning with <b>EAPI 4</b>,
-<b>econf</b> adds
-<i>&minus;&minus;disable&minus;dependency&minus;tracking</i>
-to the arguments if the string
-<i>disable&minus;dependency&minus;tracking</i> occurs in the
-output of <i>configure &minus;&minus;help</i>. Beginning
-with <b>EAPI 5</b>, <b>econf</b> adds
-<i>disable&minus;silent&minus;rules</i> to the arguments if
-the string <i>disable&minus;silent&minus;rules</i> occurs in
-the output of <i>configure &minus;&minus;help</i>.</p>
-
-<p style="margin-left:11%;"><b>emake</b> <i>[make
-options]</i></p>
-
-<p style="margin-left:22%;">This must be used in place of
-&lsquo;make&lsquo; in ebuilds. Performs &lsquo;${MAKE:-make}
-${MAKEOPTS} <i>make options</i> ${EXTRA_EMAKE}&lsquo;, and
-calls &lsquo;die&lsquo; automatically starting with <b>EAPI
-4</b>.</p>
-
-<p style="margin-left:22%; margin-top: 1em">The
-<b>MAKEOPTS</b> variable is set by the user so they can
-enable features such as parallel builds; see
-<b>make.conf</b>(5) for more details.</p>
-
-<p style="margin-left:22%; margin-top: 1em">The
-<b>EXTRA_EMAKE</b> knob is portage feature so developers can
-override things while debugging ebuilds; it is not part of
-any EAPI specification.</p>
-
-
-<p style="margin-left:22%; margin-top: 1em"><b>***WARNING***</b>
-<br>
-You must make sure your build is happy with parallel makes
-(make &minus;j2). It should be tested thoroughly as parallel
-makes are notorious for failing _sometimes_ but not always.
-If you determine that your package fails to build in
-parallel, and you are unable to resolve the issue, then you
-should run &lsquo;<b>emake</b> &minus;j1&lsquo; explicitly.
-This is a last resort however as it can significantly slow
-down builds on systems with lots of processors.</p>
-
-<p style="margin-left:11%; margin-top: 1em"><b>Install:
-<br>
-einstall</b> <i>[make options]</i></p>
-
-<p style="margin-left:22%;">This is used as a replacement
-for make install. Performs: <br>
-make \</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>prefix=${ED}/usr \</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>datadir=${ED}/usr/share \</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>infodir=${ED}/usr/share/info \</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>localstatedir=${ED}/var/lib \</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>mandir=${ED}/usr/share/man \</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>sysconfdir=${ED}/etc \</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p><i>${EXTRA_EINSTALL}</i> \</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p><i>make options</i> \</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="85%">
-
-
-<p>install</p></td></tr>
-</table>
-
-<p style="margin-left:22%;">Please do <b>not</b> use this
-in place of &rsquo;emake install DESTDIR=${D}&rsquo;. That
-is the preferred way of installing make&minus;based
-packages. Also, do not utilize the <i>EXTRA_EINSTALL</i>
-variable since it is for users.</p>
-
-<p style="margin-left:11%;"><b>prepall <br>
-prepalldocs <br>
-prepallinfo <br>
-prepallman <br>
-prepallstrip</b></p>
-
-<p style="margin-left:22%;">Useful for when a package
-installs into <b>${D}</b> via scripts (i.e. makefiles). If
-you want to be sure that libraries are executable, aclocal
-files are installed into the right place, doc/info/man files
-are all compressed, and that executables are all stripped of
-debugging symbols, then use these suite of functions.
-<b><br>
-prepall:</b></p>
-
-<p style="margin-left:32%;">Runs <b>prepallman</b>,
-<b>prepallinfo</b>, <b>prepallstrip</b>, sets libraries +x,
-and then checks aclocal directories. Please note this does
-<i>*not*</i> run <b>prepalldocs</b>.</p>
-
-<p style="margin-left:22%;"><b>prepalldocs:</b></p>
-
-<p style="margin-left:32%;">Compresses all doc files in
-${ED}/usr/share/doc.</p>
-
-<p style="margin-left:22%;"><b>prepallinfo:</b></p>
-
-<p style="margin-left:32%;">Compresses all info files in
-${ED}/usr/share/info.</p>
-
-<p style="margin-left:22%;"><b>prepallman:</b></p>
-
-<p style="margin-left:32%;">Compresses all man files in
-${ED}/usr/share/man.</p>
-
-<p style="margin-left:22%;"><b>prepallstrip:</b></p>
-
-<p style="margin-left:32%;">Strips all executable files of
-debugging symboles. This includes libraries.</p>
-
-<p style="margin-left:11%;"><b>prepinfo</b> <i>[dir]</i>
-<b><br>
-prepman</b> <i>[dir]</i> <b><br>
-prepstrip</b> <i>[dir]</i></p>
-
-<p style="margin-left:22%;">Similar to the <b>prepall</b>
-functions, these are subtle in their differences. <b><br>
-prepinfo:</b></p>
-
-<p style="margin-left:32%;">If a <i>dir</i> is not
-specified, then <b>prepinfo</b> will assume the dir
-<i>usr</i>. <b>prepinfo</b> will then compress all the files
-in ${ED}/<i>dir</i>/info.</p>
-
-<p style="margin-left:22%;"><b>prepman:</b></p>
-
-<p style="margin-left:32%;">If a <i>dir</i> is not
-specified, then <b>prepman</b> will assume the dir
-<i>usr</i>. <b>prepman</b> will then compress all the files
-in ${ED}/<i>dir</i>/man/*/.</p>
-
-<p style="margin-left:22%;"><b>prepstrip:</b></p>
-
-<p style="margin-left:32%;">All the files found in
-${ED}/<i>dir</i> will be stripped. You may specify multiple
-directories.</p>
-
-<p style="margin-left:11%;"><b>docompress</b> <i>[&minus;x]
-&lt;path&gt; [list of more paths]</i></p>
-
-<p style="margin-left:22%;">Beginning with <b>EAPI 4</b>,
-the <b>docompress</b> helper is used to manage lists of
-files to be included or excluded from optional compression.
-If the first argument is <b>&minus;x</b>, add each of its
-subsequent arguments to the exclusion list. Otherwise, add
-each argument to the inclusion list. The inclusion list
-initially contains <i>/usr/share/doc</i>,
-<i>/usr/share/info</i>, and <i>/usr/share/man</i>. The
-exclusion list initially contains
-<i>/usr/share/doc/${PF}/html</i>.</p>
-
-<p style="margin-left:22%; margin-top: 1em">The optional
-compression shall be carried out after <b>src_install</b>
-has completed, and before the execution of any subsequent
-phase function. For each item in the inclusion list, pretend
-it has the value of the <b>D</b> variable prepended,
-then:</p>
-
-<p style="margin-left:32%; margin-top: 1em">If it is a
-directory, act as if every file or directory immediately
-under this directory were in the inclusion list.</p>
-
-<p style="margin-left:32%; margin-top: 1em">If the item is
-a file, it may be compressed unless it has been excluded as
-described below.</p>
-
-<p style="margin-left:32%; margin-top: 1em">If the item
-does not exist, it is ignored.</p>
-
-<p style="margin-left:22%; margin-top: 1em">Whether an item
-is to be excluded is determined as follows: For each item in
-the exclusion list, pretend it has the value of the <b>D</b>
-variable prepended, then:</p>
-
-<p style="margin-left:32%; margin-top: 1em">If it is a
-directory, act as if every file or directory immediately
-under this directory were in the exclusion list.</p>
-
-<p style="margin-left:32%; margin-top: 1em">If the item is
-a file, it shall not be compressed.</p>
-
-<p style="margin-left:32%; margin-top: 1em">If the item
-does not exist, it is ignored.</p>
-
-<p style="margin-left:11%;"><b>dosed</b>
-<i>&quot;s:orig:change:g&quot; &lt;filename&gt;</i></p>
-
-<p style="margin-left:22%;">Beginning with <b>EAPI 4</b>,
-the <b>dosed</b> helper no longer exists. Ebuilds should
-call <b>sed</b>(1) directly (and assume that it is GNU
-sed).</p>
-
-<p style="margin-left:22%; margin-top: 1em">Performs sed in
-place on <i>filename</i> inside ${ED}. If no expression is
-given then <i>&quot;s:${D}::g&quot;</i> is used as the
-default expression. Note that this expression does
-<b>NOT</b> use the offset prefix. <b><br>
-
-&rsquo;dosed&nbsp;&quot;s:/usr/local:/usr:g&quot;&nbsp;/usr/bin/some&minus;script&rsquo;</b>
-runs sed on ${ED}/usr/bin/some&minus;script</p>
-
-<p style="margin-left:11%;"><b>dodir</b> <i>&lt;path&gt;
-[more paths]</i></p>
-
-<p style="margin-left:22%;">Creates directories inside of
-${ED}. <b><br>
-&rsquo;dodir&nbsp;/usr/lib/apache&rsquo;</b> creates
-${ED}/usr/lib/apache. Note that the do* functions will run
-<b>dodir</b> for you.</p>
-
-<p style="margin-left:11%;"><b>diropts</b> <i>[options for
-install(1)]</i></p>
-
-<p style="margin-left:22%;">Can be used to define options
-for the install function used in <b>dodir</b>. The default
-is <i>&minus;m0755</i>.</p>
-
-<p style="margin-left:11%;"><b>into</b>
-<i>&lt;path&gt;</i></p>
-
-<p style="margin-left:22%;">Sets the root (<i>DESTTREE</i>)
-for other functions like <b>dobin</b>, <b>dosbin</b>,
-<b>doman</b>, <b>doinfo</b>, <b>dolib</b>. <br>
-The default root is /usr.</p>
-
-<p style="margin-left:11%;"><b>keepdir</b> <i>&lt;path&gt;
-[more paths]</i></p>
-
-<p style="margin-left:22%;">Tells portage to leave
-directories behind even if they&rsquo;re empty. Functions
-the same as <b>dodir</b>.</p>
-
-<p style="margin-left:11%;"><b>dobin</b> <i>&lt;binary&gt;
-[list of more binaries]</i></p>
-
-<p style="margin-left:22%;">Installs a <i>binary</i> or a
-list of binaries into <i>DESTTREE</i>/bin. Creates all
-necessary dirs.</p>
-
-<p style="margin-left:11%;"><b>dosbin</b> <i>&lt;binary&gt;
-[list of more binaries]</i></p>
-
-<p style="margin-left:22%;">Installs a <i>binary</i> or a
-list of binaries into <i>DESTTREE</i>/sbin. Creates all
-necessary dirs.</p>
-
-<p style="margin-left:11%;"><b>doinitd</b> <i>&lt;init.d
-script&gt; [list of more init.d scripts]</i></p>
-
-<p style="margin-left:22%;">Install Gentoo <i>init.d
-scripts</i>. They will be installed into the correct
-location for Gentoo init.d scripts (/etc/init.d/). Creates
-all necessary dirs.</p>
-
-<p style="margin-left:11%;"><b>doconfd</b> <i>&lt;conf.d
-file&gt; [list of more conf.d file]</i></p>
-
-<p style="margin-left:22%;">Install Gentoo <i>conf.d
-files</i>. They will be installed into the correct location
-for Gentoo conf.d files (/etc/conf.d/). Creates all
-necessary dirs.</p>
-
-<p style="margin-left:11%;"><b>doenvd</b> <i>&lt;env.d
-entry&gt; [list of more env.d entries]</i></p>
-
-<p style="margin-left:22%;">Install Gentoo <i>env.d
-entries</i>. They will be installed into the correct
-location for Gentoo env.d entries (/etc/env.d/). Creates all
-necessary dirs.</p>
-
-<p style="margin-left:11%;"><b>dolib</b> <i>&lt;library&gt;
-[list of more libraries]</i> <b><br>
-dolib.a</b> <i>&lt;library&gt; [list of more libraries]</i>
-<b><br>
-dolib.so</b> <i>&lt;library&gt; [list of more
-libraries]</i></p>
-
-<p style="margin-left:22%;">Installs a library or a list of
-libraries into <i>DESTTREE</i>/lib. Creates all necessary
-dirs.</p>
-
-<p style="margin-left:11%;"><b>libopts</b> <i>[options for
-install(1)]</i></p>
-
-<p style="margin-left:22%;">Can be used to define options
-for the install function used in the <b>dolib</b> functions.
-The default is <i>&minus;m0644</i>.</p>
-
-<p style="margin-left:11%;"><b>doman</b>
-<i>[&minus;i18n=&lt;locale&gt;] &lt;man&minus;page&gt; [list
-of more man&minus;pages]</i></p>
-
-<p style="margin-left:22%;">Installs manual&minus;pages
-into /usr/share/man/man[0&minus;9n] depending on the manual
-file ending. The files are compressed if they are not
-already. You can specify locale&minus;specific manpages with
-the <i>&minus;i18n</i> option. Then the man&minus;page will
-be installed into
-/usr/share/man/<i>&lt;locale&gt;</i>/man[0&minus;9n].
-Beginning with <b>EAPI 2</b>, a locale&minus;specific
-manpage which contains a locale in the file name will be
-installed in
-/usr/share/man/<i>&lt;locale&gt;</i>/man[0&minus;9n], with
-the locale portion of the file name removed, and the
-<i>&minus;i18n</i> option has no effect. For example, with
-<b>EAPI 2</b>, a manpage named foo.<i>&lt;locale&gt;</i>.1
-will be installed as
-/usr/share/man/<i>&lt;locale&gt;</i>/man1/foo.1. Beginning
-with <b>EAPI 4</b>, the <i>&minus;i18n</i> option takes
-precedence over the locale suffix of the file name.</p>
-
-<p style="margin-left:11%;"><b>dohard</b>
-<i>&lt;filename&gt; &lt;linkname&gt;</i></p>
-
-<p style="margin-left:22%;">Beginning with <b>EAPI 4</b>,
-the <b>dohard</b> helper no longer exists. Ebuilds should
-call <b>ln</b>(1) directly.</p>
-
-<p style="margin-left:11%;"><b>dosym</b>
-<i>&lt;filename&gt; &lt;linkname&gt;</i></p>
-
-<p style="margin-left:22%;">Performs the ln command to
-create a symlink.</p>
-
-<p style="margin-left:11%;"><b>doheader</b> <i>[&minus;r]
-&lt;file&gt; [list of more files]</i></p>
-
-<p style="margin-left:22%;">Installs the given header files
-into /usr/include/, by default with file mode <i>0644</i>
-(this can be overridden with the <b>insopts</b> function).
-Setting &minus;r sets recursive. The <b>doheader</b> helper
-is available beginning with <b>EAPI 5</b>.</p>
-
-<p style="margin-left:11%;"><b>dohtml</b> <i>[&minus;a
-filetypes] [&minus;r] [&minus;x
-list&minus;of&minus;dirs&minus;to&minus;ignore] <br>
-[list&minus;of&minus;files&minus;and&minus;dirs]</i></p>
-
-<p style="margin-left:22%;">Installs the files in the list
-of files (space&minus;separated list) into
-/usr/share/doc/${PF}/html provided the file ends in .htm,
-.html, .css, .js, .gif, .jpeg, .jpg, or .png. Setting
-<i>&minus;a</i> limits what types of files will be included,
-<i>&minus;A</i> appends to the default list, setting
-<i>&minus;x</i> sets which dirs to exclude (CVS excluded by
-default), <i>&minus;p</i> sets a document prefix,
-<i>&minus;r</i> sets recursive.</p>
-
-<p style="margin-left:11%;"><b>doinfo</b>
-<i>&lt;info&minus;file&gt; [list of more
-info&minus;files]</i></p>
-
-<p style="margin-left:22%;">Installs info&minus;pages into
-<i>DESTDIR</i>/info. Files are automatically gzipped.
-Creates all necessary dirs.</p>
-
-<p style="margin-left:11%;"><b>domo</b>
-<i>&lt;locale&minus;file&gt; [list of more
-locale&minus;files]</i></p>
-
-<p style="margin-left:22%;">Installs locale&minus;files
-into <i>DESTDIR</i>/usr/share/locale/[LANG] depending on
-local&minus;file&rsquo;s ending. Creates all necessary
-dirs.</p>
-
-<p style="margin-left:11%;"><b>fowners</b>
-<i>&lt;permissions&gt; &lt;file&gt; [files]</i> <b><br>
-fperms</b> <i>&lt;permissions&gt; &lt;file&gt;
-[files]</i></p>
-
-<p style="margin-left:22%;">Performs chown (<b>fowners</b>)
-or chmod (<b>fperms</b>), applying <i>permissions</i> to
-<i>files</i>.</p>
-
-<p style="margin-left:11%;"><b>insinto</b>
-<i>[path]</i></p>
-
-<p style="margin-left:22%;">Sets the destination path for
-the <b>doins</b> function. <br>
-The default path is /.</p>
-
-<p style="margin-left:11%;"><b>insopts</b> <i>[options for
-install(1)]</i></p>
-
-<p style="margin-left:22%;">Can be used to define options
-for the install function used in <b>doins</b>. The default
-is <i>&minus;m0644</i>.</p>
-
-<p style="margin-left:11%;"><b>doins</b> <i>[&minus;r]
-&lt;file&gt; [list of more files]</i></p>
-
-<p style="margin-left:22%;">Installs files into the path
-controlled by <b>insinto</b>. This function uses
-<b>install</b>(1). Creates all necessary dirs. Setting
-&minus;r sets recursive. Beginning with <b>EAPI 4</b>, both
-<b>doins</b> and <b>newins</b> preserve symlinks. In <b>EAPI
-3</b> and earlier, symlinks are dereferenced rather than
-preserved.</p>
-
-<p style="margin-left:11%;"><b>exeinto</b>
-<i>[path]</i></p>
-
-<p style="margin-left:22%;">Sets the destination path for
-the <b>doexe</b> function. <br>
-The default path is /.</p>
-
-<p style="margin-left:11%;"><b>exeopts</b> <i>[options for
-install(1)]</i></p>
-
-<p style="margin-left:22%;">Can be used to define options
-for the install function used in <b>doexe</b>. The default
-is <i>&minus;m0755</i>.</p>
-
-<p style="margin-left:11%;"><b>doexe</b>
-<i>&lt;executable&gt; [list of more executables]</i></p>
-
-<p style="margin-left:22%;">Installs executables into the
-path controlled by <b>exeinto</b>. This function uses
-<b>install</b>(1). Creates all necessary dirs.</p>
-
-<p style="margin-left:11%;"><b>docinto</b>
-<i>[path]</i></p>
-
-<p style="margin-left:22%;">Sets the subdir used by
-<b>dodoc</b> and <b>dohtml</b> when installing into the
-document tree (based in /usr/share/doc/${PF}/). Default is
-no subdir, or just &quot;&quot;.</p>
-
-<p style="margin-left:11%;"><b>dodoc</b> <i>[-r]
-&lt;document&gt; [list of more documents]</i></p>
-
-<p style="margin-left:22%;">Installs a document or a list
-of documents into /usr/share/doc/${PF}/<i>&lt;docinto
-path&gt;</i>. Documents are marked for compression. Creates
-all necessary dirs. Beginning with <b>EAPI 4</b>, there is
-support for recursion, enabled by the new <i>&minus;r</i>
-option.</p>
-
-<p style="margin-left:11%;"><b>newbin</b> <i>&lt;old
-file&gt; &lt;new filename&gt;</i> <b><br>
-newsbin</b> <i>&lt;old file&gt; &lt;new filename&gt;</i>
-<b><br>
-newinitd</b> <i>&lt;old file&gt; &lt;new filename&gt;</i>
-<b><br>
-newconfd</b> <i>&lt;old file&gt; &lt;new filename&gt;</i>
-<b><br>
-newenvd</b> <i>&lt;old file&gt; &lt;new filename&gt;</i>
-<b><br>
-newlib.so</b> <i>&lt;old file&gt; &lt;new filename&gt;</i>
-<b><br>
-newlib.a</b> <i>&lt;old file&gt; &lt;new filename&gt;</i>
-<b><br>
-newman</b> <i>&lt;old file&gt; &lt;new filename&gt;</i>
-<b><br>
-newins</b> <i>&lt;old file&gt; &lt;new filename&gt;</i>
-<b><br>
-newexe</b> <i>&lt;old file&gt; &lt;new filename&gt;</i>
-<b><br>
-newdoc</b> <i>&lt;old file&gt; &lt;new filename&gt;</i></p>
-
-<p style="margin-left:22%;">All these functions act like
-the do* functions, but they only work with one file and the
-file is installed as <i>[new filename]</i>. Beginning with
-<b>EAPI 5</b>, standard input is read when the first
-parameter is &minus; (a hyphen).</p>
-
-<h2>EXAMPLES
-<a name="EXAMPLES"></a>
-</h2>
-
-
-<p style="margin-left:11%; margin-top: 1em"># Copyright
-1999&minus;2013 Gentoo Foundation <br>
-# Distributed under the terms of the GNU General Public
-License v2 <br>
-# $Header: $</p>
-
-
-<p style="margin-left:11%; margin-top: 1em">EAPI=&quot;5&quot;</p>
-
-<p style="margin-left:11%; margin-top: 1em">inherit
-some_eclass another_eclass</p>
-
-
-<p style="margin-left:11%; margin-top: 1em">DESCRIPTION=&quot;Super&minus;useful
-stream editor (sed)&quot; <br>
-
-HOMEPAGE=&quot;http://www.gnu.org/software/sed/sed.html&quot;
-<br>
-
-SRC_URI=&quot;ftp://alpha.gnu.org/pub/gnu/${PN}/${P}.tar.gz&quot;</p>
-
-
-<p style="margin-left:11%; margin-top: 1em">LICENSE=&quot;GPL&minus;2&quot;
-<br>
-SLOT=&quot;0&quot; <br>
-KEYWORDS=&quot;~x86&quot; <br>
-IUSE=&quot;&quot;</p>
-
-
-<p style="margin-left:11%; margin-top: 1em">RDEPEND=&quot;&quot;
-<br>
-DEPEND=&quot;nls? ( sys-devel/gettext )&quot;</p>
-
-
-<p style="margin-left:11%; margin-top: 1em">src_configure()
-{</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%"></td>
-<td width="8%">
-
-
-<p>econf \</p></td>
-<td width="77%">
-</td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="7%">
-</td>
-<td width="8%">
-</td>
-<td width="77%">
-
-
-<p>&minus;&minus;bindir=&quot;${EPREFIX}&quot;/bin</p></td></tr>
-</table>
-
-<p style="margin-left:11%;">}</p>
-
-<p style="margin-left:11%; margin-top: 1em">src_install()
-{</p>
-
-<table width="100%" border="0" rules="none" frame="void"
-       cellspacing="0" cellpadding="0">
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="92%">
-
-
-<p>emake DESTDIR=&quot;${D}&quot; install</p></td></tr>
-<tr valign="top" align="left">
-<td width="8%"></td>
-<td width="92%">
-
-
-<p>dodoc NEWS README* THANKS AUTHORS BUGS ChangeLog</p></td></tr>
-</table>
-
-<p style="margin-left:11%;">}</p>
-
-<h2>FILES
-<a name="FILES"></a>
-</h2>
-
-
-<p style="margin-left:11%; margin-top: 1em">The
-<i>/usr/lib/portage/bin/ebuild.sh</i> script. <br>
-The helper apps in <i>/usr/lib/portage/bin</i>. <b><br>
-/etc/portage/make.conf</b></p>
-
-<p style="margin-left:22%;">Contains variables for the
-build&minus;process and overwrites those in
-make.defaults.</p>
-
-
-<p style="margin-left:11%;"><b>/usr/share/portage/config/make.globals</b></p>
-
-<p style="margin-left:22%;">Contains the default variables
-for the build&minus;process, you should edit
-<i>/etc/portage/make.conf</i> instead.</p>
-
-
-<p style="margin-left:11%;"><b>/etc/portage/color.map</b></p>
-
-<p style="margin-left:22%;">Contains variables customizing
-colors.</p>
-
-<h2>SEE ALSO
-<a name="SEE ALSO"></a>
-</h2>
-
-
-
-<p style="margin-left:11%; margin-top: 1em"><b>ebuild</b>(1),
-<b>make.conf</b>(5), <b>color.map</b>(5)</p>
-
-<h2>REPORTING BUGS
-<a name="REPORTING BUGS"></a>
-</h2>
-
-
-<p style="margin-left:11%; margin-top: 1em">Please report
-bugs via http://bugs.gentoo.org/</p>
-
-<h2>AUTHORS
-<a name="AUTHORS"></a>
-</h2>
-
-
-<p style="margin-left:11%; margin-top: 1em">Achim Gottinger
-&lt;achim@gentoo.org&gt; <br>
-Mark Guertin &lt;gerk@gentoo.org&gt; <br>
-Nicholas Jones &lt;carpaski@gentoo.org&gt; <br>
-Mike Frysinger &lt;vapier@gentoo.org&gt; <br>
-Arfrever Frehtes Taifersar Arahesis
-&lt;arfrever@apache.org&gt; <br>
-Fabian Groffen &lt;grobian@gentoo.org&gt;</p>
-<hr>
-</body>
-</html>
+<HTML><HEAD><TITLE>Manpage of EBUILD</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
+</HEAD><BODY>
+<H1>EBUILD</H1>
+Section: Portage (5)<BR>Updated: Nov 2014<BR><A HREF="#index">Index</A>
+<A HREF="http://localhost/cgi-bin/man/man2html">Return to Main Contents</A><HR>
+
+<P>
+<A NAME="lbAB">&nbsp;</A>
+<H2>NAME</H2>
+
+ebuild - the internal format, variables, and functions in an ebuild script
+<P>
+<A NAME="lbAC">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+The <B><A HREF="http://localhost/cgi-bin/man/man2html?1+ebuild">ebuild</A></B>(1) program accepts a single ebuild script as an argument.
+This script contains variables and commands that specify how to download,
+unpack, patch, compile, install and merge a particular software package from
+its original sources.  In addition to all of this, the ebuild script can also
+contain pre/post install/remove commands, as required.  All ebuild scripts are
+written in bash.
+<P>
+<A NAME="lbAD">&nbsp;</A>
+<H3>Dependencies</H3>
+
+A <I>depend atom</I> is simply a dependency that is used by portage when
+calculating relationships between packages.  Please note that if the atom has
+not already been emerged, then the latest version available is matched.
+<DL COMPACT>
+<DT><B>Atom Bases</B>
+
+<DD>
+The base atom is just a full category/packagename.
+<P>
+Examples:
+<PRE>
+<I>sys-apps/sed</I>
+<I>sys-libs/zlib</I>
+<I>net-misc/dhcp</I>
+</PRE>
+
+<DT><B>Atom Versions</B>
+
+<DD>
+It is nice to be more specific and say that only certain versions of atoms are
+acceptable.  Note that versions must be combined with a prefix (see below).
+Hence you may add a version number as a postfix to the base.
+<P>
+Examples:
+<PRE>
+        sys-apps/sed<I>-4.0.5</I>
+        sys-libs/zlib<I>-1.1.4-r1</I>
+        net-misc/dhcp<I>-3.0_p2</I>
+</PRE>
+
+<P>
+Versions are normally made up of two or three numbers separated by periods,
+such as 1.2 or 4.5.2.  This string may be followed by a character such as 1.2a
+or 4.5.2z.  Note that this letter is <I>not</I> meant to indicate alpha, beta,
+etc... status.  For that, use the optional suffix; either _alpha, _beta, _pre
+(pre-release), _rc (release candidate), or _p (patch).  This means for the
+3rd pre-release of a package, you would use something like 1.2_pre3.  The
+suffixes here can be arbitrarily chained without limitation.
+<DT><B>Atom Prefix Operators [&gt; &gt;= = &lt;= &lt;]</B>
+
+<DD>
+Sometimes you want to be able to depend on general versions rather than
+specifying exact versions all the time.  Hence we provide standard boolean
+operators:
+<P>
+Examples:
+<PRE>
+        <I>&gt;</I>media-libs/libgd-1.6
+        <I>&gt;=</I>media-libs/libgd-1.6
+        <I>=</I>media-libs/libgd-1.6
+        <I>&lt;=</I>media-libs/libgd-1.6
+        <I>&lt;</I>media-libs/libgd-1.6
+</PRE>
+
+<DT><B>Extended Atom Prefixes [!~] and Postfixes [*]</B>
+
+<DD>
+Now to get even fancier, we provide the ability to define blocking packages and
+version range matching.  Also note that these extended prefixes/postfixes may
+be combined in any way with the atom classes defined above.
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><I>~</I>
+
+<DD>
+means match any revision of the base version specified.  So in the
+example below, we would match versions '1.0.2a', '1.0.2a-r1', '1.0.2a-r2',
+etc...
+<P>
+Example:
+<PRE>
+        <I>~</I>net-libs/libnet-1.0.2a
+</PRE>
+
+<DT><I>!</I>
+
+<DD>
+means block packages from being installed at the same time.
+<P>
+Example:
+<PRE>
+        <I>!</I>app-text/dos2unix
+</PRE>
+
+<DT><I>!!</I>
+
+<DD>
+means block packages from being installed at the same time
+and explicitly disallow them from being temporarily installed
+simultaneously during a series of upgrades. This syntax is supported
+beginning with <B>EAPI 2</B>.
+<P>
+Example:
+<PRE>
+        <I>!!</I>&lt;sys-apps/portage-2.1.4_rc1
+</PRE>
+
+<DT><I>*</I>
+
+<DD>
+means match any version of the package so long
+as the specified string prefix is matched. So with a
+version of '2*', we can match '2.1', '2.2', '2.2.1',
+etc... and not match version '1.0', '3.0', '4.1', etc...
+Beware that, due to the string matching nature, '20'
+will also be matched by '2*'. The version part
+that comes before the '*' must be a valid version in the absence of the '*'.
+For example, '2' is a valid version and '2.' is not. Therefore, '2*' is
+allowed and '2.*' is not.
+<P>
+Examples:
+<PRE>
+        =dev-libs/glib-2<I>*</I>
+        <I>!</I>=net-fs/samba-2<I>*</I>
+</PRE>
+
+</DL>
+</DL>
+
+<DT><B>Atom Slots</B>
+
+<DD>
+Beginning with <B>EAPI 1</B>, any atom can be constrained to match a specific
+<B>SLOT</B>. This is accomplished by appending a colon followed by a
+<B>SLOT</B>:
+<P>
+Examples:
+<PRE>
+        x11-libs/qt:3
+        <I>~</I>x11-libs/qt-3.3.8:3
+        <I>&gt;=</I>x11-libs/qt-3.3.8:3
+        <I>=</I>x11-libs/qt-3.3*:3
+</PRE>
+
+<DT><B>Sub Slots</B>
+
+<DD>
+Beginning with <B>EAPI 5</B>, a slot dependency may contain an
+optional sub-slot part that follows the regular slot and is
+delimited by a <I>/</I> character.
+<P>
+Examples:
+<PRE>
+        dev-libs/icu:0/0
+        dev-libs/icu:0/49
+        dev-lang/perl:0/5.12
+        dev-libs/glib:2/2.30
+</PRE>
+
+<DT><B>Atom Slot Operators</B>
+
+<DD>
+Beginning with <B>EAPI 5</B>, slot operator dependency consists
+of a colon followed by one of the following operators:
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><I>*</I>
+
+<DD>
+Indicates that any slot value is acceptable. In addition,
+for runtime dependencies, indicates that the package will not
+break if the matched package is uninstalled and replaced by
+a different matching package in a different slot.
+<P>
+Examples:
+<PRE>
+        dev-libs/icu:*
+        dev-lang/perl:*
+        dev-libs/glib:*
+</PRE>
+
+<DT><I>=</I>
+
+<DD>
+Indicates that any slot value is acceptable. In addition,
+for runtime dependencies, indicates that the package will
+break unless a matching package with slot and sub-slot equal
+to the slot and sub-slot of the best installed version at the
+time the package was installed is available.
+<P>
+Examples:
+<PRE>
+        dev-libs/icu:=
+        dev-lang/perl:=
+        dev-libs/glib:=
+</PRE>
+
+<DT><I>slot=</I>
+
+<DD>
+Indicates that only a specific slot value is acceptable, and
+otherwise behaves identically to the plain equals slot operator.
+<P>
+Examples:
+<PRE>
+        dev-libs/icu:0=
+        dev-lang/perl:0=
+        dev-libs/glib:2=
+</PRE>
+
+</DL>
+<P>
+
+To implement the equals slot operator, the package manager
+will need to store the slot/sub-slot pair of the best installed
+version of the matching package. This syntax is only for package
+manager use and must not be used by ebuilds. The package manager
+may do this by inserting the appropriate slot/sub-slot pair
+between the colon and equals sign when saving the package's
+dependencies. The sub-slot part must not be omitted here
+(when the SLOT variable omits the sub-slot part, the package
+is considered to have an implicit sub-slot which is equal to
+the regular slot).
+<P>
+Examples:
+<PRE>
+        dev-libs/icu:0/0=
+        dev-libs/icu:0/49=
+        dev-lang/perl:0/5.12=
+        dev-libs/glib:2/2.30=
+</PRE>
+
+</DL>
+
+<DT><B>Atom USE</B>
+
+<DD>
+Beginning with <B>EAPI 2</B>, any atom can be constrained to match specific
+<B>USE</B> flag settings. When used together with <B>SLOT</B> dependencies,
+<B>USE</B> dependencies appear on the right hand side of <B>SLOT</B>
+dependencies.
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>Unconditional USE Dependencies</B>
+
+<DD>
+<TABLE>
+<TR VALIGN=top><TD>Example</TD><TD>Meaning<BR></TD></TR>
+<TR VALIGN=top><TD><HR></TD><TD><HR></TD></TR>
+<TR VALIGN=top><TD>foo[bar,baz]</TD><TD>foo must have both bar and baz enabled<BR></TD></TR>
+<TR VALIGN=top><TD>foo[-bar,baz]</TD><TD>foo must have bar disabled and baz enabled<BR></TD></TR>
+</TABLE>
+
+<DT><B>Conditional USE Dependencies</B>
+
+<DD>
+<TABLE>
+<TR VALIGN=top><TD>Compact Form</TD><TD>Equivalent Expanded Form<BR></TD></TR>
+<TR VALIGN=top><TD><HR></TD><TD><HR></TD></TR>
+<TR VALIGN=top><TD>foo[!bar?]</TD><TD>bar? ( foo ) !bar? ( foo[-bar] )<BR></TD></TR>
+<TR VALIGN=top><TD>foo[bar=]</TD><TD>bar? ( foo[bar] ) !bar? ( foo[-bar] )<BR></TD></TR>
+<TR VALIGN=top><TD>foo[!bar=]</TD><TD>bar? ( foo[-bar] ) !bar? ( foo[bar] )<BR></TD></TR>
+</TABLE>
+
+</DL>
+</DL>
+
+<DT><B>Atom USE defaults</B>
+
+<DD>
+Beginning with <B>EAPI 4</B>, <B>USE</B> dependencies may specify default
+assumptions about values for flags that may or may not be missing from
+the <B>IUSE</B> of the matched package. Such defaults are specified by
+immediately following a flag with either <I>(+)</I> or <I>(-)</I>. Use
+<I>(+)</I> to behave as if a missing flag is present and enabled, or
+<I>(-)</I> to behave as if it is present and disabled:
+<P>
+Examples:
+<PRE>
+        media-video/ffmpeg[threads(+)]
+        media-video/ffmpeg[-threads(-)]
+</PRE>
+
+<DT><B>Dynamic Dependencies</B>
+
+<DD>
+Sometimes programs may depend on different things depending on the USE
+variable.  Portage offers a few options to handle this.  Note that when
+using the following syntaxes, each case is considered as 1 Atom in the
+scope it appears.  That means that each Atom both conditionally include
+multiple Atoms and be nested to an infinite depth.
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><B>usevar? ( Atom )</B>
+
+<DD>
+To include the jpeg library when the user has jpeg in <B>USE</B>, simply use the
+following syntax:
+<P>
+jpeg? ( media-libs/jpeg )
+<DT><B>!usevar? ( Atom )</B>
+
+<DD>
+If you want to include a package only if the user does not have a certain
+option in their <B>USE</B> variable, then use the following syntax:
+<P>
+!nophysfs? ( dev-games/physfs )
+<P>
+This is often useful for those times when you want to want to add optional
+support for a feature and have it enabled by default.
+<DT><B>usevar? ( Atom if true ) !usevar? ( Atom if false )</B>
+
+<DD>
+For functionality like the tertiary operator found in C you must use
+two statements, one normal and one inverted.  If a package uses
+GTK2 or GTK1, but not both, then you can handle that like this:
+<P>
+gtk2? ( =x11-libs/gtk+-2* ) !gtk2? ( =x11-libs/gtk+-1* )
+<P>
+That way the default is the superior GTK2 library.
+<DT><B>|| ( Atom Atom ... )</B>
+
+<DD>
+When a package can work with a few different packages but a virtual is not
+appropriate, this syntax can easily be used.
+<P>
+Example:
+<PRE>
+|| (
+        app-games/unreal-tournament
+        app-games/unreal-tournament-goty
+)
+</PRE>
+
+<P>
+Here we see that unreal-tournament has a normal version and it has a goty
+version.  Since they provide the same base set of files, another package can
+use either.  Adding a virtual is inappropriate due to the small scope of it.
+<P>
+Another good example is when a package can be built with multiple video
+interfaces, but it can only ever have just one.
+<P>
+Example:
+<PRE>
+|| (
+        sdl? ( media-libs/libsdl )
+        svga? ( media-libs/svgalib )
+        opengl? ( virtual/opengl )
+        ggi? ( media-libs/libggi )
+        virtual/x11
+)
+</PRE>
+
+<P>
+Here only one of the packages will be chosen, and the order of preference is
+determined by the order in which they appear.  So sdl has the best chance of
+being chosen, followed by svga, then opengl, then ggi, with a default of X if
+the user does not specify any of the previous choices.
+<P>
+Note that if any of the packages listed are already merged, the package manager
+will use that to consider the dependency satisfied.
+<P>
+</DL>
+</DL>
+</DL>
+<A NAME="lbAE">&nbsp;</A>
+<H3>Cross-compilation</H3>
+
+Portage supports cross-compilation into a subdirectory specified by <B>ROOT</B>.
+<DL COMPACT>
+<DT><B>Host</B>
+
+<DD>
+<I>Host</I> in this context means the platform hosting the build process, i.e.
+what autotools calls CBUILD.
+Its packages are contained in the root of the filesystem (&quot;<I>/</I>&quot;).
+<P>
+If <B>ROOT</B> is &quot;<I>/</I>&quot;, all dependency types will be installed there.
+Otherwise, for EAPIs that support <B>HDEPEND</B> (experimental
+<B>EAPI 5-hdepend</B>), only <B>HDEPEND</B> is installed into &quot;<I>/</I>&quot;.
+For EAPIs that do not support <B>HDEPEND</B>, the behaviour is controlled by the
+<I>--root-deps</I> flag to <B><A HREF="http://localhost/cgi-bin/man/man2html?1+emerge">emerge</A></B>(1), defaulting to install only
+<B>DEPEND</B> into the <I>host</I>.
+<DT><B>Target</B>
+
+<DD>
+<I>Target</I> refers to the platform that the package will later run on, i.e.
+what autotools calls CHOST.
+The directory housing this system is specified by <B>ROOT</B>.
+If it is different from &quot;<I>/</I>&quot;, i.e. <I>host</I> and <I>target</I> are not the
+same, this variable contains the path to the directory housing the <I>target</I>
+system.
+<P>
+For EAPIs that support <B>HDEPEND</B> (experimental <B>EAPI 5-hdepend</B>),
+<B>DEPEND</B>, <B>RDEPEND</B>, and <B>PDEPEND</B>
+list the <I>target</I> dependencies, i.e. those to be installed into <B>ROOT</B>.
+For EAPIs that do not support <B>HDEPEND</B>, the <B><A HREF="http://localhost/cgi-bin/man/man2html?1+emerge">emerge</A></B>(1) flag
+<I>--root-deps</I> controls what the package manager installs there.
+Without it, <B>emerge</B> defaults to install only runtime dependencies (i.e.
+<B>RDEPEND</B> and <B>PDEPEND</B>) into <B>ROOT</B>.
+</DL>
+<P>
+
+See section <B>VARIABLES</B> for more information about the <B>DEPEND</B>,
+<B>RDEPEND</B> and <B>HDEPEND</B> variables.
+<DL COMPACT>
+<DT><B>The targetroot USE flag</B>
+
+<DD>
+For EAPIs that support the &quot;<I>targetroot</I>&quot; USE flag, that flag is
+automatically enabled by the package manager if <I>host</I> and <I>target</I>
+system are not the same, i.e. if the <B>ROOT</B> is not &quot;<I>/</I>&quot;.
+This is necessary where the package to be built needs an executable copy of
+itself during the build process.
+A known example is dev-lang/python, which needs to run a Python interpreter
+during compilation.
+<P>
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>VARIABLES</H2>
+
+<DL COMPACT>
+<DT><B>Usage Notes</B>
+
+<DD>
+- Variables defined in <B><A HREF="http://localhost/cgi-bin/man/man2html?5+make.conf">make.conf</A></B>(5) are available for use in
+ebuilds (except Portage-specific variables, which might be not supported by
+other package managers).
+<BR>
+
+- When assigning values to variables in ebuilds, you <I>cannot have a
+space</I> between the variable name and the equal sign.
+<BR>
+
+- Variable values should only contain characters that are members of the
+<B><A HREF="http://localhost/cgi-bin/man/man2html?7+ascii">ascii</A></B>(7) character set. This requirement is mandated by <B>GLEP 31</B>.
+<DT><B>P</B>
+
+<DD>
+This variable contains the package name without the ebuild revision.
+This variable must NEVER be modified.
+<P>
+xfree-4.2.1-r2.ebuild --&gt; $P=='xfree-4.2.1'
+<DT><B>PN</B>
+
+<DD>
+Contains the name of the script without the version number.
+<P>
+xfree-4.2.1-r2.ebuild --&gt; $PN=='xfree'
+<DT><B>PV</B>
+
+<DD>
+Contains the version number without the revision.
+<P>
+xfree-4.2.1-r2.ebuild --&gt; $PV=='4.2.1'
+<DT><B>PR</B>
+
+<DD>
+Contains the revision number or 'r0' if no revision number exists.
+<P>
+xfree-4.2.1-r2.ebuild --&gt; $PR=='r2'
+<DT><B>PVR</B>
+
+<DD>
+Contains the version number with the revision.
+<P>
+xfree-4.2.1-r2.ebuild --&gt; $PVR=='4.2.1-r2'
+<DT><B>PF</B>
+
+<DD>
+Contains the full package name <B>PN</B>-<B>PVR</B>
+<P>
+xfree-4.2.1-r2.ebuild --&gt; $PF=='xfree-4.2.1-r2'
+<DT><B>CATEGORY</B>
+
+<DD>
+Contains the package category name.
+<DT><B>A</B>
+
+<DD>
+Contains all source files required for the package.  This variable must
+not be defined. It is autogenerated from the <B>SRC_URI</B> variable.
+<DT><B>WORKDIR</B> = <I>${PORTAGE_TMPDIR}/portage/${CATEGORY}/${PF}/work</I>
+
+<DD>
+Contains the path to the package build root.  Do not modify this variable.
+<DT><B>FILESDIR</B> = <I>${repository_location}/${CATEGORY}/${PN}/files</I>
+
+<DD>
+Contains the path to the 'files' subdirectory in the package specific
+location in given repository.  Do not modify this variable.
+<DT><B>EBUILD_PHASE</B>
+
+<DD>
+Contains the abreviated name of the phase function that is
+currently executing, such as &quot;setup&quot;, &quot;unpack&quot;, &quot;compile&quot;, or
+&quot;preinst&quot;.
+<DT><B>EBUILD_PHASE_FUNC</B>
+
+<DD>
+Beginning with <B>EAPI 5</B>, contains the full name of the phase
+function that is currently executing, such as &quot;pkg_setup&quot;,
+&quot;src_unpack&quot;, &quot;src_compile&quot;, or &quot;pkg_preinst&quot;.
+<DT><B>EPREFIX</B>
+
+<DD>
+Beginning with <B>EAPI 3</B>, contains the offset
+that this Portage was configured for during
+installation.  The offset is sometimes necessary in an ebuild or eclass,
+and is available in such cases as ${EPREFIX}.  EPREFIX does not contain
+a trailing slash, therefore an absent offset is represented by the empty
+string.  Do not modify this variable.
+<DT><B>S</B> = <I>${WORKDIR}/${P}</I>
+
+<DD>
+Contains the path to the temporary <I>build directory</I>.  This variable
+is used by the functions <I>src_compile</I> and <I>src_install</I>.  Both
+are executed with <I>S</I> as the current directory.  This variable may
+be modified to match the extraction directory of a tarball for the package.
+<DT><B>T</B> = <I>${PORTAGE_TMPDIR}/portage/${CATEGORY}/${PF}/temp</I>
+
+<DD>
+Contains the path to a <I>temporary directory</I>.  You may use this for
+whatever you like.
+<DT><B>D</B> = <I>${PORTAGE_TMPDIR}/portage/${CATEGORY}/${PF}/image/</I>
+
+<DD>
+Contains the path to the temporary <I>install directory</I>.  Every write
+operation that does not involve the helper tools and functions (found below)
+should be prefixed with ${D}.
+Beginning with <B>EAPI 3</B>, the offset prefix often needs
+to be taken into account here, for which the variable
+${ED} is provided (see below).
+Do not modify this variable.
+<DT><B>ED</B> = <I>${PORTAGE_TMPDIR}/portage/${CATEGORY}/${PF}/image/${EPREFIX}/</I>
+
+<DD>
+Beginning with <B>EAPI 3</B>, contains the path
+&quot;${D%/}${EPREFIX}/&quot; for convenience purposes.
+For EAPI values prior to <B>EAPI 3</B> which do
+not support ED, helpers use <B>D</B> where
+they would otherwise use ED.
+Do not modify this variable.
+<DT><B>MERGE_TYPE</B>
+
+<DD>
+Beginning with <B>EAPI 4</B>, the MERGE_TYPE variable can be used to
+query the current merge type. This variable will contain one of the
+following possible values:
+<P>
+<DL COMPACT><DT><DD>
+<TABLE>
+<TR VALIGN=top><TD>Value</TD><TD>Meaning<BR></TD></TR>
+<TR VALIGN=top><TD><HR></TD><TD><HR></TD></TR>
+<TR VALIGN=top><TD>buildonly</TD><TD>source-build which is not scheduled for merge<BR></TD></TR>
+<TR VALIGN=top><TD>source</TD><TD>source-build which is scheduled for merge<BR></TD></TR>
+</TABLE>
+
+</DL>
+
+<DT><B>PROVIDES_EXCLUDE</B> = <I>[space delimited list of fnmatch patterns]</I>
+
+<DD>
+Sonames and file paths matched by these fnmatch patterns will be
+excluded during genertion of <B>PROVIDES</B> metadata (see
+<B><A HREF="http://localhost/cgi-bin/man/man2html?5+portage">portage</A></B>(5)). Patterns are delimited by whitespace, and it is
+possible to create patterns containing quoted whitespace.
+<DT><B>PORTAGE_LOG_FILE</B>
+
+<DD>
+Contains the path of the build log. If <B>PORT_LOGDIR</B> variable is unset then
+PORTAGE_LOG_FILE=<I>&quot;${T}/build.log&quot;</I>.
+<DT><B>PORTAGE_SOCKS5_PROXY</B>
+
+<DD>
+Contains the UNIX socket path to SOCKSv5 proxy providing host network
+access. Available only when running inside network-sandbox and a proxy
+is available (see network-sandbox in <B><A HREF="http://localhost/cgi-bin/man/man2html?5+make.conf">make.conf</A></B>(5)).
+<DT><B>REPLACED_BY_VERSION</B>
+
+<DD>
+Beginning with <B>EAPI 4</B>, the REPLACED_BY_VERSION variable can be
+used in pkg_prerm and pkg_postrm to query the package version that
+is replacing the current package. If there is no replacement package,
+the variable will be empty, otherwise it will contain a single version
+number.
+<DT><B>REPLACING_VERSIONS</B>
+
+<DD>
+Beginning with <B>EAPI 4</B>, the REPLACING_VERSIONS variable can be
+used in pkg_pretend, pkg_setup, pkg_preinst and pkg_postinst to query
+the package version(s) that the current package is replacing. If there
+are no packages to replace, the variable will be empty, otherwise it
+will contain a space-separated list of version numbers corresponding
+to the package version(s) being replaced. Typically, this variable will
+not contain more than one version, but according to PMS it can contain
+more.
+<DT><B>REQUIRES_EXCLUDE</B> = <I>[space delimited list of fnmatch patterns]</I>
+
+<DD>
+Sonames and file paths matched by these fnmatch patterns will be
+excluded during generation of <B>REQUIRES</B> metadata (see
+<B><A HREF="http://localhost/cgi-bin/man/man2html?5+portage">portage</A></B>(5)). Patterns are delimited by whitespace, and it is
+possible to create patterns containing quoted whitespace.
+<DT><B>ROOT</B> = <I>/</I>
+
+<DD>
+Contains the path that portage should use as the root of the live filesystem.
+When packages wish to make changes to the live filesystem, they should do so in
+the tree prefixed by ${ROOT}.  Often the offset prefix needs to be taken
+into account here, for which the variable ${EROOT} is provided (see
+below).  Do not modify this variable.
+<DT><B>EROOT</B> = <I>${ROOT%/}${EPREFIX}/</I>
+
+<DD>
+Beginning with <B>EAPI 3</B>, contains
+&quot;${ROOT%/}${EPREFIX}/&quot; for convenience
+purposes. Do not modify this variable.
+<DT><B>DESCRIPTION</B> = <I>A happy little package</I>
+
+<DD>
+Should contain a short description of the package.
+<DT><B>EAPI</B> = <I>0</I>
+
+<DD>
+Defines the ebuild API version to which this package conforms. If not
+defined then it defaults to &quot;0&quot;. If portage does not recognize the
+EAPI value then it will mask the package and refuse to perform any
+operations with it since this means that a newer version of portage
+needs to be installed first. For maximum backward compatiblity, a
+package should conform to the lowest possible EAPI. Note that anyone
+who uses the <B><A HREF="http://localhost/cgi-bin/man/man2html?1+ebuild">ebuild</A></B>(1) and <B><A HREF="http://localhost/cgi-bin/man/man2html?1+repoman">repoman</A></B>(1) commands with this
+package will be required to have a version of portage that recognizes
+the EAPI to which this package conforms.
+<DT><B>SRC_URI</B> = <I><A HREF="http://example.com/path/${P}.tar.gz">http://example.com/path/${P}.tar.gz</A></I>
+
+<DD>
+Contains a list of URIs for the required source files.  It can contain
+multiple URIs for a single source file.  The list is processed in order
+if the file was not found on any of the <I>GENTOO_MIRRORS</I>.
+Beginning with <B>EAPI 2</B>, the output file name of a given URI may be
+customized with a &quot;-&gt;&quot; operator on the right hand side, followed by the
+desired output file name. All tokens, including the operator and output
+file name, should be separated by whitespace.
+<DT><B>HOMEPAGE</B> = <I><A HREF="http://example.com/">http://example.com/</A></I>
+
+<DD>
+Should contain a list of URIs for the sources main sites and other further
+package dependent information.
+<DT><B>KEYWORDS</B> = <I>[-~][x86,ppc,sparc,mips,alpha,arm,hppa]</I>
+
+<DD>
+Should contain appropriate list of arches that the ebuild is know to
+work/not work.  By default if you do not know if an ebuild runs under
+a particular arch simply omit that KEYWORD.  If the ebuild will not
+work on that arch include it as -ppc for example.  If the ebuild is
+being submitted for inclusion, it must have ~arch set for architectures
+where it has been PROVEN TO WORK.  (Packages KEYWORDed this way may be
+unmasked for testing by setting ACCEPT_KEYWORDS=&quot;~arch&quot; on the command
+line, or in <B><A HREF="http://localhost/cgi-bin/man/man2html?5+make.conf">make.conf</A></B>(5)) For an authoritative list please review
+/usr/portage/profiles/arch.list.  Please keep this list in alphabetical order.
+<DT><B>SLOT</B>
+
+<DD>
+This sets the SLOT for packages that may need to have multiple versions
+co-exist.  By default you should set <B>SLOT</B>=&quot;0&quot;.  If you are unsure, then
+do not fiddle with this until you seek some guidance from some guru.  This
+value should <I>NEVER</I> be left undefined.
+<P>
+Beginning with <B>EAPI 5</B>, the SLOT variable may contain
+an optional sub-slot part that follows the regular slot and
+is delimited by a / character. The sub-slot must be a valid
+slot name. The sub-slot is used to represent cases in which
+an upgrade to a new version of a package with a different
+sub-slot may require dependent packages to be rebuilt. When
+the sub-slot part is omitted from the SLOT definition, the
+package is considered to have an implicit sub-slot which is
+equal to the regular slot. Refer to the <B>Atom Slot
+Operators</B> section for more information about sub-slot
+usage.
+<DT><B>LICENSE</B>
+
+<DD>
+This should be a space delimited list of licenses that the package falls
+under.  This <B>_must_</B> be set to a matching license in
+/usr/portage/licenses/. If the license does not exist in portage yet, you
+must add it first.
+<DT><B>IUSE</B>
+
+<DD>
+This should be a list of any and all USE flags that are leveraged within
+your build script.  The only USE flags that should not be listed here are
+arch related flags (see <B>KEYWORDS</B>). Beginning with <B>EAPI 1</B>, it
+is possible to prefix flags with + or - in order to create default settings
+that respectively enable or disable the corresponding <B>USE</B> flags. For
+details about <B>USE</B> flag stacking order, refer to the <B>USE_ORDER</B>
+variable in <B><A HREF="http://localhost/cgi-bin/man/man2html?5+make.conf">make.conf</A></B>(5). Given the default <B>USE_ORDER</B> setting,
+negative IUSE default settings are effective only for negation of
+repo-level USE settings, since profile and user configuration settings
+override them.
+<DT><B>DEPEND</B>
+
+<DD>
+This should contain a list of all packages that are required for the program
+to compile (aka <I>buildtime</I> dependencies).  These are usually libraries and
+headers.
+<P>
+Starting from experimental <B>EAPI 5-hdepend</B>, tools should go into the
+<B>HDEPEND</B> variable instead, as <B>DEPEND</B> will only be installed into the
+<I>target</I> system and hence cannot be executed in a cross-compile setting.
+(See section <B>Cross-compilation</B> for more information.)
+<P>
+You may use the syntax described above in the <B>Dependencies</B> section.
+<DT><B>RDEPEND</B>
+
+<DD>
+This should contain a list of all packages that are required for this
+program to run (aka <I>runtime</I> dependencies).  These are usually libraries.
+<P>
+In <B>EAPI 3</B> or earlier, if this is not set, then it defaults to the value
+of <B>DEPEND</B>. In <B>EAPI 4</B> or later, <B>RDEPEND</B> will never be
+implicitly set.
+<P>
+You may use the syntax described above in the <B>Dependencies</B> section.
+<DT><B>HDEPEND</B>
+
+<DD>
+This should contain a list of all packages that are required to be executable
+during compilation of this program (aka <I>host</I> buildtime dependencies).
+These are usually tools, like interpreters or (cross-)compilers.
+<P>
+This variable is new in experimental <B>EAPI 5-hdepend</B> and will be installed
+into the <I>host</I> system.
+(See section <B>Cross-compilation</B> for more information.)
+<P>
+You may use the syntax described above in the <B>Dependencies</B> section.
+<DT><B>PDEPEND</B>
+
+<DD>
+This should contain a list of all packages that should be merged after this
+one (aka <I>post</I> merge dependencies), but which may be installed by the
+package manager at any time, if that is not possible.
+<P>
+<B>***WARNING***</B>
+
+<BR>
+
+Use this only as last resort to break cyclic dependencies!
+<P>
+You may use the syntax described above in the <B>Dependencies</B> section.
+<DT><B>REQUIRED_USE</B>
+
+<DD>
+Beginning with <B>EAPI 4</B>, the <B>REQUIRED_USE</B> variable can be
+used to specify combinations of <B>USE</B> flags that are allowed
+or not allowed. Elements can be nested when necessary.
+<TABLE>
+<TR VALIGN=top><TD>Behavior</TD><TD>Expression<BR></TD></TR>
+<TR VALIGN=top><TD><HR></TD><TD><HR></TD></TR>
+<TR VALIGN=top><TD>If flag1 enabled then flag2 enabled</TD><TD>flag1? ( flag2 )<BR></TD></TR>
+<TR VALIGN=top><TD>If flag1 disabled then flag2 enabled</TD><TD>!flag1? ( flag2 )<BR></TD></TR>
+<TR VALIGN=top><TD>If flag1 disabled then flag2 disabled</TD><TD>!flag1? ( !flag2 )<BR></TD></TR>
+<TR VALIGN=top><TD>Must enable any one or more (inclusive or)</TD><TD>|| ( flag1 flag2 flag3 )<BR></TD></TR>
+<TR VALIGN=top><TD>Must enable exactly one but not more (exclusive or)</TD><TD>^^ ( flag1 flag2 flag3 )<BR></TD></TR>
+<TR VALIGN=top><TD>May enable at most one (EAPI 5 or later)</TD><TD>?? ( flag1 flag2 flag3 )<BR></TD></TR>
+</TABLE>
+
+<DT><B>RESTRICT</B> = <I>[strip,mirror,fetch,userpriv]</I>
+
+<DD>
+This should be a space delimited list of portage features to restrict.
+You may use conditional syntax to vary restrictions as seen above in DEPEND.
+
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><I>binchecks</I>
+
+<DD>
+Disable all QA checks for binaries.  This should ONLY be used in packages
+for which binary checks make no sense (linux-headers and kernel-sources, for
+example, can safely be skipped since they have no binaries).  If the binary
+checks need to be skipped for other reasons (such as proprietary binaries),
+see the <B>QA CONTROL VARIABLES</B> section for more specific exemptions.
+<DT><I>bindist</I>
+
+<DD>
+Distribution of built packages is restricted.
+<DT><I>fetch</I>
+
+<DD>
+like <I>mirror</I> but the files will not be fetched via <B>SRC_URI</B> either.
+<DT><I>installsources</I>
+
+<DD>
+Disables installsources for specific packages. This is for packages with
+binaries that are not compatible with debugedit.
+<DT><I>mirror</I>
+
+<DD>
+files in <B>SRC_URI</B> will not be downloaded from the <B>GENTOO_MIRRORS</B>.
+<DT><I>preserve-libs</I>
+
+<DD>
+Disables preserve-libs for specific packages. Note than when a package is
+merged, RESTRICT=preserve-libs applies if either the new instance or the
+old instance sets RESTRICT=preserve-libs.
+<DT><I>primaryuri</I>
+
+<DD>
+fetch from URIs in <B>SRC_URI</B> before <B>GENTOO_MIRRORS</B>.
+<DT><I>splitdebug</I>
+
+<DD>
+Disables splitdebug for specific packages. This is for packages with
+binaries that trigger problems with splitdebug, such as file-collisions
+between symlinks in /usr/lib/debug/.build-id (triggered by bundled libraries).
+<DT><I>strip</I>
+
+<DD>
+final binaries/libraries will not be stripped of debug symbols.
+<DT><I>test</I>
+
+<DD>
+do not run src_test even if user has <B>FEATURES</B>=test.
+<DT><I>userpriv</I>
+
+<DD>
+Disables userpriv for specific packages.
+</DL>
+</DL>
+
+
+<DT><B>PROPERTIES</B> = <I>[interactive]</I>
+
+<DD>
+A space delimited list of properties, with conditional syntax support.
+
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><I>interactive</I>
+
+<DD>
+One or more ebuild phases will produce a prompt that requires user interaction.
+</DL>
+</DL>
+
+
+<DT><B>PROVIDE</B> = <I>virtual/TARGET</I>
+
+<DD>
+This variable should only be used when a package provides a virtual target.
+For example, blackdown-jdk and sun-jdk provide <I>virtual/jdk</I>.  This
+allows for packages to depend on <I>virtual/jdk</I> rather than on blackdown
+or sun specifically.
+<P>
+The <B>PROVIDE</B> variable has been deprecated. See
+<I><A HREF="http://www.gentoo.org/proj/en/glep/glep-0037.html">http://www.gentoo.org/proj/en/glep/glep-0037.html</A></I> for details.
+<P>
+<DT><B>DOCS</B>
+
+<DD>
+Beginning with <B>EAPI 4</B>, an array or space-delimited list of documentation
+files for the default src_install function to install using dodoc. If
+undefined, a reasonable default list is used. See the documentation for
+src_install below.
+<P>
+</DL>
+<A NAME="lbAG">&nbsp;</A>
+<H3>QA Control Variables:</H3>
+
+<DL COMPACT>
+<DT><B>Usage Notes</B>
+
+<DD>
+Several QA variables are provided which allow an ebuild to manipulate some
+of the QA checks performed by portage.  Use of these variables in ebuilds
+should be kept to an absolute minimum otherwise they defeat the purpose
+of the QA checks, and their use is subject to agreement of the QA team.
+They are primarily intended for use by ebuilds that install closed-source
+binary objects that cannot be altered.
+<P>
+Note that objects that violate these rules may fail on some architectures.
+<DT><B>QA_PREBUILT</B>
+
+<DD>
+This should contain a list of file paths, relative to the image
+directory, of files that are pre-built binaries. Paths
+listed here will be appended to each of the QA_* variables
+listed below. The paths may contain fnmatch-like patterns
+which will be internally translated to regular expressions for
+the QA_* variables that support regular expressions instead
+of fnmatch patterns. The translation mechanism simply replaces
+&quot;*&quot; with &quot;.*&quot;.
+<DT><B>QA_TEXTRELS</B>
+
+<DD>
+This variable can be set to a list of file paths, relative to the image
+directory, of files that contain text relocations that cannot be eliminated.
+The paths may contain fnmatch patterns.
+<P>
+This variable is intended to be used on closed-source binary objects that
+cannot be altered.
+<DT><B>QA_EXECSTACK</B>
+
+<DD>
+This should contain a list of file paths, relative to the image directory, of
+objects that require executable stack in order to run.
+The paths may contain fnmatch patterns.
+<P>
+This variable is intended to be used on objects that truly need executable
+stack (i.e. not those marked to need it which in fact do not).
+<DT><B>QA_WX_LOAD</B>
+
+<DD>
+This should contain a list of file paths, relative to the image directory, of
+files that contain writable and executable segments.  These are rare.
+The paths may contain fnmatch patterns.
+<DT><B>QA_FLAGS_IGNORED</B>
+
+<DD>
+This should contain a list of file paths, relative to the image directory, of
+files that do not contain .GCC.command.line sections or contain .hash sections.
+The paths may contain regular expressions with escape-quoted special
+characters.
+<P>
+This variable is intended to be used on files of binary packages which ignore
+CFLAGS, CXXFLAGS, FFLAGS, FCFLAGS, and LDFLAGS variables.
+<DT><B>QA_MULTILIB_PATHS</B>
+
+<DD>
+This should contain a list of file paths, relative to the image directory, of
+files that should be ignored for the multilib-strict checks.
+The paths may contain regular expressions with escape-quoted special
+characters.
+<DT><B>QA_PRESTRIPPED</B>
+
+<DD>
+This should contain a list of file paths, relative to the image directory, of
+files that contain pre-stripped binaries. The paths may contain regular
+expressions with escape-quoted special characters.
+<DT><B>QA_SONAME</B>
+
+<DD>
+This should contain a list of file paths, relative to the image directory, of
+shared libraries that lack SONAMEs. The paths may contain regular expressions
+with escape-quoted special characters.
+<DT><B>QA_SONAME_NO_SYMLINK</B>
+
+<DD>
+This should contain a list of file paths, relative to the image directory, of
+shared libraries that have SONAMEs but should not have a corresponding SONAME
+symlink in the same directory. The paths may contain regular expressions
+with escape-quoted special characters.
+<DT><B>QA_AM_MAINTAINER_MODE</B>
+
+<DD>
+This should contain a list of lines containing automake missing --run
+commands. The lines may contain regular expressions with escape-quoted
+special characters.
+<DT><B>QA_CONFIGURE_OPTIONS</B>
+
+<DD>
+This should contain a list of configure options which trigger warnings about
+unrecognized options. The options may contain regular expressions with
+escape-quoted special characters.
+<DT><B>QA_DT_NEEDED</B>
+
+<DD>
+This should contain a list of file paths, relative to the image directory, of
+shared libraries that lack NEEDED entries. The paths may contain regular
+expressions with escape-quoted special characters.
+<DT><B>QA_DESKTOP_FILE</B>
+
+<DD>
+This should contain a list of file paths, relative to the image directory, of
+desktop files which should not be validated. The paths may contain regular
+expressions with escape-quoted special characters.
+<P>
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>PORTAGE DECLARATIONS</H2>
+
+<DL COMPACT>
+<DT><B>inherit</B>
+
+<DD>
+Inherit is portage's maintenance of extra classes of functions that are
+external to ebuilds and provided as inheritable capabilities and data. They
+define functions and set data types as drop-in replacements, expanded, and
+simplified routines for extremely common tasks to streamline the build
+process. Call to inherit cannot depend on conditions which can vary in given
+ebuild. Specification of the eclasses contains only their name and not the
+<I>.eclass</I> extension. Also note that the inherit statement must come
+before other variable declarations unless these variables are used in global
+scope of eclasses.
+<P>
+</DL>
+<A NAME="lbAI">&nbsp;</A>
+<H2>PHASE FUNCTIONS</H2>
+
+<DL COMPACT>
+<DT><B>pkg_pretend</B>
+
+<DD>
+Beginning with <B>EAPI 4</B>, this function can be defined in order to
+check that miscellaneous requirements are met. It is called as early
+as possible, before any attempt is made to satisfy dependencies. If the
+function detects a problem then it should call eerror and die. The
+environment (variables, functions, temporary directories, etc..) that
+is used to execute pkg_pretend is not saved and therefore is not
+available in phases that execute afterwards.
+<DT><B>pkg_nofetch</B>
+
+<DD>
+This function will be executed when the files in <B>SRC_URI</B>
+cannot be fetched for any reason. If you turn on <I>fetch</I> in
+<B>RESTRICT</B>, this is useful for displaying information to the
+user on *how* to obtain said files. All
+you have to do is output a message and let the function return.  Do not
+end the function with a call to <B>die</B>.
+<DT><B>pkg_setup</B>
+
+<DD>
+This function can be used if the package needs specific setup actions or
+checks to be preformed before anything else.
+<BR>
+
+Initial working directory: $PORTAGE_TMPDIR
+<DT><B>src_unpack</B>
+
+<DD>
+This function is used to unpack all the sources in <I>A</I> to <I>WORKDIR</I>.
+If not defined in the <I>ebuild script</I> it calls <I>unpack ${A}</I>. Any
+patches and other pre configure/compile modifications should be done here.
+<BR>
+
+Initial working directory: $WORKDIR
+<DT><B>src_prepare</B>
+
+<DD>
+All preparation of source code, such as application of patches, should be done
+here. This function is supported beginning with <B>EAPI 2</B>.
+<BR>
+
+Initial working directory: $S
+<DT><B>src_configure</B>
+
+<DD>
+All necessary steps for configuration should be done here. This function is
+supported beginning with <B>EAPI 2</B>.
+<BR>
+
+Initial working directory: $S
+<DT><B>src_compile</B>
+
+<DD>
+With less than <B>EAPI 2</B>, all necessary steps for both configuration and
+compilation should be done here. Beginning with <B>EAPI 2</B>, only compilation
+steps should be done here.
+<BR>
+
+Initial working directory: $S
+<DT><B>src_test</B>
+
+<DD>
+Run all package specific test cases. The default is to run
+'emake check' followed 'emake test'. Prior to <B>EAPI 5</B>,
+the default src_test implementation will automatically pass the
+-j1 option as the last argument to emake, and beginning with
+<B>EAPI 5</B> it will allow the tests to run in parallel.
+<BR>
+
+Initial working directory: $S
+<DT><B>src_install</B>
+
+<DD>
+Should contain everything required to install the package in the temporary
+<I>install directory</I>.
+<BR>
+
+Initial working directory: $S
+<P>
+Beginning with <B>EAPI 4</B>, if src_install is undefined then the
+following default implementation is used:
+<P>
+<PRE>
+src_install() {
+    if [[ -f Makefile || -f GNUmakefile || -f makefile ]] ; then
+        emake DESTDIR=&quot;${D}&quot; install
+    fi
+
+    if ! declare -p DOCS &amp;&gt;/dev/null ; then
+        local d
+        for d in README* ChangeLog AUTHORS NEWS TODO CHANGES \
+                THANKS BUGS FAQ CREDITS CHANGELOG ; do
+            [[ -s &quot;${d}&quot; ]] &amp;&amp; dodoc &quot;${d}&quot;
+        done
+    elif [[ $(declare -p DOCS) == &quot;declare -a &quot;* ]] ; then
+        dodoc &quot;${DOCS[@]}&quot;
+    else
+        dodoc ${DOCS}
+    fi
+}
+</PRE>
+
+<DT><B>pkg_preinst pkg_postinst</B>
+
+<DD>
+All modifications required on the live-filesystem before and after the
+package is merged should be placed here. Also commentary for the user
+should be listed here as it will be displayed last.
+<BR>
+
+Initial working directory: $PWD
+<DT><B>pkg_prerm pkg_postrm</B>
+
+<DD>
+Like the pkg_*inst functions but for unmerge.
+<BR>
+
+Initial working directory: $PWD
+<DT><B>pkg_config</B>
+
+<DD>
+This function should contain optional basic configuration steps.
+<BR>
+
+Initial working directory: $PWD
+<P>
+</DL>
+<A NAME="lbAJ">&nbsp;</A>
+<H2>HELPER FUNCTIONS</H2>
+
+<A NAME="lbAK">&nbsp;</A>
+<H3>Phases:</H3>
+
+<DL COMPACT>
+<DT><B>default</B>
+
+<DD>
+Calls the default phase function implementation for the currently executing
+phase. This function is supported beginning with <B>EAPI 2</B>.
+<DT><B>default_*</B>
+
+<DD>
+Beginning with <B>EAPI 2</B>, the default pkg_nofetch and src_* phase
+functions are accessible via a function having a name that begins with
+default_ and ends with the respective phase function name. For example,
+a call to a function with the name default_src_compile is equivalent to
+a call to the default src_compile implementation.
+<P>
+<DL COMPACT><DT><DD>
+<TABLE>
+<TR VALIGN=top><TD>Default Phase Functions<BR></TD></TR>
+<TR VALIGN=top><TD><HR></TD></TR>
+<TR VALIGN=top><TD>default_src_unpack<BR></TD></TR>
+<TR VALIGN=top><TD>default_src_prepare<BR></TD></TR>
+<TR VALIGN=top><TD>default_src_configure<BR></TD></TR>
+<TR VALIGN=top><TD>default_src_compile<BR></TD></TR>
+<TR VALIGN=top><TD>default_src_test<BR></TD></TR>
+</TABLE>
+
+</DL>
+
+<P>
+</DL>
+<A NAME="lbAL">&nbsp;</A>
+<H3>General:</H3>
+
+<DL COMPACT>
+<DT><B>assert</B> <I>[reason]</I>
+
+<DD>
+Checks the value of the shell's PIPESTATUS array variable, and if any
+component is non-zero (indicating failure), calls die with <I>reason</I>
+as a failure message.
+<DT><B>die</B> <I>[reason]</I>
+
+<DD>
+Causes the current emerge process to be aborted. The final display will
+include <I>reason</I>.
+<P>
+Beginning with <B>EAPI 4</B>, all helpers automatically call <B>die</B>
+whenever some sort of error occurs. Helper calls may be prefixed with
+the <B>nonfatal</B> helper in order to prevent errors from being fatal.
+<DT><B>nonfatal</B> <I>&lt;helper&gt;</I>
+
+<DD>
+Execute <I>helper</I> and <I>do not</I> call die if it fails.
+The <B>nonfatal</B> helper is available beginning with <B>EAPI 4</B>.
+<DT><B>use</B> <I>&lt;USE item&gt;</I>
+
+<DD>
+If <I>USE item</I> is in the <B>USE</B> variable, the function will silently
+return 0 (aka shell true).  If <I>USE item</I> is not in the <B>USE</B>
+variable, the function will silently return 1 (aka shell false).  <B>usev</B>
+is a verbose version of <B>use</B>.
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><I>Example:</I>
+
+<DD>
+<PRE>
+if use gnome ; then
+        guiconf=&quot;--enable-gui=gnome --with-x&quot;
+elif use gtk ; then
+        guiconf=&quot;--enable-gui=gtk --with-x&quot;
+elif use X ; then
+        guiconf=&quot;--enable-gui=athena --with-x&quot;
+else
+        # No gui version will be built
+        guiconf=&quot;&quot;
+fi
+</PRE>
+
+</DL>
+</DL>
+
+<DT><B>usev</B> <I>&lt;USE item&gt;</I>
+
+<DD>
+Like <B>use</B>, but also echoes <I>USE item</I> when <B>use</B> returns true.
+<DT><B>usex</B> <I>&lt;USE flag&gt;</I> <I>[true output]</I> <I>[false output]</I> <I>[true suffix]</I> <I>[false suffix]</I>
+
+<DD>
+If USE flag is set, echo [true output][true suffix] (defaults to
+&quot;yes&quot;), otherwise echo [false output][false suffix] (defaults to
+&quot;no&quot;). The usex helper is available beginning with <B>EAPI 5</B>.
+<DT><B>use_with</B> <I>&lt;USE item&gt;</I> <I>[configure name]</I> <I>[configure opt]</I>
+
+<DD>
+Useful for creating custom options to pass to a configure script. If <I>USE
+item</I> is in the <B>USE</B> variable and a <I>configure opt</I> is specified,
+then the string <I>--with-[configure name]=[configure opt]</I> will be
+echoed. If <I>configure opt</I> is not specified, then just
+<I>--with-[configure name]</I> will be echoed.  If <I>USE item</I> is not in
+the <B>USE</B> variable, then the string <I>--without-[configure name]</I>
+will be echoed. If <I>configure name</I> is not specified, then <I>USE item</I>
+will be used in its place. Beginning with <B>EAPI 4</B>, an empty <I>configure
+opt</I> argument is recognized. In <B>EAPI 3</B> and earlier, an empty
+<I>configure opt</I> argument is treated as if it weren't provided.
+<DL COMPACT><DT><DD>
+<DL COMPACT>
+<DT><I>Examples:</I>
+
+<DD>
+<PRE>
+USE=&quot;opengl&quot;
+myconf=$(use_with opengl)
+(myconf now has the value &quot;--with-opengl&quot;)
+
+USE=&quot;jpeg&quot;
+myconf=$(use_with jpeg libjpeg)
+(myconf now has the value &quot;--with-libjpeg&quot;)
+
+USE=&quot;&quot;
+myconf=$(use_with jpeg libjpeg)
+(myconf now has the value &quot;--without-libjpeg&quot;)
+
+USE=&quot;sdl&quot;
+myconf=$(use_with sdl SDL all-plugins)
+(myconf now has the value &quot;--with-SDL=all-plugins&quot;)
+</PRE>
+
+</DL>
+</DL>
+
+<DT><B>use_enable</B> <I>&lt;USE item&gt;</I> <I>[configure name]</I> <I>[configure opt]</I>
+
+<DD>
+Same as <B>use_with</B> above, except that the configure options are
+<I>--enable-</I> instead of <I>--with-</I> and <I>--disable-</I> instead
+of <I>--without-</I>. Beginning with <B>EAPI 4</B>, an empty <I>configure
+opt</I> argument is recognized. In <B>EAPI 3</B> and earlier, an empty
+<I>configure opt</I> argument is treated as if it weren't provided.
+<DT><B>has</B> <I>&lt;item&gt;</I> <I>&lt;item list&gt;</I>
+
+<DD>
+If <I>item</I> is in <I>item list</I>, then <B>has</B> returns
+0. Otherwise, 1 is returned. There is another version, <B>hasv</B>, that
+will conditionally echo <I>item</I>.
+<BR>
+
+The <I>item list</I> is delimited by the <I>IFS</I> variable.  This variable
+has a default value of ' ', or a space.  It is a <B><A HREF="http://localhost/cgi-bin/man/man2html?1+bash">bash</A></B>(1) setting.
+<DT><B>hasv</B> <I>&lt;item&gt;</I> <I>&lt;item list&gt;</I>
+
+<DD>
+Like <B>has</B>, but also echoes <I>item</I> when <B>has</B> returns true.
+<DT><B>has_version</B> <I>[--host-root]</I> <I>&lt;category/package-version&gt;</I>
+
+<DD>
+Check to see if <I>category/package-version</I> is installed on the system.
+The parameter accepts all values that are acceptable in the <B>DEPEND</B>
+variable.  The function returns 0 if <I>category/package-version</I> is
+installed, 1 otherwise. Beginning with <B>EAPI 5</B>, the
+--host-root option may be used in order to cause the query
+to apply to the host root instead of ${ROOT}.
+<DT><B>best_version</B> <I>[--host-root]</I> <I>&lt;package name&gt;</I>
+
+<DD>
+This function will look up <I>package name</I> in the database of currently
+installed programs and echo the &quot;best version&quot; of the package that is
+currently installed. Beginning with <B>EAPI 5</B>, the
+--host-root option may be used in order to cause the query
+to apply to the host root instead of ${ROOT}.
+<P>
+Example:
+<PRE>
+        VERINS=&quot;$(best_version net-ftp/glftpd)&quot;
+        (VERINS now has the value &quot;net-ftp/glftpd-1.27&quot; if glftpd-1.27 is       installed)
+</PRE>
+
+<P>
+</DL>
+<A NAME="lbAM">&nbsp;</A>
+<H3>Hooks:</H3>
+
+<DL COMPACT>
+<DT><B>register_die_hook</B> <I>[list of function names]</I>
+
+<DD>
+Register one or more functions to call when the ebuild fails for any reason,
+including file collisions with other packages.
+<DT><B>register_success_hook</B> <I>[list of function names]</I>
+
+<DD>
+Register one or more functions to call when the ebuild builds and/or installs
+successfully.
+<P>
+</DL>
+<A NAME="lbAN">&nbsp;</A>
+<H3>Output:</H3>
+
+<DL COMPACT>
+<DT><B>einfo</B> <I>disposable message</I>
+
+<DD>
+Same as <B>elog</B>, but should be used when the message isn't important to the
+user (like progress or status messages during the build process).
+<DT><B>elog</B> <I>informative message</I>
+
+<DD>
+If you need to display a message that you wish the user to read and take
+notice of, then use <B>elog</B>.  It works just like <B><A HREF="http://localhost/cgi-bin/man/man2html?1+echo">echo</A></B>(1), but
+adds a little more to the output so as to catch the user's eye. The message
+will also be logged by portage for later review.
+<DT><B>ewarn</B> <I>warning message</I>
+
+<DD>
+Same as <B>einfo</B>, but should be used when showing a warning to the user.
+<DT><B>eqawarn</B> <I>QA warning message</I>
+
+<DD>
+Same as <B>einfo</B>, but should be used when showing a QA warning to the user.
+<DT><B>eerror</B> <I>error message</I>
+
+<DD>
+Same as <B>einfo</B>, but should be used when showing an error to the user.
+<DT><B>ebegin</B> <I>helpful message</I>
+
+<DD>
+Like <B>einfo</B>, we output a <I>helpful message</I> and then hint that the
+following operation may take some time to complete.  Once the task is
+finished, you need to call <B>eend</B>.
+<DT><B>eend</B> <I>&lt;status&gt;</I> <I>[error message]</I>
+
+<DD>
+Followup the <B>ebegin</B> message with an appropriate &quot;OK&quot; or &quot;!!&quot; (for
+errors) marker.  If <I>status</I> is non-zero, then the additional <I>error
+message</I> is displayed.
+<P>
+</DL>
+<A NAME="lbAO">&nbsp;</A>
+<H3>Unpack:</H3>
+
+<DL COMPACT>
+<DT><B>unpack</B> <I>&lt;source&gt;</I> <I>[list of more sources]</I>
+
+<DD>
+This function uncompresses and/or untars a list of sources into the current
+directory. The function will append <I>source</I> to the <B>DISTDIR</B> variable.
+<P>
+</DL>
+<A NAME="lbAP">&nbsp;</A>
+<H3>Compile:</H3>
+
+<DL COMPACT>
+<DT><B>econf</B> <I>[configure options]</I>
+
+<DD>
+This is used as a replacement for configure.  Performs:
+<PRE>
+${<I>ECONF_SOURCE</I>:-.}/configure \
+        ${CBUILD:+--build=${CBUILD}} \
+        --datadir=&quot;${EPREFIX}&quot;/usr/share \
+        --host=${CHOST} \
+        --infodir=&quot;${EPREFIX}&quot;/usr/share/info \
+        --localstatedir=&quot;${EPREFIX}&quot;/var/lib \
+        --prefix=&quot;${EPREFIX}&quot;/usr \
+        --mandir=&quot;${EPREFIX}&quot;/usr/share/man \
+        --sysconfdir=&quot;${EPREFIX}&quot;/etc \
+        ${CTARGET:+--target=${CTARGET}} \
+        --disable-dependency-tracking \
+        <I>${EXTRA_ECONF}</I> \
+        <I>configure options</I> || die &quot;econf failed&quot;
+</PRE>
+
+Note that the <I>EXTRA_ECONF</I> is for users only, not for ebuild
+writers.  If you wish to pass more options to configure, just pass the
+extra arguments to <B>econf</B>. Also note that <B>econf</B> automatically
+calls <B>die</B> if the configure script fails.
+Beginning with <B>EAPI 3</B>, <B>econf</B> uses the <B>${EPREFIX}</B>
+variable which is disregarded for prior <B>EAPI</B> values.
+Beginning with <B>EAPI 4</B>, <B>econf</B> adds
+<I>--disable-dependency-tracking</I> to the arguments if the
+string <I>disable-dependency-tracking</I> occurs in the output
+of <I>configure --help</I>.
+Beginning with <B>EAPI 5</B>, <B>econf</B> adds
+<I>disable-silent-rules</I> to the arguments if the
+string <I>disable-silent-rules</I> occurs in the output
+of <I>configure --help</I>.
+<DT><B>emake</B> <I>[make options]</I>
+
+<DD>
+This must be used in place of `make` in ebuilds.  Performs `${MAKE:-make}
+${MAKEOPTS} <I>make options</I> ${EXTRA_EMAKE}`, and calls `die` automatically
+starting with <B>EAPI 4</B>.
+<P>
+The <B>MAKEOPTS</B> variable is set by the user so they can enable features such
+as parallel builds; see <B><A HREF="http://localhost/cgi-bin/man/man2html?5+make.conf">make.conf</A></B>(5) for more details.
+<P>
+The <B>EXTRA_EMAKE</B> knob is portage feature so developers can override things
+while debugging ebuilds; it is not part of any EAPI specification.
+<P>
+<B>***WARNING***</B>
+
+<BR>
+
+You must make sure your build is happy with parallel makes (make -j2).  It
+should be tested thoroughly as parallel makes are notorious for failing
+_sometimes_ but not always.  If you determine that your package fails to build
+in parallel, and you are unable to resolve the issue, then you should run
+`<B>emake</B> -j1` explicitly.  This is a last resort however as it can
+significantly slow down builds on systems with lots of processors.
+<P>
+</DL>
+<A NAME="lbAQ">&nbsp;</A>
+<H3>Install:</H3>
+
+<DL COMPACT>
+<DT><B>einstall</B> <I>[make options]</I>
+
+<DD>
+This is used as a replacement for make install.  Performs:
+<PRE>
+make \
+        prefix=${ED}/usr \
+        datadir=${ED}/usr/share \
+        infodir=${ED}/usr/share/info \
+        localstatedir=${ED}/var/lib \
+        mandir=${ED}/usr/share/man \
+        sysconfdir=${ED}/etc \
+        <I>${EXTRA_EINSTALL}</I> \
+        <I>make options</I> \
+        install
+</PRE>
+
+Please do <B>not</B> use this in place of 'emake install DESTDIR=${D}'.
+That is the preferred way of installing make-based packages.  Also, do
+not utilize the <I>EXTRA_EINSTALL</I> variable since it is for users.
+<P>
+
+<DT><B>prepall</B>
+
+<DD>
+<DT><B>prepalldocs</B>
+
+<DD>
+<DT><B>prepallinfo</B>
+
+<DD>
+<DT><B>prepallman</B>
+
+<DD>
+<DT><B>prepallstrip</B>
+
+<DD>
+
+Useful for when a package installs into <B>${D}</B> via scripts
+(i.e. makefiles).  If you want to be sure that libraries are executable,
+aclocal files are installed into the right place, doc/info/man files are
+all compressed, and that executables are all stripped of debugging symbols,
+then use these suite of functions.
+<DL COMPACT><DT><DD>
+
+<DL COMPACT>
+<DT><B>prepall:</B>
+
+<DD>
+Runs <B>prepallman</B>, <B>prepallinfo</B>, <B>prepallstrip</B>, sets
+libraries +x, and then checks aclocal directories.  Please note this
+does <I>*not*</I> run <B>prepalldocs</B>.
+<DT><B>prepalldocs:</B>
+
+<DD>
+Compresses all doc files in ${ED}/usr/share/doc.
+<DT><B>prepallinfo:</B>
+
+<DD>
+Compresses all info files in ${ED}/usr/share/info.
+<DT><B>prepallman:</B>
+
+<DD>
+Compresses all man files in ${ED}/usr/share/man.
+<DT><B>prepallstrip:</B>
+
+<DD>
+Strips all executable files of debugging symboles.  This includes libraries.
+</DL>
+</DL>
+
+<P>
+<DT><B>prepinfo</B> <I>[dir]</I>
+
+<DD>
+<DT><B>prepman</B> <I>[dir]</I>
+
+<DD>
+<DT><B>prepstrip</B> <I>[dir]</I>
+
+<DD>
+
+Similar to the <B>prepall</B> functions, these are subtle in their differences.
+<DL COMPACT><DT><DD>
+
+<DL COMPACT>
+<DT><B>prepinfo:</B>
+
+<DD>
+If a <I>dir</I> is not specified, then <B>prepinfo</B> will assume the dir
+<I>usr</I>. <B>prepinfo</B> will then compress all the files in
+${ED}/<I>dir</I>/info.
+<DT><B>prepman:</B>
+
+<DD>
+If a <I>dir</I> is not specified, then <B>prepman</B> will assume the dir
+<I>usr</I>. <B>prepman</B> will then compress all the files in
+${ED}/<I>dir</I>/man/*/.
+<DT><B>prepstrip:</B>
+
+<DD>
+All the files found in ${ED}/<I>dir</I> will be stripped.  You may specify
+multiple directories.
+</DL>
+</DL>
+
+
+<DT><B>docompress</B> <I>[-x] &lt;path&gt; [list of more paths]</I>
+
+<DD>
+<DL COMPACT><DT><DD>
+Beginning with <B>EAPI 4</B>, the <B>docompress</B> helper is used to
+manage lists of files to be included or excluded from optional compression.
+If the first argument is <B>-x</B>, add each of its subsequent arguments to
+the exclusion list. Otherwise, add each argument to the inclusion list.
+The inclusion list initially contains <I>/usr/share/doc</I>,
+<I>/usr/share/info</I>, and <I>/usr/share/man</I>. The exclusion list
+initially contains <I>/usr/share/doc/${PF}/html</I>.
+<P>
+The optional compression shall be carried out after <B>src_install</B>
+has completed, and before the execution of any subsequent phase
+function. For each item in the inclusion list, pretend it has the
+value of the <B>D</B> variable prepended, then:
+<P>
+<DL COMPACT><DT><DD>
+If it is a directory, act as if every file or directory immediately
+under this directory were in the inclusion list.
+<P>
+If the item is a file, it may be compressed unless it has been
+excluded as described below.
+<P>
+If the item does not exist, it is ignored.
+</DL>
+
+<P>
+Whether an item is to be excluded is determined as follows: For each
+item in the exclusion list, pretend it has the value of the <B>D</B>
+variable prepended, then:
+<P>
+<DL COMPACT><DT><DD>
+If it is a directory, act as if every file or directory immediately
+under this directory were in the exclusion list.
+<P>
+If the item is a file, it shall not be compressed.
+<P>
+If the item does not exist, it is ignored.
+</DL>
+
+</DL>
+
+<DT><B>dosed</B> <I>s:orig:change:g &lt;filename&gt;</I>
+
+<DD>
+Beginning with <B>EAPI 4</B>, the <B>dosed</B> helper no longer exists. Ebuilds
+should call <B><A HREF="http://localhost/cgi-bin/man/man2html?1+sed">sed</A></B>(1) directly (and assume that it is GNU sed).
+<P>
+Performs sed in place on <I>filename</I> inside ${ED}. If no expression is
+given then <I>&quot;s:${D}::g&quot;</I> is used as the default expression.  Note
+that this expression does <B>NOT</B> use the offset prefix.
+<BR>
+
+<B>'dosed&nbsp;s:/usr/local:/usr:g&nbsp;/usr/bin/some-script'</B>
+
+runs sed on ${ED}/usr/bin/some-script
+<DT><B>dodir</B> <I>&lt;path&gt; [more paths]</I>
+
+<DD>
+Creates directories inside of ${ED}.
+<BR>
+
+<B>'dodir&nbsp;/usr/lib/apache'</B>
+
+creates ${ED}/usr/lib/apache.  Note that the do* functions will run
+<B>dodir</B> for you.
+<DT><B>diropts</B> <I>[options for <A HREF="http://localhost/cgi-bin/man/man2html?1+install">install</A>(1)]</I>
+
+<DD>
+Can be used to define options for the install function used in
+<B>dodir</B>.  The default is <I>-m0755</I>.
+<DT><B>into</B> <I>&lt;path&gt;</I>
+
+<DD>
+Sets the root (<I>DESTTREE</I>) for other functions like <B>dobin</B>,
+<B>dosbin</B>, <B>doman</B>, <B>doinfo</B>, <B>dolib</B>.
+<BR>
+
+The default root is /usr.
+<DT><B>keepdir</B> <I>&lt;path&gt; [more paths]</I>
+
+<DD>
+Tells portage to leave directories behind even if they're empty.  Functions
+the same as <B>dodir</B>.
+<DT><B>dobin</B> <I>&lt;binary&gt; [list of more binaries]</I>
+
+<DD>
+Installs a <I>binary</I> or a list of binaries into <I>DESTTREE</I>/bin.
+Creates all necessary dirs.
+<DT><B>dosbin</B> <I>&lt;binary&gt; [list of more binaries]</I>
+
+<DD>
+Installs a <I>binary</I> or a list of binaries into <I>DESTTREE</I>/sbin.
+Creates all necessary dirs.
+<DT><B>doinitd</B> <I>&lt;init.d script&gt; [list of more init.d scripts]</I>
+
+<DD>
+Install Gentoo <I>init.d scripts</I>.  They will be installed into the
+correct location for Gentoo init.d scripts (/etc/init.d/).  Creates all
+necessary dirs.
+<DT><B>doconfd</B> <I>&lt;conf.d file&gt; [list of more conf.d file]</I>
+
+<DD>
+Install Gentoo <I>conf.d files</I>.  They will be installed into the
+correct location for Gentoo conf.d files (/etc/conf.d/).  Creates all
+necessary dirs.
+<DT><B>doenvd</B> <I>&lt;env.d entry&gt; [list of more env.d entries]</I>
+
+<DD>
+Install Gentoo <I>env.d entries</I>.  They will be installed into the
+correct location for Gentoo env.d entries (/etc/env.d/).  Creates all
+necessary dirs.
+<P>
+
+<DT><B>dolib</B> <I>&lt;library&gt;</I> <I>[list of more libraries]</I>
+
+<DD>
+<DT><B>dolib.a</B> <I>&lt;library&gt;</I> <I>[list of more libraries]</I>
+
+<DD>
+<DT><B>dolib.so</B> <I>&lt;library&gt;</I> <I>[list of more libraries]</I>
+
+<DD>
+
+Installs a library or a list of libraries into <I>DESTTREE</I>/lib.
+Creates all necessary dirs.
+<DT><B>libopts</B> <I>[options for <A HREF="http://localhost/cgi-bin/man/man2html?1+install">install</A>(1)]</I>
+
+<DD>
+Can be used to define options for the install function used in
+the <B>dolib</B> functions.  The default is <I>-m0644</I>.
+<DT><B>doman</B> <I>[-i18n=&lt;locale&gt;]</I> <I>&lt;man-page&gt; [list of more man-pages]</I>
+
+<DD>
+Installs manual-pages into /usr/share/man/man[0-9n] depending on the
+manual file ending.  The files are compressed if they are not already.  You
+can specify locale-specific manpages with the <I>-i18n</I> option.  Then the
+man-page will be installed into /usr/share/man/<I>&lt;locale&gt;</I>/man[0-9n].
+Beginning with <B>EAPI 2</B>, a locale-specific manpage which contains a locale
+in the file name will be installed in /usr/share/man/<I>&lt;locale&gt;</I>/man[0-9n],
+with the locale portion of the file name removed, and the <I>-i18n</I> option
+has no effect. For example, with <B>EAPI 2</B>, a manpage named
+foo.<I>&lt;locale&gt;</I>.1 will be installed as
+/usr/share/man/<I>&lt;locale&gt;</I>/man1/foo.1. Beginning with <B>EAPI 4</B>,
+the <I>-i18n</I> option takes precedence over the locale suffix of the
+file name.
+<P>
+
+<DT><B>dohard</B> <I>&lt;filename&gt; &lt;linkname&gt;</I>
+
+<DD>
+Beginning with <B>EAPI 4</B>, the <B>dohard</B> helper no longer exists. Ebuilds
+should call <B><A HREF="http://localhost/cgi-bin/man/man2html?1+ln">ln</A></B>(1) directly.
+<DT><B>dosym</B> <I>&lt;filename&gt; &lt;linkname&gt;</I>
+
+<DD>
+
+Performs the ln command to create a symlink.
+<DT><B>doheader</B> <I>[-r] &lt;file&gt; [list of more files]</I>
+
+<DD>
+Installs the given header files into /usr/include/, by default
+with file mode <I>0644</I> (this can be overridden with the
+<B>insopts</B> function). Setting -r sets recursive. The
+<B>doheader</B> helper is available beginning with <B>EAPI 5</B>.
+<DT><B>dohtml</B> <I> [-a filetypes] [-r] [-x list-of-dirs-to-ignore] [list-of-files-and-dirs]</I>
+
+<DD>
+Installs the files in the list of files (space-separated list) into
+/usr/share/doc/${PF}/html provided the file ends in .htm, .html, .css, .js, 
+Setting <I>-a</I> limits what types of files will be included,
+<I>-A</I> appends to the default list, setting <I>-x</I> sets which dirs to
+exclude (CVS excluded by default), <I>-p</I> sets a document prefix,
+<I>-r</I> sets recursive.
+<DT><B>doinfo</B> <I>&lt;info-file&gt; [list of more info-files]</I>
+
+<DD>
+Installs info-pages into <I>DESTDIR</I>/info.  Files are automatically
+gzipped.  Creates all necessary dirs.
+<DT><B>domo</B> <I>&lt;locale-file&gt; [list of more locale-files]</I>
+
+<DD>
+Installs locale-files into <I>DESTDIR</I>/usr/share/locale/[LANG]
+depending on local-file's ending.  Creates all necessary dirs.
+<P>
+
+<DT><B>fowners</B> <I>&lt;permissions&gt; &lt;file&gt; [files]</I>
+
+<DD>
+<DT><B>fperms</B> <I>&lt;permissions&gt; &lt;file&gt; [files]</I>
+
+<DD>
+
+Performs chown (<B>fowners</B>) or chmod (<B>fperms</B>), applying
+<I>permissions</I> to <I>files</I>.
+<DT><B>insinto</B> <I>[path]</I>
+
+<DD>
+Sets the destination path for the <B>doins</B> function.
+<BR>
+
+The default path is /.
+<DT><B>insopts</B> <I>[options for <A HREF="http://localhost/cgi-bin/man/man2html?1+install">install</A>(1)]</I>
+
+<DD>
+Can be used to define options for the install function used in
+<B>doins</B>.  The default is <I>-m0644</I>.
+<DT><B>doins</B> <I>[-r] &lt;file&gt; [list of more files]</I>
+
+<DD>
+Installs files into the path controlled by <B>insinto</B>.  This function
+uses <B><A HREF="http://localhost/cgi-bin/man/man2html?1+install">install</A></B>(1).  Creates all necessary dirs.
+Setting -r sets recursive. Beginning with <B>EAPI 4</B>, both
+<B>doins</B> and <B>newins</B> preserve symlinks. In <B>EAPI 3</B> and
+earlier, symlinks are dereferenced rather than preserved.
+<DT><B>exeinto</B> <I>[path]</I>
+
+<DD>
+Sets the destination path for the <B>doexe</B> function.
+<BR>
+
+The default path is /.
+<DT><B>exeopts</B> <I>[options for <A HREF="http://localhost/cgi-bin/man/man2html?1+install">install</A>(1)]</I>
+
+<DD>
+Can be used to define options for the install function used in <B>doexe</B>.
+The default is <I>-m0755</I>.
+<DT><B>doexe</B> <I>&lt;executable&gt; [list of more executables]</I>
+
+<DD>
+Installs executables into the path controlled by <B>exeinto</B>.  This function
+uses <B><A HREF="http://localhost/cgi-bin/man/man2html?1+install">install</A></B>(1).  Creates all necessary dirs.
+<DT><B>docinto</B> <I>[path]</I>
+
+<DD>
+Sets the subdir used by <B>dodoc</B> and <B>dohtml</B>
+when installing into the document tree
+(based in /usr/share/doc/${PF}/).  Default is no subdir, or just &quot;&quot;.
+<DT><B>dodoc</B> <I>[-r] &lt;document&gt; [list of more documents]</I>
+
+<DD>
+Installs a document or a list of documents into
+/usr/share/doc/${PF}/<I>&lt;docinto path&gt;</I>.
+Documents are marked for compression.  Creates all necessary dirs.
+Beginning with <B>EAPI 4</B>, there is support for recursion, enabled by the
+new <I>-r</I> option.
+<P>
+
+<DT><B>newbin</B> <I>&lt;old file&gt; &lt;new filename&gt;</I>
+
+<DD>
+<DT><B>newsbin</B> <I>&lt;old file&gt; &lt;new filename&gt;</I>
+
+<DD>
+<DT><B>newinitd</B> <I>&lt;old file&gt; &lt;new filename&gt;</I>
+
+<DD>
+<DT><B>newconfd</B> <I>&lt;old file&gt; &lt;new filename&gt;</I>
+
+<DD>
+<DT><B>newenvd</B> <I>&lt;old file&gt; &lt;new filename&gt;</I>
+
+<DD>
+<DT><B>newlib.so</B> <I>&lt;old file&gt; &lt;new filename&gt;</I>
+
+<DD>
+<DT><B>newlib.a</B> <I>&lt;old file&gt; &lt;new filename&gt;</I>
+
+<DD>
+<DT><B>newman</B> <I>&lt;old file&gt; &lt;new filename&gt;</I>
+
+<DD>
+<DT><B>newins</B> <I>&lt;old file&gt; &lt;new filename&gt;</I>
+
+<DD>
+<DT><B>newexe</B> <I>&lt;old file&gt; &lt;new filename&gt;</I>
+
+<DD>
+<DT><B>newdoc</B> <I>&lt;old file&gt; &lt;new filename&gt;</I>
+
+<DD>
+
+All these functions act like the do* functions, but they only work with one
+file and the file is installed as <I>[new filename]</I>.
+Beginning with <B>EAPI 5</B>, standard input is read when the
+first parameter is - (a hyphen).
+<P>
+</DL>
+<A NAME="lbAR">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+
+<PRE>
+# Copyright 1999-2013 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: $
+
+EAPI=&quot;5&quot;
+
+inherit some_eclass another_eclass
+
+DESCRIPTION=&quot;Super-useful stream editor (sed)&quot;
+HOMEPAGE=&quot;<A HREF="http://www.gnu.org/software/sed/sed.html">http://www.gnu.org/software/sed/sed.html</A>&quot;
+SRC_URI=&quot;<A HREF="ftp://alpha.gnu.org/pub/gnu/${PN}/${P}.tar.gz">ftp://alpha.gnu.org/pub/gnu/${PN}/${P}.tar.gz</A>&quot;
+
+LICENSE=&quot;GPL-2&quot;
+SLOT=&quot;0&quot;
+KEYWORDS=&quot;~x86&quot;
+IUSE=&quot;&quot;
+
+RDEPEND=&quot;&quot;
+DEPEND=&quot;nls? ( sys-devel/gettext )&quot;
+
+src_configure() {
+        econf \
+                --bindir=&quot;${EPREFIX}&quot;/bin
+}
+
+src_install() {
+        emake DESTDIR=&quot;${D}&quot; install
+        dodoc NEWS README* THANKS AUTHORS BUGS ChangeLog
+}
+</PRE>
+
+
+<P>
+<A NAME="lbAS">&nbsp;</A>
+<H2>FILES</H2>
+
+<DL COMPACT>
+<DT>The <I>/usr/lib/portage/bin/ebuild.sh</I> script.<DD>
+<DT>The helper apps in <I>/usr/lib/portage/bin</I>.<DD>
+<DT><B>/etc/portage/make.conf</B>
+
+<DD>
+Contains variables for the build-process and overwrites those in
+make.defaults.
+<DT><B>/usr/share/portage/config/make.globals</B>
+
+<DD>
+Contains the default variables for the build-process, you should edit
+<I>/etc/portage/make.conf</I> instead.
+<DT><B>/etc/portage/color.map</B>
+
+<DD>
+Contains variables customizing colors.
+<P>
+</DL>
+<A NAME="lbAT">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<B><A HREF="http://localhost/cgi-bin/man/man2html?1+ebuild">ebuild</A></B>(1),
+
+<B><A HREF="http://localhost/cgi-bin/man/man2html?5+make.conf">make.conf</A></B>(5),
+
+<B><A HREF="http://localhost/cgi-bin/man/man2html?5+color.map">color.map</A></B>(5)
+
+<P>
+<A NAME="lbAU">&nbsp;</A>
+<H2>REPORTING BUGS</H2>
+
+Please report bugs via <A HREF="http://bugs.gentoo.org/">http://bugs.gentoo.org/</A>
+<P>
+<A NAME="lbAV">&nbsp;</A>
+<H2>AUTHORS</H2>
+
+<PRE>
+Achim Gottinger &lt;achim@gentoo.org&gt;
+Mark Guertin &lt;gerk@gentoo.org&gt;
+Nicholas Jones &lt;carpaski@gentoo.org&gt;
+Mike Frysinger &lt;vapier@gentoo.org&gt;
+Arfrever Frehtes Taifersar Arahesis &lt;arfrever@apache.org&gt;
+Fabian Groffen &lt;grobian@gentoo.org&gt;
+</PRE>
+
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">NAME</A><DD>
+<DT><A HREF="#lbAC">DESCRIPTION</A><DD>
+<DL>
+<DT><A HREF="#lbAD">Dependencies</A><DD>
+<DT><A HREF="#lbAE">Cross-compilation</A><DD>
+</DL>
+<DT><A HREF="#lbAF">VARIABLES</A><DD>
+<DL>
+<DT><A HREF="#lbAG">QA Control Variables:</A><DD>
+</DL>
+<DT><A HREF="#lbAH">PORTAGE DECLARATIONS</A><DD>
+<DT><A HREF="#lbAI">PHASE FUNCTIONS</A><DD>
+<DT><A HREF="#lbAJ">HELPER FUNCTIONS</A><DD>
+<DL>
+<DT><A HREF="#lbAK">Phases:</A><DD>
+<DT><A HREF="#lbAL">General:</A><DD>
+<DT><A HREF="#lbAM">Hooks:</A><DD>
+<DT><A HREF="#lbAN">Output:</A><DD>
+<DT><A HREF="#lbAO">Unpack:</A><DD>
+<DT><A HREF="#lbAP">Compile:</A><DD>
+<DT><A HREF="#lbAQ">Install:</A><DD>
+</DL>
+<DT><A HREF="#lbAR">EXAMPLES</A><DD>
+<DT><A HREF="#lbAS">FILES</A><DD>
+<DT><A HREF="#lbAT">SEE ALSO</A><DD>
+<DT><A HREF="#lbAU">REPORTING BUGS</A><DD>
+<DT><A HREF="#lbAV">AUTHORS</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="http://github.com/hamano/man2html/">man2html</A>,
+using the manual pages.<BR>
+Time: 15:37:15 GMT, December 02, 2015
+</BODY>
+</HTML>
