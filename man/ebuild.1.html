@@ -1,324 +1,258 @@
-<HTML><HEAD><TITLE>Manpage of EBUILD</TITLE>
-<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
-</HEAD><BODY>
-<H1>EBUILD</H1>
-Section: Portage (1)<BR>Updated: Mar 2013<BR><A HREF="#index">Index</A>
-<A HREF="http://localhost/cgi-bin/man/man2html">Return to Main Contents</A><HR>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+EBUILD(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+EBUILD(1)</td>
+<td class="head-vol">
+Portage</td>
+<td class="head-rtitle">
+EBUILD(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> ebuild - a low level interface to the Portage system</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>ebuild</b> <i>file command [command]...</i></div>
+<div class="section">
+<h1>DESCRIPTION</h1> The ebuild program is a direct interface to the Portage system. It allows for direct action upon an ebuild with specific subcommands or groups of commands to perform in a specific ebuild's context and functions.  Accepting an ebuild script and one or more commands as arguments, the ebuild program parses the ebuild script and executes the specified commands.  Commands exist to fetch sources, unpack sources, compile sources, install object files into a temporary directory &quot;image&quot;, merge the image to the local filesystem, create a bzipped tarball package out of the image, and more.</div>
+<div class="section">
+<h1>FILE</h1> This must be a valid ebuild script.  For further information read  <b>ebuild</b>(5).</div>
+<div class="section">
+<h1>COMMANDS</h1> By default, portage will execute all the functions in order up to the one actually specified, except for the functions that have already been executed in a previous invocation of ebuild.  For example, simply issuing the command  <b>compile</b> will trigger the functions before it to also be run (such as  <b>setup</b> and <b>unpack</b>), unless they were run in a previous invocation of ebuild.  If you want to make sure they are all run, you need to use the command  <b>clean</b> first.  If you wish to only have the specified command run, then you should use the  <i>noauto</i> option in the <b>FEATURES</b> environment variable.  See the  <b>make.conf</b>(5) man page for more information.<div style="height: 1.00em;">
+&#160;</div>
+<dl>
+<dt>
+<b>help</b></dt>
+<dd>
+Shows a condensed form of this man page along with a lot of package specific information.</dd>
+</dl>
+<dl>
+<dt>
+<b>setup</b></dt>
+<dd>
+Runs all package-specific setup actions and exotic system checks.</dd>
+</dl>
+<dl>
+<dt>
+<b>clean</b></dt>
+<dd>
+Cleans the temporary build directory that Portage has created for this particular ebuild file.  The temporary build directory normally contains the extracted source files as well as a possible &quot;install image&quot; (all the files that will be merged to the local filesystem or stored in a package).  The location of the build directory is set by the PORTAGE_TMPDIR variable.  For information on what this variable is, run  <i>emerge --info</i>, or to override this variable, see  <b>make.conf</b>(5).<div style="height: 1.00em;">
+&#160;</div>
+Note: Portage cleans up almost everything after a package has been successfully merged unless FEATURES contains 'noclean'.  Adding noclean to FEATURES will cause a lot of files to remain and will consume large amounts of space, very quickly.  It is not recommended to leave this on, unless you have use for the sources post-merge.  Optionally, one may manually clean these files with  <i>rm -rf /var/tmp/portage</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>fetch</b></dt>
+<dd>
+Checks to see if all the sources specified in SRC_URI are available in DISTDIR (see  <b>make.conf</b>(5) for more information) and have a valid checksum.  If the sources aren't available, an attempt is made to download them from the locations specified in SRC_URI.  If multiple download locations are listed for a particular file, Portage pings each location to see which location is closer. (May not be true presently.)  The Gentoo Linux mirrors defined by GENTOO_MIRRORS is always considered first.  If for some reason the current or just-downloaded sources' checksums don't match those recorded in files/digest-[package]-[version-rev], a warning is printed and ebuild exits with an error code of 1.</dd>
+</dl>
+<dl>
+<dt>
+<b>digest</b></dt>
+<dd>
+This is now equivalent to the <i>manifest</i> command.</dd>
+</dl>
+<dl>
+<dt>
+<b>manifest</b></dt>
+<dd>
+Updates the manifest file for the package.  This creates checksums for all of the files found in the same directory as the current ebuild as well as the recursive contents of the files subdirectory. It also creates checksums for all of the files listed in SRC_URI for each ebuild. For further information regarding the behavior of this command, see the documentation for the  <i>assume-digests</i> value of the <b>FEATURES</b> variable in  <b>make.conf</b>(5). See the <b>--force</b> option if you would like to prevent digests from being assumed.</dd>
+</dl>
+<dl>
+<dt>
+<b>unpack</b></dt>
+<dd>
+Extracts the sources to a subdirectory in the <i>build directory</i> (BUILD_PREFIX) by running the  <i>src_unpack()</i> function in the ebuild file.  If no src_unpack() function has been specified, a default src_unpack() function is used that extracts all the files specified in SRC_URI.  The sources are normally extracted to ${BUILD_PREFIX}/[package]-[version-rev]/work.  This particular directory can be referenced by using the ${WORKDIR} variable.<div style="height: 1.00em;">
+&#160;</div>
+If you're creating an ebuild, you'll want to make sure that the S (source directory) variable defined at the top of your ebuild script points to the directory that contains your extracted sources.  This directory is defined by default to be ${WORKDIR}/${P}, so it is not often required.  The src_unpack() function is also responsible for making the appropriate patches to the sources so that they're ready for compilation.</dd>
+</dl>
+<dl>
+<dt>
+<b>prepare</b></dt>
+<dd>
+Prepares the extracted sources by running the <i>src_prepare()</i> function specified in the ebuild file. When src_prepare() starts, the current working directory will be set to ${S}. This function is supported beginning with  <b>EAPI 2</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>configure</b></dt>
+<dd>
+Configures the extracted sources by running the <i>src_configure()</i> function specified in the ebuild file. When src_configure() starts, the current working directory will be set to ${S}. This function is supported beginning with  <b>EAPI 2</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>compile</b></dt>
+<dd>
+Compiles the extracted sources by running the <i>src_compile()</i> function specified in the ebuild file.  When src_compile() starts, the current working directory will be set to ${S}.  When src_compile() completes, the sources should be fully compiled.</dd>
+</dl>
+<dl>
+<dt>
+<b>test</b></dt>
+<dd>
+Runs package-specific test cases to verify that everything was built properly.</dd>
+</dl>
+<dl>
+<dt>
+<b>preinst</b></dt>
+<dd>
+Runs package-specific actions that need to be done before the package is installed into the live filesystem.</dd>
+</dl>
+<dl>
+<dt>
+<b>install</b></dt>
+<dd>
+Installs the package to the temporary <i>install directory</i> by running the  <i>src_install()</i> function.  When completed, the  <i>install directory</i> (${BUILD_PREFIX}/[package]-[version-rev]/image) will contain all the files that should either be merged to the local filesystem or included in a binary package.</dd>
+</dl>
+<dl>
+<dt>
+<b>postinst</b></dt>
+<dd>
+Runs package-specific actions that need to be done after the package is installed into the live filesystem.  Usually helpful messages are shown here.</dd>
+</dl>
+<dl>
+<dt>
+<b>qmerge</b></dt>
+<dd>
+This function installs all the files in the <i>install directory</i> to the live filesystem.  The process works as follows: first, the  <i>pkg_preinst()</i> function (if specified) is run.  Then, the files are merged into the live filesystem, and the installed files' checksums are recorded in  <i>/var/db/pkg/${CATEGORY}/${PN}-${PVR}/CONTENTS</i>.  After all the files have been merged, the  <i>pkg_postinst()</i> function (if specified) is executed.</dd>
+</dl>
+<dl>
+<dt>
+<b>merge</b></dt>
+<dd>
+Normally, to merge an ebuild, you need to <i>fetch</i>, <i>unpack</i>,  <i>compile</i>, <i>install</i> and <i>qmerge</i>.  If you're simply interested in merging the ebuild, you can use this command, which will perform all these steps for you, stopping along the way if a particular step doesn't complete successfully.</dd>
+</dl>
+<dl>
+<dt>
+<b>unmerge</b></dt>
+<dd>
+This function first executes the <i>pkg_prerm()</i> function (if specified). Then it removes all files from the live filesystem that have a valid checksum and mtime in the package contents file.  Any empty directories are recursively removed.  Finally, it runs  <i>pkg_postrm()</i> function (if specified).  It is safe to merge a new version of a package first and then unmerge the old one.  In fact, this is the recommended package upgrade method.</dd>
+</dl>
+<dl>
+<dt>
+<b>prerm</b></dt>
+<dd>
+Runs package-specific actions that need to be executed before the package is removed from the filesystem.  See also  <i>unmerge</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>postrm</b></dt>
+<dd>
+Runs package-specific actions that need to be executed after the package is removed from the filesystem.  See also  <i>unmerge</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>config</b></dt>
+<dd>
+Runs package-specific actions that need to be executed after the emerge process has completed.  This usually entails setup of configuration files or other similar setups that the user may wish to run.</dd>
+</dl>
+<dl>
+<dt>
+<b>package</b></dt>
+<dd>
+This command is a lot like the <i>merge</i> command, except that after fetching, unpacking, compiling and installing, a .tbz2 binary package tarball is created and stored in  <b>PKGDIR</b> (see <b>make.conf</b>(5)).</dd>
+</dl>
+<dl>
+<dt>
+<b>rpm</b></dt>
+<dd>
+Builds a RedHat RPM package from the files in the temporary  <i>install directory</i>.  At the moment, the ebuild's dependency information is not incorporated into the RPM.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>OPTIONS</h1><dl>
+<dt>
+<b>--debug</b></dt>
+<dd>
+Run bash with the -x option, causing it to output verbose debugging information to stdout.</dd>
+</dl>
+<dl>
+<dt>
+<b>--color &lt; y | n &gt;</b></dt>
+<dd>
+Enable or disable color output.  This option will override <i>NOCOLOR</i> (see  <b>make.conf</b>(5)) and may also be used to force color output when stdout is not a tty (by default, color is disabled unless stdout is a tty).</dd>
+</dl>
+<dl>
+<dt>
+<b>--force</b></dt>
+<dd>
+When used together with the digest or manifest command, this option forces regeneration of digests for all distfiles associated with the current ebuild. Any distfiles that do not already exist in ${DISTDIR} will be automatically fetched.</dd>
+</dl>
+<dl>
+<dt>
+<b>--ignore-default-opts</b></dt>
+<dd>
+Do not use the <i>EBUILD_DEFAULT_OPTS</i> environment variable.</dd>
+</dl>
+<dl>
+<dt>
+<b>--skip-manifest</b></dt>
+<dd>
+Skip all manifest checks.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>AUTHORS</h1><br/>
+Achim Gottinger &lt;achim@gentoo.org&gt;<br/>
+Daniel Robbins &lt;drobbins@gentoo.org&gt;<br/>
+Nicholas Jones &lt;carpaski@gentoo.org&gt;<br/>
+Mike Frysinger &lt;vapier@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>FILES</h1><dl>
+<dt>
+<b>/etc/portage/make.conf</b></dt>
+<dd>
+Contains variables for the build-process and overwrites those in make.globals.</dd>
+</dl>
+<dl>
+<dt>
+<b>/etc/portage/color.map</b></dt>
+<dd>
+Contains variables customizing colors.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>emerge</b>(1), <b>ebuild</b>(5), <b>make.conf</b>(5), <b>color.map</b>(5)<dl>
+<dt>
+The <i>/usr/lib/portage/bin/ebuild.sh</i> script.</dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+The helper apps in <i>/usr/lib/portage/bin</i>.</dt>
+<dd>
+</dd>
+</dl>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Mar 2013</td>
+<td class="foot-os">
+Portage 2.2.20</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
 
-<A NAME="lbAB">&nbsp;</A>
-<H2>NAME</H2>
-
-ebuild - a low level interface to the Portage system
-<A NAME="lbAC">&nbsp;</A>
-<H2>SYNOPSIS</H2>
-
-<B>ebuild</B>
-
-<I>file command [command]</I>...
-
-<A NAME="lbAD">&nbsp;</A>
-<H2>DESCRIPTION</H2>
-
-The ebuild program is a direct interface to the Portage system. It
-allows for direct action upon an ebuild with specific subcommands or
-groups of commands to perform in a specific ebuild's context and
-functions.  Accepting an ebuild script and one or more commands
-as arguments, the ebuild program parses the ebuild script and
-executes the specified commands.  Commands exist to fetch sources,
-unpack sources, compile sources, install object files into a temporary
-directory &quot;image&quot;, merge the image to the local filesystem, create a
-bzipped tarball package out of the image, and more.
-<A NAME="lbAE">&nbsp;</A>
-<H2>FILE</H2>
-
-This must be a valid ebuild script.  For further information read
-<B><A HREF="http://localhost/cgi-bin/man/man2html?5+ebuild">ebuild</A></B>(5).
-<A NAME="lbAF">&nbsp;</A>
-<H2>COMMANDS</H2>
-
-By default, portage will execute all the functions in order up to the
-one actually specified, except for the functions that have already been
-executed in a previous invocation of ebuild.  For example, simply issuing the
-command <B>compile</B> will trigger the functions before it to also be run (such
-as <B>setup</B> and <B>unpack</B>), unless they were run in a previous invocation
-of ebuild.  If you want to make sure they are all run, you need to use
-the command <B>clean</B> first.  If you wish to only have the specified command
-run, then you should use the <I>noauto</I> option in the <B>FEATURES</B>
-environment variable.  See the <B><A HREF="http://localhost/cgi-bin/man/man2html?5+make.conf">make.conf</A></B>(5) man page for more
-information.
-<P>
-<DL COMPACT>
-<DT><B>help</B>
-
-<DD>
-Shows a condensed form of this man page along with a lot of package
-specific information.
-<DT><B>setup</B>
-
-<DD>
-Runs all package-specific setup actions and exotic system checks.
-<DT><B>clean</B>
-
-<DD>
-Cleans the temporary build directory that Portage has created for
-this particular ebuild file.  The temporary build directory normally
-contains the extracted source files as well as a possible
-&quot;install image&quot; (all the files that will be merged to the local
-filesystem or stored in a package).  The location of the build
-directory is set by the PORTAGE_TMPDIR variable.  For information
-on what this variable is, run <I>emerge --info</I>, or to override
-this variable, see <B><A HREF="http://localhost/cgi-bin/man/man2html?5+make.conf">make.conf</A></B>(5).
-<P>
-Note: Portage cleans up almost everything after a package has been
-successfully merged unless FEATURES contains 'noclean'.  Adding noclean
-to FEATURES will cause a lot of files to remain and will consume large
-amounts of space, very quickly.  It is not recommended to leave this on,
-unless you have use for the sources post-merge.  Optionally, one may
-manually clean these files with <I>rm -rf /var/tmp/portage</I>.
-<DT><B>fetch</B>
-
-<DD>
-Checks to see if all the sources specified in SRC_URI are available in
-DISTDIR (see <B><A HREF="http://localhost/cgi-bin/man/man2html?5+make.conf">make.conf</A></B>(5) for more information) and have a valid
-checksum.  If the sources aren't available, an attempt is made to
-download them from the locations specified in SRC_URI.  If multiple
-download locations are listed for a particular file, Portage pings
-each location to see which location is closer. (May not be true
-presently.)  The Gentoo Linux mirrors defined by GENTOO_MIRRORS is
-always considered first.  If for some reason the current or
-just-downloaded sources' checksums don't match those recorded
-in files/digest-[package]-[version-rev], a warning is printed
-and ebuild exits with an error code of 1.
-<DT><B>digest</B>
-
-<DD>
-This is now equivalent to the <I>manifest</I> command.
-<DT><B>manifest</B>
-
-<DD>
-Updates the manifest file for the package.  This creates checksums for all
-of the files found in the same directory as the current ebuild as well as
-the recursive contents of the files subdirectory. It also creates checksums
-for all of the files listed in SRC_URI for each ebuild. For further
-information regarding the behavior of this command, see the documentation for
-the <I>assume-digests</I> value of the <B>FEATURES</B> variable in
-<B><A HREF="http://localhost/cgi-bin/man/man2html?5+make.conf">make.conf</A></B>(5). See the <B>--force</B> option if you would like to
-prevent digests from being assumed.
-<DT><B>unpack</B>
-
-<DD>
-Extracts the sources to a subdirectory in the <I>build directory</I>
-(BUILD_PREFIX) by running the <I>src_unpack()</I> function in the ebuild
-file.  If no src_unpack() function has been specified, a default
-src_unpack() function is used that extracts all the files specified in
-SRC_URI.  The sources are normally extracted to
-${BUILD_PREFIX}/[package]-[version-rev]/work.  This particular directory
-can be referenced by using the ${WORKDIR} variable.
-<P>
-If you're creating an ebuild, you'll want to make sure that the S
-(source directory) variable defined at the top of your ebuild script
-points to the directory that contains your extracted sources.  This
-directory is defined by default to be ${WORKDIR}/${P}, so it is not
-often required.  The src_unpack() function is also responsible for
-making the appropriate patches to the sources so that they're ready
-for compilation.
-<DT><B>prepare</B>
-
-<DD>
-Prepares the extracted sources by running the <I>src_prepare()</I>
-function specified in the ebuild file. When src_prepare() starts, the
-current working directory will be set to ${S}. This function is supported
-beginning with <B>EAPI 2</B>.
-<DT><B>configure</B>
-
-<DD>
-Configures the extracted sources by running the <I>src_configure()</I>
-function specified in the ebuild file. When src_configure() starts, the
-current working directory will be set to ${S}. This function is supported
-beginning with <B>EAPI 2</B>.
-<DT><B>compile</B>
-
-<DD>
-Compiles the extracted sources by running the <I>src_compile()</I>
-function specified in the ebuild file.  When src_compile() starts, the
-current working directory will be set to ${S}.  When src_compile()
-completes, the sources should be fully compiled.
-<DT><B>test</B>
-
-<DD>
-Runs package-specific test cases to verify that everything was built
-properly.
-<DT><B>preinst</B>
-
-<DD>
-Runs package-specific actions that need to be done before the package
-is installed into the live filesystem.
-<DT><B>install</B>
-
-<DD>
-Installs the package to the temporary <I>install directory</I> by running
-the <I>src_install()</I> function.  When completed, the
-<I>install directory</I> (${BUILD_PREFIX}/[package]-[version-rev]/image)
-will contain all the files that should either be merged to the local
-filesystem or included in a binary package.
-<DT><B>postinst</B>
-
-<DD>
-Runs package-specific actions that need to be done after the package
-is installed into the live filesystem.  Usually helpful messages are
-shown here.
-<DT><B>qmerge</B>
-
-<DD>
-This function installs all the files in the <I>install directory</I>
-to the live filesystem.  The process works as follows: first, the
-<I>pkg_preinst()</I> function (if specified) is run.  Then, the files
-are merged into the live filesystem, and the installed files'
-checksums are recorded in
-<I>/var/db/pkg/${CATEGORY}/${PN}-${PVR}/CONTENTS</I>.  After
-all the files have been merged, the <I>pkg_postinst()</I> function
-(if specified) is executed.
-<DT><B>merge</B>
-
-<DD>
-Normally, to merge an ebuild, you need to <I>fetch</I>, <I>unpack</I>,
-<I>compile</I>, <I>install</I> and <I>qmerge</I>.  If you're simply
-interested in merging the ebuild, you can use this command, which
-will perform all these steps for you, stopping along the way if a
-particular step doesn't complete successfully.
-<DT><B>unmerge</B>
-
-<DD>
-This function first executes the <I>pkg_prerm()</I> function (if specified).
-Then it removes all files from the live filesystem that have a valid
-checksum and mtime in the package contents file.  Any empty directories
-are recursively removed.  Finally, it runs <I>pkg_postrm()</I> function (if
-specified).  It is safe to merge a new version of a package first and
-then unmerge the old one.  In fact, this is the recommended package
-upgrade method.
-<DT><B>prerm</B>
-
-<DD>
-Runs package-specific actions that need to be executed before the package is
-removed from the filesystem.  See also <I>unmerge</I>.
-<DT><B>postrm</B>
-
-<DD>
-Runs package-specific actions that need to be executed after the package is
-removed from the filesystem.  See also <I>unmerge</I>.
-<DT><B>config</B>
-
-<DD>
-Runs package-specific actions that need to be executed after the emerge
-process has completed.  This usually entails setup of configuration files
-or other similar setups that the user may wish to run.
-<DT><B>package</B>
-
-<DD>
-This command is a lot like the <I>merge</I> command, except that after
-fetching, unpacking, compiling and installing, a .tbz2 binary package
-tarball is created and stored in <B>PKGDIR</B> (see <B><A HREF="http://localhost/cgi-bin/man/man2html?5+make.conf">make.conf</A></B>(5)).
-<DT><B>rpm</B>
-
-<DD>
-Builds a RedHat RPM package from the files in the temporary
-<I>install directory</I>.  At the moment, the ebuild's dependency
-information is not incorporated into the RPM.
-</DL>
-<A NAME="lbAG">&nbsp;</A>
-<H2>OPTIONS</H2>
-
-<DL COMPACT>
-<DT><B>--debug</B>
-
-<DD>
-Run bash with the -x option, causing it to output verbose debugging
-information to stdout.
-<DT><B>--color &lt; y | n &gt;</B>
-
-<DD>
-Enable or disable color output.  This option will override <I>NOCOLOR</I>
-(see <B><A HREF="http://localhost/cgi-bin/man/man2html?5+make.conf">make.conf</A></B>(5)) and may also be used to force color output when stdout
-is not a tty (by default, color is disabled unless stdout is a tty).
-<DT><B>--force</B>
-
-<DD>
-When used together with the digest or manifest command,
-this option forces regeneration of
-digests for all distfiles associated with the current ebuild. Any distfiles
-that do not already exist in ${DISTDIR} will be automatically fetched.
-<DT><B>--ignore-default-opts</B>
-
-<DD>
-Do not use the <I>EBUILD_DEFAULT_OPTS</I> environment variable.
-<DT><B>--skip-manifest</B>
-
-<DD>
-Skip all manifest checks.
-</DL>
-<A NAME="lbAH">&nbsp;</A>
-<H2>REPORTING BUGS</H2>
-
-Please report bugs via <A HREF="http://bugs.gentoo.org/">http://bugs.gentoo.org/</A>
-<A NAME="lbAI">&nbsp;</A>
-<H2>AUTHORS</H2>
-
-<PRE>
-Achim Gottinger &lt;achim@gentoo.org&gt;
-Daniel Robbins &lt;drobbins@gentoo.org&gt;
-Nicholas Jones &lt;carpaski@gentoo.org&gt;
-Mike Frysinger &lt;vapier@gentoo.org&gt;
-</PRE>
-
-<A NAME="lbAJ">&nbsp;</A>
-<H2>FILES</H2>
-
-<DL COMPACT>
-<DT><B>/etc/portage/make.conf</B>
-
-<DD>
-Contains variables for the build-process and overwrites those
-in make.globals.
-<DT><B>/etc/portage/color.map</B>
-
-<DD>
-Contains variables customizing colors.
-</DL>
-<A NAME="lbAK">&nbsp;</A>
-<H2>SEE ALSO</H2>
-
-<B><A HREF="http://localhost/cgi-bin/man/man2html?1+emerge">emerge</A></B>(1),
-
-<B><A HREF="http://localhost/cgi-bin/man/man2html?5+ebuild">ebuild</A></B>(5),
-
-<B><A HREF="http://localhost/cgi-bin/man/man2html?5+make.conf">make.conf</A></B>(5),
-
-<B><A HREF="http://localhost/cgi-bin/man/man2html?5+color.map">color.map</A></B>(5)
-
-<DL COMPACT>
-<DT>The <I>/usr/lib/portage/bin/ebuild.sh</I> script.<DD>
-<DT>The helper apps in <I>/usr/lib/portage/bin</I>.<DD>
-<P>
-</DL>
-
-<HR>
-<A NAME="index">&nbsp;</A><H2>Index</H2>
-<DL>
-<DT><A HREF="#lbAB">NAME</A><DD>
-<DT><A HREF="#lbAC">SYNOPSIS</A><DD>
-<DT><A HREF="#lbAD">DESCRIPTION</A><DD>
-<DT><A HREF="#lbAE">FILE</A><DD>
-<DT><A HREF="#lbAF">COMMANDS</A><DD>
-<DT><A HREF="#lbAG">OPTIONS</A><DD>
-<DT><A HREF="#lbAH">REPORTING BUGS</A><DD>
-<DT><A HREF="#lbAI">AUTHORS</A><DD>
-<DT><A HREF="#lbAJ">FILES</A><DD>
-<DT><A HREF="#lbAK">SEE ALSO</A><DD>
-</DL>
-<HR>
-This document was created by
-<A HREF="http://github.com/hamano/man2html/">man2html</A>,
-using the manual pages.<BR>
-Time: 15:37:12 GMT, December 02, 2015
-</BODY>
-</HTML>
