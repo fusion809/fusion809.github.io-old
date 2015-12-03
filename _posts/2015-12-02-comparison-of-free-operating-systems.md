@@ -369,13 +369,94 @@ function sdyb {
 ### Background
 {% include os.html os="Gentoo Linux" dw="gentoo" d="https://www.gentoo.org/downloads/" bugs="https://bugs.gentoo.org/" irc="https://www.gentoo.org/get-involved/irc-channels/all-channels.html" ml="https://www.gentoo.org/get-involved/mailing-lists/all-lists.html" wiki="https://wiki.gentoo.org/wiki/Main_Page" wp="Gentoo Linux" docs="https://wiki.gentoo.org/wiki/Main_Page" url="https://www.gentoo.org/" %} is an independent Linux distribution that was originally known as **Enoch Linux** and founded in 2002 by a Canadian-born American computer programmer and software engineer named [Daniel Robbins](https://en.wikipedia.org/wiki/Daniel_Robbins_(computer_programmer)). As far as Linux distributions go, it is, in my limited experience, the most difficult-to-use and to setup Linux distribution around. This is because its package management system, **Portage**, while incredibly powerful is also slow, difficult-to-learn and difficult-to-use. See unlike most package managers Portage installs software primarily (although binary installs are also possible) from source code using instructions found in specialized Bash scripts known as ebuilds. Installing software from source code optimizes the control users have over their system, as it means that features they want they can enable in a package when they configure its source code, while features they do not want they can also disable at the configure stage. Unfortunately, however, compiling software from source code also means that software installation takes longer than it would if one were installing from a binary package instead.
 
-Daniel Robbins later left the project in 2004 to create a new Linux distribution called Funtoo Linux (which is derived from Gentoo) which it is my understanding one must pay for. In its early days Gentoo was actually one of the most popular Linux distributions around, at least according to DistroWatch, but with time its popularity fell as fewer and fewer people had the skill, inclination and time to build their system from the ground up with Portage. In fact, I do not even have the skill to install Gentoo manually, instead I took the easy way out and used [Packer](https://github.com/d11wtq/gentoo-packer) to build a virtual machine with it installed. Even with the assistance of Packer I am struggling to use Gentoo Linux because of Portage-related difficulties (see the package management section for details).
+Daniel Robbins later left the project in 2004 to create a new Linux distribution called Funtoo Linux (which is derived from Gentoo) which it is my understanding one must pay for, in order to use it. In its early days Gentoo was actually one of the most popular Linux distributions around, at least according to DistroWatch, but with time its popularity fell as fewer and fewer people had the skill, inclination and the time to build their system from the ground up with Portage. In fact, I do not even have the skill to install Gentoo manually, instead I took the easy way out and used [Packer](https://github.com/d11wtq/gentoo-packer) to build a virtual machine with it installed. Even with the assistance of Packer I am struggling to use Gentoo Linux because of Portage-related difficulties (see the package management section for details).
 
-The power and versatility of Portage is best illustrated by the mere fact that Gentoo is second only to Debian in the number of architecture types it has been ported to. Portage has even been ported to &#42;nix operating systems other than Linux including:
+The power and versatility of Portage is best illustrated by the mere fact that Gentoo is second only to Debian in the number of architecture types it has been ported to. Portage has even been ported to other non-Linux &#42;nix operating systems, including:
 * The &#42;BSDs including FreeBSD, NetBSD and OpenBSD.
 * Darwin
 * GNU (with the Herd kernel)
 * OS X
+
+## Package Management
+As previously mentioned Portage ([`emerge`](/man/emerge.1.html) from the command-line) is the package manager of Gentoo Linux although several derivatives of Gentoo Linux also use Portage. Portage is written in Python and Bash script &mdash; according to [GitHub](https://github.com/gentoo/portage) these languages make up 93.6% and 6.4% of Portage's source code, respectively, as of 4 December 2015. Portage is probably the most complicated, yet also the most flexible and powerful of Linux package managers available today. Here are some example Bash scripts to simplify using Portage:
+```bash
+# Install a package, but ask first
+function ema {
+  sudo emerge -av $@
+}
+
+# Install a package and build binary
+function emb {
+  sudo emerge -avb $@
+}
+
+alias bpkg=emb
+
+# Build a binary (.tbz2) package to /usr/portage/packages/$CAT ($CAT is the package's category),
+# but do not install it
+function emB {
+  sudo emerge -avB $@
+}
+alias bpkgo=emB
+
+# Test for dependencies
+function emdt {
+  sudo emerge -deptest $@
+}
+
+# Install from list.txt
+function eml {
+  sudo emerge -av $(cat "$1".txt)
+}
+
+# Install package dependencies only and ask before doing so. e.g., emo enlightenment
+# would install all of enlightenment's dependencies.
+function emo {
+  sudo emerge -aov $@ && spm
+}
+
+# Pretend to install a package
+function emp {
+  sudo emerge -pv $@
+}
+
+# rev-dep
+function emrv {
+  sudo revdep-rebuild
+}
+
+# Unmerge a package, does not the dependency tree
+function emrm {
+  sudo emerge -C $@ && spm
+}
+
+alias emc=emrm
+
+# Sync Portage Tree and all Layman overlays.
+function ems {
+  sudo emerge --sync --quiet && sudo layman -Sq
+}
+
+alias sync=ems
+
+# Updates all packages in Portage
+function emup {
+  sudo emerge -uDU --with-bdeps=y @world
+}
+
+# Search categories
+function cats {
+  sudo eix -C -c "$@"
+}
+
+alias eixcc=cats
+alias eicc=cats
+
+# Track the download progress of packages being installed with Portage
+function tailf {
+  tail -f /var/log/emerge-fetch.log
+}
+```
 
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)
