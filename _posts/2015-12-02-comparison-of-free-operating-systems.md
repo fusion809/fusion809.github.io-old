@@ -377,9 +377,36 @@ The power and versatility of Portage is best illustrated by the mere fact that G
 * GNU (with the Herd kernel)
 * OS X
 
+I think of Gentoo Linux as essentially a more complex, customizable and portable version of Arch Linux. See like Arch, a fresh installation has nothing but the command-line and some basic packages to it and anything more than this must be built up from the ground by the user. Arch Linux's package manager pacman uses binary packages and does not give one a choice of which features of the package is built and which are not, while Gentoo's Portage, gives one all the choice of which features of the package is built.
+
 ## Package Management
-As previously mentioned Portage ([`emerge`](/man/emerge.1.html) from the command-line) is the package manager of Gentoo Linux although several derivatives of Gentoo Linux also use Portage. Portage is written in Python and Bash script &mdash; according to [GitHub](https://github.com/gentoo/portage) these languages make up 93.6% and 6.4% of Portage's source code, respectively, as of 4 December 2015. Portage is probably the most complicated, yet also the most flexible and powerful of Linux package managers available today. Here are some example Bash scripts to simplify using Portage:
+As previously mentioned Portage ([`emerge`](/man/emerge.1.html) from the command-line) is the package manager of Gentoo Linux although several derivatives of Gentoo Linux also use Portage. Portage is written in Python and Bash script &mdash; according to [GitHub](https://github.com/gentoo/portage) these languages make up 93.6% and 6.4% of Portage's source code, respectively, as of 4 December 2015. Portage was inspired by the BSD ports system, the major differences are that Portage automates installation for one and also includes several advanced features including fake installs, safe unmerging, system profiles, virtual packages, dependency-resolution, config file management, *etc.* Portage is probably the most complicated, yet also the most flexible and powerful of Linux package managers available today. Here are some example Bash scripts to simplify using Portage:
+
 ```bash
+##############################################
+              # cd functions #
+##############################################
+# cd to keywords directory
+function cdk {
+  mkdir /etc/portage/package.keywords
+  cd /etc/portage/package.keywords
+}
+
+# cd to mask directory
+function cdm {
+  mkdir /etc/portage/package.mask
+  cd /etc/portage/package.mask
+}
+
+# cd to use flag directory
+function cdu {
+  mkdir /etc/portage/package.use
+  cd /etc/portage/package.use
+}
+
+##############################################
+              # emerge functions #
+##############################################
 # Install a package, but ask first
 function ema {
   sudo emerge -av $@
@@ -444,6 +471,9 @@ function emup {
   sudo emerge -uDU --with-bdeps=y @world
 }
 
+##############################################
+                  # Other #
+##############################################
 # Search categories
 function cats {
   sudo eix -C -c "$@"
@@ -452,11 +482,37 @@ function cats {
 alias eixcc=cats
 alias eicc=cats
 
+##############################################
+           # edit config files #
+##############################################
+# nano keywords
+function nkey {
+  sudo nano /etc/portage/package.keywords/gentoo.keywords
+}
+
+# nano mask
+function nmask {
+  sudo nano /etc/portage/package.mask/gentoo.mask
+}
+
+# nano USE flags
+function nuse {
+  sudo nano /etc/portage/package.use/gentoo.use
+}
+
 # Track the download progress of packages being installed with Portage
 function tailf {
   tail -f /var/log/emerge-fetch.log
 }
 ```
+
+Running the `emup` function is what gives the issues I previously mentioned in this post. See what often when I run this command I get error messages regarding package conflicts that would occur if an upgrade is performed and what is worse is that this happens on every Gentoo and Sabayon (a Gentoo derivative that is covered later in this post) installation I have ever run this command on. I sort of know how to resolve this problem but since the number of package conflicts this message mentions is often so much that it cannot even fit the list in the limited memory of my terminal emulators, it would probably take me weeks to make the adjustments needed and then test that they worked, so quite often I just give up.
+
+{% include specs.html arch="i486, i586, i686, x86_64, alpha, arm, hppa, mips, powerpc, ppc64, sparc64." origin="U.S.A." date="2002" shell="Bash" ui="Command-line." im="From live media or from stage tarballs." type="Linux." pm="Portage" rm="Rolling." tm="Advanced users, that have a lot of time on their hands and patience, and want to build their system from the ground-up." %}
+
+{% include os-min.html cpu="i486" ram="256 MB" HDD="2.75 GB (including swap)" ims="~200 MB" %}
+
+{% include os-ratings.html bf="<3." cmb="&geq;9." doc="&geq;8. Some of the best documentation around " sup="? Only used the support forums for Gentoo once. I have also used the IRC channel <span class="irc">#gentoo-dev-help</span> once" %}
 
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)
