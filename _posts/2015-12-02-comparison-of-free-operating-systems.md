@@ -514,7 +514,18 @@ Running the `emup` function is what gives the issues I previously mentioned in t
 
 {% include os-min.html cpu="i486" ram="256 MB" HDD="2.75 GB (including swap)" ims="~200 MB" %}
 
-{% include os-ratings.html bf="<3." cmb="&geq;9." doc="&geq;8. Some of the best documentation around, most of which is present at the Gentoo Wiki. Most Gentoo ebuilds for complex programs (that need documentation) also have USE flags that can be used to build documentation for the program." sup="? Only used the support forums for Gentoo once and I was asking for support with using Portage on Sabayon. This one time it was not particularly helpful. I have also used the IRC channel #gentoo-dev-help once for helping with ebuilds and they were helpful." pm="<8. I like Portage on ideological grounds, but on practical grounds it is virtually impossible to use, effectively, long-term, due to the upgrade issue I mentioned under Package Management." sru="8. Low system resource requirements, true, but high CPU/RAM use when Portage is run." sb="~7-10." mewi="&leq;4." oa="<6. Ideologically I love Gentoo, but as I said Portage can be a nightmare." %}
+<h3>Ratings</h3>
+<ul>
+  <li><b>Beginner-friendliness</b>: &leq;3.</li>
+  <li><b>Customizability</b>: &geq;9.</li>
+  <li><b>Documentation</b>: &geq;8. Some of the best documentation around, most of which is present at the Gentoo Wiki. Most Gentoo ebuilds for complex programs (that need documentation) also have USE flags that can be used to build documentation for the program.</li>
+  <li><b>Free support</b>: ? Only used the support forums for Gentoo {% include link.html url="https://forums.gentoo.org/viewtopic-t-1030778.html" link="once" %} and I was asking for support with using Portage on Sabayon. This one time it was not particularly helpful. I have also used the IRC channel <span class="irc">#gentoo-dev-help</span> once for helping with ebuilds and they were helpful.</li>
+  <li><b>Package management</b>: <8. I like Portage on ideological grounds, but on practical grounds it is virtually impossible to use, effectively, long-term, due to the upgrade issue I mentioned under Package Management.</li>
+  <li><b>Performance/<abbr title="System Resource Usage">SRU</abbr></b>: 8. Low system resource requirements, true, but high CPU/RAM use when Portage is run.</li>
+  <li><b>Stability</b>: ~7-10.</li>
+  <li><b><abbr title="My Experience With It (MEWI), a numerical estimate as to how much experience I have with this system">MEWI</abbr></b>: &leq;4.</li>
+  <li><b>Overall</b>: &leq;6. Ideologically I love Gentoo, but as I said Portage can be a nightmare.</li>
+</ul>
 
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)
