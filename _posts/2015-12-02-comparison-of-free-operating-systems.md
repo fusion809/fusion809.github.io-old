@@ -379,7 +379,7 @@ The power and versatility of Portage is best illustrated by the mere fact that G
 
 I think of Gentoo Linux as essentially a more complex, customizable and portable version of Arch Linux. See like Arch, a fresh installation has nothing but the command-line and some basic packages to it and anything more than this must be built up from the ground by the user. Arch Linux's package manager pacman uses binary packages and does not give one a choice of which features of the package is built and which are not, while Gentoo's Portage, gives one all the choice of which features of the package is built.
 
-## Package Management
+### Package Management
 As previously mentioned Portage ([`emerge`](/man/emerge.1.html) from the command-line) is the package manager of Gentoo Linux although several derivatives of Gentoo Linux also use Portage. Portage is written in Python and Bash script &mdash; according to [GitHub](https://github.com/gentoo/portage) these languages make up 93.6% and 6.4% of Portage's source code, respectively, as of 4 December 2015. Portage was inspired by the BSD ports system, the major differences are that Portage automates installation for one and also includes several advanced features including fake installs, safe unmerging, system profiles, virtual packages, dependency-resolution, config file management, *etc.* Portage is probably the most complicated, yet also the most flexible and powerful of Linux package managers available today. Here are some example Bash scripts to simplify using Portage:
 
 ```bash
@@ -512,7 +512,7 @@ Running the `emup` function is what gives the issues I previously mentioned in t
 
 {% include os-min.html cpu="i486" ram="256 MB" HDD="2.75 GB (including swap)" ims="~200 MB" %}
 
-{% include os-ratings.html bf="<3." cmb="&geq;9." doc="&geq;8. Some of the best documentation around " sup="? Only used the support forums for Gentoo once. I have also used the IRC channel <span class="irc">#gentoo-dev-help</span> once" %}
+{% include os-ratings.html bf="<3." cmb="&geq;9." doc="&geq;8. Some of the best documentation around, most of which is present at the Gentoo Wiki. Most Gentoo ebuilds for complex programs (that need documentation) also have USE flags that can be used to build documentation for the program." sup="? Only used the support forums for Gentoo once and I was asking for support with using Portage on Sabayon. This one time it was not particularly helpful. I have also used the IRC channel #gentoo-dev-help once for helping with ebuilds and they were helpful." pm="<8. I like Portage on ideological grounds, but on practical grounds it is virtually impossible to use, effectively, long-term, due to the upgrade issue I mentioned under Package Management." sru="8. Low system resource requirements, true, but high CPU/RAM use when Portage is run." sb="~7-10." mewi="&leq;4." oa="<6. Ideologically I love Gentoo, but as I said Portage can be a nightmare." %}
 
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)
