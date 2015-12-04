@@ -31,31 +31,7 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
 
 {% include glossary.html %}
 
-## Review Format
-Each OS review will have the format:
-* **OS Name**
-  * &lt;Screenshot of the OS running&gt;
-
-
-  * **Background**
-     * Background information on the OS, such as its history, an overview of its features that distinguish it from other operating systems and how user-friendly it is.
-
-
-  * **Package Management**
-     * Not all OSs will have this section, but if they do, here I will discuss the OS's default PMSs and their features. Including some basic usage of the PMSs. Those that lack this section likely lack it because they share the package management system of their parent distribution (that is the distribution that they are derived from). It is important also to note that I usually avoid graphical front-ends for package management systems like the plague, because I have had some nasty experiences with them on the first Linux distribution I ever tried, Ubuntu, that were absent from the command-line.
-
-
-  * **Specifications**
-     * A list of specifications, including OS type, its parent, its package management system (PMS), default user interface and architecture support.
-     * **Minimum Requirements**
-         * Minimum required <abbr title="Central Processing Unit">CPU</abbr>, <abbr title="Hard Disk Drive">HDD</abbr>, <abbr title="Installation Medium Size">IMS</abbr> and <abbr title="Random Access Memory">RAM</abbr>.
-
-
-  * **Ratings**
-     * Where I give approximate numerical ratings (from 1-10. 1 being terrible/non-existent and 10 being perfect) for the quality of the various features and characteristics of the OS.
-     * I do provide a numerical rating for system resource usage, but I cannot use `ps_mem` to assess this accurately and consistently across systems, as my VirtualBox VMs for the various OSs reviewed here, have widely different programs running on them, hence it is an unfair comparison.
-     * I also provide a numerical rating from 1-10 for the extent of my experience with the system (MEWI), 1 in this context indicates <1 hour, 2 for ~1-2 hours and 3 for 2-3 hours, 4 for 3-6 hours, ..., 10 for >100 hours.
-     * Additionally I provide an overall satisfaction score for the system, from 1 to 10.
+{% include review-format.html %}
 
 ## antiX
 {% include image.html url="/images/antiX-15.png" width = "768px" float="none" description="antiX 15 running in VirtualBox, with its default desktop" %}
@@ -488,6 +464,8 @@ Running the `emup` function is what gives the issues I previously mentioned in t
 
 ### Package Management
 MintInstall is essentially a Linux Mint equivalent to the Ubuntu Software Center as just like the software centre it is a graphical front-end for APT. I personally have fairly limited experience with it, so it may have a few features that the software centre lacks that I am unaware of.
+
+{% include specs.html arch="i686, x86_64" %}
 
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)
