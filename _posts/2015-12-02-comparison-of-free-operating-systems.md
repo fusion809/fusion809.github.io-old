@@ -16,6 +16,7 @@ redirect_from:
 As is mentioned in the [About Me](/about-me/) section of this website, I have tried quite a few Linux distributions using **Oracle VM VirtualBox**. Some I have only spent less than an hour using, but those I have spent over an hour with and feel fairly confident in my ability to review, include:
 
 {% include oslist.html %}
+
 <!--
 7. [Linux Mint](http://linuxmint.com/)
 8. [Mageia](http://www.mageia.org/en/)
@@ -28,45 +29,7 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
 -->
 {% include toc.html %}
 
-## Glossary
-* <b>&#42;nix</b>
-  * Unix/Unix-like operating system.
-* <b>BE</b>
-  * <b>B</b>leeding <b>e</b>dge: means has the very latest software.
-* <b>BSD</b>
-  * <b>B</b>erkeley <b>S</b>oftware <b>D</b>istribution.
-* <b>BSDs</b>
-  * <b>B</b>erkeley <b>S</b>oftware <b>D</b>istribution derivative<b>s</b>.
-* <b>CLI</b>
-  * <b>C</b>ommand-<b>l</b>ine <b>i</b>nterface. Also known as terminal, a way of interacting with one's OS by issuing a series of textual commands.
-* <b>CLIs</b>
-  * <b>C</b>ommand-<b>l</b>ine <b>i</b>nterface<b>s</b>.
-* <b>FOSS</b>
-  * <b>F</b>ree and <b>o</b>pen-<b>s</b>ource <b>s</b>oftware.
-* <b>GUI</b>
-  * <b>G</b>raphical <b>u</b>ser <b>i</b>nterface.
-* <b>GUIs</b>
-  * <b>G</b>raphical <b>u</b>ser <b>i</b>nterface<b>s</b>.
-* <b>LD</b>
-  * <b>L</b>inux <b>d</b>istribution.
-* <b>LDs</b>
-  * <b>L</b>inux <b>d</b>istribution<b>s</b>.
-* <b>OS</b>
-  * <b>O</b>perating <b>s</b>ystem.
-* <b>OSs</b>
-  * <b>O</b>perating <b>s</b>ystem<b>s</b>.
-* <b>Out-of-the-box</b>
-  * The property of an operating system of being "out-of-the-box" means that as soon as the default installer (if any) has done its job and installed the system, the system should be ready to be used by the user without any further configuration or installation of software onto the system.
-* <b>PMS</b>
-  * <b>P</b>ackage <b>m</b>agement <b>s</b>ystem.
-* <b>PMSs</b>
-  * <b>P</b>ackage <b>m</b>agement <b>s</b>ystem<b>s</b>.
-* <b>RRM</b>
-  * <b>R</b>olling <b>r</b>elease <b>m</b>odel. A type of operating system development model in which the system is continually developing, this is as opposed to standard release models (SRMs) which uses distinct OS versions that must be reinstalled over the previous version.
-* <b>VM</b>
-  * <b>V</b>irtual <b>m</b>achine. Host operating systems run within virtualization software such as VirtualBox.
-* <b>VMs</b>
-  * <b>V</b>irtual <b>m</b>achine<b>s</b>.
+{% include glossary.html %}
 
 ## Review Format
 Each OS review will have the format:
@@ -79,7 +42,7 @@ Each OS review will have the format:
 
 
   * **Package Management**
-    * Not all OSs will have this section, but if they do, here I will discuss the OS's default PMSs and their features. Including some basic usage of the PMSs.
+     * Not all OSs will have this section, but if they do, here I will discuss the OS's default PMSs and their features. Including some basic usage of the PMSs. Those that lack this section likely lack it because they share the package management system of their parent distribution (that is the distribution that they are derived from). It is important also to note that I usually avoid graphical front-ends for package management systems like the plague, because I have had some nasty experiences with them on the first Linux distribution I ever tried, Ubuntu, that were absent from the command-line.
 
 
   * **Specifications**
@@ -509,29 +472,22 @@ function tailf {
 }
 ```
 
-Running the `emup` function is what gives the issues I previously mentioned in this post. See what often when I run this command I get error messages regarding package conflicts that would occur if an upgrade is performed and what is worse is that this happens on every Gentoo and Sabayon (a Gentoo derivative that is covered later in this post) installation I have ever run this command on. I sort of know how to resolve this problem but since the number of package conflicts this message mentions is often so much that it cannot even fit the list in the limited memory of my terminal emulator, it would probably take me weeks to make the adjustments needed and then test that they worked, so quite often I just give up.
+Running the `emup` function is what gives the issues I previously mentioned in this post. See often when I run this command I get error messages regarding package conflicts that would occur if an upgrade is performed and what is worse is that this happens on every Gentoo and Sabayon (a Gentoo derivative that is covered later in this post) installation I have ever run this command on. I sort of know how to resolve this problem (a trial and error game with masking packages, changing USE flags and keywords, *etc.*) but since the number of package conflicts this message mentions is often so much that it cannot even fit the list in the limited memory of my terminal emulator, it would probably take me weeks to make the adjustments needed, so quite often I just give up.
 
 {% include specs.html arch="i486, i586, i686, x86_64, alpha, arm, hppa, mips, powerpc, ppc64, sparc64." origin="U.S.A." date="2002" shell="Bash" ui="Command-line." im="From live media or from stage tarballs." type="Linux." pm="Portage" rm="Rolling." tm="Advanced users, that have a lot of time on their hands and patience, and want to build their system from the ground-up." %}
 
 {% include os-min.html cpu="i486" ram="256 MB" HDD="2.75 GB (including swap)" ims="~200 MB" %}
 
-### Ratings
-<ul>
-  <li><b>Beginner-friendliness</b>: &leq;3.</li>
-  <li><b>Customizability</b>: &geq;9.</li>
-  <li><b>Documentation</b>: &geq;8. Some of the best documentation around, most of which is present at the Gentoo Wiki, while more complicated developer-type documentation (like writing ebuilds) can be found {% include link.html url="https://devmanual.gentoo.org/" link="here" %}. Most Gentoo ebuilds for complex programs (that actually need documentation, as they are not self-explanatory) also have USE flags that can be used to build documentation for the program.</li>
-  <li><b>Free support</b>: ? Only used the support forums for Gentoo {% include link.html url="https://forums.gentoo.org/viewtopic-t-1030778.html" link="once" %} and I was asking for support with using Portage on Sabayon. This one time it was not particularly helpful. I have also used the IRC channel {% include irc.html channel="gentoo-dev-help" %} once for helping with ebuilds and they were helpful.</li>
-  <li><b>Package management</b>: <8. I like Portage on ideological grounds, but on practical grounds it is virtually impossible to use, effectively, long-term, due to the upgrade issue I mentioned under Package Management.</li>
-  <li><b>Performance/<abbr title="System Resource Usage">SRU</abbr></b>: 8. Low system resource requirements, true, but high CPU/RAM use when Portage is run.</li>
-  <li><b>Stability</b>: ~7-10.</li>
-  <li><b><abbr title="My Experience With It (MEWI), a numerical estimate as to how much experience I have with this system">MEWI</abbr></b>: &leq;4.</li>
-  <li><b>Overall</b>: &leq;6. Ideologically I love Gentoo, but as I said Portage can be a nightmare.</li>
-</ul>
+{% include gentoo-ratings.html %}
 
 ## Linux Mint
-{% include image.html image="Linux-Mint-17.png" width="1000px" description="Linux Mint 17.2 with the default Cinnamon desktop" float="none" %}
+{% include image.html image="Linux-Mint-17.3.png" width="1000px" description="Linux Mint 17.3 with the default Cinnamon desktop" float="none" %}
+
 ### Background
-{% include links.html link="Linux Mint" url="http://linuxmint.com" %}
+{% include os.html os="Linux Mint" url="http://linuxmint.com" forum="http://linuxmint.com/forum/" docs="http://community.linuxmint.com/" bugs="https://bugs.launchpad.net/linuxmint" gr="linuxmint" dw="mint" d="http://www.linuxmint.com/download.php" irc="http://community.linuxmint.com/tutorial/view/12" ml="http://forums.linuxmint.com/viewtopic.php?f=152&t=73603" %} is an Irish Linux distribution based on Ubuntu's LTS releases. What distinguishes it from the Ubuntu LTS releases it is built on is that it has browser plugins, media codecs, support for DVD playback and other pre-installed packages that are designed to make it more out-of-the-box. Linux Mint also has its own customized desktop built from GNOME 3 called [Cinnamon](http://cinnamon.linuxmint.com/) (which has been ported to most major Linux distributions) and its own graphical package installer, MintInstall. As it is built on Ubuntu's LTS releases it is also compatible with Ubuntu's software repositories and can use them without a problem, usually, at least.
+
+### Package Management
+MintInstall is essentially a Linux Mint equivalent to the Ubuntu Software Center as just like the software centre it is a graphical front-end for APT. I personally have fairly limited experience with it, so it may have a few features that the software centre lacks that I am unaware of.
 
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)
