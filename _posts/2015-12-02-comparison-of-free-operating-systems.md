@@ -475,7 +475,7 @@ MintInstall is essentially a Linux Mint equivalent to the Ubuntu Software Center
 {% include image.html image="Mageia-5-KDE4.png" float="none" description="Mageia 5 with its default KDE Plasma 4 desktop." width="1000px" %}
 
 ### Background
-{% include os.html os="Mageia" url="http://www.mageia.org/en/" forum="https://forums.mageia.org/en/" irc="irc://irc.freenode.net/#mageia" d="http://www.mageia.org/en/downloads/" ml="https://wiki.mageia.org/en/Mailing_lists" dw="mageia" docs="http://www.mageia.org/en/doc/" wiki="http://wiki.mageia.org/" bugs="https://bugs.mageia.org/" %}
+{% include os.html os="Mageia" url="http://www.mageia.org/en/" forum="https://forums.mageia.org/en/" irc="irc://irc.freenode.net/#mageia" d="http://www.mageia.org/en/downloads/" ml="https://wiki.mageia.org/en/Mailing_lists" dw="mageia" docs="http://www.mageia.org/en/doc/" wiki="http://wiki.mageia.org/" bugs="https://bugs.mageia.org/" %} is a French Linux distribution that was originally forked from the proprietary Mandriva Linux distribution by several former employees of Mandriva S.A. Mageia 1, the first release of Mageia, was released in 2011. 
 
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)
