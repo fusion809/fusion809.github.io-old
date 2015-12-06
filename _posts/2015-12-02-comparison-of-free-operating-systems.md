@@ -475,7 +475,27 @@ MintInstall is essentially a Linux Mint equivalent to the Ubuntu Software Center
 {% include image.html image="Mageia-5-KDE4.png" float="none" description="Mageia 5 with its default KDE Plasma 4 desktop." width="1000px" %}
 
 ### Background
-{% include os.html os="Mageia" url="http://www.mageia.org/en/" forum="https://forums.mageia.org/en/" irc="irc://irc.freenode.net/#mageia" d="http://www.mageia.org/en/downloads/" ml="https://wiki.mageia.org/en/Mailing_lists" dw="mageia" docs="http://www.mageia.org/en/doc/" wiki="http://wiki.mageia.org/" bugs="https://bugs.mageia.org/" wp="Mageia" %} is a French Linux distribution that was originally forked from the proprietary Mandriva Linux distribution by several former employees of Mandriva S.A. Mageia 1, the first release of Mageia, was released in 2011. Mageia follows a fixed release model and uses older and more stable versions of almost (if not all) all of its software, including its kernel (currently the latest LTS release 4.1.13, although a week or so ago it was still using 3.18) and desktop environments (GNOME 3.14 and KDE Plasma 4.14 are currently used).
+{% include os.html os="Mageia" url="http://www.mageia.org/en/" forum="https://forums.mageia.org/en/" irc="irc://irc.freenode.net/#mageia" d="http://www.mageia.org/en/downloads/" ml="https://wiki.mageia.org/en/Mailing_lists" dw="mageia" docs="http://www.mageia.org/en/doc/" wiki="http://wiki.mageia.org/" bugs="https://bugs.mageia.org/" wp="Mageia" %} is a French Linux distribution that was originally forked from the proprietary Mandriva Linux distribution by several former employees of Mandriva S.A. Mageia 1, the first release of Mageia, was released in 2011. Mageia follows a fixed release model and uses older and more stable versions of almost (if not all) all of its software, including its kernel (currently the latest LTS release 4.1.13, although a week or so ago it was still using 3.18) and desktop environments (GNOME 3.14 and KDE Plasma 4.14 are currently used). Like its parent its package management system is [urpmi](https://en.wikipedia.org/wiki/urpmi), which uses RPM packages. The word &ldquo;mageia&rdquo; is Latin for &ldquo;magic&rdquo;.
+
+### Package Management System
+As previously mentioned Mageia uses the command-line urpmi ([`urpmi`](/man/urpmi.8.html) from the command-line) package manager, which installs software using RPM binary packages and the RPM package manager. The command for uninstalling software ([`urpme`](/man/urpme.8.html)), querying installed software and software repositories ([`urpmq`](/man/urpmq.8.html)). Mageia also uses Mandriva's graphical front-end for urpmi, rpmdrake. Below is a Bash script showing some useful commands involving urpmi. My experience with Mageia is just barely at the point where I am comfortable reviewing it, so I cannot really add much beyond this about it. I have noticed, however, that Mageia is one Linux distribution wherein I have had great difficulty installing the [Atom](https://atom.io) text editor (which is the text editor I am using to write the post). I have managed to by using the official [RPM binary package](https://atom.io/download/rpm) provided by the Atom development team, by running `sudo urpmi https://atom-installer.github.com/v1.2.4/atom.x86_64.rpm?s=1448042930`, although I did have to uninstall the `apmd` package first due to a file conflict (as both packages provide a `/usr/bin/apm` file).
+
+```bash
+# Update all installed software
+function update {
+	sudo urpmi.update -a && sudo urpmi --auto-select
+}
+
+# Remove program arguments provided to it
+function urm {
+  sudo urpme $@
+}
+
+# Install program arguments provided to it. URLs (to RPM packages) can also be given to it
+function uin {
+  sudo urpmi $@
+}
+```
 
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)
