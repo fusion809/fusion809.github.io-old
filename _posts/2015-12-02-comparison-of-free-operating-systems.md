@@ -500,7 +500,13 @@ function uin {
 
 {% include os-min.html cpu="i586." ram="512 MB, 2048 MB preferred." hdd="5 GB minimum, 20 GB preferred." ims="39 MB (NET), 3.6 GB (DVD)." %}
 
-{% include os-ratings.html bf="8." cmb="<6." doc="5? Documentation seems to be in its infancy." sup="? Never had to use their forums." pm="8." sru="4." sb="&geq;7. Never experienced any bugs myself."  mewi="&leq;4." oa="7." %}
+{% include os-ratings.html bf="8." cmb="<6." doc="5? Documentation seems to be in its infancy." sup="? Never had to use their forums." pm="8." sru="4." sb="&geq;7. Never experienced any bugs myself." mewi="&leq;4." oa="7." %}
+
+## Manjaro Linux
+{% include image.html image="Manjaro-Linux-01.png" float="none" description="Manjaro Linux" width="1000px" %}
+
+### Background
+{% include os.html os="Manjaro Linux" url="https://manjaro.github.io" wp="Manjaro Linux" wiki="https://wiki.manjaro.org/index.php?title=Main_Page" forum="https://forum.manjaro.org/" ml="https://lists.manjaro.org/mailman/listinfo" irc="irc://irc.freenode.net/#manjaro" dw="manjaro" gr="manjaro" docs="https://wiki.manjaro.org/index.php?title=Main_Page" d="http://manjaro.github.io/download/" %} is a European beginner-friendly Arch Linux-derived Linux distribution that features a graphical installer (called [Calamares](https://calamares.io)) and several official and unofficial editions that differ only in their preinstalled desktop environment. 
 
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)
