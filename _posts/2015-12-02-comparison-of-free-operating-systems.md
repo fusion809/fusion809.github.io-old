@@ -12,14 +12,13 @@ redirect_from:
 ---
 {% include draft.html %}
 
-{% include image.html url="/images/Oracle-VM-VirtualBox-5.0.10-29-11-2015.png" width = "1150px" float="none" description="Oracle VM VirtualBox 5.0.10" %}
+{% include os-shot.html image="Oracle-VM-VirtualBox-5.0.10-29-11-2015.png" width = "1150px" float="none" description="Oracle VM VirtualBox 5.0.10" %}
 
 As is mentioned in the [About Me](/about-me/) section of this website, I have tried quite a few Linux distributions using **Oracle VM VirtualBox**. Some I have only spent less than an hour using, but those I have spent over an hour with and feel fairly confident in my ability to review, include:
 
 {% include oslist.html %}
 
 <!--
-9. [Manjaro Linux](https://manjaro.github.io)
 10. [openSUSE](https://www.opensuse.org/)
 11. [PC-BSD](http://www.pcbsd.org/)
 12. [PCLinuxOS](http://www.pclinuxos.com/)
@@ -33,7 +32,7 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
 {% include review-format.html %}
 
 ## antiX
-{% include image.html url="/images/antiX-15.png" width = "768px" float="none" description="antiX 15 running in VirtualBox, with its default desktop" %}
+{% include os-shot.html image="antiX-15.png" width = "768px" float="none" description="antiX 15 running in VirtualBox, with its default desktop" %}
 
 ### Background
 {% include os.html os="antiX" d="http://antix.mepis.org/index.php?title=Main_Page#Downloads" url="http://antix.mepis.org/index.php?title=Main_Page" forum="http://antix.freeforums.org/" dw="antix" wp="antiX" %} is a lightweight Linux distribution based on Debian's 'Testing' branch for 32-bit (i486 or better) and 64-bit systems. It is essentially designed to be a lightweight distribution as it uses the IceWM window manager as its default user interface. I have found it fairly user-friendly with a graphical installer and a fresh install takes up less than 3 GB hard disk drive (HDD) space. A fresh install can also work with as little as 128 MB RAM, although a minimum of 256 MB is recommended. Compared to more popular Linux distributions such as its parent Debian, its own documentation is fairly minimal, although as it is a Debian derivative the documentation of Debian should suffice in most cases. Since it is built on the testing branch of Debian its system software is usually bleeding edge, in terms of how up-to-date it is.
@@ -45,7 +44,7 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
 {% include os-ratings.html BF="8. Fairly beginner-friendly." CMB="8. A core-libre version is available, which contains the bare minimum software, on it you can build your own custom system." doc="2. Very little original documentation exists for antiX." sup="? I've never had to use their support." pm="7. Uses tools it borrows from Debian, which in my opinion are not very impressive." oa="8. It is OK, but I always feel it is like using a treehouse for your office &mdash; it is too minimalistic for it to be appropriate. Although, if I had the time and inclination to install all the software I wanted, I could make it more to my liking." sru="9. Fairly lightweight, by default." sb="7-8. I have never had any stability issues with it myself, probably because I have not used it enough to, but it is based on the testing branch of Debian, hence it is inevitable that it will be more buggy than Debian (Stable)."  mewi="2." %}
 
 ## Arch Linux
-{% include image.html image="Arch-Linux-DDE-menu.png" width="1000px" float="none" description="Arch Linux running the Deepin Desktop Environment" %}
+{% include os-shot.html image="Arch-Linux-DDE-menu.png" width="1000px" float="none" description="Arch Linux running the Deepin Desktop Environment" %}
 
 ### Background
 {% include os.html os="Arch Linux" d="https://www.archlinux.org/download/" dw="arch" wp="Arch Linux" url="https://www.archlinux.org/" wiki="https://wiki.archlinux.org/" forum="https://bbs.archlinux.org/" bugs="https://bugs.archlinux.org/" gr="archlinux" irc="https://wiki.archlinux.org/index.php/IRC_channel" ml="https://lists.archlinux.org//listinfo" %} is an independent Linux distribution that was first founded in 2002 and has since become one of the most popular Linux distributions that is geared towards experienced users. It aims to adhere to the "Keep It Simple, Stupid" principle. Its take on this principle is that no automation should be done and that a fresh install of Arch should have as little software on it as possible. The purpose of this minimalism is that it gives the user as much control over their system as possible. Arch uses its own package management system too, pacman.
@@ -139,7 +138,7 @@ function yarm {
 {% include os-ratings.html bf="4." cmb=">8." doc="8. Has some of the best documentation out there." sup="? Never really had to use their support forums and channels, except once when I was trying to install it manually on a VM. When I did then, there were plenty of responses to the forum post I wrote, but the general consensus of opinion was that I should not be using the system until I was a more competent Linux user." pm=">8." sru=">8." sb="7. I have found Arch disturbingly easy to inadvertently break and make unusable, but most of the time it is stable enough to use." mewi=">5. I have a decent amount of experience with this system and its more newbie-friendly derivative, Manjaro Linux." oa="8." %}
 
 ## CentOS
-{% include image.html image="CentOS-7.png" width="1000px" float="none" description="CentOS 7 running GNOME 3" %}
+{% include os-shot.html image="CentOS-7.png" width="1000px" float="none" description="CentOS 7 running GNOME 3" %}
 
 ### Background
 {% include os.html bugs="https://bugs.centos.org/my_view_page.php" d="https://www.centos.org/download/" dw="centos" os="CentOS" forum="https://www.centos.org/forums/" wiki="https://wiki.centos.org/" ml="https://wiki.centos.org/GettingHelp/ListInfo" docs="https://www.centos.org/docs/" irc="https://wiki.centos.org/irc" wp="CentOS" gr="centos" %}, which is an acronym for <b>C</b>ommunity <b>E</b>nterprise <b>O</b>perating <b>S</b>ystem, is a Linux distribution that is based on Fedora and Red Hat Enterprise Linux (RHEL), that unlike Fedora, values stability over bleeding-edge software. It is essentially a free equivalent to RHEL, as it is designed for individuals or organizations that do not require commercial support (that is, paid support, the type of support that comes with RHEL), but still require the system stability of an enterprise-class operating system. Its stability comes from the fact it uses older, but more thoroughly-tested versions of the software found on Fedora. For example, its current (as of {{ page.date | date: "%d %B %y" }}) 7.1-1503 release uses GNOME 3.8 and the 3.10 version of the Linux kernel, both are from roughly two years ago.
@@ -262,7 +261,7 @@ function sagsb {
 {% include os-ratings.html bf="7-8." cmb="5." doc=">7. Has pretty good documentation, but I have fairly little experience with said documentation." sup="? Never had to use their support forums or IRC channels." pm="7. Not a big fan of APT myself." sru="7. Lighter than CentOS, but not as minimalistic as Arch" sb=">9. Very stable, never had stability issues with it myself." mewi="4. Some experience, not an awful lot though." oa="7. As previously mentioned I dislike outdated software in an OS." %}
 
 ## Fedora
-{% include image.html image="Fedora-23-GNOME.png" width="1000px" float="none" description="Fedora 23 with its default GNOME 3.18 desktop" %}
+{% include os-shot.html image="Fedora-23-GNOME.png" width="1000px" float="none" description="Fedora 23 with its default GNOME 3.18 desktop" %}
 
 ### Background
 {% include os.html ask="https://ask.fedoraproject.org/" bugs="https://bugzilla.redhat.com/" wiki="https://fedoraproject.org/wiki/Fedora_Project_Wiki" ml="https://fedoraproject.org/wiki/Communicating_and_getting_help#Mailing_Lists" irc="https://fedoraproject.org/wiki/Communicating_and_getting_help#IRC_for_interactive_community_support" forum="http://fedoraforum.org/" wp="Fedora (operating system)" os="Fedora" docs="https://docs.fedoraproject.org/en-US/index.html" dw="fedora" d="https://torrent.fedoraproject.org/" url="http://getfedora.org/" %}, previously known as **Fedora Core** is a Linux distribution that was first founded in 2003 as a free continuation of the proprietary Red Hat Linux (RHL) distribution. It is developed by the Fedora Project, which is funded by Red Hat. Fedora, like its parent, uses RPM packages and originally used yum as its default package manager, until the release of Fedora 22 (F22) in May 2015 when it was replaced with a libsolv-based rewrite of it called [**DNF**](http://dnf.baseurl.org/). Its chief distinguishing characteristic, in my books, is that despite the fact it follows a fixed (or standard) release model, with new releases every 6-12 months, its system and desktop software is nearly always the latest stable versions available. For example, Fedora 23 (F23) ships with the 4.2 release of the Linux kernel and the 3.18 release of the GNOME desktop. Most Linux distributions that follow a fixed release model use the long-term stable (LTS) releases of the Linux kernel and other system software, for example, openSUSE 42.1 (released within a week of Fedora 23) shipped with the 4.1 kernel, because it is the latest LTS kernel available. Fedora is also the Linux distribution that is used by Linus Torvalds &mdash; the original developer of the Linux kernel.
@@ -301,7 +300,7 @@ function sdyb {
 {% include os-ratings.html bf="7-8." cmb="~5." doc="6-7. Its documentation, including the Wiki, are adequate for most actions one may wish to do on Fedora, although the Wiki is quite often out of date and does not dive into more advanced or specialized topics." sup="? Never had to use their support forums or IRC channels. I have used their AskBot website and found it less helpful than what Ask Ubuntu is for Ubuntu questions, but usually (~70% of the time) a reasonable answer is obtained within a day." pm="7. Not a big fan of DNF myself. I will admit it does seem marginally better than yum." sru="6." sb="7-8. Fairly stable, but it does use the latest kernels and DNF has occasionally given me grief that appears to be bugs." mewi="6. Once I installed it on a removable drive and used it from there for a few weeks." oa="8. Fairly up-to-date software, but less intuitive than Ubuntu and poorer support." %}
 
 ## Gentoo Linux
-{% include image.html image="Gentoo-Linux-12.0.jpg" float="none" description="Gentoo Linux 12.0, taken from Wikimedia Commons" width="1000px" %}
+{% include os-shot.html image="Gentoo-Linux-12.0.jpg" float="none" description="Gentoo Linux 12.0, taken from Wikimedia Commons" width="1000px" %}
 
 ### Background
 {% include os.html os="Gentoo Linux" dw="gentoo" d="https://www.gentoo.org/downloads/" bugs="https://bugs.gentoo.org/" irc="https://www.gentoo.org/get-involved/irc-channels/all-channels.html" ml="https://www.gentoo.org/get-involved/mailing-lists/all-lists.html" wiki="https://wiki.gentoo.org/wiki/Main_Page" wp="Gentoo Linux" docs="https://wiki.gentoo.org/wiki/Main_Page" url="https://www.gentoo.org/" %} is an independent Linux distribution that was originally known as **Enoch Linux** and founded in 2002 by a Canadian-born American computer programmer and software engineer named [Daniel Robbins](https://en.wikipedia.org/wiki/Daniel_Robbins_(computer_programmer)). As far as Linux distributions go, it is, in my limited experience, the most difficult-to-use and to setup Linux distribution around. This is because its package management system, **Portage**, while incredibly powerful is also slow, difficult-to-learn and difficult-to-use. See unlike most package managers Portage installs software primarily (although binary installs are also possible) from source code using instructions found in specialized Bash scripts known as **ebuilds**. Installing software from source code optimizes the control users have over their system, as it means that features they want they can enable in a package when they configure its source code, while features they do not want they can also disable at the configure stage. Unfortunately, however, compiling software from source code also means that software installation takes longer than it would if one were installing from a binary package instead.
@@ -456,7 +455,7 @@ Running the `emup` function is what gives the issues I previously mentioned in t
 {% include gentoo-ratings.html %}
 
 ## Linux Mint
-{% include image.html image="Linux-Mint-17.3.png" width="1000px" description="Linux Mint 17.3 with the default Cinnamon desktop" float="none" %}
+{% include os-shot.html image="Linux-Mint-17.3.png" width="1000px" description="Linux Mint 17.3 with the default Cinnamon desktop" float="none" %}
 
 ### Background
 {% include os.html os="Linux Mint" url="http://linuxmint.com" forum="http://linuxmint.com/forum/" docs="http://community.linuxmint.com/" bugs="https://bugs.launchpad.net/linuxmint" gr="linuxmint" dw="mint" d="http://www.linuxmint.com/download.php" irc="http://community.linuxmint.com/tutorial/view/12" ml="http://forums.linuxmint.com/viewtopic.php?f=152&t=73603" %} is an Irish Linux distribution based on Ubuntu's LTS releases. What distinguishes it from the Ubuntu LTS releases it is built on is that it has browser plugins, media codecs, support for DVD playback and other pre-installed packages that are designed to make it more out-of-the-box. Linux Mint also has its own customized desktop built from GNOME 3 called [Cinnamon](http://cinnamon.linuxmint.com/) (which has been ported to most major Linux distributions) and its own graphical package installer, MintInstall. As it is built on Ubuntu's LTS releases it is also compatible with Ubuntu's software repositories and can use them without a problem, usually, at least. Unfortunately LTS releases of Ubuntu usually ship with fairly old desktop/system software.
@@ -471,7 +470,7 @@ MintInstall is essentially a Linux Mint equivalent to the Ubuntu Software Center
 {% include os-ratings.html bf="9." cmb="<6." doc="4. Fairly minimal documentation of its own, although the more complete Ubuntu documentation should be applicable to it too." sup="? Never had to use their forums." pm="7." sru="4." sb="&geq;7. Never experienced any bugs myself, but I know from experience on other platforms that Cinnamon can be buggy."  mewi="&leq;4." oa="7-8." %}
 
 ## Mageia
-{% include image.html image="Mageia-5-KDE4.png" float="none" description="Mageia 5 with its default KDE Plasma 4 desktop." width="1000px" %}
+{% include os-shot.html image="Mageia-5-KDE4.png" float="none" description="Mageia 5 with its default KDE Plasma 4 desktop." width="1000px" %}
 
 ### Background
 {% include os.html os="Mageia" url="http://www.mageia.org/en/" forum="https://forums.mageia.org/en/" irc="irc://irc.freenode.net/#mageia" d="http://www.mageia.org/en/downloads/" ml="https://wiki.mageia.org/en/Mailing_lists" dw="mageia" docs="http://www.mageia.org/en/doc/" wiki="http://wiki.mageia.org/" bugs="https://bugs.mageia.org/" wp="Mageia" %} is a French Linux distribution that was originally forked from the proprietary Mandriva Linux distribution by several former employees of Mandriva S.A. Mageia 1, the first release of Mageia, was released in 2011. Mageia follows a fixed release model and uses older and more stable versions of almost (if not all) all of its software, including its kernel (currently the latest LTS release 4.1.13, although a week or so ago it was still using 3.18) and desktop environments (GNOME 3.14 and KDE Plasma 4.14 are currently used). Like its parent its package management system is [urpmi](https://en.wikipedia.org/wiki/urpmi), which uses RPM packages. The word &ldquo;mageia&rdquo; is Latin for &ldquo;magic&rdquo;.
@@ -496,17 +495,28 @@ function uin {
 }
 ```
 
-{% include specs.html arch="i586, x86_64." origin="France." date="2011" shell="Bash." ui="GNOME, KDE" im="Live media." type="Linux." pm="urpmi." rm="Fixed." base="Mandriva Linux." tm="Users that favour stability over having the latest software." %}
+{% include specs.html arch="i586, x86_64." origin="France." date="2011" shell="Bash." ui="GNOME, KDE" im="Graphical, using live media." type="Linux." pm="urpmi." rm="Fixed." base="Mandriva Linux." tm="Users that favour stability over having the latest software." %}
 
 {% include os-min.html cpu="i586." ram="512 MB, 2048 MB preferred." hdd="5 GB minimum, 20 GB preferred." ims="39 MB (NET), 3.6 GB (DVD)." %}
 
 {% include os-ratings.html bf="8." cmb="<6." doc="5? Documentation seems to be in its infancy." sup="? Never had to use their forums." pm="8." sru="4." sb="&geq;7. Never experienced any bugs myself." mewi="&leq;4." oa="7." %}
 
 ## Manjaro Linux
-{% include image.html image="Manjaro-Linux-01.png" float="none" description="Manjaro Linux" width="1000px" %}
+{% include os-shot.html image="Manjaro-Linux-01.png" float="none" description="Manjaro Linux Xfce edition." width="1000px" %}
 
 ### Background
-{% include os.html os="Manjaro Linux" url="https://manjaro.github.io" wp="Manjaro Linux" wiki="https://wiki.manjaro.org/index.php?title=Main_Page" forum="https://forum.manjaro.org/" ml="https://lists.manjaro.org/mailman/listinfo" irc="irc://irc.freenode.net/#manjaro" dw="manjaro" gr="manjaro" docs="https://wiki.manjaro.org/index.php?title=Main_Page" d="http://manjaro.github.io/download/" %} is a European beginner-friendly Arch Linux-derived Linux distribution that features a graphical installer (called [Calamares](https://calamares.io)) and several official and unofficial editions that differ only in their preinstalled desktop environment. 
+{% include os.html os="Manjaro Linux" url="https://manjaro.github.io" wp="Manjaro Linux" wiki="https://wiki.manjaro.org/index.php?title=Main_Page" forum="https://forum.manjaro.org/" ml="https://lists.manjaro.org/mailman/listinfo" irc="irc://irc.freenode.net/#manjaro" dw="manjaro" gr="manjaro" docs="https://wiki.manjaro.org/index.php?title=Main_Page" d="http://manjaro.github.io/download/" %} is a European beginner-friendly Arch Linux-derived Linux distribution that features a graphical installer (called [Calamares](https://calamares.io)), automatic hardware detection (using the [Manjaro Hardware Detection](https://wiki.manjaro.org/index.php?title=Manjaro_Hardware_Detection) tool) and several official and unofficial (or community) editions that differ only in their preinstalled desktop environment. Such official editions include KDE, NET and Xfce editions. Currently Manjaro is still in beta testing, without any official releases being made yet. I have noticed more bugs in than there are in Arch Linux, for example, I have found it impossible to run the [Deepin Desktop Environment](https://github.com/fasheng/arch-deepin/issues/92) on Manjaro, although running it on Arch Linux goes without a hitch.
+
+Like its parent it uses pacman and Yaourt for command-line package management, although graphical front-ends also come preinstalled, including [Octopi](https://octopiproject.wordpress.com/).
+
+{% include specs.html arch="i686, x86_64." origin="Austria, France, Germany." date="2013." ui="KDE, Xfce." im="Graphical, using live media." type="Linux." pm="pacman, Yaourt." rm="Rolling." base="Arch Linux." tm="Users that prefer to have the latest software but also prefer a graphical installation process." %}
+
+{% include os-min.html cpu="i686 @ 1 GHz." ram="1024 MB." hdd="30 GB." ims="529.5 MB (i686, NET edition)." %}
+
+{% include os-ratings.html bf="8-9." cmb="7. Not as customizable as its parent, but still some customizability exists." doc="5-7. Its Wiki is still in its infancy, although most information at the ArchWiki should also be applicable to Manjaro." sup="5. I have used their forums a few times and I must say it is not definitely not the best. For one, if you include a hyperlink in your new thread you will have to a wait a few days, at least, before it receives moderator approval and hence becomes viewable to potential answerers to your question(s)." pm=">8." sru="7. I find it fairly fast and lightweight, considering the fact it uses a graphical user interface, by default." sb="6." mewi="7. I have installed it on a removable hard drive before and used it for a while, so I have a reasonable level of experience with it." oa="8. Manjaro is one of my favourite OSs, but it is still in beta testing, so bugs are frequent." %}
+
+## openSUSE
+{% include os-shot.html image="openSUSE-42.1-desktop-screenshot-appmenu.png" float="none" description="Screenshot of openSUSE 42.1 with its default wallpaper." width="1000px" %}
 
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)
