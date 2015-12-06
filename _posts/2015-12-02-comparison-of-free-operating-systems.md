@@ -519,7 +519,7 @@ Like its parent it uses pacman and Yaourt for command-line package management, a
 {% include os-shot.html image="openSUSE-42.1-desktop-screenshot-appmenu.png" float="none" description="Screenshot of openSUSE 42.1 with its default wallpaper." width="1000px" %}
 
 ### Background
-{% include os.html os="openSUSE" url="https://www.opensuse.org/" d="https://software.opensuse.org/" dw="opensuse" wp="openSUSE" wiki="https://en.opensuse.org/Main_Page" forum="https://forums.opensuse.org/forum.php" ml="https://en.opensuse.org/openSUSE:Mailing_lists" irc="https://en.opensuse.org/openSUSE:IRC_list" docs="http://doc.opensuse.org/" gr="openSUSE" %}
+{% include os.html os="openSUSE" url="https://www.opensuse.org/" d="https://software.opensuse.org/" dw="opensuse" wp="openSUSE" wiki="https://en.opensuse.org/Main_Page" forum="https://forums.opensuse.org/forum.php" ml="https://en.opensuse.org/openSUSE:Mailing_lists" irc="https://en.opensuse.org/openSUSE:IRC_list" docs="http://doc.opensuse.org/" gr="openSUSE" %} is a German Linux distribution that is the free continuation of S.u.S.E., a Linux distribution first founded in the early 1990s by a group of German mathematics university students. openSUSE is a community project sponsored by Novell, Inc. an American multinational company. openSUSE is used as the open-source basis of the commercial SUSE Linux Enterprise (SLE) product sold by Novell.
 
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)
