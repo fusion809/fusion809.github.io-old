@@ -518,6 +518,9 @@ Like its parent it uses pacman and Yaourt for command-line package management, a
 ## openSUSE
 {% include os-shot.html image="openSUSE-42.1-desktop-screenshot-appmenu.png" float="none" description="Screenshot of openSUSE 42.1 with its default wallpaper." width="1000px" %}
 
+### Background
+{% include os.html os="openSUSE" url="https://www.opensuse.org/" d="https://software.opensuse.org/" dw="opensuse" wp="openSUSE" wiki="https://en.opensuse.org/Main_Page" forum="https://forums.opensuse.org/forum.php" ml="https://en.opensuse.org/openSUSE:Mailing_lists" irc="https://en.opensuse.org/openSUSE:IRC_list" docs="http://doc.opensuse.org/" gr="openSUSE" %}
+
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)
 [^2]: Source: [AUR (en) - Packages](https://aur.archlinux.org/packages)
