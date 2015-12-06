@@ -1,12 +1,13 @@
 ---
 layout: post
 title:  "A Comparison of Free Operating Systems"
-date:   2015-12-02 +1000
+date:   2015-12-10 +1000
 categories: bsd, linux, comparisons
 redirect_from:
   - /2015/11/10/comparison-of-linux-distros/
   - /2015/11/29/comparison-of-linux-distros-and-bsd-derivatives/
   - /2015/11/30/comparison-of-free-operating-systems/
+  - /2015/12/02/comparison-of-free-operating-systems/
   - /comparison-of-free-operating-systems/
 ---
 {% include draft.html %}
@@ -18,8 +19,6 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
 {% include oslist.html %}
 
 <!--
-7. [Linux Mint](http://linuxmint.com/)
-8. [Mageia](http://www.mageia.org/en/)
 9. [Manjaro Linux](https://manjaro.github.io)
 10. [openSUSE](https://www.opensuse.org/)
 11. [PC-BSD](http://www.pcbsd.org/)
@@ -478,7 +477,7 @@ MintInstall is essentially a Linux Mint equivalent to the Ubuntu Software Center
 {% include os.html os="Mageia" url="http://www.mageia.org/en/" forum="https://forums.mageia.org/en/" irc="irc://irc.freenode.net/#mageia" d="http://www.mageia.org/en/downloads/" ml="https://wiki.mageia.org/en/Mailing_lists" dw="mageia" docs="http://www.mageia.org/en/doc/" wiki="http://wiki.mageia.org/" bugs="https://bugs.mageia.org/" wp="Mageia" %} is a French Linux distribution that was originally forked from the proprietary Mandriva Linux distribution by several former employees of Mandriva S.A. Mageia 1, the first release of Mageia, was released in 2011. Mageia follows a fixed release model and uses older and more stable versions of almost (if not all) all of its software, including its kernel (currently the latest LTS release 4.1.13, although a week or so ago it was still using 3.18) and desktop environments (GNOME 3.14 and KDE Plasma 4.14 are currently used). Like its parent its package management system is [urpmi](https://en.wikipedia.org/wiki/urpmi), which uses RPM packages. The word &ldquo;mageia&rdquo; is Latin for &ldquo;magic&rdquo;.
 
 ### Package Management System
-As previously mentioned Mageia uses the command-line urpmi ([`urpmi`](/man/urpmi.8.html) from the command-line) package manager, which installs software using RPM binary packages and the RPM package manager. The command for uninstalling software ([`urpme`](/man/urpme.8.html)), querying installed software and software repositories ([`urpmq`](/man/urpmq.8.html)). Mageia also uses Mandriva's graphical front-end for urpmi, rpmdrake. Below is a Bash script showing some useful commands involving urpmi. My experience with Mageia is just barely at the point where I am comfortable reviewing it, so I cannot really add much beyond this about it. I have noticed, however, that Mageia is one Linux distribution wherein I have had great difficulty installing the [Atom](https://atom.io) text editor (which is the text editor I am using to write the post). I have managed to by using the official [RPM binary package](https://atom.io/download/rpm) provided by the Atom development team, by running `sudo urpmi https://atom-installer.github.com/v1.2.4/atom.x86_64.rpm?s=1448042930`, although I did have to uninstall the `apmd` package first due to a file conflict (as both packages provide a `/usr/bin/apm` file).
+As previously mentioned Mageia uses the command-line urpmi ([`urpmi`](/man/urpmi.8.html) from the command-line) package manager, which installs software using RPM binary packages and the RPM package manager. urpmi is written in Perl. The command for uninstalling software ([`urpme`](/man/urpme.8.html)), querying installed software and software repositories ([`urpmq`](/man/urpmq.8.html)). Mageia also uses Mandriva's graphical front-end for urpmi, rpmdrake. Below is a Bash script showing some useful commands involving urpmi. My experience with Mageia is just barely at the point where I am comfortable reviewing it, so I cannot really add much beyond this about it. I have noticed, however, that Mageia is one Linux distribution wherein I have had great difficulty installing the [Atom](https://atom.io) text editor (which is the text editor I am using to write the post). I have managed to by using the official [RPM binary package](https://atom.io/download/rpm) provided by the Atom development team, by running `sudo urpmi https://atom-installer.github.com/v1.2.4/atom.x86_64.rpm?s=1448042930`, although I did have to uninstall the `apmd` package first due to a file conflict (as both packages provide a `/usr/bin/apm` file).
 
 ```bash
 # Update all installed software
@@ -496,6 +495,12 @@ function uin {
   sudo urpmi $@
 }
 ```
+
+{% include specs.html arch="i586, x86_64." origin="France." date="2011" shell="Bash." ui="GNOME, KDE" im="Live media." type="Linux." pm="urpmi." rm="Fixed." base="Mandriva Linux." tm="Users that favour stability over having the latest software." %}
+
+{% include os-min.html cpu="i586." ram="512 MB, 2048 MB preferred." hdd="5 GB minimum, 20 GB preferred." ims="39 MB (NET), 3.6 GB (DVD)." %}
+
+{% include os-ratings.html bf="8." cmb="<6." doc="5? Documentation seems to be in its infancy." sup="? Never had to use their forums." pm="8." sru="4." sb="&geq;7. Never experienced any bugs myself."  mewi="&leq;4." oa="7." %}
 
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)
