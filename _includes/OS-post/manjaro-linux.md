@@ -1,0 +1,15 @@
+## Manjaro Linux
+{% include OS-post/os-shot.html image="Manjaro-Linux-01.png" float="none" description="Manjaro Linux Xfce edition." width="1000px" %}
+
+### Background
+{% include OS-post/os.html os="Manjaro Linux" url="https://manjaro.github.io" wp="Manjaro Linux" wiki="https://wiki.manjaro.org/index.php?title=Main_Page" forum="https://forum.manjaro.org/" ml="https://lists.manjaro.org/mailman/listinfo" irc="irc://irc.freenode.net/#manjaro" dw="manjaro" gr="manjaro" docs="https://wiki.manjaro.org/index.php?title=Main_Page" d="http://manjaro.github.io/download/" %} is a European beginner-friendly Arch Linux-derived Linux distribution that features a graphical installer (called [Calamares](https://calamares.io)), automatic hardware detection (using the [Manjaro Hardware Detection](https://wiki.manjaro.org/index.php?title=Manjaro_Hardware_Detection) tool) and several official and unofficial (or community) editions that differ only in their preinstalled desktop environment. Such official editions include KDE, NET and Xfce editions. Currently Manjaro is still in beta testing, without any official releases being made yet. I have noticed more bugs in than there are in Arch Linux, for example, I have found it impossible to run the [Deepin Desktop Environment](https://github.com/fasheng/arch-deepin/issues/92) on Manjaro, although running it on Arch Linux goes without a hitch.
+
+Like its parent it uses pacman and Yaourt for command-line package management, although graphical front-ends also come preinstalled, including [Octopi](https://octopiproject.wordpress.com/).
+
+openSUSE is currently the fourth most popular Linux distribution, according to *DistroWatch*.
+
+{% include OS-post/specs.html arch="i686, x86_64." origin="Austria, France, Germany." date="2013." ui="KDE, Xfce." im="Graphical, using live media." type="Linux." pm="pacman, Yaourt." rm="Rolling." base="Arch Linux." tm="Users that prefer to have the latest software but also prefer a graphical installation process." %}
+
+{% include OS-post/os-min.html cpu="i686 @ 1 GHz." ram="1024 MB." hdd="30 GB." ims="529.5 MB (i686, NET edition)." %}
+
+{% include OS-post/os-ratings.html bf="8-9." cmb="7. Not as customizable as its parent, but still some customizability exists." doc="5-7. Its Wiki is still in its infancy, although most information at the ArchWiki should also be applicable to Manjaro." sup="5. I have used their forums a few times and I must say it is not definitely not the best. For one, if you include a hyperlink in your new thread you will have to a wait a few days, at least, before it receives moderator approval and hence becomes viewable to potential answerers to your question(s)." pm=">8." sru="7. I find it fairly fast and lightweight, considering the fact it uses a graphical user interface, by default." sb="6." mewi="7. I have installed it on a removable hard drive before and used it for a while, so I have a reasonable level of experience with it." oa="8. Manjaro is one of my favourite OSs, but it is still in beta testing, so bugs are frequent." %}
