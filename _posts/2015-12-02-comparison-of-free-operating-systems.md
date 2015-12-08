@@ -19,14 +19,13 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
 {% include OS-post/oslist.html %}
 
 <!--
-11. [PC-BSD](http://www.pcbsd.org/)
 12. [PCLinuxOS](http://www.pclinuxos.com/)
 13. [Sabayon Linux](http://www.sabayon.org/)
 14. [Ubuntu](http://www.ubuntu.com/)
 -->
 {% include toc.html %}
 
-{% include OS-post/glossary.html %}
+{% include OS-post/glossary.md %}
 
 {% include OS-post/review-format.html %}
 
