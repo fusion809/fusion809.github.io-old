@@ -27,7 +27,7 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
 
 {% include OS-post/glossary.md %}
 
-{% include OS-post/review-format.html %}
+{% include OS-post/review-format.md %}
 
 {% include OS-post/antix.md %}
 

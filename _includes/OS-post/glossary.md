@@ -7,6 +7,8 @@
   * <b>B</b>erkeley <b>S</b>oftware <b>D</b>istribution.
 * **BSDs**
   * <b>B</b>erkeley <b>S</b>oftware <b>D</b>istribution derivative<b>s</b>.
+* **Calamares**
+  * [Calamares](https://calamares.io) is a distribution-independent graphical installer framework written predominantly in C++ (82.0%) and Python (8.0%), according to [GitHub](https://github.com/calamares/calamares).
 * **CLI**
   * <b>C</b>ommand-<b>l</b>ine <b>i</b>nterface. Also known as terminal, a way of interacting with one&#39;s OS by issuing a series of textual commands.
 * **CLIs**
