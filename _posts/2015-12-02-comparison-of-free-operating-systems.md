@@ -18,11 +18,6 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
 
 {% include OS-post/oslist.html %}
 
-<!--
-12. [PCLinuxOS](http://www.pclinuxos.com/)
-13. [Sabayon Linux](http://www.sabayon.org/)
-14. [Ubuntu](http://www.ubuntu.com/)
--->
 {% include toc.html %}
 
 {% include OS-post/glossary.md %}
@@ -50,6 +45,8 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
 {% include OS-post/opensuse.md %}
 
 {% include OS-post/pcbsd.md %}
+
+{% include OS-post/pclinuxos.md %}
 
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)
