@@ -48,6 +48,8 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
 
 {% include OS-post/pclinuxos.md %}
 
+{% include OS-post/sabayon-linux.md %}
+
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)
 [^2]: Source: [AUR (en) - Packages](https://aur.archlinux.org/packages)
