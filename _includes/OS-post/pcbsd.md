@@ -8,3 +8,7 @@ You may have noticed this is the only BSD derivative compared in this post, this
 
 ### Package Management
 {% include OS-post/os-shot.html image="AppCafe.png" width="1150px" float="none" description="AppCafe, the graphical user interface for the pkg package management system" %}
+PC-BSD, like its parent FreeBSD, uses **pkg** and the **ports system** for command-line package management, although unlike FreeBSD a graphical front-end for pkg called **AppCafe** is also included in a default installation of PC-BSD. I have personally found pkg and its graphical front-end **very** prone to unresolvable errors, for example, at the time of writing this post I have booted my PC-BSD VM and used AppCafe to upgrade my VM's packages and it gave out the fatal error:
+{% gist 77536cea7b2914a158f1 %}
+
+Likewise using `pkg` for upgrades gives the error documented in this [forum post](https://forums.pcbsd.org/thread-20354.html) I started.

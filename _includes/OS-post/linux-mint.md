@@ -6,6 +6,9 @@
 
 It is presently ranked first in terms of popularity, according to the *DistroWatch* website.
 
+### Installer
+Linux Mint uses the Ubiquity installer of Ubuntu.
+
 ### Package Management
 MintInstall is essentially a Linux Mint equivalent to the Ubuntu Software Center as just like the software centre it is a graphical front-end for APT. I personally have fairly limited experience with it, so it may have a few features that the software centre lacks that I am unaware of.
 

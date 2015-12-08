@@ -9,6 +9,9 @@ Internationally openSUSE is one of the most popular Linux distributions, with it
 
 Novell signed a deal with Microsoft in 2006, which was meant to improve on compatibility between free and open-source programs and Microsoft's proprietary programs, that has lead to significant contention in the FOSS community. This is because, in general, the FOSS community has a great deal of disdain for big software companies like Microsoft and this agreement seemed more like Novell selling out to Microsoft, than anything else. Further criticism of openSUSE has been focused on the belief that the system is a little "bloated". What I interpret this to mean is that the live DVD ISO file used to install openSUSE without relying on one's network too much is larger (namely 4.7 GB for 42.1) than what one would expect based on the size of similar Linux distribution's live media. That and the fact that the system contains several unnecessary packages that while intended to make the system more "out-of-the-box" add unnecessary size to the system.
 
+### Installer
+openSUSE uses YaST2 for system installation as well as package management post-installation.
+
 ### Package Management
 openSUSE uses [**ZYpp**](https://github.com/openSUSE/zypper) ([`zypper`](/man/zypper.8.html) from the command-line) for package management which installs software from RPM binary packages. ZYpp (not including any of its libraries, just zypper) is written in C++ (96.1%), Perl (1.3%), Bash script (1.1%), C (0.9%), *etc.*[^4] Here is an example Bash script for automating some common actions with ZYpp:
 ```bash
