@@ -1,12 +1,16 @@
 ## Manjaro Linux
-{% include OS-post/os-shot.html image="Manjaro-Linux-01.png" float="none" description="Manjaro Linux Xfce edition." width="1150px" %}
+{% include OS-post/os-shot.html image="Manjaro-15.09-welcome.png" float="none" description="Manjaro Linux Xfce edition." width="1150px" %}
 
 ### Background
 {% include OS-post/os.html os="Manjaro Linux" url="https://manjaro.github.io" wp="Manjaro Linux" wiki="https://wiki.manjaro.org/index.php?title=Main_Page" forum="https://forum.manjaro.org/" ml="https://lists.manjaro.org/mailman/listinfo" irc="irc://irc.freenode.net/#manjaro" dw="manjaro" gr="manjaro" docs="https://wiki.manjaro.org/index.php?title=Main_Page" d="http://manjaro.github.io/download/" %} is a European beginner-friendly Arch Linux-based Linux distribution that features an automated command-line and graphical installer (called [Thus](https://github.com/manjaro/thus), although the platform-independent installer, [Calamares](https://calamares.io), is also available), automatic hardware detection (using the [Manjaro Hardware Detection](https://wiki.manjaro.org/index.php?title=Manjaro_Hardware_Detection) tool) and several official and unofficial (or community) editions that differ only in their preinstalled desktop environment. Such official editions include KDE, NET and Xfce editions. Currently Manjaro is still in beta testing, without any official releases being made yet. I have noticed more bugs in than there are in Arch Linux, for example, I have found it impossible to run the [Deepin Desktop Environment](https://github.com/fasheng/arch-deepin/issues/92) on Manjaro, although running it on Arch Linux goes without a hitch.
 
 Like its parent it uses pacman and Yaourt for command-line package management, although graphical front-ends also come preinstalled, including [Octopi](https://octopiproject.wordpress.com/).
 
-Manjaro is currently the 7th most popular operating system according to *DistroWatch*.
+Manjaro is currently the 7th most popular operating system ranked, according to *DistroWatch*.
+
+### Installer
+{% include OS-post/os-shot.html image="Manjaro-Thus-installer.png" width="500px" float="left" description="Manjaro's Thus installer" %} {% include OS-post/os-shot.html image="Manjaro-Calamares-installer.png" width="500px" float="right" description="The Calamares installer on Manjaro 15.09" %}
+One of the major features that distinguishes Manjaro from Arch is an automated installation process that can be performed graphically or textually. Graphically this installation can be done using the distribution-independent Calamares installer or Manjaro's own Thus installer. Textually this must be done using Manjaro's Thus installer. I have not had enough experience with Manjaro installation to really offer any real comparison between the two installers, but I have found [this blog post](http://www.zdnet.com/article/thus-versus-calamares-comparing-manjaro-15-09-installers/) from another author that seems like a decent comparison between the two. 
 
 {% include OS-post/specs.html arch="i686, x86_64." origin="Austria, France, Germany." date="2013." ui="KDE, Xfce." im="Graphical (Calamares or Thus installer), using live media." type="Linux." pm="pacman, Yaourt." rm="Rolling." base="Arch Linux." tm="Users that prefer to have the latest software but also prefer a graphical installation process." %}
 
