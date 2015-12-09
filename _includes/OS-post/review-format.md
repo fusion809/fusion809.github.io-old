@@ -5,7 +5,7 @@ Each OS review will have the format:
 * **OS Name**
   * &lt;Screenshot of the OS running&gt;
   * **Background**
-      * Background information on the OS, such as its history, an overview of its features that distinguish it from other operating systems and how user-friendly it is.
+      * Background information on the OS, such as its history, an overview of its features that distinguish it from other operating systems and how user-friendly it is. I also mention its average [*DistroWatch*](http://distrowatch.com) ranking over the past year.
   * **Package Management**
       * Not all OSs will have this section, but if they do, here I will discuss the OS&#39;s default PMSs and their features. Including some basic usage of the PMSs. Those that lack this section likely lack it because they share the package management system of their parent distribution (that is the distribution that they are derived from). It is important also to note that I usually avoid graphical front-ends for package management systems like the plague, because I have had some nasty experiences with them on the first Linux distribution I ever tried, Ubuntu, that were absent from the command-line.
   * **Installer**
