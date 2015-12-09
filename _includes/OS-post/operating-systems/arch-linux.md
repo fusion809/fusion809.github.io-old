@@ -17,7 +17,7 @@ Yaourt is French for yogurt and is so named as it is an acronym for <b>Y</b>et <
 
 I would personally rate pacman and Yaourt as two of my favourite package managers, because of how simple, fast, yet flexible they are. Most package managers will install software from either binary packages or from source code, unlike Yaourt which can install from both. pacman and Yaourt are also fairly fast compared to equivalent package managers operating on other systems. For example, Yaourt will most of the time take less time to install a software package from source code than Portage will take to install the same package. I suspect the reason behind this is that Portage is written in Python and Bash script, while pacman is written in C and Yaourt, being a wrapper for pacman, is written in C and Bash script. pacman is actually widely considered the fastest Linux package manager available.
 
-Arch Linux also follows a bleeding-edge rolling release model (BE-RRM), which means that users almost always have the latest software and never need to perform a standard system upgrade. Although it is worthwhile noting that not all software on Arch is bleeding-edge, some can be a few releases behind. For example, as of {{ page.date | date: "%d %B %Y" }} [e_dbus 1.7.9](https://www.archlinux.org/packages/extra/x86_64/e_dbus/) is still in their official pacman repositories, even though version 1.7.10 was released on 6 January 2014.[^3] Although as a side note it may also be worthwhile mentioning that I have set up a GitHub repository containing [PKGBUILDs](https://github.com/fusion809/PKGBUILDs) for packages that are either not in the AUR/pacman repositories, or the versions that are there have since become out of date. At the time of writing this, these PKGBUILDs are all related to the Enlightenment desktop.
+Arch Linux also follows a bleeding-edge rolling release model (BE-RRM), which means that users almost always have the latest software and never need to perform a standard system upgrade. Although it is worthwhile noting that not all software on Arch is bleeding-edge, some can be a few releases behind. For example, as of {{ page.date | date: "%d %B %Y" }} [e_dbus 1.7.9](https://www.archlinux.org/packages/extra/x86_64/e_dbus/) is still in their official pacman repositories, even though version 1.7.10 was released on 6 January 2014.[^3] Although as a side note it may also be worthwhile mentioning that I have set up a GitHub repository containing [PKGBUILDs](https://github.com/fusion809/PKGBUILDs) for packages that are either not in the AUR/pacman repositories, or the versions that are there have since become out of date. At the time of writing this, these PKGBUILDs are all related to the Enlightenment desktop (and includes e_dbus 1.7.10).
 
 pacman and Yaourt both have a very unusual syntax, see most command-line BSD/Linux package managers use the `install` option to install software, `remove` to remove software, `update` to update software repositories and `upgrade` to update all installed software. pacman (and hence also Yaourt, although for upgrades the option is `-Syua` for Yaourt) instead uses `-S`, `-R`, `-Sy` and `-Syu` options, respectively. Further details of its syntax can be found [here](https://wiki.archlinux.org/index.php/Pacman_Rosetta).
 
@@ -29,8 +29,7 @@ function aurin {
   do
     git clone https://aur.archlinux.org/$i.git
     pushd $i
-    makepkg -s
-    paclin $i
+    makepkg -si
     popd
     rm -rf $i
   done
