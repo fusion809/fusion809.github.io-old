@@ -140,7 +140,7 @@ function sabw {
 }
 ```
 
-{% include OS-post/specs.md arch="x86_64." origin="Italy." date="2005." shell="Bash." ui="None (SpinBase/Server edition), Fluxbox (Minimal edition), GNOME, KDE, MATE and Xfce." base="Gentoo Linux." im="Graphical from live media. A tarball for chroots is also available." type="Linux." pm="Entropy and Portage." rm="Rolling." tm="Linux newcomers, experienced users that are too lazy to compile all their software using Gentoo, etc." %}
+{% include OS-post/specs.md arch="x86_64." origin="Italy." date="2005." shell="Bash." ui="None (SpinBase/Server edition), Fluxbox (Minimal edition), GNOME, KDE, MATE and Xfce." base="Gentoo Linux." im="Graphical from live media. A tarball for chroots is also available." type="Linux." pm="Entropy and Portage." rm="Rolling." tm="Linux newcomers, experienced users that are too lazy to compile all their software using Gentoo, *etc.*" %}
 
 {% include OS-post/os-min.md cpu="x86_64." ram="512 MB. 1024 MB preferable." hdd="20 GB minimum, 30 GB preferable." ims="569 MB (SpinBase edition), 588 MB (tarball), 934 MB (Server edition)." %}
 
