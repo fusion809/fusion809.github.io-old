@@ -193,7 +193,7 @@ jQuery.fn.toc.defaults = {
 
 $(document).ready(function() {
   $('#toc').toc({
-      'selectors': 'h2,h3', //elements to use as headings
+      'selectors': 'h2,h3,h4', //elements to use as headings
       'container': 'body', //element to find all selectors in
       'listType': '<ul/>', //use unordered list. If you need ordered one instead pass: '<ol/>'
       'smoothScrolling': true, //enable or disable smooth scrolling on click

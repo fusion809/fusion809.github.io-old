@@ -2,7 +2,7 @@
 ### Ratings
 * **Beginner-friendliness**: {{ include.bf }}{{ include.BF }}{{ include.beginner-friendliness }}
 * **Customizability**: {{ include.customizability }}{{ include.custom }}{{ include.cmb }}{{ include.CMB }}
-* **Documentation**: {{ include.doc }}{{ include.DOC }}{{ include.documentation }}{{ include.docqual }}
+* **Documentation**: {{ include.doc }}{{ include.docs }}{{ include.DOCS }}{{ include.DOC }}{{ include.documentation }}{{ include.docqual }}
 * **Free support**: {{ include.support }}{{ include.sup }}{{ include.SUP }}
 * **Package management**: {{ include.pm }}{{ include.PM }}
 * **Performance/<abbr title="System Resource Usage">SRU</abbr>**: {{ include.sru }}{{ include.SRU }}{{ include.performance }}
