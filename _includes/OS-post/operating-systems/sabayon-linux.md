@@ -10,6 +10,8 @@ Currently it is ranked 32nd for popularity according to the *DistroWatch* websit
 
 It currently only supports 64-bit processors, although ARM support (for Raspberry Pi computers) is planned to become available in the near future and 32-bit (x86) processors were supported until 2014.[^8]
 
+Sabayon Linux is named after [Zabaione](https://en.wikipedia.org/wiki/Zabaione), an egg-based Italian desert that is also spelt as Sabayon.
+
 ### Package Management
 As previously mentioned Sabayon uses both Entropy and Portage package managers, with Entropy being the only one that is officially supported by the Sabayon community. In other words, from what I can tell, if you use Portage you are on your own as far as the Sabayon community is concerned. There are over 13,100 distinct (not including different package versions) binary packages in the Entropy repositories, although as previously mentioned the Portage Tree and GPOs contain far more distinct ebuilds than this.
 
