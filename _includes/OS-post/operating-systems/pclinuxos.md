@@ -10,6 +10,7 @@ It was originally forked from Mandriva Linux, but it has since become an indepen
 PCLinuxOS uses the Draklive-Install installer, which is a remnant of its Mandriva roots.
 
 ### Package Management
+{% include OS-post/os-shot.html image="PCLinuxOS-KDE-Synaptic.png" float="none" description="Synaptic 0.57.2 running on PCLinuxOS under the KDE Plasma 4 desktop" %}
 As previously mentioned PCLinuxOS uses APT-RPM for package management, with Synaptic as a preinstalled graphical front-end. APT-RPM has virtually identical syntax to APT, so for example Bash scripts refer to the [Debian](#debian) section of this post.
 
 {% include OS-post/specs.md arch="i586, x86_64." origin="U.S.A." date="2005." ui="KDE, LXDE." shell="Bash." im="Graphical using Draklive-Install." type="Linux." base="Independent, originally forked from Mandriva Linux." rm="Rolling." tm="Linux beginners." pm="APT-RPM." %}
