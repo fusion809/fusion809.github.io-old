@@ -60,5 +60,5 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
 [^5]: Source: [openSUSE/zypper repository](https://github.com/openSUSE/zypper)
 [^6]: Source: [Entropy releases before 138](https://github.com/Sabayon/entropy/releases?after=138)
 [^7]: Source: [Entropy releases before 0.6.9](https://github.com/Sabayon/entropy/releases?after=0.6.9)
-[^8]: Source: Forum topic "[Important: Sabayon x86 (32bit) is being deprecated](https://www.sabayon.org/article/important-sabayon-x86-32bit-being-deprecated)" by Fabio Erculiani
+[^8]: Source: Forum topic ["Important: Sabayon x86 (32bit) is being deprecated"](https://www.sabayon.org/article/important-sabayon-x86-32bit-being-deprecated) by Fabio Erculiani
 [^9]: Source: [txt.gz](http://packages.ubuntu.com/wily/allpackages?format=txt.gz).
