@@ -52,8 +52,8 @@ alias zypup=update
 alias szpu=update
 ```
 
-{% include OS-post/specs.html arch="armhf, i586, x86_64." origin="Germany." date="&lt;1996. Depends on the point at which one considers openSUSE to have been born." ui="GNOME, KDE, IceWM, LXDE, Xfce, etc." im="Graphical, using live media." type="Linux." pm="ZYpp." rm="Fixed (standard releases), Rolling (Tumbleweed)." tm="Users that prefer to an OS that works &ldquo;out-of-the-box&rdquo;." %}
+{% include OS-post/specs.md arch="armhf, i586, x86_64." origin="Germany." date="&lt;1996. Depends on the point at which one considers openSUSE to have been born." ui="GNOME, KDE, IceWM, LXDE, Xfce, etc." im="Graphical, using live media." type="Linux." pm="ZYpp." rm="Fixed (standard releases), Rolling (Tumbleweed)." tm="Users that prefer to an OS that works &ldquo;out-of-the-box&rdquo;." %}
 
 {% include OS-post/os-min.html cpu="Pentium 4 @ 1.6 GHz." ram="1024 MB, 2048 MB recommended." hdd="3 GB, 5 GB for a graphical desktop." ims="85 MB (x86_64, NET edition)." %}
 
-{% include OS-post/os-ratings.html bf="8-9." cmb="7." doc="&gt;8. Pretty extensive documentation." sup="? Only used their forums once and the support I got fixed the problem." pm="&gt;8. I actually rather like ZYpp and YaST2." sru="5. Fairly bloated, especially when using the usual desktops, GNOME/KDE." sb="8. I have found it fairly stable since the release of 42.1." mewi="7. I have a fair degree of experience with it on VirtualBox VMs." oa="9. I love Tumbleweed." %}
+{% include OS-post/os-ratings.md bf="8-9." cmb="7." doc="&gt;8. Pretty extensive documentation." sup="? Only used their forums once and the support I got fixed the problem." pm="&gt;8. I actually rather like ZYpp and YaST2." sru="5. Fairly bloated, especially when using the usual desktops, GNOME/KDE." sb="8. I have found it fairly stable since the release of 42.1." mewi="7. I have a fair degree of experience with it on VirtualBox VMs." oa="9. I love Tumbleweed." %}

@@ -24,31 +24,31 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
 
 {% include OS-post/review-format.md %}
 
-{% include OS-post/antix.md %}
+{% include OS-post/operating-systems/antix.md %}
 
-{% include OS-post/arch-linux.md %}
+{% include OS-post/operating-systems/arch-linux.md %}
 
-{% include OS-post/centos.md %}
+{% include OS-post/operating-systems/centos.md %}
 
-{% include OS-post/debian.md %}
+{% include OS-post/operating-systems/debian.md %}
 
-{% include OS-post/fedora.md %}
+{% include OS-post/operating-systems/fedora.md %}
 
-{% include OS-post/gentoo-linux.md %}
+{% include OS-post/operating-systems/gentoo-linux.md %}
 
-{% include OS-post/linux-mint.md %}
+{% include OS-post/operating-systems/linux-mint.md %}
 
-{% include OS-post/mageia.md %}
+{% include OS-post/operating-systems/mageia.md %}
 
-{% include OS-post/manjaro-linux.md %}
+{% include OS-post/operating-systems/manjaro-linux.md %}
 
-{% include OS-post/opensuse.md %}
+{% include OS-post/operating-systems/opensuse.md %}
 
-{% include OS-post/pcbsd.md %}
+{% include OS-post/operating-systems/pcbsd.md %}
 
-{% include OS-post/pclinuxos.md %}
+{% include OS-post/operating-systems/pclinuxos.md %}
 
-{% include OS-post/sabayon-linux.md %}
+{% include OS-post/operating-systems/sabayon-linux.md %}
 
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)

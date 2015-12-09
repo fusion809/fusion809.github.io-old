@@ -29,8 +29,8 @@ function uin {
 }
 ```
 
-{% include OS-post/specs.html arch="i586, x86_64." origin="France." date="2011" shell="Bash." ui="GNOME, KDE" im="Graphical, using live media." type="Linux." pm="urpmi." rm="Fixed." base="Mandriva Linux." tm="Users that favour stability over having the latest software." %}
+{% include OS-post/specs.md arch="i586, x86_64." origin="France." date="2011" shell="Bash." ui="GNOME, KDE" im="Graphical, using live media." type="Linux." pm="urpmi." rm="Fixed." base="Mandriva Linux." tm="Users that favour stability over having the latest software." %}
 
 {% include OS-post/os-min.html cpu="i586." ram="512 MB, 2048 MB preferred." hdd="5 GB minimum, 20 GB preferred." ims="39 MB (NET), 3.6 GB (DVD)." %}
 
-{% include OS-post/os-ratings.html bf="8." cmb="<6." doc="5? Documentation seems to be in its infancy." sup="? Never had to use their forums." pm="8." sru="4." sb="&geq;7. Never experienced any bugs myself." mewi="&leq;4." oa="7." %}
+{% include OS-post/os-ratings.md bf="8." cmb="<6." doc="5? Documentation seems to be in its infancy." sup="? Never had to use their forums." pm="8." sru="4." sb="&geq;7. Never experienced any bugs myself." mewi="&leq;4." oa="7." %}

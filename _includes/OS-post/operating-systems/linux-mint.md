@@ -13,8 +13,8 @@ Linux Mint uses the Ubiquity installer of Ubuntu.
 {% include OS-post/os-shot.html image="MintInstall-7.6.3.png" description="MintInstall 7.6.3 running on Linux Mint 17.3" width="782px" %}
 MintInstall is essentially a Linux Mint equivalent to the Ubuntu Software Center as just like the software centre it is a graphical front-end for APT. I personally have fairly limited experience with it, so it may have a few features that the software centre lacks that I am unaware of.
 
-{% include OS-post/specs.html arch="i386, x86_64." origin="Ireland." date="2006." shell="Bash." ui="Cinnamon, KDE, MATE and Xfce." im="Live media." type="Linux." pm="APT." rm="Fixed." base="Ubuntu (LTS)." tm="Newcomers to Linux." %}
+{% include OS-post/specs.md arch="i386, x86_64." origin="Ireland." date="2006." shell="Bash." ui="Cinnamon, KDE, MATE and Xfce." im="Live media." type="Linux." pm="APT." rm="Fixed." base="Ubuntu (LTS)." tm="Newcomers to Linux." %}
 
 {% include OS-post/os-min.html cpu="i386." ram="512 MB. 1024 MB recommended." HDD="5 GB. 20 GB recommended." ims="1.4 GB." %}
 
-{% include OS-post/os-ratings.html bf="9." cmb="<6." doc="4. Fairly minimal documentation of its own, although the more complete Ubuntu documentation should be applicable to it too." sup="? Never had to use their forums." pm="7." sru="4." sb="&geq;7. Never experienced any bugs myself, but I know from experience on other platforms that Cinnamon can be buggy."  mewi="&leq;4." oa="7-8." %}
+{% include OS-post/os-ratings.md bf="9." cmb="<6." doc="4. Fairly minimal documentation of its own, although the more complete Ubuntu documentation should be applicable to it too." sup="? Never had to use their forums." pm="7." sru="4." sb="&geq;7. Never experienced any bugs myself, but I know from experience on other platforms that Cinnamon can be buggy."  mewi="&leq;4." oa="7-8." %}

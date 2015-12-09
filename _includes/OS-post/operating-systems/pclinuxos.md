@@ -12,8 +12,8 @@ PCLinuxOS uses the Draklive-Install installer, which is a remnant of its Mandriv
 ### Package Management
 As previously mentioned PCLinuxOS uses APT-RPM for package management, with Synaptic as a pre-installed graphical front-end. APT-RPM has virtually identical syntax to APT, so for example Bash scripts refer to the [Debian](#debian) section of this post.
 
-{% include OS-post/specs.html arch="i586, x86_64." origin="U.S.A." date="2005." ui="KDE, LXDE." shell="Bash." im="Graphical using Draklive-Install." type="Linux." base="Independent, originally forked from Mandriva Linux." rm="Rolling." tm="Linux beginners." pm="APT-RPM." %}
+{% include OS-post/specs.md arch="i586, x86_64." origin="U.S.A." date="2005." ui="KDE, LXDE." shell="Bash." im="Graphical using Draklive-Install." type="Linux." base="Independent, originally forked from Mandriva Linux." rm="Rolling." tm="Linux beginners." pm="APT-RPM." %}
 
 {% include OS-post/os-min.html cpu="i586." ram="384 MB. 1024 MB recommended." hdd="3 GB. 10 GB recommended." ims="656 MB." %}
 
-{% include OS-post/os-ratings.html bf="~8. Not experience with it to be confident as to this rating, but from what I can tell it is fairly user-friendly." cmb="&lt;7." doc="5. From what I can tell its documentation is not tip-top by any means." sup="Never had to use their forum." sb="&geq;8. Never had any stability issues with it myself." mewi="5." oa="8." pm="7. Not a big fan of APT." sru="8. LXDE is available as a default desktop and is fairly lightweight." %}
+{% include OS-post/os-ratings.md bf="~8. Not experience with it to be confident as to this rating, but from what I can tell it is fairly user-friendly." cmb="&lt;7." doc="5. From what I can tell its documentation is not tip-top by any means." sup="Never had to use their forum." sb="&geq;8. Never had any stability issues with it myself." mewi="5." oa="8." pm="7. Not a big fan of APT." sru="8. LXDE is available as a default desktop and is fairly lightweight." %}
