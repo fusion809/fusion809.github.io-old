@@ -18,7 +18,7 @@ Ubuntu 15.10 has a grand total of 58,345 binary packages available in its offici
 Ubiquity is Ubuntu's official installer, that has been borrowed by many of its derivatives both official and unofficial.
 
 ### Package management
-{% include OS-post/os-shot.html image="Ubuntu-15.10-software-centre.png" float="none" description="The Ubuntu Software Center running on Ubuntu 15.10" width="1150px" %}
+{% include OS-post/os-shot.html image="Ubuntu-15.10-software-center.png" float="none" description="The Ubuntu Software Center running on Ubuntu 15.10" width="1150px" %}
 As previously mentioned Ubuntu uses the same basic command-line utilities for package management as its parent, Debian, namely APT and dpkg. Although it also features its own official graphical front-end for APT, the Ubuntu Software Center.
 
 {% include OS-post/specs.md arch="armhf, i686, powerpc, ppc64el, x86_64." origin="U.K." date="2004." shell="Bash." ui="GNOME, KDE, LXDE, MATE, Unity and Xfce." base="Debian." im="Graphical using live media." pm="APT and dpkg." rm="Fixed." tm="Linux newcomers." %}
