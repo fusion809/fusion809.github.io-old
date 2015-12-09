@@ -10,7 +10,7 @@ It is presently ranked first in terms of popularity, according to the *DistroWat
 Linux Mint uses the Ubiquity installer of Ubuntu.
 
 ### Package Management
-{% include OS-post/os-shot.html image="MintInstall-7.6.3.png" description="MintInstall 7.6.3 running on Linux Mint 17.3" width="782px" %}
+{% include OS-post/os-shot.html image="MintInstall-7.6.3.png" description="MintInstall 7.6.3 running on Linux Mint 17.3" float="none" width="782px" %}
 MintInstall is essentially a Linux Mint equivalent to the Ubuntu Software Center as just like the software centre it is a graphical front-end for APT. I personally have fairly limited experience with it, so it may have a few features that the software centre lacks that I am unaware of.
 
 {% include OS-post/specs.md arch="i386, x86_64." origin="Ireland." date="2006." shell="Bash." ui="Cinnamon, KDE, MATE and Xfce." im="Live media." type="Linux." pm="APT." rm="Fixed." base="Ubuntu (LTS)." tm="Newcomers to Linux." %}
