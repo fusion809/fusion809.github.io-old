@@ -8,13 +8,13 @@ I personally find it a distribution that is somewhere between Ubuntu and Arch Li
 
 Fedora also has a developmental release called Fedora Rawhide that can be called a bleeding-edge rolling release edition, but I would not as a bleeding-edge rolling release model means, to me, at least, that while the system may be using the latest software it only uses the latest **stable releases** of its software (or at least its system software) and not the latest **developmental releases** of its software. Rawhide uses the latest **developmental releases** of its system software (including its kernel) and because of this bugs that prevent users from booting a Rawhide installation are not uncommon.
 
-It is presently ranked 5th for popularity according to the *DistroWatch* website and there are over 21,000 binary packages in its repositories.[^4]
+It is presently ranked 5th for popularity according to the *DistroWatch* website.
 
 ### Installer
 Fedora uses the [**Anaconda**](https://fedoraproject.org/wiki/Anaconda) installer, which has been ported to a few other Linux distributions as well, including [Sabayon Linux](#sabayon-linux). According to its [GitHub repository](https://github.com/rhinstaller/anaconda) it is 87.8% written in Python, 7.9% written in C and 4% written in Bash script.
 
 ### Package Management
-As previously mentioned later releases of Fedora use DNF (from the command-line [`dnf`](/man/dnf.8.html)) as their default command-line package manager, with PackageKit being an officially-supported graphical front-end for DNF. DNF is essentially the same as yum (including the fact that it is mostly written in Python), except with faster dependency-resolution thanks to that fact it uses ZYpp's libsolv library for this. Its syntax is virtually identical to that of yum, below are some examples.
+As previously mentioned later releases of Fedora use DNF (from the command-line [`dnf`](/man/dnf.8.html)) as their default command-line package manager, with PackageKit being an officially-supported graphical front-end for DNF. DNF is essentially the same as yum (including the fact that it is mostly written in Python), except with faster dependency-resolution thanks to that fact it uses ZYpp's libsolv library for this. Its syntax is virtually identical to that of yum, below are some examples. There are over 21,000 binary packages in its repositories.[^4]
 
 ```bash
 # Install software without asking first and then clean repos and caches
