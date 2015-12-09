@@ -14,7 +14,7 @@ redirect_from:
 
 {% include OS-post/os-shot.html image="Oracle-VM-VirtualBox-5.0.10-29-11-2015.png" width="1150px" float="none" description="Oracle VM VirtualBox 5.0.10" %}
 
-As is mentioned in the [About Me](/about-me/) section of this website, I have tried quite a few Linux distributions using **Oracle VM VirtualBox**. Some I have only spent less than an hour using, but those I have spent over an hour with and feel fairly confident in my ability to review, include:
+As is mentioned in the [About Me](/about-me/) section of this website, I have tried quite a few Linux distributions and BSD derivatives using **Oracle VM VirtualBox**. Some I have only spent less than an hour using, but those I have spent over an hour with and feel fairly confident in my ability to review, include:
 
 {% include OS-post/oslist.html %}
 
