@@ -12,7 +12,7 @@ I used Ubuntu for three years on my Dell Laptop (which has 4 GB RAM, ~250 GB HDD
 
 There are several different official flavours of Ubuntu, each featuring their own desktop and/or their own set of preinstalled packages. The default flavour (which is often just called Ubuntu) features the Unity desktop, while Kubuntu, Lubuntu, Ubuntu GNOME, Ubuntu MATE and Xubuntu are the only official flavours that feature different desktops and are built on all releases of Ubuntu (both LTS and non-LTS releases). New releases are made every six months in April and October of every year, with LTS releases made in April of even-numbered years.
 
-Ubuntu 15.10 has a grand total of 58,345 binary packages available in its official repositories.[^8]
+Ubuntu 15.10 has a grand total of 58,345 binary packages available in its official repositories.[^9]
 
 ### Installer
 Ubiquity is Ubuntu's official installer, that has been borrowed by many of its derivatives both official and unofficial.

@@ -13,7 +13,7 @@ Novell signed a deal with Microsoft in 2006, which was meant to improve on compa
 openSUSE uses YaST2 for system installation as well as package management post-installation.
 
 ### Package Management
-openSUSE uses [**ZYpp**](https://github.com/openSUSE/zypper) ([`zypper`](/man/zypper.8.html) from the command-line) for package management which installs software from RPM binary packages. ZYpp (not including any of its libraries, just zypper) is written in C++ (96.1%), Perl (1.3%), Bash script (1.1%), C (0.9%), *etc.*[^4] Here is an example Bash script for automating some common actions with ZYpp:
+openSUSE uses [**ZYpp**](https://github.com/openSUSE/zypper) ([`zypper`](/man/zypper.8.html) from the command-line) for package management which installs software from RPM binary packages. ZYpp (not including any of its libraries, just zypper) is written in C++ (96.1%), Perl (1.3%), Bash script (1.1%), C (0.9%), *etc.*[^5] Here is an example Bash script for automating some common actions with ZYpp:
 ```bash
 # Install software from binary packages in available repos
 # Alternatively a URL to the RPM binary can be used as an input
