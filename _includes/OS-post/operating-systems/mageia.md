@@ -29,7 +29,7 @@ function uin {
 }
 ```
 
-{% include OS-post/specs.md arch="i586, x86_64." origin="France." date="2011" shell="Bash." ui="GNOME, KDE" im="Graphical, using live media." type="Linux." pm="urpmi." rm="Fixed." base="Mandriva Linux." tm="Users that favour stability over having the latest software." %}
+{% include OS-post/specs.md arch="i586, x86_64." origin="France." date="2011." shell="Bash." ui="GNOME, KDE." im="Graphical, using live media." type="Linux." pm="urpmi." rm="Fixed." base="Mandriva Linux." tm="Users that favour stability over having the latest software." %}
 
 {% include OS-post/os-min.md cpu="i586." ram="512 MB, 2048 MB preferred." hdd="5 GB minimum, 20 GB preferred." ims="39 MB (NET), 3.6 GB (DVD)." %}
 
