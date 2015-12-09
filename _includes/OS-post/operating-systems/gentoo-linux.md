@@ -149,6 +149,6 @@ Running the `emup` function is what gives the issues I previously mentioned in t
 
 {% include OS-post/specs.md arch="i486, i586, i686, x86_64, alpha, arm, hppa, mips, powerpc, ppc64, sparc64." origin="U.S.A." date="2002" shell="Bash" ui="Command-line." im="From live media or from stage tarballs." type="Linux." pm="Portage" rm="Rolling." tm="Advanced users, that have a lot of time on their hands and patience, and want to build their system from the ground-up." %}
 
-{% include OS-post/os-min.html cpu="i486" ram="256 MB" HDD="2.75 GB (including swap)" ims="~200 MB" %}
+{% include OS-post/os-min.md cpu="i486" ram="256 MB" HDD="2.75 GB (including swap)" ims="~200 MB" %}
 
 {% include OS-post/gentoo-ratings.md %}

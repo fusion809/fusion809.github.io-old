@@ -88,6 +88,6 @@ function yarm {
 
 {% include OS-post/specs.md arch="arm, i686, x86_64." shell="Bash." type="Linux." PMS="pacman" ui="Command-line." IM="Manual from the command-line or via unofficial shell script installers" date="2002." country="Canada." rm="Rolling." tm="Experienced users, especially those that value the latest software over system stability." %}
 
-{% include OS-post/os-min.html cpu="i686." ims="659 MB." ram="256 MB." hdd="<800 MB." %}
+{% include OS-post/os-min.md cpu="i686." ims="659 MB." ram="256 MB." hdd="<800 MB." %}
 
 {% include OS-post/os-ratings.md bf="4." cmb=">8." doc="8. Has some of the best documentation out there." sup="? Never really had to use their support forums and channels, except once when I was trying to install it manually on a VM. When I did then, there were plenty of responses to the forum post I wrote, but the general consensus of opinion was that I should not be using the system until I was a more competent Linux user." pm=">8." sru=">8." sb="7. I have found Arch disturbingly easy to inadvertently break and make unusable, but most of the time it is stable enough to use." mewi=">5. I have a decent amount of experience with this system and its more newbie-friendly derivative, Manjaro Linux." oa="8." %}
