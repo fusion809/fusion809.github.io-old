@@ -50,6 +50,8 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
 
 {% include OS-post/operating-systems/sabayon-linux.md %}
 
+{% include OS-post/operating-systems/ubuntu.md %}
+
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)
 [^2]: Source: [AUR (en) - Packages](https://aur.archlinux.org/packages)
