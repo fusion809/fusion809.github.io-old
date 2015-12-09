@@ -11,8 +11,10 @@ Manjaro is currently the 7th most popular operating system ranked, according to 
 One of the major features that distinguishes Manjaro from Arch is an automated installation process that can be performed graphically or textually. Graphically this installation can be done using the distribution-independent Calamares installer or Manjaro's own Thus installer. Textually this must be done using Manjaro's Thus installer. I have not had enough experience with Manjaro installation to really offer any real comparison between the two installers, but I have found [this blog post](http://www.zdnet.com/article/thus-versus-calamares-comparing-manjaro-15-09-installers/) from another author that seems like a decent comparison between the two.
 
 ### Package Management
+{% include OS-post/os-shot.html image="Manjaro-Linux-pamac.png" description="Pamac 2.4.3 running on Manjaro Linux" float="none" width="1150px" %}
 Like its parent it uses pacman and Yaourt for command-line package management, although the graphical front-end, [Pamac](https://github.com/manjaro/pamac) (written predominantly in [Vala](https://en.wikipedia.org/wiki/Vala_(programming_language))), which is developed by the Manjaro development team, also comes preinstalled on Manjaro. Manjaro also has the Manjaro Hardware Detection (`mhwd`) tool (which is written predominantly in C++, Bash script and C) which is developed by the Manjaro development team. Here are some example Bash scripts for simplifying the use of `mhwd`:
 ```bash
+# Install new kernel. Example use: `kernel 43` should install the 4.3 series kernel
 function kernel {
   sudo mhwd-kernel -i linux$@
 }

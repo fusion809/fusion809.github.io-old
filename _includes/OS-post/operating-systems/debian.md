@@ -47,6 +47,7 @@ function sagdb {
 }
 
 # Install software
+# The input(s) can be local packages or packages in enabled repos
 function sagi {
   sudo apt-get install -y $@
 }
@@ -54,8 +55,10 @@ function sagi {
 alias install=sagi
 
 # Install local software package(s)
-function sagli {
-  sudo dpkg -i $@
+# sudo apt-get -f install installs any missing dependencies
+# present in the currently-enabled repositories.
+function sdli {
+  sudo dpkg -i $@ && sudo apt-get -f install
 }
 
 # Remove software
