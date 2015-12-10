@@ -1,5 +1,4 @@
 ## Glossary
-{% include note.html note1="I merely study computing and related topics in my spare time, I have no formal training in technology or the associated legalities, besides doing an IT subject in grades 8-10 of high school, so while I am trying to ensure this section is as accurate as I can, I cannot guarantee its accuracy." %}
 * **&#42;nix**
   * Unix/Unix-like operating system.
 * **BE**
@@ -15,11 +14,13 @@
 * **CLIs**
   * <b>C</b>ommand-<b>l</b>ine <b>i</b>nterface<b>s</b>.
 * **Copyleft license**
-  * [Copyleft](https://en.wikipedia.org/wiki/Copyleft), which is a play on the word &ldquo;copyright&rdquo;, in the context of software licensing, refers to licenses that allow people to freely distribute copies of software licensed under their terms, as well as to make any modifications of the software they see fit and redistribute these modified versions provided they distribute these modified versions under a similar copyleft license. One of the most popular examples of a copyleft license is the [GNU General Public License](https://en.wikipedia.org/wiki/GNU_General_Public_License).
+  * [Copyleft](https://en.wikipedia.org/wiki/Copyleft), which is a play on the word &ldquo;copyright&rdquo;, in the context of software licensing, refers to licenses that allow people to freely distribute copies of software licensed under their terms, as well as to make any modifications of the software they see fit and redistribute these modified versions provided they distribute these modified versions under a similar copyleft license. One of the most popular examples of a copyleft license is the [GNU General Public License](https://en.wikipedia.org/wiki/GNU_General_Public_License) (GPL).
 * **FOSS**
   * <b>F</b>ree and <b>o</b>pen-<b>s</b>ource <b>s</b>oftware. FOSS refers to software that is **freely licensed** to be used, studied, copy, modified in anyway, and the source code is **openly shared** so that anyone with the skill and inclination is free to improve on the software should they choose, provided they conform to the requirements of the software license. FOSS is licensed under either a copyleft or permissive license or licenses in between (e.g., the [GNU Lesser General Public License](https://en.wikipedia.org/wiki/GNU_Lesser_General_Public_License)).
+* **GNU**
+  * GNU, which is a recursive acronym for **GNU is Not Unix**, is an extensive collection of software that can be used to build &#42;nix systems. This includes a kernel, GNU Hurd, although most commonly operating systems using GNU software will use the Linux kernel instead.
 * **GUI**
-  * <b>G</b>raphical <b>u</b>ser <b>i</b>nterface.
+  * <b>G</b>raphical <b>u</b>ser <b>i</b>nterface. The most notable type of GUI found on many &#42;nix systems is that of a desktop environment like Cinnamon, GNOME, KDE, LXDE, MATE, Xfce, *etc.*
 * **GUIs**
   * <b>G</b>raphical <b>u</b>ser <b>i</b>nterface<b>s</b>.
 * **Hardware**
@@ -34,7 +35,9 @@
 * **LDs**
   * <b>L</b>inux <b>d</b>istribution<b>s</b>.
 * **Linux kernel**
-  * The [Linux kernel](https://en.wikipedia.org/wiki/Linux_kernel) is a monolithic kernel originally created by and named after [Linus Torvalds](https://en.wikipedia.org/wiki/Linus_Torvalds).
+  * The [Linux kernel](https://en.wikipedia.org/wiki/Linux_kernel) is a monolithic kernel originally created by and named after Finnish computer programmer, [Linus Torvalds](https://en.wikipedia.org/wiki/Linus_Torvalds), whom at the time of its founding in 1991 was a 21-year-old computer science student. It started off as a side project by Torvalds to create an operating system for his own personal use, but has since expanded to become one of the most widely used free (licensed primarily under GPLv2) operating system kernels worldwide.
+* **Linux-libre kernel**
+  * The [Linux-libre kernel](https://en.wikipedia.org/wiki/Linux-libre) is a kernel that is essentially the Linux kernel with its proprietary binary blobs removed. These binary blobs are licensed under non-FOSS licenses and hence do not give users the freedom to study, modify and redistribute them under FOSS licenses. The Linux-libre kernel is developed as part of the GNU Project.
 * **LTS**
   * <b>L</b>ong-<b>t</b>erm <b>s</b>table/<b>s</b>upport.
 * **NET**
