@@ -12,7 +12,7 @@ The non-profit foundation that supports the development of Gentoo Linux, the Gen
 The power and versatility of Portage is best illustrated by the mere fact that Gentoo is second only to Debian in the number of architecture types it has been ported to. Portage has even been ported to non-Linux &#42;nix operating systems, including:
 * The &#42;BSDs including FreeBSD, NetBSD and OpenBSD.
 * Darwin
-* GNU (with the Herd kernel)
+* GNU (with the Hurd kernel)
 * OS X
 
 I think of Gentoo Linux as essentially a more complex, customizable and portable version of Arch Linux. See like Arch, a fresh installation has nothing but the command-line and some basic packages to it and anything more than this must be built from the ground-up by the user. Arch Linux's package manager, pacman, uses binary packages and does not give one a choice of which features of the package will be built and which will not, while Gentoo's Portage, gives total control over which features are built and which are not.

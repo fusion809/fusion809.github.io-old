@@ -1,10 +1,11 @@
 ## Glossary
+{% include note.html note1="I merely study computing and related topics in my spare time, I have no formal training in technology or the associated legalities, besides doing an IT subject in grades 8-10 of high school, so while I am trying to ensure this section is as accurate as I can, I cannot guarantee its accuracy." %}
 * **&#42;nix**
   * Unix/Unix-like operating system.
 * **BE**
   * <b>B</b>leeding <b>e</b>dge: means has the very latest software.
 * **BSD**
-  * <b>B</b>erkeley <b>S</b>oftware <b>D</b>istribution, a Unix operating system developed at the University of California, Berkeley between 1977 and 1995. The early releases of BSD were proprietary licensed, although releases from 4.3 onwards (which was made in 1986) were licensed under the permissive BSD licenses.
+  * <b>B</b>erkeley <b>S</b>oftware <b>D</b>istribution, a Unix operating system developed at the University of California, Berkeley between 1977 and 1995. The early releases of BSD were proprietary licensed, although releases from 4.3 onwards (which was made in 1986) were licensed under the permissive BSD licenses. BSD 4.4 was forked to create several operating systems (including Apple's OS X) that are still under active development today.
 * **BSDs**
   * <b>B</b>erkeley <b>S</b>oftware <b>D</b>istribution derivative<b>s</b>.
 * **Calamares**
@@ -13,34 +14,47 @@
   * <b>C</b>ommand-<b>l</b>ine <b>i</b>nterface. Also known as terminal, a way of interacting with one&#39;s OS by issuing a series of textual commands.
 * **CLIs**
   * <b>C</b>ommand-<b>l</b>ine <b>i</b>nterface<b>s</b>.
-* **Copyleft**
-  * [Copyleft](https://en.wikipedia.org/wiki/Copyleft), which is a play on the word &ldquo;copyright&rdquo;, in the context of software licensing, refers to licenses that allow people to freely distribute copies of the software, as well as to make any modifications of the software they see fit and redistribute these modified versions under a similar copyleft license. 
+* **Copyleft license**
+  * [Copyleft](https://en.wikipedia.org/wiki/Copyleft), which is a play on the word &ldquo;copyright&rdquo;, in the context of software licensing, refers to licenses that allow people to freely distribute copies of software licensed under their terms, as well as to make any modifications of the software they see fit and redistribute these modified versions provided they distribute these modified versions under a similar copyleft license. One of the most popular examples of a copyleft license is the [GNU General Public License](https://en.wikipedia.org/wiki/GNU_General_Public_License).
 * **FOSS**
-  * <b>F</b>ree and <b>o</b>pen-<b>s</b>ource <b>s</b>oftware.
+  * <b>F</b>ree and <b>o</b>pen-<b>s</b>ource <b>s</b>oftware. FOSS refers to software that is **freely licensed** to be used, studied, copy, modified in anyway, and the source code is **openly shared** so that anyone with the skill and inclination is free to improve on the software should they choose, provided they conform to the requirements of the software license. FOSS is licensed under either a copyleft or permissive license or licenses in between (e.g., the [GNU Lesser General Public License](https://en.wikipedia.org/wiki/GNU_Lesser_General_Public_License)).
 * **GUI**
   * <b>G</b>raphical <b>u</b>ser <b>i</b>nterface.
 * **GUIs**
   * <b>G</b>raphical <b>u</b>ser <b>i</b>nterface<b>s</b>.
+* **Hardware**
+  * Computer hardware consists of the physical or tangible components of a computer, including its hard disk drive (HDD), central processing unit (CPU), graphics card, *etc.*
+* **Kernel**
+  * An [operating system kernel](https://en.wikipedia.org/wiki/Kernel_(operating_system)) is a piece of system software that manages all communication between a computer's software and its hardware. It essentially converts all software input/output requests into implementable instructions for the computer's hardware. There are three major category of kernel, although one of these categories is debatable with the creator of the Linux kernel calling it simple marketing, they are:
+      * [Hybrid kernels](https://en.wikipedia.org/wiki/Hybrid_kernel) (the debatable kernel category), are as their name suggests, kernels that are a compromise between micro- and monolithic kernels, with some (but not all) system software components running in the kernel's virtual memory (or kernel space). Examples include the kernels of both OS X and the Windows NT family.
+      * [Microkernels](https://en.wikipedia.org/wiki/Microkernel) (and more extreme members of this category like nano- and pico-kernels). These are kernels that keep as little of the system software running in the kernel's virtual memory as possible. They are so called because they usually consist of significantly fewer lines of source code than corresponding monolithic kernels. This makes bug-fixing easier, although it may also reduce the performance of operating systems using these kernels. Examples include the GNU Hurd and MINIX kernels.
+      * [Monolithic kernels](https://en.wikipedia.org/wiki/Monolithic_kernel), which are kernels that keep all system software in the kernel's virtual memory, and are often reported to be superior, performance-wise than their microkernel counterparts. Examples include the FreeBSD, Linux, NetBSD, OpenBSD and Solaris kernels.
 * **LD**
-  * <b>L</b>inux <b>d</b>istribution.
+  * <b>L</b>inux <b>d</b>istribution. A type of operating system that is built on top of the Linux kernel.
 * **LDs**
   * <b>L</b>inux <b>d</b>istribution<b>s</b>.
+* **Linux kernel**
+  * The [Linux kernel](https://en.wikipedia.org/wiki/Linux_kernel) is a monolithic kernel originally created by and named after [Linus Torvalds](https://en.wikipedia.org/wiki/Linus_Torvalds).
 * **LTS**
   * <b>L</b>ong-<b>t</b>erm <b>s</b>table/<b>s</b>upport.
 * **NET**
   * Usually refers to netinstall editions. These are OS editions that contain the barebones required to install an OS using one's network (or internet) connection.
 * **OS**
-  * <b>O</b>perating <b>s</b>ystem.
+  * <b>O</b>perating <b>s</b>ystem, is essentially the pieces of system software that manages hardware and software resources and provides common services for computer programs. The most important piece of system software of any operating system is its kernel.
 * **OSs**
   * <b>O</b>perating <b>s</b>ystem<b>s</b>.
 * **Out-of-the-box**
   * The property of an operating system of being <q>out-of-the-box</q> means that as soon as the default installer (if any) has done its job and installed the system, the system should be ready to be used by the user without any further configuration or installation of software onto the system.
+* **Permissive license**
+  * [Permissive licenses](https://en.wikipedia.org/wiki/Permissive_license) are FOSS licenses that do not require that derivatives of the software licensed under their terms be released under similar FOSS licenses. Popular examples of permissive licenses include the various BSD licenses and the MIT License.
 * **PMS**
   * <b>P</b>ackage <b>m</b>agement <b>s</b>ystem.
 * **PMSs**
   * <b>P</b>ackage <b>m</b>agement <b>s</b>ystem<b>s</b>.
 * **RRM**
   * <b>R</b>olling <b>r</b>elease <b>m</b>odel. A type of operating system development model in which the system is continually developing, this is as opposed to standard release models (SRMs) which uses distinct OS versions that must be reinstalled over the previous version.
+* **Software**
+  * Software are the non-physical or tangible components of a computer, specifically data stored on a computer's hard drive, computer programs (e.g., the web browser you are using to view this blog post), software libraries, *etc.*
 * **VM**
   * <b>V</b>irtual <b>m</b>achine. Host operating systems run within virtualization software such as VirtualBox.
 * **VMs**
