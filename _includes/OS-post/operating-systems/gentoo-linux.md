@@ -155,9 +155,9 @@ Running the `emup` function is what gives the issues I previously mentioned in t
 ### Derivatives
 {% include OS-post/derivatives.md os="Gentoo" %}
 Gentoo has a few different derivatives, the most notable one is probably [Sabayon Linux](#sabayon-linux) which is covered later in this post, other notable Gentoo derivatives include:
-* [Calculate Linux](http://www.calculate-linux.org/), which I have managed to install on a VM, although I did not use it mcuh as I was turned off by Portage.
-* [Chrome OS/Chromium OS](https://www.chromium.org/chromium-os), which I have never used.
-* [Funtoo Linux](http://www.funtoo.org/Welcome), which I have also never used.
+* [Calculate Linux](http://www.calculate-linux.org/), which I have managed to install on a VM, although I did not use it much as I was turned off by Portage. It is currently ranked 77th by the *DistroWatch* website for popularity and is compatible with both i686 and x86_64 processors.
+* [Chrome OS/Chromium OS](https://www.chromium.org/chromium-os), which I have never used. It is not ranked by *DistroWatch*.
+* [Funtoo Linux](http://www.funtoo.org/Welcome), which I have also never used. It is ranked 152nd for popularity according to *DistroWatch* and supports i486, i686, x86_64 and sparc64 architectures. 
 
 {% include OS-post/specs.md arch="i486, i586, i686, x86_64, alpha, arm, hppa, mips, powerpc, ppc64, sparc64." origin="U.S.A." date="1999 (Gentoo Foundation, year of founding) or 2002 (year Gentoo 1.0 was first released). Depending on how you define it." shell="Bash." ui="Command-line." im="From live media or from stage tarballs." type="Linux." pm="Portage" rm="Rolling." tm="Advanced users, that have a lot of time on their hands and patience, and want to build their system from the ground-up." %}
 
