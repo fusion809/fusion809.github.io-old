@@ -74,7 +74,8 @@ function sagsb {
 ```
 
 ### Derivatives
-Besides [antiX](#antix), [Ubuntu](#ubuntu) and its various progeny (like [Linux Mint](#linux-mint)) Debian has several other derivatives, the only one I have managed to install on a VM is {% include OS-post/os.md os="Kali Linux" dw="kali" url="https://www.kali.org/" forum="https://forums.kali.org/" docs="https://www.kali.org/kali-linux-documentation/" d="http://www.kali.org/downloads/" bugs="https://bugs.kali.org/" %} (previously known as **BackTrack**) which is predominantly used for penetration testing and supports ARM, i386 and x86_64 processor types. 
+{% include OS-post/derivatives.md os="Debian" excluding="Ubuntu" %}
+Besides [antiX](#antix), [Ubuntu](#ubuntu) and its various progeny (like [Linux Mint](#linux-mint)) Debian has several other derivatives, the only one I have managed to install on a VM is {% include OS-post/os.md os="Kali Linux" dw="kali" url="https://www.kali.org/" forum="https://forums.kali.org/" docs="https://www.kali.org/kali-linux-documentation/" d="http://www.kali.org/downloads/" bugs="https://bugs.kali.org/" %} (previously known as **BackTrack**) which is predominantly used for penetration testing and supports ARM, i386 and x86_64 processor types.
 
 {% include OS-post/specs.md arch="arm64, armel, armhf, i386, mips, mipsel, powerpc, ppc64el, s390x, x86_64." shell="Bash." type="Linux." PMS="APT." ui="Cinnamon, GNOME, KDE, LXDE, MATE, Xfce, <i>etc</i>." IM="Live CD, DVD or USB." date="2004." country="U.S.A." rm="Fixed, approximately once every 1-3 years." tm="Individuals/organizations with a reasonable skill set, that do not require commercial support, but greatly favour system stability over how up-to-date software." %}
 

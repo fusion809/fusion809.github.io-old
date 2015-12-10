@@ -38,6 +38,13 @@ function sdyb {
 }
 ```
 
+### Derivatives
+{% include OS-post/derivatives.md os="Fedora" %}
+Fedora has quite a few derivative distributions, although nowhere near as many as Debian has. The most notable derivatives, besides [CentOS](#centos), its derivative Red Hat Enterprise Linux (RHEL) and RHEL's derivatives (like [Oracle Linux](http://distrowatch.com/table.php?distribution=oracle)) are probably:
+* [BLAG Linux And GNU](http://distrowatch.com/table.php?distribution=blag), is a British Fedora derivative that uses the Linux-libre kernel and adheres to the Free Software Foundation's requirements for a free GNU/Linux distribution.
+* [Chapeau](http://distrowatch.com/table.php?distribution=chapeau), a British Fedora derivative which I have installed on a VM. Its major distinguishing feature from Fedora is the fact that it has a more relaxed stance on package licensing terms and only supports 64-bit processors.
+* [Korora](http://distrowatch.com/table.php?distribution=korora), an Australian Fedora derivative that I have also installed on a VM. It has a few extra tools (that I have hardly even used) and its releases usually lag a few months behind the corresponding Fedora releases they are built on. Its artwork is also a distinguishing feature (which I rather like).
+
 {% include OS-post/specs.md base="Red Hat Linux" arch="armhfp, i686, x86_64. Several more were supported in F17 and F18." shell="Bash." type="Linux." PMS="DNF, PackageKit." ui="Cinnamon, GNOME, KDE, LXDE, MATE, Xfce, <i>etc</i>." IM="Live CD, DVD or USB." date="2003." country="U.S.A." rm="Fixed, approximately once 6-12 months." tm="Individuals that do not require commercial support and favour the latest system software over stability. They should preferably also have at least a few months' worth of experience with other Linux distributions, such as Ubuntu." %}
 
 {% include OS-post/os-min.md cpu="i686 @ 1 GHz." ims="676 MB." ram="1,024 MB." hdd="10 GB." %}

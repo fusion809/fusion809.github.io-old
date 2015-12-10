@@ -4,7 +4,7 @@
 * **BE**
   * <b>B</b>leeding <b>e</b>dge: means has the very latest software.
 * **BSD**
-  * <b>B</b>erkeley <b>S</b>oftware <b>D</b>istribution.
+  * <b>B</b>erkeley <b>S</b>oftware <b>D</b>istribution, a Unix operating system developed at the University of California, Berkeley between 1977 and 1995. The early releases of BSD were proprietary licensed, although releases from 4.3 onwards (which was made in 1986) were licensed under the permissive BSD licenses.
 * **BSDs**
   * <b>B</b>erkeley <b>S</b>oftware <b>D</b>istribution derivative<b>s</b>.
 * **Calamares**
@@ -13,6 +13,8 @@
   * <b>C</b>ommand-<b>l</b>ine <b>i</b>nterface. Also known as terminal, a way of interacting with one&#39;s OS by issuing a series of textual commands.
 * **CLIs**
   * <b>C</b>ommand-<b>l</b>ine <b>i</b>nterface<b>s</b>.
+* **Copyleft**
+  * [Copyleft](https://en.wikipedia.org/wiki/Copyleft), which is a play on the word &ldquo;copyright&rdquo;, in the context of software licensing, refers to licenses that allow people to freely distribute copies of the software, as well as to make any modifications of the software they see fit and redistribute these modified versions under a similar copyleft license. 
 * **FOSS**
   * <b>F</b>ree and <b>o</b>pen-<b>s</b>ource <b>s</b>oftware.
 * **GUI**
