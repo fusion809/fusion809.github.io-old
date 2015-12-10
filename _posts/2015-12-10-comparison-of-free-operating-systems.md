@@ -10,7 +10,6 @@ redirect_from:
   - /2015/12/02/comparison-of-free-operating-systems/
   - /comparison-of-free-operating-systems/
 ---
-{% include draft.html %}
 
 {% include OS-post/os-shot.html image="Oracle-VM-VirtualBox-5.0.10-29-11-2015.png" width="1150px" float="none" description="Oracle VM VirtualBox 5.0.10" %}
 
