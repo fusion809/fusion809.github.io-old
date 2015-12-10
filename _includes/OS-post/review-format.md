@@ -6,10 +6,12 @@ Each OS review will have the format:
   * &lt;Screenshot of the OS running&gt;
   * **Background**
       * Background information on the OS, such as its history, an overview of its features that distinguish it from other operating systems and how user-friendly it is. I also mention its average [*DistroWatch*](http://distrowatch.com) ranking over the past year.
-  * **Package Management**
-      * Not all OSs will have this section, but if they do, here I will discuss the OS&#39;s default PMSs and their features. Including some basic usage of the PMSs. Those that lack this section likely lack it because they share the package management system of their parent distribution (that is the distribution that they are derived from). It is important also to note that I usually avoid graphical front-ends for package management systems like the plague, because I have had some nasty experiences with them on the first Linux distribution I ever tried, Ubuntu, that were absent from the command-line.
   * **Installer**
       * This section is also optional and only included if the installer is used on multiple platforms and/or is notable with regard to its features.
+  * **Package Management**
+      * Not all OSs will have this section, but if they do, here I will discuss the OS&#39;s default PMSs and their features. Including some basic usage of the PMSs. Those that lack this section likely lack it because they share the package management system of their parent distribution (that is the distribution that they are derived from). It is important also to note that I usually avoid graphical front-ends for package management systems like the plague, because I have had some nasty experiences with them on the first Linux distribution I ever tried, Ubuntu, that were absent from the command-line.
+  * **Derivatives**
+      * Not all operating systems will have this section, but if they do I will discuss any notable derivatives of the OS, in question, that I have used but have not used enough to write a separate review for them.
   * **Specifications**
       * A list of specifications, including OS type, its parent, its package management system (PMS), default user interface and architecture support.
       * **Minimum Requirements**
