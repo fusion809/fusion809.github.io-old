@@ -41,7 +41,7 @@ function sdyb {
 ### Derivatives
 {% include OS-post/derivatives.md os="Fedora" %}
 Fedora has quite a few derivative distributions, although nowhere near as many as Debian has. The most notable derivatives, besides [CentOS](#centos), its derivative Red Hat Enterprise Linux (RHEL) and RHEL's derivatives (like [Oracle Linux](http://distrowatch.com/table.php?distribution=oracle)) are probably:
-* [BLAG Linux And GNU](http://distrowatch.com/table.php?distribution=blag), is a British Fedora derivative that uses the Linux-libre kernel and adheres to the Free Software Foundation's requirements for a free GNU/Linux distribution.
+* [BLAG Linux And GNU](http://distrowatch.com/table.php?distribution=blag), is a British Fedora derivative that uses the Linux-libre kernel and adheres to the Free Software Foundation's requirements for a free GNU/Linux distribution. I have not been able to use it as the download links on their website have experienced [link rot](https://en.wikipedia.org/wiki/Link_rot).
 * [Chapeau](http://distrowatch.com/table.php?distribution=chapeau), a British Fedora derivative which I have installed on a VM. Its major distinguishing feature from Fedora is the fact that it has a more relaxed stance on package licensing terms and only supports 64-bit processors.
 * [Korora](http://distrowatch.com/table.php?distribution=korora), an Australian Fedora derivative that I have also installed on a VM. It has a few extra tools (that I have hardly even used) and its releases usually lag a few months behind the corresponding Fedora releases they are built on. Its artwork is also a distinguishing feature (which I rather like).
 

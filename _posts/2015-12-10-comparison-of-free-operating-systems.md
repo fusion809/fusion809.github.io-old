@@ -14,7 +14,7 @@ redirect_from:
 
 {% include OS-post/os-shot.html image="Oracle-VM-VirtualBox-5.0.10-29-11-2015.png" width="1150px" float="none" description="Oracle VM VirtualBox 5.0.10" %}
 
-{% include note.md note2="I merely study computing and related topics in my spare time, I have no formal training in technology or the associated legalities, so while I am trying to ensure this post (especially the glossary section) is as accurate as I can, I cannot guarantee its accuracy. If you have any corrections or edit recommendations please forward them to my email address." note1="Hyperlinks to third-party resources (including Wikipedia) that I cannot guarantee the accuracy are included in this article." %}
+{% include OS-post/intro-note.html %}
 
 As is mentioned in the [About Me](/about-me/) section of this website, I have tried quite a few Linux distributions and BSD derivatives using **Oracle VM VirtualBox**. Some I have only spent less than an hour using, but those I have spent over an hour with and feel fairly confident in my ability to review, include:
 
