@@ -17,4 +17,4 @@ As previously mentioned PCLinuxOS uses APT-RPM for package management, with Syna
 
 {% include OS-post/os-min.md cpu="i586." ram="384 MB. 1024 MB recommended." hdd="3 GB. 10 GB recommended." ims="656 MB." %}
 
-{% include OS-post/os-ratings.md bf="~8. Not enough experience with it to be confident as to this rating, but from what I can tell it is fairly user-friendly." cmb="&lt;7." doc="5. From what I can tell its documentation is not tip-top by any means." sup="Never had to use their forum." sb="&geq;8. Never had any stability issues with it myself." mewi="5." oa="8." pm="7." sru="8. LXDE is available as a default desktop and is fairly lightweight." %}
+{% include OS-post/os-ratings.md bf="~8. Not enough experience with it to be confident as to this rating, but from what I can tell it is fairly user-friendly." cmb="&lt;7." doc="5. From what I can tell its documentation is not tip-top by any means." sup="? Never had to use their forum." sb="&geq;8. Never had any stability issues with it myself." mewi="5." oa="8." pm="7." sru="8. LXDE is available as a default desktop and is fairly lightweight." %}
