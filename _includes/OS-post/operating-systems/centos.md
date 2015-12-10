@@ -42,7 +42,7 @@ function yrm {
 ```
 
 ### Derivatives
-{% include OS-post/derivatives.md os="centos" %}
+{% include OS-post/derivatives.md os="CentOS" %}
 CentOS has a few derivatives of its own and there are a few derivatives of its most notable derivative, Red Hat Enterprise Linux (RHEL). Besides RHEL and its derivatives there is very little I can comment on CentOS's derivatives as I have not used any of them or heard anything notable about them. The two RHEL derivatives I know anything about are [Scientific Linux](https://en.wikipedia.org/wiki/Scientific_Linux) and [Oracle Linux](https://en.wikipedia.org/wiki/Oracle_Linux), which while I have not used them I do know a little about their reputation. Scientific Linux, as its name suggests, is primarily targeted towards scientific computing and is co-developed by Fermi National Accelerator Laboratory and the European Organization for Nuclear Research (CERN) and is available free of charge. Oracle Linux is more oriented towards businesses that potentially need paid support (even though Oracle Linux itself is free) and an assurance of system stability.
 
 {% include OS-post/specs.md arch="x86_64." shell="Bash." type="Linux." PMS="yum" ui="GNOME, KDE." IM="From live media." date="2004." country="U.S.A." rm="Fixed." tm="Individuals and organizations that place great importance on system stability, yet either cannot afford or do not want paid support from Red Hat." base="Fedora, RHEL." %}
