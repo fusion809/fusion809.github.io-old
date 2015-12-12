@@ -11,12 +11,14 @@ Often, on this blog, I write posts regarding installing software with Sabayon's 
 This post will cover some of the basics of using Entropy and Portage and how to use them together, in the safest way possible. It will also cover other related topics like using Layman to add overlays. You will probably notice that the command-line is featured heavily in this article, with little mention (usually all they will get is about a sentence mention each, if they are really notable) of graphical user interface (GUI) front-ends for these programs, this is because I tend to find command-line front-ends for package managers are more stable than their graphical counterparts.
 
 {% include toc.html %}
-##Preliminary Information
+## Preliminary Information
 Entropy, Layman and Portage are all written in Python, Bash script and to smaller extents other programming languages like C. [Entropy](#Entropy) is maintained by Fabio Erculiani and other developers of Sabayon, while [Layman](#Layman) and [Portage](#Portage) are both maintained by the Gentoo community. This section will cover some of the preliminary information for each of these programs, including their command-line syntax, so as to make the rest of this post easier to understand.
 
 {% include PMS/Portage.md %}
 
 {% include PMS/ebuilds.md %}
+
+{% include PMS/ebuild-writing.md %}
 
 {% include PMS/Layman.md %}
 
@@ -24,14 +26,14 @@ Entropy, Layman and Portage are all written in Python, Bash script and to smalle
 
 {% include PMS/mixing-entropy-and-portage.md %}
 
-##The Algorithm
+## The Algorithm
 If you come across a program you want to install on your Sabayon machine (and you know it is compatible with Linux systems) the following is an algorithm I would suggest you use to install it.
 {% include PMS/algorithm.html %}
 
-##Examples
+## Examples
 {% include PMS/openra.md %}
 {% include PMS/supertux.md %}
 
-##Footnotes
+## Footnotes
 [^1]: Specifically the [emerge.1.html](/man/emerge.1.html) manpage
 [^2]: Source: [Entropy releases before 0.6.9](https://github.com/Sabayon/entropy/releases?after=0.6.9)
