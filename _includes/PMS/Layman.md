@@ -12,11 +12,11 @@ As with emerge, I am not going to cover every option and action available for la
 {% include coder.html line1="layman --add=sabayon" %}
 or in shortened notation:
 {% include coder.html line1="layman -a sabayon" %}
-It is important to note that while this technique will add the `sabayon` overlay to one's machine not all overlays can be added this way, as some overlays are not within Layman's default list of available overlays (which I will henceforth refer to as the **reference list**). To view the reference list, run:
+It is important to note that while this technique will add the `sabayon` overlay to one's machine not all overlays can be added this way, as some overlays are not within Layman's default list of available overlays (which I will henceforth refer to as the **remote list**). To view the remote, run:
 {% include coder.html line1="layman -L" %}
 while to see the list of overlays currently installed, locally, on your machine run:
 {% include coder.html line1="layman -l" %}
-To add a new overlay that is not within the reference list, run:
+To add a new overlay that is not within the Layman remote list, run:
 {% include coder.html line1="layman -o &lt;URL of repository XML file&gt; -f -a &lt;overlay name&gt;" %}
 {% include PMS/table3-options-for-layman.html %}
 <br/>
