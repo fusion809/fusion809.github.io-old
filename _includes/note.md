@@ -1,5 +1,4 @@
-<div class="note">
-
+{% capture my_content %}
 **NOTE:**
 * *{{ include.note1 }}*
 {% if include.note2 %}
@@ -20,15 +19,17 @@
 * *{{ include.note9 }}*
 {% if include.note10 %}
 * *{{ include.note10 }}*
-  {% endif %}
-  {% endif %}
-  {% endif %}
-  {% endif %}
-  {% endif %}
-  {% endif %}
-  {% endif %}
-  {% endif %}
-  {% endif %}
-</ul>
+{% endif %}
+{% endif %}
+{% endif %}
+{% endif %}
+{% endif %}
+{% endif %}
+{% endif %}
+{% endif %}
+{% endif %}
+{% endcapture %}
+<div class="note">
+{{ my_content | markdownify }}
 </div>
 <br/>
