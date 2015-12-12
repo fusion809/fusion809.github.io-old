@@ -32,229 +32,9 @@ This can be confusing to users not familiar with the formatting used by Gentoo's
 What is in square-brackets (`[...]`) are optional parts of the command (that is, they can be omitted) and when you are writing an actual command you omit the square brackets and substitute the word inside with any of a set of possible values it can take on. Some (not all, I do not even understand them all!) possible values *options* and *action* can take on are covered in the tables below. Multiple options can be combined with certain actions, often using the shortened notation. For example, to combine the ask and verbose options when emerging GNU Octave, one can run the shortened form <code><span class="coder">root #</span> &nbsp;emerge -av sci-mathematics/octave</code> or the full-lengthed form <code><span class="coder">root #</span> &nbsp;emerge --ask --verbose sci-mathematics/octave</code>. The vertical lines or pipes, as they can also be called, which is `|`, in (1) means the options separated by it and between the square brackets are mutually-exclusive options (that is, you either pick one or you pick none, depending on what you want to do). To save time, I will call the following part of (1) &quot;**input**&quot;:
 <div class="code">[<em>ebuild</em> | <em>tbz2file</em> | <em>file</em> | <em>@set</em> | <em>atom</em>]</div>
 **Sets** (`@set` in the "input") are essentially a useful way of specifying a large group of packages. There are six sets found in a default install of Sabayon, more can be created by users with root access by them editing files in the directory, `/etc/portage/sets`. Running {% include coders.html line1="emerge --list-sets" %} should list all available sets. **ebuilds** are just the names of packages you want to install. At a bare minimum they should be the package's name (case-sensitive), without its category (e.g., wordpress for www-apps/wordpress), but sometimes specifying a package's name without its category leaves some ambiguity (that is, there may be more than one package in the Portage Tree or unofficial overlays added with Layman, that has the name specified), so it is often safer to specify the category also. Some people may want to specify the specific package version they want too, to do this add an equal sign before the category and specify the package version after the package's name, for example running {% include coders.html line1="emerge =sys-apps/portage-2.2.20" %} should install Portage version 2.2.20. **Files** are files that have been created by installed packages. **tbz2file**, as one can probably guess are any binary packages created by emerge itself, in the `.tbz2` file format that one wishes to install. **Atoms** (`atom`) are essentially the same as ebuilds, only with bounds on their version numbers specified. For example, {% include coders.html line1="emerge &lt;dev-lang/python-2.0" %} should install the latest version of Python available before version 2.0.
-<table style="width: 100%; border: 1px; padding: 1em; vertical-align: middle;"><caption><strong>Table 1: Options for Emerge</strong></caption>
-<tbody>
-<tr class="green">
-<td class="title" style="width: 240px;">Long</td>
-<td class="title">Short</td>
-<td class="title" style="width: 660px;">Meaning</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--ask</div></td>
-<td class="green"><code>-a</code></td>
-<td class="green">Ask before running the action.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--autounmask [y|n]</div></td>
-<td class="green">N/A</td>
-<td class="green">This option is enabled by default and it basically allows emerge to unmask packages as required and write changes for package.use. Possible forms this option can take on are <code>--autounmask=y</code>, <code>--autounmask=n</code> (which will disable this option and unmasking/package.use changes will not occur) or <code>--autounmask</code>.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--autounmask-write [y|n]</div></td>
-<td class="green">N/A</td>
-<td class="green">This option is similar to <code>--autounmask</code>, except it can write to package.use and other configuration files directly.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--buildpkg [y|n]</div></td>
-<td class="green"><code>-b</code></td>
-<td class="green">By default this option is disabled, but when enabled it causes emerge to install the package(s) and it also creates binary package(s) from the installed package(s) (file format: <code>.tbz2</code>) in <strong>PKGDIR</strong> (which is specified by <code>/etc/portage/make.conf</code>, by default it is <code>/usr/portage/packages</code>).</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--buildpkgonly</div></td>
-<td class="green"><code>-B</code></td>
-<td class="green">This option, which is not enabled by default, will only create binary package(s) and not install the package(s) specified to it.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--changed-use</div></td>
-<td class="green"><code>-U</code></td>
-<td class="green">Tells emerge to include installed packages where USE flags have changed since installation.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--debug</div></td>
-<td class="green"><code>-d</code></td>
-<td class="green">Show more detailed debugging information.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--deep</div></td>
-<td class="green"><code>-D</code></td>
-<td class="green">With this option emerge will look at the entire (or "deep") dependency tree (not just the immediate dependencies of the package it is emerging, which it does by default) for updates.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--emptytree</div></td>
-<td class="green"><code>-e</code></td>
-<td class="green">Reinstalls package and all deep dependencies.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--keep-going [ y | n ]</div></td>
-<td class="green">N/A</td>
-<td class="green">Continue as much as possible after an error.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--newuse</div></td>
-<td class="green"><code>-N</code></td>
-<td class="green">Reinstall packages that have had their USE flags changed since installation. This option is more comprehensive in the packages it reinstalls than <code>--changed-use</code>.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--nodeps</div></td>
-<td class="green"><code>-O</code></td>
-<td class="green">Installs specified packages, without installing any dependencies. This option may cause package breakage.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--noreplace</div></td>
-<td class="green"><code>-n</code></td>
-<td class="green">Skips packages that are already installed.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--oneshot</div></td>
-<td class="green"><code>-1</code></td>
-<td class="green">It will emerge the package as normal, but will not add the packages to the world file for later updating.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--onlydeps</div></td>
-<td class="green"><code>-o</code></td>
-<td class="green">Install the specified package(s) dependencies, only. This is the emerge equivalent to APT's <code>apt-get build-dep</code>.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--pretend</div></td>
-<td class="green"><code>-p</code></td>
-<td class="green">This option causes emerge to display which packages would have been emerged, had the pretend option not been used.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--quiet [y|n]</div></td>
-<td class="green"><code>-q</code></td>
-<td class="green">This option, although results do vary, should minimize the output provided by emerge.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--update</div></td>
-<td class="green"><code>-u</code></td>
-<td class="green">Updates packages to the best version available (not necessarily the latest, however).</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--verbose</div></td>
-<td class="green"><code>-v</code></td>
-<td class="green">This option causes more details to be given from ask and pretend commands. These details include GNU info errors and (for the pretend command) it will print USE flags.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--with-bdeps [y|n]</div></td>
-<td class="green">N/A</td>
-<td class="green">During dependency calculations, build time dependencies that are not strictly required will be included. For installation actions this defaults to n, while for depclean actions this defaults to y.</td>
-</tr>
-</tbody>
-</table>
-<table class="green" style="width: 100%; border: 1px; padding: 1em;"><caption><strong>Table 2: Action values for Emerge</strong></caption>
-<tbody>
-<tr class="green">
-<td class="title" style="width: 130px;">Long</td>
-<td class="title" style="width: 50px;">Short</td>
-<td class="title" style="width: 50px;"><abbr title="Input-required?">IR</abbr>?</td>
-<td class="title" style="width: 670px;">Meaning</td>
-</tr>
-<tr class="green">
-<td class="green">None</td>
-<td class="green">N/A</td>
-<td style="background-color: green; color: white; text-align: center; vertical-align: middle;">Yes</td>
-<td class="green">If no action is specified then emerge will merge all packages specified and their dependencies.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--config</div></td>
-<td class="green">N/A</td>
-<td style="background-color: green; color: white; text-align: center; vertical-align: middle;">Yes</td>
-<td class="green">Run specific configuring processes that must be done after the package is emerged. The best example for this I can provide are the MariaDB and MySQL packages. Configuring these packages is required in order to set up a database with them.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--depclean</div></td>
-<td class="green"><code>-c</code></td>
-<td style="background-color: green; color: white; text-align: center; vertical-align: middle;">Yes</td>
-<td class="green">Removes packages not associated with any merged package.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--help</div></td>
-<td class="green"><code>-h</code></td>
-<td style="background-color: red; color: white; text-align: center; vertical-align: middle;">No</td>
-<td class="green">Displays some basic syntactic information, although if you really want some documentation for emerge from the command-line use <code>man emerge</code>.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--prune</div></td>
-<td class="green"><code>-P</code></td>
-<td style="background-color: green; color: white; text-align: center; vertical-align: middle;">Yes</td>
-<td class="green">Remove all but the highest installed version of the package specified.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--regen</div></td>
-<td class="green">N/A</td>
-<td style="background-color: red; color: white; text-align: center; vertical-align: middle;">No</td>
-<td class="green">Causes portage to check and update the dependency cache of all ebuilds in the portage tree.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--resume</div></td>
-<td class="green"><code>-r</code></td>
-<td style="background-color: red; color: white; text-align: center; vertical-align: middle;">No</td>
-<td class="green">Resumes the last merge, if said merge was cancelled due to errors.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--search</div></td>
-<td class="green"><code>-s</code></td>
-<td style="background-color: green; color: white; text-align: center; vertical-align: middle;">Yes</td>
-<td class="green">Search for packages who's name matches with the supplied case-insensitive string.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--searchdesc</div></td>
-<td class="green"><code>-S</code></td>
-<td style="background-color: green; color: white; text-align: center; vertical-align: middle;">Yes</td>
-<td class="green">Search the Portage tree for string in package names and descriptions.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--sync</div></td>
-<td class="green">N/A</td>
-<td style="background-color: red; color: white; text-align: center; vertical-align: middle;">No</td>
-<td class="green">Updates all the ebuilds in the Portage Tree. You should do this once a week, at least. The first time you do it, this will take quite some time (potentially up to a few hours). To save time the first time you do this you may wish to run <code>emerge-webrsync</code> which will download the Portage Tree as a tarball.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--unmerge</div></td>
-<td class="green"><code>-C</code></td>
-<td style="background-color: green; color: white; text-align: center; vertical-align: middle;">Yes</td>
-<td class="green">Unmerges (that is, uninstalls) software packages specified.
-<strong>WARNING: This command ignores packages that may depend on the unmerged packages.</strong> For a more dependency-conscious and hence safer version of this command use the <code>--depclean</code> or <code>--prune</code> options.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--version</div></td>
-<td class="green"><code>-V</code></td>
-<td style="background-color: red; color: white; text-align: center; vertical-align: middle;">No</td>
-<td class="green">Display the version number of emerge.</td>
-</tr>
-</tbody>
-</table>
+{% include PMS/table1-options-for-emerge.html %}
+<br/>
+{% include PMS/table2-actions-for-emerge.html %}
 ###Links
 ####Handbook
 * [AMD64 Handbook](https://wiki.gentoo.org/wiki/Handbook:AMD64/Working/Portage)
@@ -264,7 +44,6 @@ What is in square-brackets (`[...]`) are optional parts of the command (that is,
 * [EBUILD(5) Manpage](/man/ebuild.5.html)
 * [EMERGE(1) Manpage](/man/emerge.1.html)
 * [PORTAGE(5) Manpage](/man/portage.5.html)
-
 
 ###Layman
 {% include links.html gp="Layman" gw="Layman" package="app-portage/layman" program="Layman" link="http://layman.sourceforge.net/" gr="gentoo/layman" %} is a command-line tool for managing Portage overlays. It can be installed with Portage (from the OGO) using the command:
@@ -286,109 +65,15 @@ while to see the list of overlays currently installed, locally, on your machine 
 {% include coder.html line1="layman -l" %}
 To add a new overlay that is not within the reference list, run:
 {% include coder.html line1="layman -o &lt;URL of repository XML file&gt; -f -a &lt;overlay name&gt;" %}
-<table class="green" style="width: 100%; border: 1px; padding: 1em; vertical-align: middle;"><caption><strong>Table 3: Options for Layman</strong></caption>
-<tbody>
-<tr class="green">
-<td class="title" style="width: 150px;">Long</td>
-<td class="title">Short</td>
-<td class="title">Meaning</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--nocolor</div></td>
-<td class="green"><code>-N</code></td>
-<td class="green">Remove colour codes from Layman output.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--quiet</div></td>
-<td class="green"><code>-q</code></td>
-<td class="green">Reduce output.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--quietness</div></td>
-<td class="green"><code>-Q</code></td>
-<td class="green">Takes a numerical value between 0 and 4 to determine the amount of output provided. 0 means no output, 4 means full output.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--verbose</div></td>
-<td class="green"><code>-v</code></td>
-<td class="green">Makes Layman give more output details, such as a description of the overlays you download.</td>
-</tr>
-</tbody>
-</table>
-<table class="green" style="width: 100%; border: 1px; padding: 1em; vertical-align: middle;"><caption><strong>Table 4: Actions for Layman</strong></caption>
-<tbody>
-<tr class="green">
-<td class="title" style="width: 150px;">Long</td>
-<td class="title">Short</td>
-<td class="title">Meaning</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--add</div></td>
-<td class="green"><code>-a</code></td>
-<td class="green">Add overlay.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--delete</div></td>
-<td class="green"><code>-d</code></td>
-<td class="green">Delete overlay. Specify "ALL" to delete all locally installed overlays.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--disable</div></td>
-<td class="green"><code>-D</code></td>
-<td class="green">Disable overlay. Specify "ALL" to disable all locally-installed overlays.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--info</div></td>
-<td class="green"><code>-i</code></td>
-<td class="green">Display all available information about the overlay.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--list</div></td>
-<td class="green"><code>-L</code></td>
-<td class="green">List all available overlays. Note that these overlays are not necessarily installed on your system.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--list-local</div></td>
-<td class="green"><code>-l</code></td>
-<td class="green">List all locally-installed overlays.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--readd</div></td>
-<td class="green"><code>-r</code></td>
-<td class="green">Re-add overlay(s) specified, to re-add all overlays, use the input "ALL".</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--sync</div></td>
-<td class="green"><code>-s</code></td>
-<td class="green">Synchronize (or in other words, update) overlay(s) specified. To sync them all use the input "ALL" or use the
-<code>-S</code> option mentioned below.</td>
-</tr>
-<tr class="green">
-<td class="green">
-<div class="code">--sync-all</div></td>
-<td class="green"><code>-S</code></td>
-<td class="green">Update all overlays.</td>
-</tr>
-</tbody>
-</table>
+{% include PMS/table3-options-for-layman.html %}
+<br/>
+{% include PMS/table4-actions-for-layman.html %}
 ### Entropy
 {% include image.html image="Rigo-Application-Browser.png" width="1366" height="738" float="none" description="Rigo Application Browser running under KDE Plasma 5" %}
 
-{% include links.html package="sys-apps/entropy" program="Entropy" gr="Sabayon/entropy" sw="En:Entropy" link="/man/equo.pdf" pdf="PDF" %}, is a PMS that was specifically designed for Sabayon by Fabio Erculiani, the original creator of Sabayon. Its first unstable release to be added to Sabayon was in July 2008 when {% include forum.html f="60" t="13917" link="Sabayon 3.5 was released" %} and its first stable release to be added to Sabayon was made in May 2011 with the [release of Sabayon 6](https://lxnay.wordpress.com/2011/05/11/sabayon-6-entropy-1-a-new-era-is-about-to-come/). Unlike Portage which is primarily designed to install source code packages (although it can also install binary packages), Entropy is designed to work with binary packages only. Binary packages take less time than source code packages to install and requires less user know-how and input. Entropy is also unique in that it has two official front-ends: command-line/textual (**Equo**) and graphical (**Rigo**). I personally favour using the command-line for installing packages on Linux distributions, because in my experience graphical installers are more prone to crashes during installation than their command-line/textual counterparts.
+{% include links.html package="sys-apps/entropy" program="Entropy" gr="Sabayon/entropy" sw="En:Entropy" link="/man/equo.pdf" pdf="PDF" %}, is a PMS that was specifically designed for Sabayon by Fabio Erculiani, the original creator of Sabayon. Its first unstable release to be added to Sabayon was in July 2008 when {% include forum.html f="60" t="13917" link="Sabayon 3.5 was released" %} and its first stable release to be added to Sabayon was made in 2012. Unlike Portage which is primarily designed to install source code packages (although it can also install binary packages), Entropy is designed to work with binary packages only. Binary packages take less time than source code packages to install and requires less user know-how and input. Entropy is also unique in that it has two official front-ends: command-line/textual (**Equo**) and graphical (**Rigo**). I personally favour using the command-line for installing packages on Linux distributions, because in my experience graphical installers are more prone to crashes during installation than their command-line/textual counterparts.
 
-Compared to Portage, Entropy is far more simple to use, if you go to the Entropy Store you can see the USE flags used to compile the software packages provided by Entropy, as all packages provided by Entropy had to be compiled with Portage on another machine first (in `.tbz2` format). Entropy contains packages from the Portage Tree and packages from Sabayon's own overlays, which are called `sabayon` and `sabayon-distro`, respectively. Entropy is also safer to use and support for using Entropy to install packages is far better than support for Portage-installed packages on the [Sabayon forums](https://forum.sabayon.org/).
+Compared to Portage, Entropy is far more simple to use, if you go to the Entropy Store you can see the USE flags used to compile the software packages provided by Entropy, as all packages provided by Entropy had to be compiled with Portage on another machine first (in `.tbz2` format) and then convert from a Portage package to an Entropy package with {% include coders.html line1="equo pkg inflate &lt;PACKAGE&gt;"%}. Entropy contains packages from the Portage Tree and packages from Sabayon's own overlays, which are called [`sabayon`](https://github.com/Sabayon/for-gentoo) and [`sabayon-distro`](https://github.com/Sabayon/sabayon-distro), respectively. Entropy is also safer to use and support for using Entropy to install packages is far better than support for Portage-installed packages on the [Sabayon forums](https://forum.sabayon.org/).
 
 ####Equo Syntax
 The generalized syntax for Entropy's command-line front-end, Equo, is:
@@ -396,129 +81,9 @@ The generalized syntax for Entropy's command-line front-end, Equo, is:
 Some (but by no stretch of the imagine all) options and actions for Equo are listed in tables 4 and 5, below. Note some options are only available for certain actions, for details see the man pages for Equo and its various actions (e.g., run `man equo install` for the equo install manual). One action and another option that are not covered in these tables, that I felt were worthwhile mentioning, are repo and mirrorsort, respectively. The command:
 {% include coder.html line1="equo repo mirrorsort &lt;REPO&gt;" %}
 where `<REPO>` is the name of an Entropy repository (e.g., `sabayonlinux.org`, `sabayon-weekly` or `sabayon-limbo`), can be used to optimize the order of preference for the repository's mirrors, hence, potentially, accelerating the process by which Sabayon downloads software packages.
-<table class="green" style="width: 100%; border: 1px; padding: 1em; vertical-align: middle;"><caption><strong>Table 5: Options for Equo</strong></caption>
-<tbody>
-<tr class="green">
-<td class="title" style="width: 130px;">Option</td>
-<td class="title" style="width: 660px;">Meaning</td>
-</tr>
-<tr class="green">
-<td class="green"><code>-a</code>, <code>--ask</code></td>
-<td class="green">Ask before performing actions. For example <code>equo i -a [ebuild]</code> will ask you before it will install the package specified by the <code>ebuild</code> argument.</td>
-</tr>
-<tr class="green">
-<td class="green"><code>--deep</code></td>
-<td class="green">Reinstall dependencies, even if unnecessary.</td>
-</tr>
-<tr class="green">
-<td class="green"><code>-h</code>, <code>--help</code>, <code>help</code></td>
-<td class="green">Print help information.</td>
-</tr>
-<tr class="green">
-<td class="green"><code>-o</code></td>
-<td class="green">If given to the "install" action this option will cause only the package's dependencies to be installed. This is the equivalent to running <code>apt-get build-dep</code> for APT.</td>
-</tr>
-<tr class="green">
-<td class="green"><code>-p</code>, <code>--pretend</code></td>
-<td class="green">Show what would be done, had this option not been given.</td>
-</tr>
-<tr class="green">
-<td class="green"><code>--purge</code></td>
-<td class="green">(for upgrade) it will remove unmaintained packages, if any.</td>
-</tr>
-<tr class="green">
-<td class="green"><code>-q</code>, <code>--quiet</code></td>
-<td class="green">Quiet (reduce) output.</td>
-</tr>
-<tr class="green">
-<td class="green"><code>-v</code>, <code>--verbose</code></td>
-<td class="green">Verbose output.</td>
-</tr>
-</tbody>
-</table>
+{% include PMS/table5-equo-options.html %}
 <br/>
-<table class="green" style="width: 100%; border: 1px; padding: 1em; vertical-align: middle;"><caption><strong>Table 6: Actions for Equo</strong></caption>
-<tbody>
-<tr class="green">
-<td class="title">Long</td>
-<td class="title">Short</td>
-<td class="title">Meaning</td>
-<td class="title" style="width: 140px;">Manpage</td>
-</tr>
-<tr class="green">
-<td class="green"><code>cleanup</code></td>
-<td class="green">N/A</td>
-<td class="green">Remove downloaded packages and clean temporary directories.</td>
-<td class="green">{% include man.html man="equo-cleanup.1.html" %}</td>
-</tr>
-<tr class="green">
-<td class="green"><code>config</code></td>
-<td class="green">N/A</td>
-<td class="green">Configure installed packages.</td>
-<td class="green">{% include man.html man="equo-config.1.html" %}</td>
-</tr>
-<tr class="green">
-<td class="green"><code>deptest</code></td>
-<td class="green"><code>dt</code></td>
-<td class="green">Look for unsatisfied dependencies.</td>
-<td class="green">{% include man.html man="equo-deptest.1.html" %}</td>
-</tr>
-<tr class="green">
-<td class="green"><code>install</code></td>
-<td class="green"><code>i</code></td>
-<td class="green">Install software.</td>
-<td class="green">{% include man.html man="equo-install.1.html" %}</td>
-</tr>
-<tr class="green">
-<td class="green"><code>libtest</code></td>
-<td class="green"><code>lt</code></td>
-<td class="green">Look for missing libraries required by other packages.</td>
-<td class="green">{% include man.html man="equo-libtest.1.html" %}</td>
-</tr>
-<tr class="green">
-<td class="green"><code>mask</code></td>
-<td class="green">N/A</td>
-<td class="green">Mask packages given as input.</td>
-<td class="green">{% include man.html man="equo-mask.1.html" %}</td>
-</tr>
-<tr class="green">
-<td class="green"><code>remove</code></td>
-<td class="green"><code>rm</code></td>
-<td class="green">Remove packages given as input.</td>
-<td class="green">{% include man.html man="equo-remove.1.html" %}</td>
-</tr>
-<tr class="green">
-<td class="green"><code>rescue</code></td>
-<td class="green">N/A</td>
-<td class="green">Tools to rescue system</td>
-<td class="green">{% include man.html man="equo-rescue.1.html" %}</td>
-</tr>
-<tr class="green">
-<td class="green"><code>search</code></td>
-<td class="green"><code>s</code></td>
-<td class="green">Search for packages in repositories.</td>
-<td class="green">{% include man.html man="equo-search.1.html" %}</td>
-</tr>
-<tr class="green">
-<td class="green"><code>unmask</code></td>
-<td class="green">N/A</td>
-<td class="green">Unmask packages given as input.</td>
-<td class="green">{% include man.html man="equo-unmask.1.html" %}</td>
-</tr>
-<tr class="green">
-<td class="green"><code>update</code></td>
-<td class="green"><code>up</code></td>
-<td class="green">Update repositories.</td>
-<td class="green">{% include man.html man="equo-update.1.html" %}</td>
-</tr>
-<tr class="green">
-<td class="green"><code>upgrade</code></td>
-<td class="green"><code>u</code></td>
-<td class="green">Upgrade packages that have been updated (in the software repositories) since they were installed, or since you last ran this command.</td>
-<td class="green">{% include man.html man="equo-upgrade.1.html" %}</td>
-</tr>
-</tbody>
-</table>
+{% include PMS/table6-equo-actions.html %}
 
 ##Mixing Entropy with Portage
 By default Entropy and Portage act fairly independently of one another. In order for you to use them together, you must tell Entropy that you are also using Portage to install packages by running:
@@ -536,7 +101,7 @@ Packages installed with Entropy are almost always safer (less likely to lead to 
 
 ##The Algorithm
 Occasionally, while browsing the internet, I find a program I would like to install on my Sabayon machine. Here is the algorithm I follow to install it:
-{% include algorithm.html %}
+{% include PMS/algorithm.html %}
 ##Examples
 
 ###OpenRA
@@ -545,7 +110,7 @@ Occasionally, while browsing the internet, I find a program I would like to inst
 {% include links.html package="games-strategy/openra" program="OpenRA" link="http://www.openra.net/" wp="OpenRA" gr="OpenRA/OpenRA" wiki="https://github.com/OpenRA/OpenRA/wiki" %} is a free and open-source futuristic strategy game. For me, it reminds me of one of my favourite Windows games, [Outlive](https://en.wikipedia.org/wiki/Outlive). OpenRA is unusual in that it is not available in the Entropy Store, although a [few ebuilds](https://packages.gentoo.org/packages/games-strategy/openra) for it do exist in the Portage Tree, although it is worthwhile mentioning that these ebuilds are often out of date. For example, as of 26 November 2015 the latest ebuild available in the Portage Tree is for version 20141029 (note how this number represents the date of the release, 29 October 2014), while the latest release is 20150919 (released 19 September 2015). There are unofficial overlays (such as [games-overlay](https://github.com/hasufell/games-overlay)) that contain more recent versions of OpenRA, although it was not until 19 October 2015 that an ebuild for 20150919 was added to this overlay.
 
 To install the latest version available of OpenRA on Sabayon one has four main options:
-{% include openra.html %}
+{% include PMS/openra.html %}
 
 ####External links
 * [Download Page](http://www.openra.net/download/)
