@@ -16,6 +16,8 @@ Entropy, Layman and Portage are all written in Python, Bash script and to smalle
 
 {% include PMS/Portage.md %}
 
+{% include PMS/ebuilds.md %}
+
 {% include PMS/Layman.md %}
 
 {% include PMS/Entropy.md %}
