@@ -1,5 +1,5 @@
 {% capture my_content %}
-**NOTE:**
+<div class="note-title">NOTE</div>
 * *{{ include.note1 }}*
 {% if include.note2 %}
 * *{{ include.note2 }}*
@@ -32,4 +32,3 @@
 <div class="note">
 {{ my_content | markdownify }}
 </div>
-<br/>
