@@ -1,10 +1,12 @@
 ## Glossary
 * **&#42;nix**
   * Unix/Unix-like operating system.
+* **Bash**
+  * The <b>B</b>ourne-<b>A</b>gain <b>Sh</b>ell is the most popular Unix shell around today. It is free and developed as part of the GNU Project. Any Bash script snippet shown in this post is designed to be added to one's `.bashrc` file (which is found in the user's home directory) so that after one run's `source ~/.bashrc` (which will cause Bash to re-read this file) one can run the functions defined in the script from one's favourite terminal. For example, if you add the Bash script for Debian package management to your `~/.bashrc` file and run `source ~/.bashrc` then running `update` from a terminal emulator it should upgrade all packages on your system. 
 * **BE**
   * <b>B</b>leeding <b>e</b>dge: means has the very latest software.
 * **BSD**
-  * <b>B</b>erkeley <b>S</b>oftware <b>D</b>istribution, a Unix operating system developed at the University of California, Berkeley between 1977 and 1995. The early releases of BSD were proprietary licensed, although releases from 4.3 onwards (which was made in 1986) were licensed under the permissive BSD licenses. BSD 4.4 was forked to create several operating systems (including Apple's OS X) that are still under active development today.
+  * <b>B</b>erkeley <b>S</b>oftware <b>D</b>istribution, a Unix operating system developed at the University of California, Berkeley between 1977 and 1995. The early releases of BSD were proprietary-licensed, although releases from 4.3 onwards (which was made in 1986) were licensed under the permissive BSD licenses. BSD 4.4 was forked to create several operating systems (including Apple's OS X) that are still under active development today.
 * **BSDs**
   * <b>B</b>erkeley <b>S</b>oftware <b>D</b>istribution derivative<b>s</b>.
 * **Calamares**
@@ -39,7 +41,7 @@
 * **Linux kernel**
   * The [Linux kernel](https://en.wikipedia.org/wiki/Linux_kernel) is a monolithic kernel originally created by and named after Finnish computer programmer, [Linus Torvalds](https://en.wikipedia.org/wiki/Linus_Torvalds), whom at the time of its founding in 1991 was a 21-year-old computer science student. It started off as a side project by Torvalds to create an operating system for his own personal use, but has since expanded to become one of the most widely used free (licensed primarily under GPLv2) operating system kernels worldwide.
 * **Linux-libre kernel**
-  * The [Linux-libre kernel](https://en.wikipedia.org/wiki/Linux-libre) is a kernel that is essentially the Linux kernel with its proprietary binary blobs removed. These binary blobs are licensed under non-FOSS licenses and hence do not give users the freedom to study, modify and redistribute them under FOSS licenses. The binary blobs basically improve the kernel's compatibility with one's hardware. The Linux-libre kernel is developed as part of the GNU Project. 
+  * The [Linux-libre kernel](https://en.wikipedia.org/wiki/Linux-libre) is a kernel that is essentially the Linux kernel with its proprietary binary blobs removed. These binary blobs are licensed under non-FOSS licenses and hence do not give users the freedom to study, modify and redistribute them under FOSS licenses. The binary blobs basically improve the kernel's compatibility with one's hardware. The Linux-libre kernel is developed as part of the GNU Project.
 * **LTS**
   * <b>L</b>ong-<b>t</b>erm <b>s</b>table/<b>s</b>upport.
 * **NET**

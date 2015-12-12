@@ -5,7 +5,7 @@ date:   2015-12-20
 categories: sabayon, package-management, command-line
 ---
 {% include draft.html %}
-{% include note.md note1="This post contains links to external resources, which I have little, if any, control over and hence I cannot guarantee their accuracy at any given time." note2="Any instruction involving Portage or manual installation from source code, has the capability to break your system and cause other problems, so if you follow them you and you alone assume any and all responsibility for the consequences!" %}
+{% include note.md note1="This post contains links to external resources, which I have little, if any, control over and hence I cannot guarantee their accuracy." note2="Any instruction involving Portage or manual installation from source code, has the capability to break your system and cause other problems, so if you follow them you and you alone assume any and all responsibility for the consequences!" %}
 Often, on this blog, I write posts regarding installing software with Sabayon's two package managers: **Portage** which it borrows from Gentoo and **Entropy** which is wholly original. I felt I would dedicate this post to both package managers, giving you some tips on how to use them safely and most efficiently. Generally speaking when it comes to Sabayon, unless you know what you are doing (for future reference users that "know what they are doing" in this context will be referred to as *competent Sabayon users*), you are recommended to only use Entropy as your **package management system** (**PMS**), as working with Portage is more risky and mixing Entropy with Portage is known to quite easily lead to system breaks. I mix the two, even though I have no formal training in anything technology-related and I have only been using Sabayon since July/August 2015.
 
 This post will cover some of the basics of using Entropy and Portage and how to use them together, in the safest way possible. It will also cover other related topics like using Layman to add overlays. You will probably notice that the command-line is featured heavily in this article, with little mention (usually all they will get is about a sentence mention each, if they are really notable) of graphical user interface (GUI) front-ends for these programs, this is because I tend to find command-line front-ends for package managers are more stable than their graphical counterparts.
@@ -14,86 +14,18 @@ This post will cover some of the basics of using Entropy and Portage and how to 
 ##Preliminary Information
 Entropy, Layman and Portage are all written in Python, Bash script and to smaller extents other programming languages like C. [Entropy](#Entropy) is maintained by Fabio Erculiani and other developers of Sabayon, while [Layman](#Layman) and [Portage](#Portage) are both maintained by the Gentoo community. This section will cover some of the preliminary information for each of these programs, including their command-line syntax, so as to make the rest of this post easier to understand.
 
-###Portage
-{% include image.html image="GTK-based-Portage-front-end-Porthole.png" description="Screenshot of Porthole running under KDE Plasma 5" width="1366" height="738" %}
+{% include PMS/Portage.md %}
 
-{% include links.html sw="En:Portage" wp="Portage_(software)" package="sys-apps/portage" program="Portage" gw="Portage" %} is a package management system that is arguably the most powerful Linux PMS available today. It is written in [Python](https://en.wikipedia.org/wiki/Python_(programming_language)) and [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) script, so as to afford users the ability to script with Portage. Portage installs, removes and upgrades software using the instructions contained in a specialized type of Bash script known as an **ebuild**, which are stored within the &quot;**Portage Tree**&quot; which is `/usr/portage`, by default. This tree, only contains ebuilds from the **Portage Tree** (PT, you can search this overlay online at [packages.gentoo.org](https://packages.gentoo.org)), ebuilds in overlays added with Layman are added to another location, `/var/lib/layman`. Normally Portage installs (or &quot;*merges*&quot;) software from source code, so as to maximize the control users have over the features their software has, but some pre-compiled binary packages exist in the PT for software that would otherwise take several hours to compile. These packages are in `.tbz2` file format and are created by running emerge with the `--buildpkg` or `--buildpkgonly` options enabled. Installing software from source code may also improve the performance (minimizing resource usage) of software installed this way.
+{% include PMS/Layman.md %}
 
-Portage affords users this extra control via **USE flags**, which are “keywords that embodies support and dependency-information for a certain concept” (quoted from the [Gentoo Handbook](https://wiki.gentoo.org/wiki/Handbook:X86/Working/USE)), in other words they are keywords that allow users to decide which (if any) optional package features (like language bindings, for example) will be built, when the package itself is built. These USE flags can be enabled or disabled for individual packages (via modifying files in the directory `/etc/portage/package.use`) or for all packages (via editing the `USE="...` line in `/etc/portage/make.conf`. USE flags should not be confused with **package keywords** (individual package keywords can be found in the directory `/etc/portage/package.keywords`, editing keywords for all packages can be done by editing the `ACCEPT_KEYWORDS="..."` line in `/etc/portage/make.conf`), which are entirely separate keywords, that detail architecture support (x86_64 vs. x86) and a few other features. Likewise packages you do not want Portage to emerge under any circumstances (which can be called **masked packages**) can be added to files within the directory `/etc/portage/package.mask`.
-
-Portage is traditionally a **command-line package management system** (invoked by the command `emerge`), with no official graphical front-ends available, but a few unofficial graphical front-ends exist in the PT, of which the most popular is probably the GTK+ based {% include links.html package="app-portage/porthole" program="Porthole" link="http://porthole.sourceforge.net/" %}
-
-The PT contains over 18,750 software packages, as of December 2015, and while this may seem like quite a fair number (which it is) there will always be some people that will want to install software that is not in the PT. To do this it is advisable to search the [GPO website](http://gpo.zugaina.org/), for the package you would like and then add the overlay that contains the package you want with **Layman**.
-####Emerge Syntax
-According to **Portage's Manpage**[^1], emerge commands have the following format:
-{% include coder.html line1="emerge [<em>options</em>] [<em>action</em>] [<em>ebuild</em> | <em>tbz2file</em> | <em>file</em> | <em>@set</em> | <em>atom</em>]" no="1" %}
-This can be confusing to users not familiar with the formatting used by Gentoo's Manpages (or Linux Manpages in general, for that matter), but I will attempt to explain. Before I do, I need you to get into the mind-frame you had when you first learnt algebra in high school, where variables (like x or y) could be substituted with numbers, letters, other characters or a combination of any, or even all of these. With this mind-frame the above generalized format of emerge commands will make more sense, as all words in that command except for root and emerge can be substituted, depending on what you want to do with Portage.
-
-What is in square-brackets (`[...]`) are optional parts of the command (that is, they can be omitted) and when you are writing an actual command you omit the square brackets and substitute the word inside with any of a set of possible values it can take on. Some (not all, I do not even understand them all!) possible values *options* and *action* can take on are covered in the tables below. Multiple options can be combined with certain actions, often using the shortened notation. For example, to combine the ask and verbose options when emerging GNU Octave, one can run the shortened form <code><span class="coder">root #</span> &nbsp;emerge -av sci-mathematics/octave</code> or the full-lengthed form <code><span class="coder">root #</span> &nbsp;emerge --ask --verbose sci-mathematics/octave</code>. The vertical lines or pipes, as they can also be called, which is `|`, in (1) means the options separated by it and between the square brackets are mutually-exclusive options (that is, you either pick one or you pick none, depending on what you want to do). To save time, I will call the following part of (1) &quot;**input**&quot;:
-<div class="code">[<em>ebuild</em> | <em>tbz2file</em> | <em>file</em> | <em>@set</em> | <em>atom</em>]</div>
-**Sets** (`@set` in the "input") are essentially a useful way of specifying a large group of packages. There are six sets found in a default install of Sabayon, more can be created by users with root access by them editing files in the directory, `/etc/portage/sets`. Running {% include coders.html line1="emerge --list-sets" %} should list all available sets. **ebuilds** are just the names of packages you want to install. At a bare minimum they should be the package's name (case-sensitive), without its category (e.g., wordpress for www-apps/wordpress), but sometimes specifying a package's name without its category leaves some ambiguity (that is, there may be more than one package in the Portage Tree or unofficial overlays added with Layman, that has the name specified), so it is often safer to specify the category also. Some people may want to specify the specific package version they want too, to do this add an equal sign before the category and specify the package version after the package's name, for example running {% include coders.html line1="emerge =sys-apps/portage-2.2.20" %} should install Portage version 2.2.20. **Files** are files that have been created by installed packages. **tbz2file**, as one can probably guess are any binary packages created by emerge itself, in the `.tbz2` file format that one wishes to install. **Atoms** (`atom`) are essentially the same as ebuilds, only with bounds on their version numbers specified. For example, {% include coders.html line1="emerge &lt;dev-lang/python-2.0" %} should install the latest version of Python available before version 2.0.
-{% include PMS/table1-options-for-emerge.html %}
-<br/>
-{% include PMS/table2-actions-for-emerge.html %}
-###Links
-####Handbook
-* [AMD64 Handbook](https://wiki.gentoo.org/wiki/Handbook:AMD64/Working/Portage)
-
-####Manpages
-* [EBUILD(1) Manpage](/man/ebuild.1.html)
-* [EBUILD(5) Manpage](/man/ebuild.5.html)
-* [EMERGE(1) Manpage](/man/emerge.1.html)
-* [PORTAGE(5) Manpage](/man/portage.5.html)
-
-###Layman
-{% include links.html gp="Layman" gw="Layman" package="app-portage/layman" program="Layman" link="http://layman.sourceforge.net/" gr="gentoo/layman" %} is a command-line tool for managing Portage overlays. It can be installed with Portage (from the PT) using the command:
-{% include coder.html line1="emerge -av app-portage/layman" %}
-or with Entropy using the command:
-{% include coder.html line1="equo i -av app-portage/layman" %}
-I would recommend installing Layman using Entropy as it is less error-prone and the Layman package it installs was compiled with all the USE flags required to add every type of overlay available (including Bazaar (bzr), Git, Mercurial (hg) and Subversion (svn)). Layman-added overlays (and the ebuilds contained within them) are stored in <code>/var/lib/layman/</code>.
-
-####Layman Syntax
-The basic syntax for Layman is:
-{% include coder.html line1="layman [<em>options</em>] [<em>action</em>]" %}
-As with emerge, I am not going to cover every option and action available for layman, as that would take too long, plus this is not meant to be a substitute for the manpages of the package managers and other tools covered in this post. Some of the more important/frequently-used actions and options are covered in tables 3 and 4. Please note that all actions when given in long form, if they require input (like `--add` does) this input must be specified with an equal sign and no spaces. For example to add the `sabayon` overlay you may run:
-{% include coder.html line1="layman --add=sabayon" %}
-or in shortened notation:
-{% include coder.html line1="layman -a sabayon" %}
-It is important to note that while this technique will add the `sabayon` overlay to one's machine not all overlays can be added this way, as some overlays are not within Layman's default list of available overlays (which I will henceforth refer to as the **reference list**). To view the reference list, run:
-{% include coder.html line1="layman -L" %}
-while to see the list of overlays currently installed, locally, on your machine run:
-{% include coder.html line1="layman -l" %}
-To add a new overlay that is not within the reference list, run:
-{% include coder.html line1="layman -o &lt;URL of repository XML file&gt; -f -a &lt;overlay name&gt;" %}
-{% include PMS/table3-options-for-layman.html %}
-<br/>
-{% include PMS/table4-actions-for-layman.html %}
-### Entropy
-{% include image.html image="Rigo-Application-Browser.png" width="1366" height="738" float="none" description="Rigo Application Browser running under KDE Plasma 5" %}
-
-{% include links.html package="sys-apps/entropy" program="Entropy" gr="Sabayon/entropy" sw="En:Entropy" link="/man/equo.pdf" pdf="PDF" %}, is a PMS that was specifically designed for Sabayon by Fabio Erculiani, the original creator of Sabayon. Its first unstable release to be added to Sabayon was in July 2008 (although its first unstable release full stop was back in 2007, according to Entropy's GitHub repository[^2]) when {% include forum.html f="60" t="13917" link="Sabayon 3.5 was released" %} and its first stable release to be added to Sabayon was made in 2012. Unlike Portage which is primarily designed to install source code packages (although it can also install binary packages), Entropy is designed to work with binary packages only. Binary packages take less time than source code packages to install and requires less user know-how and input. Entropy is also unique in that it has two official front-ends: command-line/textual (**Equo**) and graphical (**Rigo**). I personally favour using the command-line for installing packages on Linux distributions, because in my experience graphical installers are more prone to crashes during installation than their command-line/textual counterparts.
-
-Compared to Portage, Entropy is far more simple to use, if you go to the Entropy Store you can see the USE flags used to compile the software packages provided by Entropy, as all packages provided by Entropy had to be compiled with Portage on another machine first (in `.tbz2` format) and then convert from a Portage package to an Entropy package with {% include coders.html line1="equo pkg inflate &lt;PACKAGE&gt;"%}. Entropy contains packages from the Portage Tree and packages from Sabayon's own overlays, which are called [`sabayon`](https://github.com/Sabayon/for-gentoo) and [`sabayon-distro`](https://github.com/Sabayon/sabayon-distro), respectively. Entropy is also safer to use and support for using Entropy to install packages is far better than support for Portage-installed packages on the [Sabayon forums](https://forum.sabayon.org/).
-
-####Equo Syntax
-The generalized syntax for Entropy's command-line front-end, Equo, is:
-{% include coder.html line1="equo [<em>action</em>] [<em>options</em>] [<em>ebuild</em> | <em>atom</em>]" %}
-Some (but by no stretch of the imagine all) options and actions for Equo are listed in tables 4 and 5, below. Note some options are only available for certain actions, for details see the man pages for Equo and its various actions (e.g., run `man equo install` for the equo install manual). One action and another option that are not covered in these tables, that I felt were worthwhile mentioning, are repo and mirrorsort, respectively. The command:
-{% include coder.html line1="equo repo mirrorsort &lt;REPO&gt;" %}
-where `<REPO>` is the name of an Entropy repository (e.g., `sabayonlinux.org`, `sabayon-weekly` or `sabayon-limbo`), can be used to optimize the order of preference for the repository's mirrors, hence, potentially, accelerating the process by which Sabayon downloads software packages.
-{% include PMS/table5-equo-options.html %}
-<br/>
-{% include PMS/table6-equo-actions.html %}
+{% include PMS/Entropy.md %}
 
 ##Mixing Entropy with Portage
 By default Entropy and Portage act fairly independently of one another. In order for you to use them together, you must tell Entropy that you are also using Portage to install packages by running:
 <div class="code"><span class="coder">root #</span>  equo rescue spmsync</div>
 whenever you emerge, unmerge or update a package. I have this saved in my `~/.bashrc` (for root user) as the function `spm`, so as to make it easier for me to run it when necessary. What this will do is it will cause packages you installed with Portage to be acknowledged by Entropy, as otherwise Entropy has no clue as to their existence. After this you may also wish to mask packages you installed with Portage, so as to prevent Entropy from attempting to upgrade or remove software installed with Portage. To do this run:
 <div class="code"><span class="coder">root #</span>  equo mask &lt;PACKAGE&gt;</div>
-To prevent Entropy from downgrading emerged packages you need to edit
-<div class="code">/etc/entropy/client.conf</div>
-and uncomment (removing the hashtag `#`) the line
-<div class="code">ignore-spm-downgrades = enable</div>
+To prevent Entropy from downgrading emerged packages you need to edit `/etc/entropy/client.conf` and uncomment (removing the hashtag `#`) the line `ignore-spm-downgrades = enable`.
 Packages installed with Entropy are almost always safer (less likely to lead to system breaks or have bugs) than their Portage-installed counterparts, so when you install a package with Portage that has several non-installed dependencies I would suggest you install as many of these dependencies as possible with Entropy before you merge the remaining dependencies and the package itself with Portage.
 
 ###Further Reading
