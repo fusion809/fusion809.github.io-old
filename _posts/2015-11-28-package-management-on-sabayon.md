@@ -18,8 +18,6 @@ Entropy, Layman and Portage are all written in Python, Bash script and to smalle
 
 {% include PMS/ebuilds.md %}
 
-{% include PMS/ebuild-writing.md %}
-
 {% include PMS/Layman.md %}
 
 {% include PMS/Entropy.md %}
@@ -30,9 +28,11 @@ Entropy, Layman and Portage are all written in Python, Bash script and to smalle
 If you come across a program you want to install on your Sabayon machine (and you know it is compatible with Linux systems) the following is an algorithm I would suggest you use to install it.
 {% include PMS/algorithm.html %}
 
-## Examples
+### Examples
 {% include PMS/openra.md %}
 {% include PMS/supertux.md %}
+
+{% include PMS/ebuild-writing.md %}
 
 ## Footnotes
 [^1]: Specifically the [emerge.1.html](/man/emerge.1.html) manpage
