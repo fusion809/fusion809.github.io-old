@@ -6,5 +6,5 @@ whenever you emerge, unmerge or update a package. I have this saved in my `~/.ba
 To prevent Entropy from downgrading emerged packages you need to edit `/etc/entropy/client.conf` and uncomment (removing the hashtag `#`) the line `ignore-spm-downgrades = enable`.
 Packages installed with Entropy are almost always safer (less likely to lead to system breaks or have bugs) than their Portage-installed counterparts, so when you install a package with Portage that has several non-installed dependencies I would suggest you install as many of these dependencies as possible with Entropy before you merge the remaining dependencies and the package itself with Portage.
 
-###Further Reading
+### Further Reading
 * ["HOWTO: Safely mix Entropy and Portage" at the Sabayon Wiki](https://wiki.sabayon.org/index.php?title=HOWTO:_Safely_mix_Entropy_and_Portage)

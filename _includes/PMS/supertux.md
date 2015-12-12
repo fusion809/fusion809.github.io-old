@@ -1,4 +1,4 @@
-###SuperTux
+### SuperTux
 {% include image.html image="Supertux-checkpoint.png" description="SuperTux 0.3.3" float="none" width="800" height="600" %}
 
 {% include links.html package="games-arcade/supertux" program="SuperTux" link="http://supertux.github.io/" wp="SuperTux" gr="SuperTux/supertux" %} is a free and open-source (licensed under GNU GPLv3) 2D platform game that was first released in April 2003. Its gameplay is very similar to that of the proprietary game, Super Mario Bros. The initial 2003 release was called "Milestone 1" (or if you would prefer a version number 0.1.3) and is the version of SuperTux that is currently available in the Entropy Store and the Portage Tree. I have installed this version with Entropy, using:
@@ -11,5 +11,5 @@ this ran without error and the resulting SuperTux 2 installation (which by-the-w
 {% include codeu.html line1="git clone https://github.com/SuperTux/supertux" line2="cd supertux" line3="mkdir build && cd build" line4="cmake .. -DCMAKE_INSTALL_PREFIX=/usr" line5="make" line6="sudo make install" %}
 and surprisingly (because git snapshots are usually less stable than tarball pre-releases) it had even fewer bugs than manually compiled SuperTux 0.3.5a. There was one bug that stayed quite persistently, however, after compiling the source code manually &mdash; after a while SuperTux2 would not launch (even when run from the command-line) and the error message it gave was related to `SDL_BASEPATH` not being set. Reinstalling `libsdl2` with Entropy solved this problem, for some reason. In an attempt to overcome this error more permanently I have created an ebuild for the latest git snapshot of SuperTux {% include stebuild-b.md ebuild="games-arcade/supertux/supertux-9999" link="games-arcade/supertux-9999" %}
 
-####External links
+#### External links
 * [User Manual](https://github.com/SuperTux/supertux/wiki/User-Manual)

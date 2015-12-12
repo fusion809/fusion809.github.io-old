@@ -1,4 +1,4 @@
-###Portage
+### Portage
 {% include image.html image="GTK-based-Portage-front-end-Porthole.png" description="Screenshot of Porthole running under KDE Plasma 5" width="1366" height="738" %}
 
 {% include links.html sw="En:Portage" wp="Portage_(software)" package="sys-apps/portage" program="Portage" gw="Portage" %} is a package management system that is arguably the most powerful Linux PMS available today. It is written in [Python](https://en.wikipedia.org/wiki/Python_(programming_language)) and [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) script, so as to afford users the ability to script with Portage. Portage installs, removes and upgrades software using the instructions contained in a specialized type of Bash script known as an [**ebuild**](#ebuild).
@@ -8,7 +8,8 @@ Portage affords users this extra control via **USE flags**, which are &ldquo;key
 Portage is traditionally a **command-line package management system** (invoked by the command `emerge`), with no official graphical front-ends available, but a few unofficial graphical front-ends exist in the PT, of which the most popular is probably the GTK+ based {% include links.html package="app-portage/porthole" program="Porthole" link="http://porthole.sourceforge.net/" %}
 
 The PT contains over 18,750 software packages, as of December 2015, and while this may seem like quite a fair number (which it is) there will always be some people that will want to install software that is not in the PT. To do this it is advisable to search the [GPO website](http://gpo.zugaina.org/), for the package you would like and then add the overlay that contains the package you want with **Layman**.
-####Emerge Syntax
+
+#### Emerge Syntax
 According to **Portage's Manpage**[^1], emerge commands have the following format:
 {% include coder.html line1="emerge [<em>options</em>] [<em>action</em>] [<em>ebuild</em> | <em>tbz2file</em> | <em>file</em> | <em>@set</em> | <em>atom</em>]" no="1" %}
 This can be confusing to users not familiar with the formatting used by Gentoo's Manpages (or Linux Manpages in general, for that matter), but I will attempt to explain. Before I do, I need you to get into the mind-frame you had when you first learnt algebra in high school, where variables (like x or y) could be substituted with numbers, letters, other characters or a combination of any, or even all of these. With this mind-frame the above generalized format of emerge commands will make more sense, as all words in that command except for root and emerge can be substituted, depending on what you want to do with Portage.
@@ -19,10 +20,11 @@ What is in square-brackets (`[...]`) are optional parts of the command (that is,
 {% include PMS/table1-options-for-emerge.html %}
 <br/>
 {% include PMS/table2-actions-for-emerge.html %}
-###Links
-####Handbook
+
+### Links
+#### Handbook
 * [AMD64 Handbook](https://wiki.gentoo.org/wiki/Handbook:AMD64/Working/Portage)
 
-####Manpages
+#### Manpages
 * [EMERGE(1) Manpage](/man/emerge.1.html)
 * [PORTAGE(5) Manpage](/man/portage.5.html)

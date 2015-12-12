@@ -5,7 +5,7 @@
 
 Compared to Portage, Entropy is far more simple to use, if you go to the Entropy Store you can see the USE flags used to compile the software packages provided by Entropy, as all packages provided by Entropy had to be compiled with Portage on another machine first (in `.tbz2` format) and then convert from a Portage package to an Entropy package with {% include coders-fs.html line1="equo pkg inflate &lt;PACKAGE&gt;"%} Entropy contains packages from the Portage Tree and packages from Sabayon's own overlays, which are called [`sabayon`](https://github.com/Sabayon/for-gentoo) and [`sabayon-distro`](https://github.com/Sabayon/sabayon-distro), respectively. Entropy is also safer to use and support for using Entropy to install packages is far better than support for Portage-installed packages on the [Sabayon forums](https://forum.sabayon.org/).
 
-####Equo Syntax
+#### Equo Syntax
 The generalized syntax for Entropy's command-line front-end, Equo, is:
 {% include coder.html line1="equo [<em>action</em>] [<em>options</em>] [<em>ebuild</em> | <em>atom</em>]" %}
 Some (but by no stretch of the imagine all) options and actions for Equo are listed in tables 4 and 5, below. Note some options are only available for certain actions, for details see the man pages for Equo and its various actions (e.g., run `man equo install` for the equo install manual). One action and another option that are not covered in these tables, that I felt were worthwhile mentioning, are repo and mirrorsort, respectively. The command:
