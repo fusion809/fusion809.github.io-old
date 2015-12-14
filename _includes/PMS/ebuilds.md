@@ -3,8 +3,12 @@ As previously mentioned **ebuilds** are specialized Bash scripts many of which a
 
 Binary ebuilds usually take binary packages for other Linux distributions (such as `.deb` and `.rpm` packages for Debian and Fedora, respectively), extract their contents (as these binary packages are essentially just file archives) and move their contents to the appropriate location on one's system. Quite often when a program is installed using a binary ebuild its performance will not be as good as if it were installed using a standard (source code) ebuild. The natural question is, of course, "Why even use a binary ebuild then?" Well usually it is a matter of time, see if you install a program from source code it will often take substantially longer than installing it from a binary package, even if that binary package was originally built for another Linux distribution. For most packages Gentoo users are assumed to be willing to put up with the extra time it takes to build a software from source code, as if they are not they probably should not be using a source-based distribution like Gentoo in the first place, but for some packages the compiling time is so unbelievably long (potentially taking days or even weeks) that the maintainers of the PT decided to provide a binary ebuild for the package too. Most binary ebuilds that fit this mold have the suffix `-bin` in their name to distinguish them from their respective source code ebuilds, an example of such an binary ebuild is [`app-emulation/virtualbox-bin`](https://packages.gentoo.org/packages/app-emulation/virtualbox-bin). Other times a binary ebuild is used because of licensing restrictions that do not allow users to access the source code, so they are forced instead to use binary packages from distributions with official releases of the software available. An example of such an ebuild is [`media-sound/spotify`](https://packages.gentoo.org/packages/media-sound/spotify).
 
+`ebuild` is also the name of a command used on Gentoo-based systems like Sabayon to create manifests, merge ebuild, build binary packages from ebuilds, *etc.* The `ebuild` command is included in the `sys-apps/portage` package and its syntax is shown below:
+{% include coder.html line1="ebuild &lt;FILE&gt; &lt;COMMAND&gt;" %}
+where `<FILE>` is the ebuild file you are running the `ebuild` command on, while `<COMMAND>` is a command listed in table 3. 
+
 For details on how to write ebuilds see the [Writing ebuilds](#writing-ebuilds) section of this post.
 
 #### Manpages
-* [EBUILD(1) Manpage](/man/ebuild.1.html)
-* [EBUILD(5) Manpage](/man/ebuild.5.html)
+* [EBUILD(1) Manpage](/man/ebuild.1.html) which describes the `ebuild` command.
+* [EBUILD(5) Manpage](/man/ebuild.5.html) which describes the `ebuild` format.
