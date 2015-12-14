@@ -14,25 +14,25 @@ This post will cover some of the basics of using Entropy and Portage and how to 
 ## Preliminary Information
 Entropy, Layman and Portage are all written in Python, Bash script and to smaller extents other programming languages like C. [Entropy](#Entropy) is maintained by Fabio Erculiani and other developers of Sabayon, while [Layman](#Layman) and [Portage](#Portage) are both maintained by the Gentoo community. This section will cover some of the preliminary information for each of these programs, including their command-line syntax, so as to make the rest of this post easier to understand.
 
-{% include PMS/Portage.md %}
+{% include_relative PMS/Portage.md %}
 
-{% include PMS/ebuilds.md %}
+{% include_relative PMS/ebuilds.md %}
 
-{% include PMS/Layman.md %}
+{% include_relative PMS/Layman.md %}
 
-{% include PMS/Entropy.md %}
+{% include_relative PMS/Entropy.md %}
 
-{% include PMS/mixing-entropy-and-portage.md %}
+{% include_relative PMS/mixing-entropy-and-portage.md %}
 
 ## The Algorithm
 If you come across a program you want to install on your Sabayon machine (and you know it is compatible with Linux systems) the following is an algorithm I would suggest you use to install it.
 {% include PMS/algorithm.html %}
 
 ### Examples
-{% include PMS/openra.md %}
-{% include PMS/supertux.md %}
+{% include_relative PMS/openra.md %}
+{% include_relative PMS/supertux.md %}
 
-{% include PMS/ebuild-writing.md %}
+{% include_relative PMS/ebuild-writing.md %}
 
 ## Footnotes
 [^1]: Specifically the [emerge.1.html](/man/emerge.1.html) manpage
