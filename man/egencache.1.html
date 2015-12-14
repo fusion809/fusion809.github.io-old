@@ -1,262 +1,230 @@
-<HTML><HEAD><TITLE>Manpage of EGENCACHE</TITLE>
-<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
-</HEAD><BODY>
-<H1>EGENCACHE</H1>
-Section: Portage (1)<BR>Updated: Jul 2013<BR><A HREF="#index">Index</A>
-<A HREF="http://localhost/cgi-bin/man/man2html">Return to Main Contents</A><HR>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+EGENCACHE(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+EGENCACHE(1)</td>
+<td class="head-vol">
+Portage</td>
+<td class="head-rtitle">
+EGENCACHE(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> egencache - generate metadata cache for ebuild repositories</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>egencache</b> <i>[options] --update [ATOM]...</i></div>
+<div class="section">
+<h1>DESCRIPTION</h1> The egencache program generates metadata cache for ebuild repositories and stores it in the  <i>metadata/md5-cache/</i> directory within the repository itself, for distribution.</div>
+<div class="section">
+<h1>ACTIONS</h1><dl>
+<dt>
+<b>--update [ATOM] ... </b></dt>
+<dd>
+Update the <i>metadata/md5-cache/</i> directory (generate metadata as necessary). If no package atoms are specified then all will be updated. See ebuild(5) for the details on package atom syntax.</dd>
+</dl>
+<dl>
+<dt>
+<b>--update-changelogs</b></dt>
+<dd>
+Update the ChangeLog files from SCM logs (supported only in git repos).</dd>
+</dl>
+<dl>
+<dt>
+<b>--update-pkg-desc-index</b></dt>
+<dd>
+Update the package description index which is located at  <i>metadata/pkg_desc_index</i> in the repository.</dd>
+</dl>
+<dl>
+<dt>
+<b>--update-use-local-desc</b></dt>
+<dd>
+Update the <i>profiles/use.local.desc</i> file from metadata.xml.</dd>
+</dl>
+<dl>
+<dt>
+<b>--update-manifests</b></dt>
+<dd>
+Update manifest files, and sign them if signing is enabled. This supports parallelization if enabled via the --jobs option. The --thin-manifests and --sign-manifests options may be used to manually override layout.conf settings.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>OPTIONS</h1><dl>
+<dt>
+<b>--cache-dir=CACHE_DIR</b></dt>
+<dd>
+Location of the intermediate metadata cache which is stored in a different format that includes eclass state. See the  <b>BUGS</b> section for information about why this is necessary.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to /var/cache/edb/dep.</dd>
+</dl>
+<dl>
+<dt>
+<b>--config-root=PORTAGE_CONFIGROOT</b></dt>
+<dd>
+Location of portage config files.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to /.</dd>
+</dl>
+<dl>
+<dt>
+<b>--gpg-dir</b></dt>
+<dd>
+Override the PORTAGE_GPG_DIR variable.</dd>
+</dl>
+<dl>
+<dt>
+<b>--gpg-key</b></dt>
+<dd>
+Override the PORTAGE_GPG_KEY variable.</dd>
+</dl>
+<dl>
+<dt>
+<b>--ignore-default-opts</b></dt>
+<dd>
+Causes <i>EGENCACHE_DEFAULT_OPTS</i> to be ignored.</dd>
+</dl>
+<dl>
+<dt>
+<b>--jobs=JOBS</b></dt>
+<dd>
+Specifies the maximum number of ebuild processes to spawn simultaneously. Also see the related  <b>--load-average</b> option.</dd>
+</dl>
+<dl>
+<dt>
+<b>--load-average=LOAD</b></dt>
+<dd>
+Specifies that maximum load allowed when spawning multiple jobs.</dd>
+</dl>
+<dl>
+<dt>
+<b>--portdir=PORTDIR</b></dt>
+<dd>
+Override the PORTDIR variable. This option is deprecated in favor of --repositories-configuration option.</dd>
+</dl>
+<dl>
+<dt>
+<b>--portdir-overlay=PORTDIR_OVERLAY</b></dt>
+<dd>
+Override the PORTDIR_OVERLAY variable. This option is deprecated in favor of --repositories-configuration option.</dd>
+</dl>
+<dl>
+<dt>
+<b>--preserve-comments</b></dt>
+<dd>
+Preserve the comments found in the output use.local.desc file. This requires the output file to exist before egencache is called.</dd>
+</dl>
+<dl>
+<dt>
+<b>--repo=REPO</b></dt>
+<dd>
+Name of the repo to operate on. The name should correspond the value of a  <b>repo_name</b> entry (see <b>portage</b>(5)) from one of the repositories.</dd>
+</dl>
+<dl>
+<dt>
+<b>--repositories-configuration=REPOSITORIES_CONFIGURATION</b></dt>
+<dd>
+Override configuration of repositories. The argument of this option has the same format as repos.conf (see  <b>portage</b>(5)).</dd>
+</dl>
+<dl>
+<dt>
+<b>--rsync</b></dt>
+<dd>
+When used together with the <b>--update</b> action, this enables a workaround for cases in which the content of a cache entry changes and neither the file mtime nor size changes, preventing rsync from detecting changes. Such cases are handled by bumping the mtime on the ebuild (and the corresponding cache entry). This option should only be needed for distribution via something like  <b>rsync</b>(1), which relies on timestamps and file sizes to detect changes (see  <b>bug 139134</b>). It's not needed with <b>git</b>(1) since that uses a more thorough mechanism which allows it to detect changed inode numbers (described in  <i>racy-git.txt</i> in the git technical docs).</dd>
+</dl>
+<dl>
+<dt>
+<b>--sign-manifests&lt; y | n &gt;</b></dt>
+<dd>
+Manually override layout.conf sign-manifests setting.</dd>
+</dl>
+<dl>
+<dt>
+<b>--strict-manifests&lt; y | n &gt;</b></dt>
+<dd>
+Manually override &quot;strict&quot; FEATURES setting.</dd>
+</dl>
+<dl>
+<dt>
+<b>--thin-manifests&lt; y | n &gt;</b></dt>
+<dd>
+Manually override layout.conf thin-manifests setting.</dd>
+</dl>
+<dl>
+<dt>
+<b>--tolerant</b></dt>
+<dd>
+Exit successfully if only minor errors occurred, such as skipped cache updates due to ebuilds that either fail to source or are not sourced due to invalid Manifest entries.</dd>
+</dl>
+<dl>
+<dt>
+<b>--use-local-desc-output=ULD_OUTPUT</b></dt>
+<dd>
+Output file for use.local.desc data (or '-' for stdout)</dd>
+</dl>
+<dl>
+<dt>
+<b>--write-timestamp</b></dt>
+<dd>
+Write metadata/timestamp.chk as required for rsync repositories</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ENVIRONMENT OPTIONS</h1><dl>
+<dt>
+<b>EGENCACHE_DEFAULT_OPTS</b></dt>
+<dd>
+If this variable is set in <b>make.conf</b>(5) then any options that it contains will be added to the beginning of the command line on every invocation. These options will not be added if the  <b>--ignore-default-opts</b> option is specified.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>BUGS</h1> Prior to portage-2.1.11.32, the 'pms' cache format was enabled by default. This 'pms' format, which is distributed in the  <i>metadata/cache/</i> directory of the repository, has significant limitations related to the cache validation mechanism which involves comparison of a cache entry mtime to the mtime of the corresponding  <b>ebuild</b>(5). This mechanism is unreliable in cases when eclass changes result in metadata changes, since no information about eclass state is available in the cache. Also, since the mtime of the cache entry must correspond to that of the ebuild, the cache format is only suitable for distribution via protocols that preserve timestamps (such as  <b>rsync</b>(1)). For cache that is distributed via  <b>git</b>(1) repositories, there is currently a workaround implemented in  <b>emerge</b>(1) <b>--sync</b> which updates ebuild mtimes to match their corresponding cache entries (except for ebuilds that are modified relative to HEAD).<div style="height: 1.00em;">
+&#160;</div>
+In order to solve the above problems, the newer 'md5-dict' format has been enabled by default since portage-2.1.11.32. This format is distributed in the  <i>metadata/md5-cache/</i> directory of the repository, and includes additional validation data in the form of digests for both the ebuild and its inherited eclasses.  <b>WARNING:</b> Portage versions prior to portage-2.1.11.14 will  <b>NOT</b> recognize the 'md5-dict' format unless it is explicitly listed in  <i>metadata/layout.conf</i> (refer to <b>portage</b>(5) for example usage).<div style="height: 1.00em;">
+&#160;</div>
+<b>WARNING:</b> For backward compatibility, the obsolete 'pms' cache format will still be generated by default if the  <i>metadata/cache/</i> directory exists in the repository. It can also be explicitly enabled via the cache-formats setting in  <i>metadata/layout.conf</i> (refer to <b>portage</b>(5) for example usage). If the 'pms' cache format is enabled and the 'md5-dict' format is not enabled, then it is necessary to enable  <b>metadata-transfer</b> in <b>FEATURES</b> (see <b>make.conf(5)</b>). This causes intermediate cache (in a different format that includes eclass state) to be generated inside the directory which is configurable via the  <b>--cache-dir</b> option.</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>AUTHORS</h1><br/>
+Zac Medico &lt;zmedico@gentoo.org&gt;<br/>
+Arfrever Frehtes Taifersar Arahesis &lt;arfrever@apache.org&gt;<br/>
+</div>
+<div class="section">
+<h1>FILES</h1><dl>
+<dt>
+<b>/etc/portage/make.conf</b></dt>
+<dd>
+Contains variables.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>emerge</b>(1), <b>make.conf</b>(5), <b>portage</b>(5)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Jul 2013</td>
+<td class="foot-os">
+Portage 2.2.20</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
 
-<A NAME="lbAB">&nbsp;</A>
-<H2>NAME</H2>
-
-egencache - generate metadata cache for ebuild repositories
-<A NAME="lbAC">&nbsp;</A>
-<H2>SYNOPSIS</H2>
-
-<B>egencache</B>
-
-<I>[options] --update [ATOM]</I>...
-
-<A NAME="lbAD">&nbsp;</A>
-<H2>DESCRIPTION</H2>
-
-The egencache program generates metadata cache for ebuild repositories and
-stores it in the <I>metadata/md5-cache/</I> directory within the repository
-itself, for distribution.
-<A NAME="lbAE">&nbsp;</A>
-<H2>ACTIONS</H2>
-
-<DL COMPACT>
-<DT><B>--update [ATOM] ... </B>
-
-<DD>
-Update the <I>metadata/md5-cache/</I> directory (generate metadata as
-necessary).
-If no package atoms are specified then all will be updated. See <A HREF="http://localhost/cgi-bin/man/man2html?5+ebuild">ebuild</A>(5)
-for the details on package atom syntax.
-<DT><B>--update-changelogs</B>
-
-<DD>
-Update the ChangeLog files from SCM logs (supported only in git repos).
-<DT><B>--update-pkg-desc-index</B>
-
-<DD>
-Update the package description index which is located at
-<I>metadata/pkg_desc_index</I> in the repository.
-<DT><B>--update-use-local-desc</B>
-
-<DD>
-Update the <I>profiles/use.local.desc</I> file from metadata.xml.
-<DT><B>--update-manifests</B>
-
-<DD>
-Update manifest files, and sign them if signing is enabled. This supports
-parallelization if enabled via the --jobs option. The --thin-manifests
-and --sign-manifests options may be used to manually override layout.conf
-settings.
-</DL>
-<A NAME="lbAF">&nbsp;</A>
-<H2>OPTIONS</H2>
-
-<DL COMPACT>
-<DT><B>--cache-dir=CACHE_DIR</B>
-
-<DD>
-Location of the intermediate metadata cache which is stored in a different
-format that includes eclass state. See the <B>BUGS</B> section for
-information about why this is necessary.
-<BR>
-
-Defaults to /var/cache/edb/dep.
-<DT><B>--config-root=PORTAGE_CONFIGROOT</B>
-
-<DD>
-Location of portage config files.
-<BR>
-
-Defaults to /.
-<DT><B>--gpg-dir</B>
-
-<DD>
-Override the PORTAGE_GPG_DIR variable.
-<DT><B>--gpg-key</B>
-
-<DD>
-Override the PORTAGE_GPG_KEY variable.
-<DT><B>--ignore-default-opts</B>
-
-<DD>
-Causes <I>EGENCACHE_DEFAULT_OPTS</I> to be ignored.
-<DT><B>--jobs=JOBS</B>
-
-<DD>
-Specifies the maximum number of ebuild processes to spawn simultaneously.
-Also see the related <B>--load-average</B> option.
-<DT><B>--load-average=LOAD</B>
-
-<DD>
-Specifies that maximum load allowed when spawning multiple jobs.
-<DT><B>--portdir=PORTDIR</B>
-
-<DD>
-Override the PORTDIR variable. This option is deprecated in favor of
---repositories-configuration option.
-<DT><B>--portdir-overlay=PORTDIR_OVERLAY</B>
-
-<DD>
-Override the PORTDIR_OVERLAY variable. This option is deprecated in favor of
---repositories-configuration option.
-<DT><B>--preserve-comments</B>
-
-<DD>
-Preserve the comments found in the output use.local.desc file. This requires
-the output file to exist before egencache is called.
-<DT><B>--repo=REPO</B>
-
-<DD>
-Name of the repo to operate on. The name should correspond the value of
-a <B>repo_name</B> entry (see <B><A HREF="http://localhost/cgi-bin/man/man2html?5+portage">portage</A></B>(5)) from one of the repositories.
-<DT><B>--repositories-configuration=REPOSITORIES_CONFIGURATION</B>
-
-<DD>
-Override configuration of repositories. The argument of this option has
-the same format as repos.conf (see <B><A HREF="http://localhost/cgi-bin/man/man2html?5+portage">portage</A></B>(5)).
-<DT><B>--rsync</B>
-
-<DD>
-When used together with the <B>--update</B> action, this enables a workaround
-for cases in which the content of a cache entry changes and neither the file
-mtime nor size changes, preventing rsync from detecting changes. Such cases are
-handled by bumping the mtime on the ebuild (and the corresponding cache entry).
-This option should only be needed for distribution via something like
-<B><A HREF="http://localhost/cgi-bin/man/man2html?1+rsync">rsync</A></B>(1), which relies on timestamps and file sizes to detect changes
-(see <B>bug 139134</B>). It's not needed with <B><A HREF="http://localhost/cgi-bin/man/man2html?1+git">git</A></B>(1) since that uses a
-more thorough mechanism which allows it to detect changed inode numbers
-(described in <I>racy-git.txt</I> in the git technical docs).
-<DT><B>--sign-manifests&lt; y | n &gt;</B>
-
-<DD>
-Manually override layout.conf sign-manifests setting.
-<DT><B>--strict-manifests&lt; y | n &gt;</B>
-
-<DD>
-Manually override &quot;strict&quot; FEATURES setting.
-<DT><B>--thin-manifests&lt; y | n &gt;</B>
-
-<DD>
-Manually override layout.conf thin-manifests setting.
-<DT><B>--tolerant</B>
-
-<DD>
-Exit successfully if only minor errors occurred, such as skipped cache
-updates due to ebuilds that either fail to source or are not sourced
-due to invalid Manifest entries.
-<DT><B>--use-local-desc-output=ULD_OUTPUT</B>
-
-<DD>
-Output file for use.local.desc data (or '-' for stdout)
-<DT><B>--write-timestamp</B>
-
-<DD>
-Write metadata/timestamp.chk as required for rsync repositories
-</DL>
-<A NAME="lbAG">&nbsp;</A>
-<H2>ENVIRONMENT OPTIONS</H2>
-
-<DL COMPACT>
-<DT><B>EGENCACHE_DEFAULT_OPTS</B><DD>
-If this variable is set in <B><A HREF="http://localhost/cgi-bin/man/man2html?5+make.conf">make.conf</A></B>(5) then any options that it
-contains will be added to the beginning of the command line on every
-invocation. These options will not be added if the
-<B>--ignore-default-opts</B> option is specified.
-</DL>
-<A NAME="lbAH">&nbsp;</A>
-<H2>BUGS</H2>
-
-Prior to portage-2.1.11.32, the 'pms' cache format was enabled by default.
-This 'pms' format, which is distributed in the <I>metadata/cache/</I>
-directory of the repository, has significant limitations related to the
-cache validation mechanism which involves comparison of
-a cache entry mtime to the mtime of the corresponding <B><A HREF="http://localhost/cgi-bin/man/man2html?5+ebuild">ebuild</A></B>(5). This
-mechanism is unreliable in cases when eclass changes result in metadata
-changes, since no information about eclass state is available in the cache.
-Also, since the mtime of the cache entry must correspond to that of the
-ebuild, the cache format is only suitable for distribution via protocols
-that preserve timestamps (such as <B><A HREF="http://localhost/cgi-bin/man/man2html?1+rsync">rsync</A></B>(1)). For cache that is
-distributed via <B><A HREF="http://localhost/cgi-bin/man/man2html?1+git">git</A></B>(1) repositories, there is currently a workaround
-implemented in <B><A HREF="http://localhost/cgi-bin/man/man2html?1+emerge">emerge</A></B>(1) <B>--sync</B> which updates ebuild mtimes
-to match their corresponding cache entries (except for ebuilds that are
-modified relative to HEAD).
-<P>
-In order to solve the above problems, the newer 'md5-dict' format has been
-enabled by default since portage-2.1.11.32. This format is distributed in
-the <I>metadata/md5-cache/</I> directory of the repository, and includes
-additional validation data in the form of digests for both the ebuild
-and its inherited eclasses. <B>WARNING:</B> Portage versions prior to
-portage-2.1.11.14 will <B>NOT</B> recognize the 'md5-dict' format unless it is
-explicitly listed in <I>metadata/layout.conf</I> (refer to <B><A HREF="http://localhost/cgi-bin/man/man2html?5+portage">portage</A></B>(5)
-for example usage).
-<P>
-<B>WARNING:</B> For backward compatibility, the obsolete 'pms' cache format
-will still be generated by default if the <I>metadata/cache/</I> directory
-exists in the repository. It can also be explicitly enabled via the
-cache-formats setting in <I>metadata/layout.conf</I> (refer to <B><A HREF="http://localhost/cgi-bin/man/man2html?5+portage">portage</A></B>(5)
-for example usage). If the 'pms' cache format is enabled and the 'md5-dict'
-format is not enabled, then it is necessary to enable
-<B>metadata-transfer</B> in <B>FEATURES</B> (see <B><A HREF="http://localhost/cgi-bin/man/man2html?5+make.conf">make.conf</A>(5)</B>).
-This causes intermediate cache (in a different format that includes
-eclass state) to be generated inside the directory which is configurable
-via the <B>--cache-dir</B> option.
-<A NAME="lbAI">&nbsp;</A>
-<H2>REPORTING BUGS</H2>
-
-Please report bugs via <A HREF="http://bugs.gentoo.org/">http://bugs.gentoo.org/</A>
-<A NAME="lbAJ">&nbsp;</A>
-<H2>AUTHORS</H2>
-
-<PRE>
-Zac Medico &lt;zmedico@gentoo.org&gt;
-Arfrever Frehtes Taifersar Arahesis &lt;arfrever@apache.org&gt;
-</PRE>
-
-<A NAME="lbAK">&nbsp;</A>
-<H2>FILES</H2>
-
-<DL COMPACT>
-<DT><B>/etc/portage/make.conf</B>
-
-<DD>
-Contains variables.
-</DL>
-<A NAME="lbAL">&nbsp;</A>
-<H2>SEE ALSO</H2>
-
-<B><A HREF="http://localhost/cgi-bin/man/man2html?1+emerge">emerge</A></B>(1),
-
-<B><A HREF="http://localhost/cgi-bin/man/man2html?5+make.conf">make.conf</A></B>(5),
-
-<B><A HREF="http://localhost/cgi-bin/man/man2html?5+portage">portage</A></B>(5)
-
-<P>
-
-<HR>
-<A NAME="index">&nbsp;</A><H2>Index</H2>
-<DL>
-<DT><A HREF="#lbAB">NAME</A><DD>
-<DT><A HREF="#lbAC">SYNOPSIS</A><DD>
-<DT><A HREF="#lbAD">DESCRIPTION</A><DD>
-<DT><A HREF="#lbAE">ACTIONS</A><DD>
-<DT><A HREF="#lbAF">OPTIONS</A><DD>
-<DT><A HREF="#lbAG">ENVIRONMENT OPTIONS</A><DD>
-<DT><A HREF="#lbAH">BUGS</A><DD>
-<DT><A HREF="#lbAI">REPORTING BUGS</A><DD>
-<DT><A HREF="#lbAJ">AUTHORS</A><DD>
-<DT><A HREF="#lbAK">FILES</A><DD>
-<DT><A HREF="#lbAL">SEE ALSO</A><DD>
-</DL>
-<HR>
-This document was created by
-<A HREF="http://github.com/hamano/man2html/">man2html</A>,
-using the manual pages.<BR>
-Time: 17:50:01 GMT, December 02, 2015
-</BODY>
-</HTML>

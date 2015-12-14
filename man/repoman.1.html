@@ -1,525 +1,708 @@
-<HTML><HEAD><TITLE>Manpage of REPOMAN</TITLE>
-<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
-</HEAD><BODY>
-<H1>REPOMAN</H1>
-Section: Portage (1)<BR>Updated: Aug 2013<BR><A HREF="#index">Index</A>
-<A HREF="http://localhost/cgi-bin/man/man2html">Return to Main Contents</A><HR>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+REPOMAN(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+REPOMAN(1)</td>
+<td class="head-vol">
+Portage</td>
+<td class="head-rtitle">
+REPOMAN(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> repoman - Gentoo's program to enforce a minimal level of quality assurance in packages added to the portage tree</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <b>repoman</b> [<i>option</i>] [<i>mode</i>]</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>Quality is job zero.</b><div style="height: 1.00em;">
+&#160;</div>
+<b>repoman</b> checks the quality of ebuild repositories.<div style="height: 1.00em;">
+&#160;</div>
+Note: <b>repoman commit</b> only works <i>inside local</i> cvs, git, or subversion repositories.<div style="height: 1.00em;">
+&#160;</div>
+Note: Messages pertaining to specific lines may be inaccurate in the prescence of continuation lines from use of the  <i>\</i> character in BASH.</div>
+<div class="section">
+<h1>OPTIONS</h1><dl>
+<dt>
+<b>-a</b>, <b>--ask</b></dt>
+<dd>
+Request a confirmation before commiting</dd>
+</dl>
+<dl>
+<dt>
+<b>--digest=&lt;y|n&gt;</b></dt>
+<dd>
+Automatically update Manifest digests for modified files. This option triggers a behavior that is very similar to that enabled by FEATURES=&quot;digest&quot; in  <b>make.conf</b>(5). In order to enable this behavior by default for repoman alone, add  <b>--digest=y</b> to the <i>REPOMAN_DEFAULT_OPTS</i> variable in  <b>make.conf</b>(5). The <b>manifest-check</b> mode will automatically ignore the --digest option.<div style="height: 1.00em;">
+&#160;</div>
+<b>NOTE:</b> This option does not trigger update of digests for Manifest DIST entries that already exist. Replacement of existing Manifest DIST entries can be forced by using the  <b>manifest</b> mode together with the  <b>--force</b> option.</dd>
+</dl>
+<dl>
+<dt>
+<b>-f</b>, <b>--force</b></dt>
+<dd>
+Force commit to proceed, regardless of QA issues. For convenience, this option causes the most time consuming QA checks to be skipped. The commit message will include an indication that this option has been enabled, together with the usual portage version stamp.<div style="height: 1.00em;">
+&#160;</div>
+When used together with <b>manifest</b> mode, <b>--force</b> causes existing digests to be replaced for any files that exist in ${DISTDIR}. Existing digests are assumed to be correct for files that would otherwise have to be downloaded in order to recompute digests.  <b>WARNING:</b> When replacing existing digests, it is the user's responsibility to ensure that files contained in ${DISTDIR} have the correct identities. Especially beware of partially downloaded files.</dd>
+</dl>
+<dl>
+<dt>
+<b>-S</b>, <b>--straight-to-stable</b></dt>
+<dd>
+Allow committing straight to stable</dd>
+</dl>
+<dl>
+<dt>
+<b>-q</b>, <b>--quiet</b></dt>
+<dd>
+Be less verbose about extraneous info</dd>
+</dl>
+<dl>
+<dt>
+<b>-p</b>, <b>--pretend</b></dt>
+<dd>
+Don't commit or fix anything; just show what would be done</dd>
+</dl>
+<dl>
+<dt>
+<b>-x</b>, <b>--xmlparse</b></dt>
+<dd>
+Forces the metadata.xml parse check to be carried out</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b>, <b>--verbose</b></dt>
+<dd>
+Displays every package name while checking</dd>
+</dl>
+<dl>
+<dt>
+<b>--echangelog=&lt;y|n|force&gt;</b></dt>
+<dd>
+For commit mode, call echangelog if ChangeLog is unmodified (or regardless of modification if 'force' is specified). This option can be enabled by default for a particular repository by setting &quot;update-changelog = true&quot; in metadata/layout.conf (see  <b>portage</b>(5)).</dd>
+</dl>
+<dl>
+<dt>
+<b>--experimental-inherit=&lt;y|n&gt;</b></dt>
+<dd>
+Enable experimental inherit.missing checks which may misbehave when the internal eclass database becomes outdated.</dd>
+</dl>
+<dl>
+<dt>
+<b>--if-modified=&lt;y|n&gt;</b></dt>
+<dd>
+Only check packages that have uncommitted modifications</dd>
+</dl>
+<dl>
+<dt>
+<b>-i</b>, <b>--ignore-arches</b></dt>
+<dd>
+Ignore arch-specific failures (where arch != host)</dd>
+</dl>
+<dl>
+<dt>
+<b>--ignore-default-opts</b></dt>
+<dd>
+Do not use the <i>REPOMAN_DEFAULT_OPTS</i> environment variable.</dd>
+</dl>
+<dl>
+<dt>
+<b>-I</b>, <b>--ignore-masked</b></dt>
+<dd>
+Ignore masked packages (not allowed with commit mode)</dd>
+</dl>
+<dl>
+<dt>
+<b>--include-arches </b>ARCHES</dt>
+<dd>
+A space separated list of arches used to filter the selection of profiles for dependency checks.</dd>
+</dl>
+<dl>
+<dt>
+<b>-d</b>, <b>--include-dev</b></dt>
+<dd>
+Include dev profiles in dependency checks.</dd>
+</dl>
+<dl>
+<dt>
+<b>-e &lt;y|n&gt;</b>, <b>--include-exp-profiles=&lt;y|n&gt;</b></dt>
+<dd>
+Include exp profiles in dependency checks.</dd>
+</dl>
+<dl>
+<dt>
+<b>--unmatched-removal</b></dt>
+<dd>
+Enable strict checking of package.mask and package.unmask files for unmatched removal atoms.</dd>
+</dl>
+<dl>
+<dt>
+<b>--without-mask</b></dt>
+<dd>
+Behave as if no package.mask entries exist (not allowed with commit mode)</dd>
+</dl>
+<dl>
+<dt>
+<b>-m</b>, <b>--commitmsg</b></dt>
+<dd>
+Adds a commit message via the command line</dd>
+</dl>
+<dl>
+<dt>
+<b>-M</b>, <b>--commitmsgfile</b></dt>
+<dd>
+Adds a commit message from the specified file</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>, <b>--version</b></dt>
+<dd>
+Show version info</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>, <b>--help</b></dt>
+<dd>
+Show this screen</dd>
+</dl>
+</div>
+<div class="section">
+<h1>MODES</h1><dl>
+<dt>
+<b>full</b></dt>
+<dd>
+Scan directory tree for QA issues (full listing)</dd>
+</dl>
+<dl>
+<dt>
+<b>help</b></dt>
+<dd>
+Show this screen</dd>
+</dl>
+<dl>
+<dt>
+<b>scan</b></dt>
+<dd>
+Scan directory tree for QA issues (short listing)</dd>
+</dl>
+<dl>
+<dt>
+<b>fix</b></dt>
+<dd>
+Fix simple QA issues (stray digests, missing digests)</dd>
+</dl>
+<dl>
+<dt>
+<b>manifest</b></dt>
+<dd>
+Generate a Manifest (fetches distfiles if necessary). See the <b>--force</b> option if you would like to replace existing distfiles digests.</dd>
+</dl>
+<dl>
+<dt>
+<b>manifest-check</b></dt>
+<dd>
+Check Manifests for missing or incorrect digests</dd>
+</dl>
+<dl>
+<dt>
+<b>commit</b></dt>
+<dd>
+Scan directory tree for QA issues; if OK, commit via cvs</dd>
+</dl>
+</div>
+<div class="section">
+<h1>QA KEYWORDS</h1><dl>
+<dt>
+<b>CVS/Entries.IO_error</b></dt>
+<dd>
+Attempting to commit, and an IO error was encountered access the Entries file</dd>
+</dl>
+<dl>
+<dt>
+<b>DESCRIPTION.missing</b></dt>
+<dd>
+Ebuilds that have a missing or empty DESCRIPTION variable</dd>
+</dl>
+<dl>
+<dt>
+<b>EAPI.definition</b></dt>
+<dd>
+EAPI definition does not conform to PMS section 7.3.1 (first non-comment, non-blank line). See bug #402167.</dd>
+</dl>
+<dl>
+<dt>
+<b>EAPI.deprecated</b></dt>
+<dd>
+Ebuilds that use features that are deprecated in the current EAPI</dd>
+</dl>
+<dl>
+<dt>
+<b>EAPI.incompatible</b></dt>
+<dd>
+Ebuilds that use features that are only available with a different EAPI</dd>
+</dl>
+<dl>
+<dt>
+<b>EAPI.unsupported</b></dt>
+<dd>
+Ebuilds that have an unsupported EAPI version (you must upgrade portage)</dd>
+</dl>
+<dl>
+<dt>
+<b>HOMEPAGE.missing</b></dt>
+<dd>
+Ebuilds that have a missing or empty HOMEPAGE variable</dd>
+</dl>
+<dl>
+<dt>
+<b>HOMEPAGE.virtual</b></dt>
+<dd>
+Virtuals that have a non-empty HOMEPAGE variable</dd>
+</dl>
+<dl>
+<dt>
+<b>IUSE.invalid</b></dt>
+<dd>
+This ebuild has a variable in IUSE that is not in the use.desc or its metadata.xml file</dd>
+</dl>
+<dl>
+<dt>
+<b>IUSE.missing</b></dt>
+<dd>
+This ebuild has a USE conditional which references a flag that is not listed in IUSE</dd>
+</dl>
+<dl>
+<dt>
+<b>KEYWORDS.dropped</b></dt>
+<dd>
+Ebuilds that appear to have dropped KEYWORDS for some arch</dd>
+</dl>
+<dl>
+<dt>
+<b>KEYWORDS.invalid</b></dt>
+<dd>
+This ebuild contains KEYWORDS that are not listed in profiles/arch.list or for which no valid profile was found</dd>
+</dl>
+<dl>
+<dt>
+<b>KEYWORDS.missing</b></dt>
+<dd>
+Ebuilds that have a missing or empty KEYWORDS variable</dd>
+</dl>
+<dl>
+<dt>
+<b>KEYWORDS.stable</b></dt>
+<dd>
+Ebuilds that have been added directly with stable KEYWORDS</dd>
+</dl>
+<dl>
+<dt>
+<b>KEYWORDS.stupid</b></dt>
+<dd>
+Ebuilds that use KEYWORDS=-* instead of package.mask</dd>
+</dl>
+<dl>
+<dt>
+<b>LICENSE.deprecated</b></dt>
+<dd>
+This ebuild is listing a deprecated license.</dd>
+</dl>
+<dl>
+<dt>
+<b>LICENSE.invalid</b></dt>
+<dd>
+This ebuild is listing a license that doesnt exist in portages license/ dir.</dd>
+</dl>
+<dl>
+<dt>
+<b>LICENSE.missing</b></dt>
+<dd>
+Ebuilds that have a missing or empty LICENSE variable</dd>
+</dl>
+<dl>
+<dt>
+<b>LICENSE.syntax</b></dt>
+<dd>
+Syntax error in LICENSE (usually an extra/missing space/parenthesis)</dd>
+</dl>
+<dl>
+<dt>
+<b>LICENSE.virtual</b></dt>
+<dd>
+Virtuals that have a non-empty LICENSE variable</dd>
+</dl>
+<dl>
+<dt>
+<b>LIVEVCS.stable</b></dt>
+<dd>
+Ebuild is a live ebuild (cvs, git, darcs, svn, etc) checkout with stable keywords.</dd>
+</dl>
+<dl>
+<dt>
+<b>LIVEVCS.unmasked</b></dt>
+<dd>
+Ebuild is a live ebuild (cvs, git, darcs, svn, etc) checkout but has keywords and is not masked in the global package.mask.</dd>
+</dl>
+<dl>
+<dt>
+<b>PDEPEND.suspect</b></dt>
+<dd>
+PDEPEND contains a package that usually only belongs in DEPEND</dd>
+</dl>
+<dl>
+<dt>
+<b>PROVIDE.syntax</b></dt>
+<dd>
+Syntax error in PROVIDE (usually an extra/missing space/parenthesis)</dd>
+</dl>
+<dl>
+<dt>
+<b>RDEPEND.implicit</b></dt>
+<dd>
+RDEPEND is unset in the ebuild which triggers implicit RDEPEND=$DEPEND assignment (prior to EAPI 4)</dd>
+</dl>
+<dl>
+<dt>
+<b>RDEPEND.suspect</b></dt>
+<dd>
+RDEPEND contains a package that usually only belongs in DEPEND</dd>
+</dl>
+<dl>
+<dt>
+<b>PROPERTIES.syntax</b></dt>
+<dd>
+Syntax error in PROPERTIES (usually an extra/missing space/parenthesis)</dd>
+</dl>
+<dl>
+<dt>
+<b>RESTRICT.syntax</b></dt>
+<dd>
+Syntax error in RESTRICT (usually an extra/missing space/parenthesis) <b>SLOT.invalid</b> Ebuilds that have a missing or invalid SLOT variable value</dd>
+</dl>
+<dl>
+<dt>
+<b>SRC_URI.mirror</b></dt>
+<dd>
+A uri listed in profiles/thirdpartymirrors is found in SRC_URI</dd>
+</dl>
+<dl>
+<dt>
+<b>changelog.ebuildadded</b></dt>
+<dd>
+An ebuild was added but the ChangeLog was not modified</dd>
+</dl>
+<dl>
+<dt>
+<b>changelog.missing</b></dt>
+<dd>
+Missing ChangeLog files</dd>
+</dl>
+<dl>
+<dt>
+<b>changelog.notadded</b></dt>
+<dd>
+ChangeLogs that exist but have not been added to cvs</dd>
+</dl>
+<dl>
+<dt>
+<b>dependency.bad</b></dt>
+<dd>
+User-visible ebuilds with unsatisfied dependencies (matched against *visible* ebuilds)</dd>
+</dl>
+<dl>
+<dt>
+<b>dependency.badindev</b></dt>
+<dd>
+User-visible ebuilds with unsatisfied dependencies (matched against *visible* ebuilds) in developing arch</dd>
+</dl>
+<dl>
+<dt>
+<b>dependency.badmasked</b></dt>
+<dd>
+Masked ebuilds with unsatisfied dependencies (matched against *all* ebuilds)</dd>
+</dl>
+<dl>
+<dt>
+<b>dependency.badmaskedindev</b></dt>
+<dd>
+Masked ebuilds with unsatisfied dependencies (matched against *all* ebuilds) in developing arch</dd>
+</dl>
+<dl>
+<dt>
+<b>dependency.badtilde</b></dt>
+<dd>
+Uses the ~ dep operator with a non-zero revision part, which is useless (the revision is ignored)</dd>
+</dl>
+<dl>
+<dt>
+<b>dependency.syntax</b></dt>
+<dd>
+Syntax error in dependency string (usually an extra/missing space/parenthesis)</dd>
+</dl>
+<dl>
+<dt>
+<b>dependency.unknown</b></dt>
+<dd>
+Ebuild has a dependency that refers to an unknown package (which may be valid if it is a blocker for a renamed/removed package, or is an alternative choice provided by an overlay)</dd>
+</dl>
+<dl>
+<dt>
+<b>digest.assumed</b></dt>
+<dd>
+Existing digest must be assumed correct (Package level only)</dd>
+</dl>
+<dl>
+<dt>
+<b>digest.missing</b></dt>
+<dd>
+Some files listed in SRC_URI aren't referenced in the Manifest</dd>
+</dl>
+<dl>
+<dt>
+<b>digest.unused</b></dt>
+<dd>
+Some files listed in the Manifest aren't referenced in SRC_URI</dd>
+</dl>
+<dl>
+<dt>
+<b>ebuild.badheader</b></dt>
+<dd>
+This ebuild has a malformed header</dd>
+</dl>
+<dl>
+<dt>
+<b>ebuild.invalidname</b></dt>
+<dd>
+Ebuild files with a non-parseable or syntactically incorrect name (or using 2.1 versioning extensions)</dd>
+</dl>
+<dl>
+<dt>
+<b>ebuild.majorsyn</b></dt>
+<dd>
+This ebuild has a major syntax error that may cause the ebuild to fail partially or fully</dd>
+</dl>
+<dl>
+<dt>
+<b>ebuild.minorsyn</b></dt>
+<dd>
+This ebuild has a minor syntax error that contravenes gentoo coding style</dd>
+</dl>
+<dl>
+<dt>
+<b>ebuild.namenomatch</b></dt>
+<dd>
+Ebuild files that do not have the same name as their parent directory</dd>
+</dl>
+<dl>
+<dt>
+<b>ebuild.nesteddie</b></dt>
+<dd>
+Placing 'die' inside ( ) prints an error, but doesn't stop the ebuild.</dd>
+</dl>
+<dl>
+<dt>
+<b>ebuild.notadded</b></dt>
+<dd>
+Ebuilds that exist but have not been added to cvs</dd>
+</dl>
+<dl>
+<dt>
+<b>ebuild.output</b></dt>
+<dd>
+A simple sourcing of the ebuild produces output; this breaks ebuild policy.</dd>
+</dl>
+<dl>
+<dt>
+<b>ebuild.patches</b></dt>
+<dd>
+PATCHES variable should be a bash array to ensure white space safety</dd>
+</dl>
+<dl>
+<dt>
+<b>ebuild.syntax</b></dt>
+<dd>
+Error generating cache entry for ebuild; typically caused by ebuild syntax error or digest verification failure.</dd>
+</dl>
+<dl>
+<dt>
+<b>file.UTF8</b></dt>
+<dd>
+File is not UTF8 compliant</dd>
+</dl>
+<dl>
+<dt>
+<b>file.executable</b></dt>
+<dd>
+Ebuilds, digests, metadata.xml, Manifest, and ChangeLog do not need the executable bit</dd>
+</dl>
+<dl>
+<dt>
+<b>file.name</b></dt>
+<dd>
+File/dir name must be composed of only the following chars: a-zA-Z0-9._-+:</dd>
+</dl>
+<dl>
+<dt>
+<b>file.size</b></dt>
+<dd>
+Files in the files directory must be under 20k</dd>
+</dl>
+<dl>
+<dt>
+<b>inherit.missing</b></dt>
+<dd>
+Ebuild uses functions from an eclass but does not inherit it</dd>
+</dl>
+<dl>
+<dt>
+<b>inherit.unused</b></dt>
+<dd>
+Ebuild inherits an eclass but does not use it</dd>
+</dl>
+<dl>
+<dt>
+<b>inherit.deprecated</b></dt>
+<dd>
+Ebuild inherits a deprecated eclass</dd>
+</dl>
+<dl>
+<dt>
+<b>java.eclassesnotused</b></dt>
+<dd>
+With virtual/jdk in DEPEND you must inherit a java eclass. Refer to  <i>http://www.gentoo.org/proj/en/java/java-devel.xml</i> for more information.</dd>
+</dl>
+<dl>
+<dt>
+<b>manifest.bad</b></dt>
+<dd>
+Manifest has missing or incorrect digests</dd>
+</dl>
+<dl>
+<dt>
+<b>metadata.bad</b></dt>
+<dd>
+Bad metadata.xml files</dd>
+</dl>
+<dl>
+<dt>
+<b>metadata.missing</b></dt>
+<dd>
+Missing metadata.xml files</dd>
+</dl>
+<dl>
+<dt>
+<b>metadata.warning</b></dt>
+<dd>
+Warnings in metadata.xml files</dd>
+</dl>
+<dl>
+<dt>
+<b>repo.eapi.banned</b></dt>
+<dd>
+The ebuild uses an EAPI which is banned by the repository's metadata/layout.conf settings.</dd>
+</dl>
+<dl>
+<dt>
+<b>repo.eapi.deprecated</b></dt>
+<dd>
+The ebuild uses an EAPI which is deprecated by the repository's metadata/layout.conf settings.</dd>
+</dl>
+<dl>
+<dt>
+<b>IUSE.rubydeprecated</b></dt>
+<dd>
+The ebuild has set a ruby interpreter in USE_RUBY, that is not available as a ruby target anymore</dd>
+</dl>
+<dl>
+<dt>
+<b>portage.internal</b></dt>
+<dd>
+The ebuild uses an internal Portage function or variable</dd>
+</dl>
+<dl>
+<dt>
+<b>upstream.workaround</b></dt>
+<dd>
+The ebuild works around an upstream bug, an upstream bug should be filed and tracked in bugs.gentoo.org</dd>
+</dl>
+<dl>
+<dt>
+<b>usage.obsolete</b></dt>
+<dd>
+The ebuild makes use of an obsolete construct</dd>
+</dl>
+<dl>
+<dt>
+<b>variable.invalidchar</b></dt>
+<dd>
+A variable contains an invalid character that is not part of the ASCII character set.</dd>
+</dl>
+<dl>
+<dt>
+<b>variable.readonly</b></dt>
+<dd>
+Assigning a readonly variable</dd>
+</dl>
+<dl>
+<dt>
+<b>variable.usedwithhelpers</b></dt>
+<dd>
+Ebuild uses D, ROOT, ED, EROOT or EPREFIX with helpers</dd>
+</dl>
+<dl>
+<dt>
+<b>virtual.oldstyle</b></dt>
+<dd>
+The ebuild PROVIDEs an old-style virtual (see GLEP 37). This is an error unless &quot;allow-provide-virtuals = true&quot; is set in metadata/layout.conf.</dd>
+</dl>
+<dl>
+<dt>
+<b>virtual.suspect</b></dt>
+<dd>
+Ebuild contains a package that usually should be pulled via virtual/, not directly.</dd>
+</dl>
+<dl>
+<dt>
+<b>wxwidgets.eclassnotused</b></dt>
+<dd>
+Ebuild DEPENDs on x11-libs/wxGTK without inheriting wxwidgets.eclass. Refer to bug #305469 for more information.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>AUTHORS</h1><br/>
+Daniel Robbins &lt;drobbins@gentoo.org&gt;<br/>
+Saleem Abdulrasool &lt;compnerd@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>emerge</b>(1)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2013</td>
+<td class="foot-os">
+Portage 2.2.20</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
 
-<A NAME="lbAB">&nbsp;</A>
-<H2>NAME</H2>
-
-repoman - Gentoo's program to enforce a minimal level of quality assurance in
-packages added to the portage tree
-<A NAME="lbAC">&nbsp;</A>
-<H2>SYNOPSIS</H2>
-
-<B>repoman</B> [<I>option</I>] [<I>mode</I>]
-<A NAME="lbAD">&nbsp;</A>
-<H2>DESCRIPTION</H2>
-
-<B>Quality is job zero.</B>
-
-<P>
-<B>repoman</B>
-
-checks the quality of ebuild repositories.
-<P>
-Note: <B>repoman commit</B> only works <I>inside local</I> cvs, git, or
-subversion repositories.
-<P>
-Note: Messages pertaining to specific lines may be inaccurate in the
-prescence of continuation lines from use of the <I>\</I> character in
-BASH.
-<A NAME="lbAE">&nbsp;</A>
-<H2>OPTIONS</H2>
-
-<DL COMPACT>
-<DT><B>-a</B>, <B>--ask</B><DD>
-Request a confirmation before commiting
-<DT><B>--digest=&lt;y|n&gt;</B><DD>
-Automatically update Manifest digests for modified files. This
-option triggers a behavior that is very similar to that enabled
-by FEATURES=&quot;digest&quot; in <B><A HREF="http://localhost/cgi-bin/man/man2html?5+make.conf">make.conf</A></B>(5). In order to enable
-this behavior by default for repoman alone, add
-<B>--digest=y</B> to the <I>REPOMAN_DEFAULT_OPTS</I> variable in
-<B><A HREF="http://localhost/cgi-bin/man/man2html?5+make.conf">make.conf</A></B>(5). The <B>manifest-check</B> mode will
-automatically ignore the --digest option.
-<P>
-<B>NOTE:</B>
-This option does not trigger update of digests for Manifest DIST
-entries that already exist. Replacement of existing Manifest
-DIST entries can be forced by using the <B>manifest</B> mode
-together with the <B>--force</B> option.
-<DT><B>-f</B>, <B>--force</B><DD>
-Force commit to proceed, regardless of QA issues. For convenience, this option
-causes the most time consuming QA checks to be skipped. The commit message will
-include an indication that this option has been enabled, together with the
-usual portage version stamp.
-<P>
-When used together with <B>manifest</B> mode, <B>--force</B> causes existing
-digests to be replaced for any files that exist in ${DISTDIR}.
-Existing digests are assumed to be correct for files that would otherwise
-have to be downloaded in order to recompute digests. <B>WARNING:</B> When
-replacing existing digests, it is the user's responsibility to ensure that
-files contained in ${DISTDIR} have the correct identities. Especially beware
-of partially downloaded files.
-<DT><B>-S</B>, <B>--straight-to-stable</B><DD>
-Allow committing straight to stable
-<DT><B>-q</B>, <B>--quiet</B><DD>
-Be less verbose about extraneous info
-<DT><B>-p</B>, <B>--pretend</B><DD>
-Don't commit or fix anything; just show what would be done
-<DT><B>-x</B>, <B>--xmlparse</B><DD>
-Forces the metadata.xml parse check to be carried out
-<DT><B>-v</B>, <B>--verbose</B><DD>
-Displays every package name while checking
-<DT><B>--echangelog=&lt;y|n|force&gt;</B><DD>
-For commit mode, call echangelog if ChangeLog is unmodified (or
-regardless of modification if 'force' is specified). This option
-can be enabled by default for a particular repository by setting
-&quot;update-changelog = true&quot; in metadata/layout.conf (see
-<B><A HREF="http://localhost/cgi-bin/man/man2html?5+portage">portage</A></B>(5)).
-<DT><B>--experimental-inherit=&lt;y|n&gt;</B><DD>
-Enable experimental inherit.missing checks which may misbehave when the
-internal eclass database becomes outdated.
-<DT><B>--if-modified=&lt;y|n&gt;</B><DD>
-Only check packages that have uncommitted modifications
-<DT><B>-i</B>, <B>--ignore-arches</B><DD>
-Ignore arch-specific failures (where arch != host)
-<DT><B>--ignore-default-opts</B><DD>
-Do not use the <I>REPOMAN_DEFAULT_OPTS</I> environment variable.
-<DT><B>-I</B>, <B>--ignore-masked</B><DD>
-Ignore masked packages (not allowed with commit mode)
-<DT><B>--include-arches </B>ARCHES
-
-<DD>
-A space separated list of arches used to filter the selection of
-profiles for dependency checks.
-<DT><B>-d</B>, <B>--include-dev</B><DD>
-Include dev profiles in dependency checks.
-<DT><B>-e &lt;y|n&gt;</B>, <B>--include-exp-profiles=&lt;y|n&gt;</B><DD>
-Include exp profiles in dependency checks.
-<DT><B>--unmatched-removal</B><DD>
-Enable strict checking of package.mask and package.unmask files for
-unmatched removal atoms.
-<DT><B>--without-mask</B><DD>
-Behave as if no package.mask entries exist (not allowed with commit mode)
-<DT><B>-m</B>, <B>--commitmsg</B><DD>
-Adds a commit message via the command line
-<DT><B>-M</B>, <B>--commitmsgfile</B><DD>
-Adds a commit message from the specified file
-<DT><B>-V</B>, <B>--version</B><DD>
-Show version info
-<DT><B>-h</B>, <B>--help</B><DD>
-Show this screen
-</DL>
-<A NAME="lbAF">&nbsp;</A>
-<H2>MODES</H2>
-
-<DL COMPACT>
-<DT><B>full</B>
-
-<DD>
-Scan directory tree for QA issues (full listing)
-<DT><B>help</B>
-
-<DD>
-Show this screen
-<DT><B>scan</B>
-
-<DD>
-Scan directory tree for QA issues (short listing)
-<DT><B>fix</B>
-
-<DD>
-Fix simple QA issues (stray digests, missing digests)
-<DT><B>manifest</B>
-
-<DD>
-Generate a Manifest (fetches distfiles if necessary). See the <B>--force</B>
-option if you would like to replace existing distfiles digests.
-<DT><B>manifest-check</B>
-
-<DD>
-Check Manifests for missing or incorrect digests
-<DT><B>commit</B>
-
-<DD>
-Scan directory tree for QA issues; if OK, commit via cvs
-</DL>
-<A NAME="lbAG">&nbsp;</A>
-<H2>QA KEYWORDS</H2>
-
-<DL COMPACT>
-<DT><B>CVS/Entries.IO_error</B>
-
-<DD>
-Attempting to commit, and an IO error was encountered access the Entries file
-<DT><B>DESCRIPTION.missing</B>
-
-<DD>
-Ebuilds that have a missing or empty DESCRIPTION variable
-<DT><B>EAPI.definition</B>
-
-<DD>
-EAPI definition does not conform to PMS section 7.3.1 (first
-non-comment, non-blank line). See bug #402167.
-<DT><B>EAPI.deprecated</B>
-
-<DD>
-Ebuilds that use features that are deprecated in the current EAPI
-<DT><B>EAPI.incompatible</B>
-
-<DD>
-Ebuilds that use features that are only available with a different EAPI
-<DT><B>EAPI.unsupported</B>
-
-<DD>
-Ebuilds that have an unsupported EAPI version (you must upgrade portage)
-<DT><B>HOMEPAGE.missing</B>
-
-<DD>
-Ebuilds that have a missing or empty HOMEPAGE variable
-<DT><B>HOMEPAGE.virtual</B>
-
-<DD>
-Virtuals that have a non-empty HOMEPAGE variable
-<DT><B>IUSE.invalid</B>
-
-<DD>
-This ebuild has a variable in IUSE that is not in the use.desc or its
-metadata.xml file
-<DT><B>IUSE.missing</B>
-
-<DD>
-This ebuild has a USE conditional which references a flag that is not listed in
-IUSE
-<DT><B>KEYWORDS.dropped</B>
-
-<DD>
-Ebuilds that appear to have dropped KEYWORDS for some arch
-<DT><B>KEYWORDS.invalid</B>
-
-<DD>
-This ebuild contains KEYWORDS that are not listed in profiles/arch.list or for
-which no valid profile was found
-<DT><B>KEYWORDS.missing</B>
-
-<DD>
-Ebuilds that have a missing or empty KEYWORDS variable
-<DT><B>KEYWORDS.stable</B>
-
-<DD>
-Ebuilds that have been added directly with stable KEYWORDS
-<DT><B>KEYWORDS.stupid</B>
-
-<DD>
-Ebuilds that use KEYWORDS=-* instead of package.mask
-<DT><B>LICENSE.deprecated</B>
-
-<DD>
-This ebuild is listing a deprecated license.
-<DT><B>LICENSE.invalid</B>
-
-<DD>
-This ebuild is listing a license that doesnt exist in portages license/ dir.
-<DT><B>LICENSE.missing</B>
-
-<DD>
-Ebuilds that have a missing or empty LICENSE variable
-<DT><B>LICENSE.syntax</B>
-
-<DD>
-Syntax error in LICENSE (usually an extra/missing space/parenthesis)
-<DT><B>LICENSE.virtual</B>
-
-<DD>
-Virtuals that have a non-empty LICENSE variable
-<DT><B>LIVEVCS.stable</B>
-
-<DD>
-Ebuild is a live ebuild (cvs, git, darcs, svn, etc) checkout with stable
-keywords.
-<DT><B>LIVEVCS.unmasked</B>
-
-<DD>
-Ebuild is a live ebuild (cvs, git, darcs, svn, etc) checkout but has keywords
-and is not masked in the global package.mask.
-<DT><B>PDEPEND.suspect</B>
-
-<DD>
-PDEPEND contains a package that usually only belongs in DEPEND
-<DT><B>PROVIDE.syntax</B>
-
-<DD>
-Syntax error in PROVIDE (usually an extra/missing space/parenthesis)
-<DT><B>RDEPEND.implicit</B>
-
-<DD>
-RDEPEND is unset in the ebuild which triggers implicit RDEPEND=$DEPEND
-assignment (prior to EAPI 4)
-<DT><B>RDEPEND.suspect</B>
-
-<DD>
-RDEPEND contains a package that usually only belongs in DEPEND
-<DT><B>PROPERTIES.syntax</B>
-
-<DD>
-Syntax error in PROPERTIES (usually an extra/missing space/parenthesis)
-<DT><B>RESTRICT.syntax</B>
-
-<DD>
-Syntax error in RESTRICT (usually an extra/missing space/parenthesis)
-<B>SLOT.invalid</B>
-
-Ebuilds that have a missing or invalid SLOT variable value
-<DT><B>SRC_URI.mirror</B>
-
-<DD>
-A uri listed in profiles/thirdpartymirrors is found in SRC_URI
-<DT><B>changelog.ebuildadded</B>
-
-<DD>
-An ebuild was added but the ChangeLog was not modified
-<DT><B>changelog.missing</B>
-
-<DD>
-Missing ChangeLog files
-<DT><B>changelog.notadded</B>
-
-<DD>
-ChangeLogs that exist but have not been added to cvs
-<DT><B>dependency.bad</B>
-
-<DD>
-User-visible ebuilds with unsatisfied dependencies (matched against *visible*
-ebuilds)
-<DT><B>dependency.badindev</B>
-
-<DD>
-User-visible ebuilds with unsatisfied dependencies (matched against *visible*
-ebuilds) in developing arch
-<DT><B>dependency.badmasked</B>
-
-<DD>
-Masked ebuilds with unsatisfied dependencies (matched against *all* ebuilds)
-<DT><B>dependency.badmaskedindev</B>
-
-<DD>
-Masked ebuilds with unsatisfied dependencies (matched against *all* ebuilds) in
-developing arch
-<DT><B>dependency.badtilde</B>
-
-<DD>
-Uses the ~ dep operator with a non-zero revision part, which is useless (the
-revision is ignored)
-<DT><B>dependency.syntax</B>
-
-<DD>
-Syntax error in dependency string (usually an extra/missing space/parenthesis)
-<DT><B>dependency.unknown</B>
-
-<DD>
-Ebuild has a dependency that refers to an unknown package (which may be
-valid if it is a blocker for a renamed/removed package, or is an
-alternative choice provided by an overlay)
-<DT><B>digest.assumed</B>
-
-<DD>
-Existing digest must be assumed correct (Package level only)
-<DT><B>digest.missing</B>
-
-<DD>
-Some files listed in SRC_URI aren't referenced in the Manifest
-<DT><B>digest.unused</B>
-
-<DD>
-Some files listed in the Manifest aren't referenced in SRC_URI
-<DT><B>ebuild.badheader</B>
-
-<DD>
-This ebuild has a malformed header
-<DT><B>ebuild.invalidname</B>
-
-<DD>
-Ebuild files with a non-parseable or syntactically incorrect name (or using 2.1
-versioning extensions)
-<DT><B>ebuild.majorsyn</B>
-
-<DD>
-This ebuild has a major syntax error that may cause the ebuild to fail
-partially or fully
-<DT><B>ebuild.minorsyn</B>
-
-<DD>
-This ebuild has a minor syntax error that contravenes gentoo coding style
-<DT><B>ebuild.namenomatch</B>
-
-<DD>
-Ebuild files that do not have the same name as their parent directory
-<DT><B>ebuild.nesteddie</B>
-
-<DD>
-Placing 'die' inside ( ) prints an error, but doesn't stop the ebuild.
-<DT><B>ebuild.notadded</B>
-
-<DD>
-Ebuilds that exist but have not been added to cvs
-<DT><B>ebuild.output</B>
-
-<DD>
-A simple sourcing of the ebuild produces output; this breaks ebuild policy.
-<DT><B>ebuild.patches</B>
-
-<DD>
-PATCHES variable should be a bash array to ensure white space safety
-<DT><B>ebuild.syntax</B>
-
-<DD>
-Error generating cache entry for ebuild; typically caused by ebuild syntax
-error or digest verification failure.
-<DT><B>file.UTF8</B>
-
-<DD>
-File is not UTF8 compliant
-<DT><B>file.executable</B>
-
-<DD>
-Ebuilds, digests, metadata.xml, Manifest, and ChangeLog do not need the
-executable bit
-<DT><B>file.name</B>
-
-<DD>
-File/dir name must be composed of only the following chars: a-zA-Z0-9._-+:
-<DT><B>file.size</B>
-
-<DD>
-Files in the files directory must be under 20k
-<DT><B>inherit.missing</B>
-
-<DD>
-Ebuild uses functions from an eclass but does not inherit it
-<DT><B>inherit.unused</B>
-
-<DD>
-Ebuild inherits an eclass but does not use it
-<DT><B>inherit.deprecated</B>
-
-<DD>
-Ebuild inherits a deprecated eclass
-<DT><B>java.eclassesnotused</B>
-
-<DD>
-With virtual/jdk in DEPEND you must inherit a java eclass. Refer to
-<I><A HREF="http://www.gentoo.org/proj/en/java/java-devel.xml">http://www.gentoo.org/proj/en/java/java-devel.xml</A></I> for more information.
-<DT><B>manifest.bad</B>
-
-<DD>
-Manifest has missing or incorrect digests
-<DT><B>metadata.bad</B>
-
-<DD>
-Bad metadata.xml files
-<DT><B>metadata.missing</B>
-
-<DD>
-Missing metadata.xml files
-<DT><B>metadata.warning</B>
-
-<DD>
-Warnings in metadata.xml files
-<DT><B>repo.eapi.banned</B>
-
-<DD>
-The ebuild uses an EAPI which is banned by the repository's
-metadata/layout.conf settings.
-<DT><B>repo.eapi.deprecated</B>
-
-<DD>
-The ebuild uses an EAPI which is deprecated by the repository's
-metadata/layout.conf settings.
-<DT><B>IUSE.rubydeprecated</B>
-
-<DD>
-The ebuild has set a ruby interpreter in USE_RUBY, that is not available as a ruby target anymore
-<DT><B>portage.internal</B>
-
-<DD>
-The ebuild uses an internal Portage function or variable
-<DT><B>upstream.workaround</B>
-
-<DD>
-The ebuild works around an upstream bug, an upstream bug should be filed and
-tracked in bugs.gentoo.org
-<DT><B>usage.obsolete</B>
-
-<DD>
-The ebuild makes use of an obsolete construct
-<DT><B>variable.invalidchar</B>
-
-<DD>
-A variable contains an invalid character that is not part of the ASCII
-character set.
-<DT><B>variable.readonly</B>
-
-<DD>
-Assigning a readonly variable
-<DT><B>variable.usedwithhelpers</B>
-
-<DD>
-Ebuild uses D, ROOT, ED, EROOT or EPREFIX with helpers
-<DT><B>virtual.oldstyle</B>
-
-<DD>
-The ebuild PROVIDEs an old-style virtual (see GLEP 37). This is an error
-unless &quot;allow-provide-virtuals = true&quot; is set in metadata/layout.conf.
-<DT><B>virtual.suspect</B>
-
-<DD>
-Ebuild contains a package that usually should be pulled via virtual/,
-not directly.
-<DT><B>wxwidgets.eclassnotused</B>
-
-<DD>
-Ebuild DEPENDs on x11-libs/wxGTK without inheriting wxwidgets.eclass. Refer to
-bug #305469 for more information.
-</DL>
-<A NAME="lbAH">&nbsp;</A>
-<H2>REPORTING BUGS</H2>
-
-Please report bugs via <A HREF="http://bugs.gentoo.org/">http://bugs.gentoo.org/</A>
-<A NAME="lbAI">&nbsp;</A>
-<H2>AUTHORS</H2>
-
-<PRE>
-Daniel Robbins &lt;drobbins@gentoo.org&gt;
-Saleem Abdulrasool &lt;compnerd@gentoo.org&gt;
-</PRE>
-
-<A NAME="lbAJ">&nbsp;</A>
-<H2>SEE ALSO</H2>
-
-<B><A HREF="http://localhost/cgi-bin/man/man2html?1+emerge">emerge</A></B>(1)
-
-<P>
-
-<HR>
-<A NAME="index">&nbsp;</A><H2>Index</H2>
-<DL>
-<DT><A HREF="#lbAB">NAME</A><DD>
-<DT><A HREF="#lbAC">SYNOPSIS</A><DD>
-<DT><A HREF="#lbAD">DESCRIPTION</A><DD>
-<DT><A HREF="#lbAE">OPTIONS</A><DD>
-<DT><A HREF="#lbAF">MODES</A><DD>
-<DT><A HREF="#lbAG">QA KEYWORDS</A><DD>
-<DT><A HREF="#lbAH">REPORTING BUGS</A><DD>
-<DT><A HREF="#lbAI">AUTHORS</A><DD>
-<DT><A HREF="#lbAJ">SEE ALSO</A><DD>
-</DL>
-<HR>
-This document was created by
-<A HREF="http://github.com/hamano/man2html/">man2html</A>,
-using the manual pages.<BR>
-Time: 17:50:37 GMT, December 02, 2015
-</BODY>
-</HTML>

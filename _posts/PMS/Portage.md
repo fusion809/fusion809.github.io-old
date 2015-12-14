@@ -1,7 +1,16 @@
 ### Portage
 {% include image.html image="GTK-based-Portage-front-end-Porthole.png" description="Screenshot of Porthole running under KDE Plasma 5" width="1366" height="738" %}
 
-{% include links.html sw="En:Portage" wp="Portage_(software)" package="sys-apps/portage" program="Portage" gw="Portage" %} is a package management system that is arguably the most powerful Linux PMS available today. It is written in [Python](https://en.wikipedia.org/wiki/Python_(programming_language)) and [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) script, so as to afford users the ability to script with Portage. Portage installs, removes and upgrades software using the instructions contained in a specialized type of Bash script known as an [**ebuild**](#ebuild).
+{% include links.html sw="En:Portage" wp="Portage_(software)" package="sys-apps/portage" program="Portage" gw="Portage" %} is a package management system that is arguably the most powerful Linux PMS available today. It is written in [Python](https://en.wikipedia.org/wiki/Python_(programming_language)) and [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) script, so as to afford users the ability to script with Portage. Portage installs, removes and upgrades software using the instructions contained in a specialized type of Bash script known as an [**ebuild**](#ebuild). The `sys-apps/portage` package provides the following executable commands:
+* [ebuild](/man/ebuild.1.html)
+* [egencache](/man/egencache.1.html)
+/usr/bin/emerge
+/usr/bin/emerge-webrsync
+/usr/bin/emirrordist
+/usr/bin/portageq
+/usr/bin/quickpkg
+/usr/bin/repoman
+
 
 Portage affords users this extra control via **USE flags**, which are &ldquo;keywords that embodies support and dependency-information for a certain concept&rdquo; (quoted from the [Gentoo Handbook](https://wiki.gentoo.org/wiki/Handbook:X86/Working/USE)), in other words they are keywords that allow users to decide which (if any) optional package features (like language bindings, for example) will be built, when the package itself is built. These USE flags can be enabled or disabled for individual packages (via modifying files in the directory `/etc/portage/package.use`) or for all packages (via editing the `USE="...` line in `/etc/portage/make.conf`. USE flags should not be confused with **package keywords** (individual package keywords can be found in the directory `/etc/portage/package.keywords`, editing keywords for all packages can be done by editing the `ACCEPT_KEYWORDS="..."` line in `/etc/portage/make.conf`), which are entirely separate keywords, that detail architecture support (x86_64 vs. x86) and a few other features. Likewise packages you do not want Portage to emerge under any circumstances (which can be called **masked packages**) can be added to files within the directory `/etc/portage/package.mask`.
 
