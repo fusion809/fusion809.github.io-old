@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+EUTILS.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+EUTILS.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+EUTILS.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> eutils.eclass - many extra (but common) functions that are used in ebuilds</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The eutils eclass contains a suite of functions that complement the ones that ebuild.sh already contain.  The idea is that the functions are not required in all ebuilds but enough utilize them to have a common home rather than having multiple ebuilds implementing the same thing.<div style="height: 1.00em;">
+&#160;</div>
+Due to the nature of this eclass, some functions may have maintainers different from the overall eclass!</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>epause</b> [seconds]</dt>
+<dd>
+Sleep for the specified number of seconds (default of 5 seconds).  Useful when printing a message the user should probably be reading and often used in conjunction with the ebeep function.  If the EPAUSE_IGNORE env var is set, don't wait at all. Defined in EAPIs 0 1 and 2.</dd>
+</dl>
+<dl>
+<dt>
+<b>ebeep</b> [number of beeps]</dt>
+<dd>
+Issue the specified number of beeps (default of 5 beeps).  Useful when printing a message the user should probably be reading and often used in conjunction with the epause function.  If the EBEEP_IGNORE env var is set, don't beep at all. Defined in EAPIs 0 1 and 2.</dd>
+</dl>
+<dl>
+<dt>
+<b>eqawarn</b> [message]</dt>
+<dd>
+Proxy to ewarn for package managers that don't provide eqawarn and use the PM implementation if available. Reuses PORTAGE_ELOG_CLASSES as set by the dev profile.</dd>
+</dl>
+<dl>
+<dt>
+<b>ecvs_clean</b> [list of dirs]</dt>
+<dd>
+Remove CVS directories recursiveley.  Useful when a source tarball contains internal CVS directories.  Defaults to $PWD.</dd>
+</dl>
+<dl>
+<dt>
+<b>esvn_clean</b> [list of dirs]</dt>
+<dd>
+Remove .svn directories recursiveley.  Useful when a source tarball contains internal Subversion directories.  Defaults to $PWD.</dd>
+</dl>
+<dl>
+<dt>
+<b>estack_push</b> &lt;stack&gt; [items to push]</dt>
+<dd>
+Push any number of items onto the specified stack.  Pick a name that is a valid variable (i.e. stick to alphanumerics), and push as many items as you like onto the stack at once.<div style="height: 1.00em;">
+&#160;</div>
+The following code snippet will echo 5, then 4, then 3, then ...<br/>
+	estack_push mystack 1 2 3 4 5<br/>
+	while estack_pop mystack i ; do<br/>
+		echo &quot;${i}&quot;<br/>
+	done<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>estack_pop</b> &lt;stack&gt; [variable]</dt>
+<dd>
+Pop a single item off the specified stack.  If a variable is specified, the popped item is stored there.  If no more items are available, return 1, else return 0.  See estack_push for more info.</dd>
+</dl>
+<dl>
+<dt>
+<b>evar_push</b> &lt;variable to save&gt; [more vars to save]</dt>
+<dd>
+This let's you temporarily modify a variable and then restore it (including set vs unset semantics).  Arrays are not supported at this time.<div style="height: 1.00em;">
+&#160;</div>
+This is meant for variables where using `local` does not work (such as exported variables, or only temporarily changing things in a func).<div style="height: 1.00em;">
+&#160;</div>
+For example:<br/>
+	evar_push LC_ALL<br/>
+	export LC_ALL=C<br/>
+	... do some stuff that needs LC_ALL=C set ...<br/>
+	evar_pop<div class="spacer">
+</div>
+<br/>
+	# You can also save/restore more than one var at a time<br/>
+	evar_push BUTTERFLY IN THE SKY<br/>
+	... do stuff with the vars ...<br/>
+	evar_pop     # This restores just one var, SKY<br/>
+	... do more stuff ...<br/>
+	evar_pop 3   # This pops the remaining 3 vars<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>evar_push_set</b> &lt;variable to save&gt; [new value to store]</dt>
+<dd>
+This is a handy shortcut to save and temporarily set a variable.  If a value is not specified, the var will be unset.</dd>
+</dl>
+<dl>
+<dt>
+<b>evar_pop</b> [number of vars to restore]</dt>
+<dd>
+Restore the variables to the state saved with the corresponding evar_push call.  See that function for more details.</dd>
+</dl>
+<dl>
+<dt>
+<b>eshopts_push</b> [options to `set` or `shopt`]</dt>
+<dd>
+Often times code will want to enable a shell option to change code behavior. Since changing shell options can easily break other pieces of code (which assume the default state), eshopts_push is used to (1) push the current shell options onto a stack and (2) pass the specified arguments to set.<div style="height: 1.00em;">
+&#160;</div>
+If the first argument is '-s' or '-u', we assume you want to call `shopt` rather than `set` as there are some options only available via that.<div style="height: 1.00em;">
+&#160;</div>
+A common example is to disable shell globbing so that special meaning/care may be used with variables/arguments to custom functions.  That would be:<br/>
+	eshopts_push -o noglob<br/>
+	for x in ${foo} ; do<br/>
+		if ...some check... ; then<br/>
+			eshopts_pop<br/>
+			return 0<br/>
+		fi<br/>
+	done<br/>
+	eshopts_pop<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>eshopts_pop</b></dt>
+<dd>
+Restore the shell options to the state saved with the corresponding eshopts_push call.  See that function for more details.</dd>
+</dl>
+<dl>
+<dt>
+<b>eumask_push</b> &lt;new umask&gt;</dt>
+<dd>
+Set the umask to the new value specified while saving the previous value onto a stack.  Useful for temporarily changing the umask.</dd>
+</dl>
+<dl>
+<dt>
+<b>eumask_pop</b></dt>
+<dd>
+Restore the previous umask state.</dd>
+</dl>
+<dl>
+<dt>
+<b>isdigit</b> &lt;number&gt; [more numbers]</dt>
+<dd>
+Return true if all arguments are numbers.</dd>
+</dl>
+<dl>
+<dt>
+<b>EPATCH_SOURCE</b> = <i>&quot;${WORKDIR}/patch&quot;</i></dt>
+<dd>
+Default directory to search for patches.</dd>
+</dl>
+<dl>
+<dt>
+<b>EPATCH_SUFFIX</b> = <i>&quot;patch.bz2&quot;</i></dt>
+<dd>
+Default extension for patches (do not prefix the period yourself).</dd>
+</dl>
+<dl>
+<dt>
+<b>EPATCH_OPTS</b> = <i>&quot;&quot;</i></dt>
+<dd>
+Options to pass to patch.  Meant for ebuild/package-specific tweaking such as forcing the patch level (-p#) or fuzz (-F#) factor.  Note that for single patch tweaking, you can also pass flags directly to epatch.</dd>
+</dl>
+<dl>
+<dt>
+<b>EPATCH_COMMON_OPTS</b> = <i>&quot;-g0 -E --no-backup-if-mismatch&quot;</i></dt>
+<dd>
+Common options to pass to `patch`.  You probably should never need to change these.  If you do, please discuss it with base-system first to be sure.<br/>
+-g0 - keep RCS, ClearCase, Perforce and SCCS happy #24571<br/>
+--no-backup-if-mismatch - do not leave .orig files behind<br/>
+-E - automatically remove empty files<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>EPATCH_EXCLUDE</b> = <i>&quot;&quot;</i></dt>
+<dd>
+List of patches not to apply.	 Note this is only file names, and not the full path.  Globs accepted.</dd>
+</dl>
+<dl>
+<dt>
+<b>EPATCH_SINGLE_MSG</b> = <i>&quot;&quot;</i></dt>
+<dd>
+Change the printed message for a single patch.</dd>
+</dl>
+<dl>
+<dt>
+<b>EPATCH_MULTI_MSG</b> = <i>&quot;Applying various patches (bugfixes/updates) ...&quot;</i></dt>
+<dd>
+Change the printed message for multiple patches.</dd>
+</dl>
+<dl>
+<dt>
+<b>EPATCH_FORCE</b> = <i>&quot;no&quot;</i></dt>
+<dd>
+Only require patches to match EPATCH_SUFFIX rather than the extended arch naming style.</dd>
+</dl>
+<dl>
+<dt>
+<b>EPATCH_USER_EXCLUDE</b></dt>
+<dd>
+List of patches not to apply.	 Note this is only file names, and not the full path.  Globs accepted.</dd>
+</dl>
+<dl>
+<dt>
+<b>epatch</b> [options] [patches] [dirs of patches]</dt>
+<dd>
+epatch is designed to greatly simplify the application of patches.  It can process patch files directly, or directories of patches.  The patches may be compressed (bzip/gzip/etc...) or plain text.  You generally need not specify the -p option as epatch will automatically attempt -p0 to -p4 until things apply successfully.<div style="height: 1.00em;">
+&#160;</div>
+If you do not specify any patches/dirs, then epatch will default to the directory specified by EPATCH_SOURCE.<div style="height: 1.00em;">
+&#160;</div>
+Any options specified that start with a dash will be passed down to patch for this specific invocation.  As soon as an arg w/out a dash is found, then arg processing stops.<div style="height: 1.00em;">
+&#160;</div>
+When processing directories, epatch will apply all patches that match:<br/>
+if ${EPATCH_FORCE} != &quot;yes&quot;<br/>
+	??_${ARCH}_foo.${EPATCH_SUFFIX}<br/>
+else<br/>
+	*.${EPATCH_SUFFIX}<br/>
+The leading ?? are typically numbers used to force consistent patch ordering. The arch field is used to apply patches only for the host architecture with the special value of &quot;all&quot; means apply for everyone.  Note that using values other than &quot;all&quot; is highly discouraged -- you should apply patches all the time and let architecture details be detected at configure/compile time.<div style="height: 1.00em;">
+&#160;</div>
+If EPATCH_SUFFIX is empty, then no period before it is implied when searching for patches to apply.<div style="height: 1.00em;">
+&#160;</div>
+Refer to the other EPATCH_xxx variables for more customization of behavior.</dd>
+</dl>
+<dl>
+<dt>
+<b>epatch_user</b></dt>
+<dd>
+Applies user-provided patches to the source tree. The patches are taken from /etc/portage/patches/&lt;CATEGORY&gt;/&lt;P-PR|P|PN&gt;[:SLOT]/, where the first of these three directories to exist will be the one to use, ignoring any more general directories which might exist as well. They must end in &quot;.patch&quot; to be applied.<div style="height: 1.00em;">
+&#160;</div>
+User patches are intended for quick testing of patches without ebuild modifications, as well as for permanent customizations a user might desire. Obviously, there can be no official support for arbitrarily patched ebuilds. So whenever a build log in a bug report mentions that user patches were applied, the user should be asked to reproduce the problem without these.<div style="height: 1.00em;">
+&#160;</div>
+Not all ebuilds do call this function, so placing patches in the stated directory might or might not work, depending on the package and the eclasses it inherits and uses. It is safe to call the function repeatedly, so it is always possible to add a call at the ebuild level. The first call is the time when the patches will be applied.<div style="height: 1.00em;">
+&#160;</div>
+Ideally, this function should be called after gentoo-specific patches have been applied, so that their code can be modified as well, but before calls to e.g. eautoreconf, as the user patches might affect autotool input files as well.</dd>
+</dl>
+<dl>
+<dt>
+<b>emktemp</b> [temp dir]</dt>
+<dd>
+Cheap replacement for when debianutils (and thus mktemp) does not exist on the users system.</dd>
+</dl>
+<dl>
+<dt>
+<b>edos2unix</b> &lt;file&gt; [more files ...]</dt>
+<dd>
+A handy replacement for dos2unix, recode, fixdos, etc...  This allows you to remove all of these text utilities from DEPEND variables because this is a script based solution.  Just give it a list of files to convert and they will all be changed from the DOS CRLF format to the UNIX LF format.</dd>
+</dl>
+<dl>
+<dt>
+<b>make_desktop_entry</b> make_desktop_entry(&lt;command&gt;, [name], [icon], [type], [fields])</dt>
+<dd>
+Make a .desktop file.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+binary:   what command does the app run with ?<br/>
+name:     the name that will show up in the menu<br/>
+icon:     the icon to use in the menu entry<br/>
+          this can be relative (to /usr/share/pixmaps) or<br/>
+          a full path to an icon<br/>
+type:     what kind of application is this?<br/>
+          for categories:<br/>
+          http://standards.freedesktop.org/menu-spec/latest/apa.html<br/>
+          if unset, function tries to guess from package's category<br/>
+fields:	extra fields to append to the desktop file; a printf string<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>validate_desktop_entries</b> [directories]</dt>
+<dd>
+Validate desktop entries using desktop-file-utils</dd>
+</dl>
+<dl>
+<dt>
+<b>make_session_desktop</b> &lt;title&gt; &lt;command&gt; [command args...]</dt>
+<dd>
+Make a GDM/KDM Session file.  The title is the file to execute to start the Window Manager.  The command is the name of the Window Manager.<div style="height: 1.00em;">
+&#160;</div>
+You can set the name of the file via the ${wm} variable.</dd>
+</dl>
+<dl>
+<dt>
+<b>domenu</b> &lt;menus&gt;</dt>
+<dd>
+Install the list of .desktop menu files into the appropriate directory (/usr/share/applications).</dd>
+</dl>
+<dl>
+<dt>
+<b>newmenu</b> &lt;menu&gt; &lt;newname&gt;</dt>
+<dd>
+Like all other new* functions, install the specified menu as newname.</dd>
+</dl>
+<dl>
+<dt>
+<b>doicon</b> [options] &lt;icons&gt;</dt>
+<dd>
+Install icon into the icon directory /usr/share/icons or into /usr/share/pixmaps if &quot;--size&quot; is not set. This is useful in conjunction with creating desktop/menu files.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+ options:<br/>
+ -s, --size<br/>
+   !!! must specify to install into /usr/share/icons/... !!!<br/>
+   size of the icon, like 48 or 48x48<br/>
+   supported icon sizes are:<br/>
+   16 22 24 32 36 48 64 72 96 128 192 256 scalable<br/>
+ -c, --context<br/>
+   defaults to &quot;apps&quot;<br/>
+ -t, --theme<br/>
+   defaults to &quot;hicolor&quot;<div class="spacer">
+</div>
+<br/>
+icons: list of icons<div class="spacer">
+</div>
+<br/>
+example 1: doicon foobar.png fuqbar.svg suckbar.png<br/>
+results in: insinto /usr/share/pixmaps<br/>
+            doins foobar.png fuqbar.svg suckbar.png<div class="spacer">
+</div>
+<br/>
+example 2: doicon -s 48 foobar.png fuqbar.png blobbar.png<br/>
+results in: insinto /usr/share/icons/hicolor/48x48/apps<br/>
+            doins foobar.png fuqbar.png blobbar.png<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>newicon</b> [options] &lt;icon&gt; &lt;newname&gt;</dt>
+<dd>
+Like doicon, install the specified icon as newname.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+example 1: newicon foobar.png NEWNAME.png<br/>
+results in: insinto /usr/share/pixmaps<br/>
+            newins foobar.png NEWNAME.png<div class="spacer">
+</div>
+<br/>
+example 2: newicon -s 48 foobar.png NEWNAME.png<br/>
+results in: insinto /usr/share/icons/hicolor/48x48/apps<br/>
+            newins foobar.png NEWNAME.png<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>strip-linguas</b> [&lt;allow LINGUAS&gt;|&lt;-i|-u&gt; &lt;directories of .po files&gt;]</dt>
+<dd>
+Make sure that LINGUAS only contains languages that a package can support.  The first form allows you to specify a list of LINGUAS.  The -i builds a list of po files found in all the directories and uses the intersection of the lists.  The -u builds a list of po files found in all the directories and uses the union of the lists.</dd>
+</dl>
+<dl>
+<dt>
+<b>preserve_old_lib</b> &lt;libs to preserve&gt; [more libs]</dt>
+<dd>
+These functions are useful when a lib in your package changes ABI SONAME. An example might be from libogg.so.0 to libogg.so.1.  Removing libogg.so.0 would break packages that link against it.  Most people get around this by using the portage SLOT mechanism, but that is not always a relevant solution, so instead you can call this from pkg_preinst.  See also the preserve_old_lib_notify function.</dd>
+</dl>
+<dl>
+<dt>
+<b>preserve_old_lib_notify</b> &lt;libs to notify&gt; [more libs]</dt>
+<dd>
+Spit helpful messages about the libraries preserved by preserve_old_lib.</dd>
+</dl>
+<dl>
+<dt>
+<b>built_with_use</b> [--hidden] [--missing &lt;action&gt;] [-a|-o] &lt;DEPEND ATOM&gt; &lt;List of USE flags&gt;</dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+Deprecated: Use EAPI 2 use deps in DEPEND|RDEPEND and with has_version calls.<div style="height: 1.00em;">
+&#160;</div>
+A temporary hack until portage properly supports DEPENDing on USE flags being enabled in packages.  This will check to see if the specified DEPEND atom was built with the specified list of USE flags.  The --missing option controls the behavior if called on a package that does not actually support the defined USE flags (aka listed in IUSE). The default is to abort (call die).  The -a and -o flags control the requirements of the USE flags.  They correspond to &quot;and&quot; and &quot;or&quot; logic.  So the -a flag means all listed USE flags must be enabled while the -o flag means at least one of the listed IUSE flags must be enabled.  The --hidden option is really for internal use only as it means the USE flag we're checking is hidden expanded, so it won't be found in IUSE like normal USE flags.<div style="height: 1.00em;">
+&#160;</div>
+Remember that this function isn't terribly intelligent so order of optional flags matter.</dd>
+</dl>
+<dl>
+<dt>
+<b>epunt_cxx</b> [dir to scan]</dt>
+<dd>
+Many configure scripts wrongly bail when a C++ compiler could not be detected.  If dir is not specified, then it defaults to ${S}.<div style="height: 1.00em;">
+&#160;</div>
+http://bugs.gentoo.org/73450</dd>
+</dl>
+<dl>
+<dt>
+<b>make_wrapper</b> &lt;wrapper&gt; &lt;target&gt; [chdir] [libpaths] [installpath]</dt>
+<dd>
+Create a shell wrapper script named wrapper in installpath (defaults to the bindir) to execute target (default of wrapper) by first optionally setting LD_LIBRARY_PATH to the colon-delimited libpaths followed by optionally changing directory to chdir.</dd>
+</dl>
+<dl>
+<dt>
+<b>path_exists</b> [-a|-o] &lt;paths&gt;</dt>
+<dd>
+Check if the specified paths exist.  Works for all types of paths (files/dirs/etc...).  The -a and -o flags control the requirements of the paths.  They correspond to &quot;and&quot; and &quot;or&quot; logic.  So the -a flag means all the paths must exist while the -o flag means at least one of the paths must exist.  The default behavior is &quot;and&quot;.  If no paths are specified, then the return value is &quot;false&quot;.</dd>
+</dl>
+<dl>
+<dt>
+<b>in_iuse</b> &lt;flag&gt;</dt>
+<dd>
+Determines whether the given flag is in IUSE. Strips IUSE default prefixes as necessary.<div style="height: 1.00em;">
+&#160;</div>
+Note that this function should not be used in the global scope.</dd>
+</dl>
+<dl>
+<dt>
+<b>use_if_iuse</b> &lt;flag&gt;</dt>
+<dd>
+Return true if the given flag is in USE and IUSE.<div style="height: 1.00em;">
+&#160;</div>
+Note that this function should not be used in the global scope.</dd>
+</dl>
+<dl>
+<dt>
+<b>usex</b> &lt;USE flag&gt; [true output] [false output] [true suffix] [false suffix]</dt>
+<dd>
+Proxy to declare usex for package managers or EAPIs that do not provide it and use the package manager implementation when available (i.e. EAPI &gt;= 5). If USE flag is set, echo [true output][true suffix] (defaults to &quot;yes&quot;), otherwise echo [false output][false suffix] (defaults to &quot;no&quot;).</dd>
+</dl>
+<dl>
+<dt>
+<b>prune_libtool_files</b> [--all|--modules]</dt>
+<dd>
+Locate unnecessary libtool files (.la) and libtool static archives (.a) and remove them from installation image.<div style="height: 1.00em;">
+&#160;</div>
+By default, .la files are removed whenever the static linkage can either be performed using pkg-config or doesn't introduce additional flags.<div style="height: 1.00em;">
+&#160;</div>
+If '--modules' argument is passed, .la files for modules (plugins) are removed as well. This is usually useful when the package installs plugins and the plugin loader does not use .la files.<div style="height: 1.00em;">
+&#160;</div>
+If '--all' argument is passed, all .la files are removed without performing any heuristic on them. You shouldn't ever use that, and instead report a bug in the algorithm instead.<div style="height: 1.00em;">
+&#160;</div>
+The .a files are only removed whenever corresponding .la files state that they should not be linked to, i.e. whenever these files correspond to plugins.<div style="height: 1.00em;">
+&#160;</div>
+Note: if your package installs both static libraries and .pc files which use variable substitution for -l flags, you need to add pkg-config to your DEPEND.</dd>
+</dl>
+<dl>
+<dt>
+<b>einstalldocs</b></dt>
+<dd>
+Install documentation using DOCS and HTML_DOCS.<div style="height: 1.00em;">
+&#160;</div>
+If DOCS is declared and non-empty, all files listed in it are installed. The files must exist, otherwise the function will fail. In EAPI 4 and subsequent EAPIs DOCS may specify directories as well, in other EAPIs using directories is unsupported.<div style="height: 1.00em;">
+&#160;</div>
+If DOCS is not declared, the files matching patterns given in the default EAPI implementation of src_install will be installed. If this is undesired, DOCS can be set to empty value to prevent any documentation from being installed.<div style="height: 1.00em;">
+&#160;</div>
+If HTML_DOCS is declared and non-empty, all files and/or directories listed in it are installed as HTML docs (using dohtml).<div style="height: 1.00em;">
+&#160;</div>
+Both DOCS and HTML_DOCS can either be an array or a whitespace- separated list. Whenever directories are allowed, '&lt;directory&gt;/.' may be specified in order to install all files within the directory without creating a sub-directory in docdir.<div style="height: 1.00em;">
+&#160;</div>
+Passing additional options to dodoc and dohtml is not supported. If you needed such a thing, you need to call those helpers explicitly.</dd>
+</dl>
+<dl>
+<dt>
+<b>optfeature</b> &lt;short description&gt; &lt;package atom to match&gt; [other atoms]</dt>
+<dd>
+Print out a message suggesting an optional package (or packages) which provide the described functionality<div style="height: 1.00em;">
+&#160;</div>
+The following snippet would suggest app-misc/foo for optional foo support, app-misc/bar or app-misc/baz[bar] for optional bar support and either both app-misc/a and app-misc/b or app-misc/c for alphabet support.<br/>
+optfeature &quot;foo support&quot; app-misc/foo<br/>
+optfeature &quot;bar support&quot; app-misc/bar app-misc/baz[bar]<br/>
+optfeature &quot;alphabet support&quot; &quot;app-misc/a app-misc/b&quot; app-misc/c<br/>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+base-system@gentoo.org<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/eutils.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/eutils.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

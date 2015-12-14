@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+GAMES.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+GAMES.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+GAMES.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> games.eclass - Standardizing the install of games.</div>
+<div class="section">
+<h1>DESCRIPTION</h1> This eclass makes sure that games are consistently handled in gentoo. It installs game files by default in FHS-compatible directories like /usr/share/games and sets more restrictive permissions in order to avoid some security bugs.<div style="height: 1.00em;">
+&#160;</div>
+The installation directories as well as the user and group files are installed as can be controlled by the user. See the variables like GAMES_BINDIR, GAMES_USER etc. below. These are NOT supposed to be set by ebuilds!<div style="height: 1.00em;">
+&#160;</div>
+For a general guide on writing games ebuilds, see: https://wiki.gentoo.org/wiki/Project:Games/Ebuild_howto</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>games_get_libdir</b></dt>
+<dd>
+Gets the directory where to install games libraries. This is in LDPATH.</dd>
+</dl>
+<dl>
+<dt>
+<b>egamesconf</b> [&lt;args&gt;...]</dt>
+<dd>
+Games equivalent to 'econf' for autotools based build systems. It passes the necessary games specific directories automatically.</dd>
+</dl>
+<dl>
+<dt>
+<b>dogamesbin</b> &lt;path&gt;...</dt>
+<dd>
+Install one or more games binaries.</dd>
+</dl>
+<dl>
+<dt>
+<b>dogamessbin</b> &lt;path&gt;...</dt>
+<dd>
+Install one or more games system binaries.</dd>
+</dl>
+<dl>
+<dt>
+<b>dogameslib</b> &lt;path&gt;...</dt>
+<dd>
+Install one or more games libraries.</dd>
+</dl>
+<dl>
+<dt>
+<b>dogameslib.a</b> &lt;path&gt;...</dt>
+<dd>
+Install one or more static games libraries.</dd>
+</dl>
+<dl>
+<dt>
+<b>dogameslib.so</b> &lt;path&gt;...</dt>
+<dd>
+Install one or more shared games libraries.</dd>
+</dl>
+<dl>
+<dt>
+<b>newgamesbin</b> &lt;path&gt; &lt;newname&gt;</dt>
+<dd>
+Install one games binary with a new name.</dd>
+</dl>
+<dl>
+<dt>
+<b>newgamessbin</b> &lt;path&gt; &lt;newname&gt;</dt>
+<dd>
+Install one system games binary with a new name.</dd>
+</dl>
+<dl>
+<dt>
+<b>games_make_wrapper</b> &lt;wrapper&gt; &lt;target&gt; [chdir] [libpaths] [installpath]</dt>
+<dd>
+Create a shell wrapper script named wrapper in installpath (defaults to the games bindir) to execute target (default of wrapper) by first optionally setting LD_LIBRARY_PATH to the colon-delimited libpaths followed by optionally changing directory to chdir.</dd>
+</dl>
+<dl>
+<dt>
+<b>gamesowners</b> [&lt;args excluding owner/group&gt;...] &lt;path&gt;...</dt>
+<dd>
+Run 'chown' with the given args on the given files. Owner and group are GAMES_USER and GAMES_GROUP and must not be passed as args.</dd>
+</dl>
+<dl>
+<dt>
+<b>gamesperms</b> &lt;path&gt;...</dt>
+<dd>
+Run 'chmod' with games specific permissions on the given files.</dd>
+</dl>
+<dl>
+<dt>
+<b>prepgamesdirs</b></dt>
+<dd>
+Fix all permissions/owners of files in games related directories, usually called at the end of src_install().</dd>
+</dl>
+<dl>
+<dt>
+<b>games_pkg_setup</b></dt>
+<dd>
+Export some toolchain specific variables and create games related groups and users. This function is exported as pkg_setup().</dd>
+</dl>
+<dl>
+<dt>
+<b>games_src_configure</b></dt>
+<dd>
+Runs egamesconf if there is a configure file. This function is exported as src_configure().</dd>
+</dl>
+<dl>
+<dt>
+<b>games_src_compile</b></dt>
+<dd>
+Runs base_src_make(). This function is exported as src_compile().</dd>
+</dl>
+<dl>
+<dt>
+<b>games_pkg_preinst</b></dt>
+<dd>
+Synchronizes GAMES_STATEDIR of the ebuild image with the live filesystem.</dd>
+</dl>
+<dl>
+<dt>
+<b>games_pkg_postinst</b></dt>
+<dd>
+Prints some warnings and infos, also related to games groups.</dd>
+</dl>
+<dl>
+<dt>
+<b>games_ut_unpack</b> &lt;directory or file to unpack&gt;</dt>
+<dd>
+Unpack .uz2 files for UT2003/UT2004.</dd>
+</dl>
+<dl>
+<dt>
+<b>games_umod_unpack</b> &lt;file to unpack&gt;</dt>
+<dd>
+Unpacks .umod/.ut2mod/.ut4mod files for UT/UT2003/UT2004. Don't forget to set 'dir' and 'Ddir'.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ECLASS VARIABLES</h1><dl>
+<dt>
+<b>GAMES_PREFIX</b> = <i>${GAMES_PREFIX:-/usr/games}</i></dt>
+<dd>
+Prefix where to install games, mostly used by GAMES_BINDIR. Games data should still go into GAMES_DATADIR. May be set by the user.</dd>
+</dl>
+<dl>
+<dt>
+<b>GAMES_PREFIX_OPT</b> = <i>${GAMES_PREFIX_OPT:-/opt}</i></dt>
+<dd>
+Prefix where to install precompiled/blob games, usually followed by package name. May be set by the user.</dd>
+</dl>
+<dl>
+<dt>
+<b>GAMES_DATADIR</b> = <i>${GAMES_DATADIR:-/usr/share/games}</i></dt>
+<dd>
+Base directory where to install game data files, usually followed by package name. May be set by the user.</dd>
+</dl>
+<dl>
+<dt>
+<b>GAMES_DATADIR_BASE</b> = <i>${GAMES_DATADIR_BASE:-/usr/share}</i></dt>
+<dd>
+Similar to GAMES_DATADIR, but only used when a package auto appends 'games' to the path. May be set by the user.</dd>
+</dl>
+<dl>
+<dt>
+<b>GAMES_SYSCONFDIR</b> = <i>${GAMES_SYSCONFDIR:-/etc/games}</i></dt>
+<dd>
+Where to install global games configuration files, usually followed by package name. May be set by the user.</dd>
+</dl>
+<dl>
+<dt>
+<b>GAMES_STATEDIR</b> = <i>${GAMES_STATEDIR:-/var/games}</i></dt>
+<dd>
+Where to install/store global variable game data, usually followed by package name. May be set by the user.</dd>
+</dl>
+<dl>
+<dt>
+<b>GAMES_LOGDIR</b> = <i>${GAMES_LOGDIR:-/var/log/games}</i></dt>
+<dd>
+Where to store global game log files, usually followed by package name. May be set by the user.</dd>
+</dl>
+<dl>
+<dt>
+<b>GAMES_BINDIR</b> = <i>${GAMES_BINDIR:-${GAMES_PREFIX}/bin}</i></dt>
+<dd>
+Where to install the game binaries. May be set by the user. This is in PATH.</dd>
+</dl>
+<dl>
+<dt>
+<b>GAMES_USER</b> = <i>${GAMES_USER:-root}</i></dt>
+<dd>
+The USER who owns all game files and usually has write permissions. May be set by the user.</dd>
+</dl>
+<dl>
+<dt>
+<b>GAMES_USER_DED</b> = <i>${GAMES_USER_DED:-games}</i></dt>
+<dd>
+The USER who owns all game files related to the dedicated server part of a package. May be set by the user.</dd>
+</dl>
+<dl>
+<dt>
+<b>GAMES_GROUP</b> = <i>${GAMES_GROUP:-games}</i></dt>
+<dd>
+The GROUP that owns all game files and usually does not have write permissions. May be set by the user. If you want games world-executable, then you can at least set this variable to 'users' which is almost the same.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+Games team &lt;games@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/games.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/games.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

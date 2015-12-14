@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+DISTUTILS-R1.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+DISTUTILS-R1.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+DISTUTILS-R1.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> distutils-r1.eclass - A simple eclass to build Python packages using distutils.</div>
+<div class="section">
+<h1>DESCRIPTION</h1> A simple eclass providing functions to build Python packages using the distutils build system. It exports phase functions for all the src_* phases. Each of the phases runs two pseudo-phases: python_..._all() (e.g. python_prepare_all()) once in ${S}, then python_...() (e.g. python_prepare()) for each implementation (see: python_foreach_impl() in python-r1).<div style="height: 1.00em;">
+&#160;</div>
+In distutils-r1_src_prepare(), the 'all' function is run before per-implementation ones (because it creates the implementations), per-implementation functions are run in a random order.<div style="height: 1.00em;">
+&#160;</div>
+In remaining phase functions, the per-implementation functions are run before the 'all' one, and they are ordered from the least to the most preferred implementation (so that 'better' files overwrite 'worse' ones).<div style="height: 1.00em;">
+&#160;</div>
+If the ebuild doesn't specify a particular pseudo-phase function, the default one will be used (distutils-r1_...). Defaults are provided for all per-implementation pseudo-phases, python_prepare_all() and python_install_all(); whenever writing your own pseudo-phase functions, you should consider calling the defaults (and especially distutils-r1_python_prepare_all).<div style="height: 1.00em;">
+&#160;</div>
+Please note that distutils-r1 sets RDEPEND and DEPEND unconditionally for you.<div style="height: 1.00em;">
+&#160;</div>
+Also, please note that distutils-r1 will always inherit python-r1 as well. Thus, all the variables defined and documented there are relevant to the packages using distutils-r1.<div style="height: 1.00em;">
+&#160;</div>
+For more information, please see the wiki: https://wiki.gentoo.org/wiki/Project:Python/distutils-r1</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>esetup.py</b> [&lt;args&gt;...]</dt>
+<dd>
+Run setup.py using currently selected Python interpreter (if ${PYTHON} is set; fallback 'python' otherwise).<div style="height: 1.00em;">
+&#160;</div>
+setup.py will be passed the following, in order: 1. ${mydistutilsargs[@]} 2. additional arguments passed to the esetup.py function.<div style="height: 1.00em;">
+&#160;</div>
+Please note that setup.py will respect defaults (unless overriden via command-line options) from setup.cfg that is created in distutils-r1_python_compile and in distutils-r1_python_install.<div style="height: 1.00em;">
+&#160;</div>
+This command dies on failure.</dd>
+</dl>
+<dl>
+<dt>
+<b>distutils_install_for_testing</b> [&lt;args&gt;...]</dt>
+<dd>
+Install the package into a temporary location for running tests. Update PYTHONPATH appropriately and set TEST_DIR to the test installation root. The Python packages will be installed in 'lib' subdir, and scripts in 'scripts' subdir (like in BUILD_DIR).<div style="height: 1.00em;">
+&#160;</div>
+Please note that this function should be only used if package uses namespaces (and therefore proper install needs to be done to enforce PYTHONPATH) or tests rely on the results of install command. For most of the packages, tests built in BUILD_DIR are good enough.</dd>
+</dl>
+<dl>
+<dt>
+<b>distutils-r1_python_prepare_all</b></dt>
+<dd>
+The default python_prepare_all(). It applies the patches from PATCHES array, then user patches and finally calls python_copy_sources to create copies of resulting sources for each Python implementation.<div style="height: 1.00em;">
+&#160;</div>
+At some point in the future, it may also apply eclass-specific distutils patches and/or quirks.</dd>
+</dl>
+<dl>
+<dt>
+<b>distutils-r1_python_prepare</b></dt>
+<dd>
+The default python_prepare(). A no-op.</dd>
+</dl>
+<dl>
+<dt>
+<b>distutils-r1_python_configure</b></dt>
+<dd>
+The default python_configure(). A no-op.</dd>
+</dl>
+<dl>
+<dt>
+<b>distutils-r1_python_compile</b> [additional-args...]</dt>
+<dd>
+The default python_compile(). Runs 'esetup.py build'. Any parameters passed to this function will be appended to setup.py invocation, i.e. passed as options to the 'build' command.<div style="height: 1.00em;">
+&#160;</div>
+This phase also sets up initial setup.cfg with build directories and copies upstream egg-info files if supplied.</dd>
+</dl>
+<dl>
+<dt>
+<b>distutils-r1_python_install</b> [additional-args...]</dt>
+<dd>
+The default python_install(). Runs 'esetup.py install', doing intermediate root install and handling script wrapping afterwards. Any parameters passed to this function will be appended to the setup.py invocation (i.e. as options to the 'install' command).<div style="height: 1.00em;">
+&#160;</div>
+This phase updates the setup.cfg file with install directories.</dd>
+</dl>
+<dl>
+<dt>
+<b>distutils-r1_python_install_all</b></dt>
+<dd>
+The default python_install_all(). It installs the documentation.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ECLASS VARIABLES</h1><dl>
+<dt>
+<b>DISTUTILS_OPTIONAL</b></dt>
+<dd>
+If set to a non-null value, distutils part in the ebuild will be considered optional. No dependencies will be added and no phase functions will be exported.<div style="height: 1.00em;">
+&#160;</div>
+If you enable DISTUTILS_OPTIONAL, you have to set proper dependencies for your package (using ${PYTHON_DEPS}) and to either call distutils-r1 default phase functions or call the build system manually.</dd>
+</dl>
+<dl>
+<dt>
+<b>DISTUTILS_SINGLE_IMPL</b></dt>
+<dd>
+If set to a non-null value, the ebuild will support setting a single Python implementation only. It will effectively replace the python-r1 eclass inherit with python-single-r1.<div style="height: 1.00em;">
+&#160;</div>
+Note that inheriting python-single-r1 will cause pkg_setup() to be exported. It must be run in order for the eclass functions to function properly.</dd>
+</dl>
+<dl>
+<dt>
+<b>PATCHES</b></dt>
+<dd>
+An array containing patches to be applied to the sources before copying them.<div style="height: 1.00em;">
+&#160;</div>
+If unset, no custom patches will be applied.<div style="height: 1.00em;">
+&#160;</div>
+Please note, however, that at some point the eclass may apply additional distutils patches/quirks independently of this variable.<div style="height: 1.00em;">
+&#160;</div>
+Example:<br/>
+PATCHES=( &quot;${FILESDIR}&quot;/${P}-make-gentoo-happy.patch )<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>DOCS</b></dt>
+<dd>
+An array containing documents installed using dodoc. The files listed there must exist in the directory from which distutils-r1_python_install_all() is run (${S} by default).<div style="height: 1.00em;">
+&#160;</div>
+If unset, the function will instead look up files matching default filename pattern list (from the Package Manager Specification), and install those found.<div style="height: 1.00em;">
+&#160;</div>
+Example:<br/>
+DOCS=( NEWS README )<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>HTML_DOCS</b></dt>
+<dd>
+An array containing documents installed using dohtml. The files and directories listed there must exist in the directory from which distutils-r1_python_install_all() is run (${S} by default).<div style="height: 1.00em;">
+&#160;</div>
+If unset, no HTML docs will be installed.<div style="height: 1.00em;">
+&#160;</div>
+Example:<br/>
+HTML_DOCS=( doc/html/. )<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>EXAMPLES</b></dt>
+<dd>
+An array containing examples installed into 'examples' doc subdirectory. The files and directories listed there must exist in the directory from which distutils-r1_python_install_all() is run (${S} by default).<div style="height: 1.00em;">
+&#160;</div>
+The 'examples' subdirectory will be marked not to be compressed automatically.<div style="height: 1.00em;">
+&#160;</div>
+If unset, no examples will be installed.<div style="height: 1.00em;">
+&#160;</div>
+Example:<br/>
+EXAMPLES=( examples/. demos/. )<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>DISTUTILS_IN_SOURCE_BUILD</b></dt>
+<dd>
+If set to a non-null value, in-source builds will be enabled. If unset, the default is to use in-source builds when python_prepare() is declared, and out-of-source builds otherwise.<div style="height: 1.00em;">
+&#160;</div>
+If in-source builds are used, the eclass will create a copy of package sources for each Python implementation in python_prepare_all(), and work on that copy afterwards.<div style="height: 1.00em;">
+&#160;</div>
+If out-of-source builds are used, the eclass will instead work on the sources directly, prepending setup.py arguments with files in the specific root.</dd>
+</dl>
+<dl>
+<dt>
+<b>DISTUTILS_ALL_SUBPHASE_IMPLS</b></dt>
+<dd>
+An array of patterns specifying which implementations can be used for *_all() sub-phase functions. If undefined, defaults to '*' (allowing any implementation). If multiple values are specified, implementations matching any of the patterns will be accepted.<div style="height: 1.00em;">
+&#160;</div>
+If the restriction needs to apply conditionally to a USE flag, the variable should be set conditionally as well (e.g. in an early phase function or other convenient location).<div style="height: 1.00em;">
+&#160;</div>
+Please remember to add a matching || block to REQUIRED_USE, to ensure that at least one implementation matching the patterns will be enabled.<div style="height: 1.00em;">
+&#160;</div>
+Example:<br/>
+REQUIRED_USE=&quot;doc? ( || ( $(python_gen_useflags 'python2*') ) )&quot;<div class="spacer">
+</div>
+<br/>
+pkg_setup() {<br/>
+    use doc &amp;&amp; DISTUTILS_ALL_SUBPHASE_IMPLS=( 'python2*' )<br/>
+}<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>mydistutilsargs</b></dt>
+<dd>
+An array containing options to be passed to setup.py.<div style="height: 1.00em;">
+&#160;</div>
+Example:<br/>
+python_configure_all() {<br/>
+	mydistutilsargs=( --enable-my-hidden-option )<br/>
+}<br/>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>AUTHORS</h1><br/>
+Author: Micha&#322; G&#243;rny &lt;mgorny@gentoo.org&gt;<br/>
+Based on the work of: Krzysztof Pawlik &lt;nelchael@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+Python team &lt;python@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/distutils-r1.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/distutils-r1.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+
