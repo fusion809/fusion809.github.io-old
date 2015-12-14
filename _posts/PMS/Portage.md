@@ -20,11 +20,11 @@ What is in square-brackets (`[...]`) are optional parts of the command (that is,
 {% include PMS/table1-options-for-emerge.html %}
 <br/>
 {% include PMS/table2-actions-for-emerge.html %}
-
-### Links
-#### Handbook
+<br/>
+#### Links
+##### Handbook
 * [AMD64 Handbook](https://wiki.gentoo.org/wiki/Handbook:AMD64/Working/Portage)
 
-#### Manpages
+##### Manpages
 * [EMERGE(1) Manpage](/man/emerge.1.html)
 * [PORTAGE(5) Manpage](/man/portage.5.html)
