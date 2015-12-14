@@ -5,7 +5,19 @@
 
 Compared to Portage, Entropy is far more simple to use, if you go to the Entropy Store you can see the USE flags used to compile the software packages provided by Entropy, as all packages provided by Entropy had to be compiled with Portage on another machine first (in `.tbz2` format) and then convert from a Portage package to an Entropy package with {% include coders-fs.html line1="equo pkg inflate &lt;PACKAGE&gt;"%} Entropy contains packages from the Portage Tree and packages from Sabayon's own overlays, which are called [`sabayon`](https://github.com/Sabayon/for-gentoo) and [`sabayon-distro`](https://github.com/Sabayon/sabayon-distro), respectively. Entropy is also safer to use and support for using Entropy to install packages is far better than support for Portage-installed packages on the [Sabayon forums](https://forum.sabayon.org/).
 
-As of December 2015 there are over 13,100 different packages (not including different package versions) in the Entropy repositories.
+As of December 2015 there are over 13,100 different packages (not including different package versions) in the Entropy repositories. If you want to check how many unique packages (not including differing package versions) are in the official repositories merely run:
+```bash
+# Check the number of unique packages in the sabayonlinux.org
+export SABO=$(sudo equo query list available --quiet sabayonlinux.org | sort | uniq | wc -l)
+# Check the number of unique packages in the sabayon-weekly
+export SABW=$(sudo equo query list available --quiet sabayon-weekly | sort | uniq | wc -l)
+# Check the number of unique packages in the sabayon-limbo
+export SABL=$(sudo equo query list available --quiet sabayon-limbo | sort | uniq | wc -l)
+
+echo "There are ${SABO} unique packages (not including different package version) in the sabayonlinux.org (DAILY) repository"
+echo "There are ${SABW} unique packages (not including different package version) in the sabayon-weekly (WEEKLY) repository"
+echo "There are ${SABL} unique packages (not including different package version) in the sabayon-limbo (LIMBO) repository"
+```
 
 #### Equo Syntax
 The generalized syntax for Entropy's command-line front-end, Equo, is:
