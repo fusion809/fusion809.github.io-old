@@ -21,37 +21,37 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
 
 {% include toc.html %}
 
-{% include OS-post/glossary.md %}
+{% include_relative OS/glossary.md %}
 
-{% include OS-post/review-format.md %}
+{% include_relative OS/review-format.md %}
 
-{% include OS-post/operating-systems/antix.md %}
+{% include_relative OS/antix.md %}
 
-{% include OS-post/operating-systems/arch-linux.md %}
+{% include_relative OS/arch-linux.md %}
 
-{% include OS-post/operating-systems/centos.md %}
+{% include_relative OS/centos.md %}
 
-{% include OS-post/operating-systems/debian.md %}
+{% include_relative OS/debian.md %}
 
-{% include OS-post/operating-systems/fedora.md %}
+{% include_relative OS/fedora.md %}
 
-{% include OS-post/operating-systems/gentoo-linux.md %}
+{% include_relative OS/gentoo-linux.md %}
 
-{% include OS-post/operating-systems/linux-mint.md %}
+{% include_relative OS/linux-mint.md %}
 
-{% include OS-post/operating-systems/mageia.md %}
+{% include_relative OS/mageia.md %}
 
-{% include OS-post/operating-systems/manjaro-linux.md %}
+{% include_relative OS/manjaro-linux.md %}
 
-{% include OS-post/operating-systems/opensuse.md %}
+{% include_relative OS/opensuse.md %}
 
-{% include OS-post/operating-systems/pcbsd.md %}
+{% include_relative OS/pcbsd.md %}
 
-{% include OS-post/operating-systems/pclinuxos.md %}
+{% include_relative OS/pclinuxos.md %}
 
-{% include OS-post/operating-systems/sabayon-linux.md %}
+{% include_relative OS/sabayon-linux.md %}
 
-{% include OS-post/operating-systems/ubuntu.md %}
+{% include_relative OS/ubuntu.md %}
 
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)
