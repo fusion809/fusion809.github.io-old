@@ -1,0 +1,1 @@
+{% include PMS/general-green-3col-table.md caption="Table 3: Commands for ebuild" title1="Command" title2="Meaning" title3="Example(s)" r1c1="`clean`" r1c2="Cleans the temporary build directory for this ebuild." r1c3="`ebuild atom-1.3.1.ebuild clean`" %}
