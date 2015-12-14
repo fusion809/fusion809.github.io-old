@@ -19,7 +19,7 @@ Entropy, Layman and Portage are all written in Python, Bash script and to smalle
 {% include_relative PMS/ebuilds.md %}
 
 {% include_relative PMS/Layman.md %}
-
+<br/>
 {% include_relative PMS/Entropy.md %}
 <br/>
 {% include_relative PMS/mixing-entropy-and-portage.md %}
@@ -35,7 +35,7 @@ If you come across a program you want to install on your Sabayon machine (and yo
 {% include_relative PMS/ebuild-writing.md %}
 
 ## Acknowledgements
-I would like to thank pontiki from the {% include irc.html channel="#jekyll" %} channel for some help with the formatting of this post.
+I would like to thank pontiki from the {% include irc.html channel="jekyll" %} channel for some help with the formatting of this post.
 
 ## Footnotes
 [^1]: Specifically the [emerge.1.html](/man/emerge.1.html) manpage
