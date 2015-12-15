@@ -37,7 +37,7 @@ If you come across a program you want to install on your Sabayon machine (and yo
 {% include_relative PMS/ebuild-writing.md %}
 
 ## Acknowledgements
-I would like to thank pontiki from the {% include irc.html channel="jekyll" %} channel for some help with the formatting of this post.
+I would like to thank pontiki from the {% include irc.html channel="jekyll" %} channel for some help with the formatting of this post and floppym from the {% include irc.html channel="gentoo-dev-help" %} channel for providing the Bash script for use searching the Portage Tree for specific examples.
 
 ## Footnotes
 [^1]: Specifically the [emerge.1.html](/man/emerge.1.html) manpage
