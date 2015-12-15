@@ -42,3 +42,4 @@ I would like to thank pontiki from the {% include irc.html channel="jekyll" %} c
 ## Footnotes
 [^1]: Specifically the [emerge.1.html](/man/emerge.1.html) manpage
 [^2]: Source: [Entropy releases before 0.6.9](https://github.com/Sabayon/entropy/releases?after=0.6.9)
+[^3]: The function order used in this table is that in which they are executed by Portage.
