@@ -15,10 +15,10 @@ ebuilds also contain their own set of functions, that are specified in **table 1
 
 I personally learn best by seeing a heap of examples, so in order to aid you to find example ebuilds I have decided to include this Bash script that can be used to search for them:
 
-<div class="code"><span class="codeu">user $</span> &nbsp;grep --include='*.ebuild' -R "&lt;PATTERN&gt;" &lt;DIRECTORY&gt;</div>
+<div class="code"><span class="codeu">user $</span> &nbsp;grep --include='&#42;.ebuild' -R "&lt;PATTERN&gt;" &lt;DIRECTORY&gt;</div>
 
 The most common choice of `<DIRECTORY>` would likely be `/usr/portage` (the Portage Tree), although for ebuilds found in the unofficial overlays managed by Layman the `<DIRECTORY>` variable can be set to `/var/lib/layman`. The `<PATTERN>` field depends on what you want in the ebuild examples you are searching for. For example:
 
-<div class="code"><span class="codeu">user $</span> &nbsp;grep --include='*.ebuild' -R "pkg_config() {" /usr/portage/</div>
+<div class="code"><span class="codeu">user $</span> &nbsp;grep --include='&#42;.ebuild' -R "pkg_config() {" /usr/portage</div>
 
 can be used to search for ebuilds in the Portage Tree with `pkg_config() {` appearing in them.
