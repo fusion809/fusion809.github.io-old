@@ -9,4 +9,5 @@ The header in lines one to three is common to all ebuilds, with the date `1999-2
 {% include PMS/table8-ebuild-variables.html %}
 The sixth line, `inherit eutils games`, is where eclass functions are inherited (inheriting means makes them available to the ebuild). Certain eclasses make extra ebuild-specified variables available for use. For example, the [`git-r3`](/man/git-r3.eclass.5.html) eclass allows for the specification of a `EGIT_REPO_URI` variable, which is essentially the same as a `SRC_URI` field, except it is for a git repository instead.
 
-ebuilds also contain their own set of functions, that are specified in **table 9**.
+ebuilds also contain their own set of functions, that are specified in **table 10**.
+{% include PMS/table10-ebuild-functions.html %}
