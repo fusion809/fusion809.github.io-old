@@ -7,7 +7,8 @@ ebuilds are so varied in their contents and structure that it is difficult for m
 The header in lines one to three is common to all ebuilds, with the date `1999-2015` being adjusted every new year (e.g., in 2016 it will be adjusted to `1999-2016`). Lines 5, 8-10, 12-15, 17-21 are where ebuild variables are being defined. They (and other allowed variables) are explained in **table 8**.
 
 {% include PMS/table8-ebuild-variables.html %}
-The sixth line, `inherit eutils games`, is where eclass functions are inherited (inheriting means makes them available to the ebuild). Certain eclasses make extra ebuild-specified variables available for use. For example, the [`git-r3`](/man/git-r3.eclass.5.html) eclass allows for the specification of a `EGIT_REPO_URI` variable, which is essentially the same as a `SRC_URI` field, except it is for a git repository instead.
+The sixth line, `inherit eutils games`, is where eclass functions are inherited (inheriting means makes them available to the ebuild). Certain eclasses make extra ebuild-specified variables available for use. For example, the [`git-r3`](/man/git-r3.eclass.5.html) eclass allows for the specification of a `EGIT_REPO_URI` variable, which is essentially the same as a `SRC_URI` field, except it is for a git repository instead. **Table 9** describes variables that are predefined read-only (that is, they are **not** set in ebuilds, although they can be used in ebuilds).
+{% include PMS/table9-ebuild-variables.html %}
 
 ebuilds also contain their own set of functions, that are specified in **table 10**.
 {% include PMS/table10-ebuild-functions.html %}
