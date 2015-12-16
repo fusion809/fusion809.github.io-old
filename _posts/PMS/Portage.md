@@ -18,7 +18,7 @@ Portage is traditionally a **command-line package management system** (invoked b
 The PT contains over 18,750 software packages, as of December 2015, and while this may seem like quite a fair number (which it is) there will always be some people that will want to install software that is not in the PT. To do this it is advisable to search the [GPO website](http://gpo.zugaina.org/), for the package you would like and then add the overlay that contains the package you want with **Layman**.
 
 #### Emerge Syntax
-According to **Portage's Manpage**[^1], emerge commands have the following format:
+According to **Portage's Manpage**[^2], emerge commands have the following format:
 {% include coder.html line1="emerge [<em>options</em>] [<em>action</em>] [<em>ebuild</em> | <em>tbz2file</em> | <em>file</em> | <em>@set</em> | <em>atom</em>]" no="1" %}
 This can be confusing to users not familiar with the formatting used by Gentoo's Manpages (or Linux Manpages in general, for that matter), but I will attempt to explain. Before I do, I need you to get into the mind-frame you had when you first learnt algebra in high school, where variables (like x or y) could be substituted with numbers, letters, other characters or a combination of any, or even all of these. With this mind-frame the above generalized format of emerge commands will make more sense, as all words in that command except for root and emerge can be substituted, depending on what you want to do with Portage.
 
