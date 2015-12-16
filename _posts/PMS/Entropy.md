@@ -25,6 +25,6 @@ The generalized syntax for Entropy's command-line front-end, Equo, is:
 Some (but by no stretch of the imagine all) options and actions for Equo are listed in tables 4 and 5, below. Note some options are only available for certain actions, for details see the man pages for Equo and its various actions (e.g., run `man equo install` for the equo install manual). One action and another option that are not covered in these tables, that I felt were worthwhile mentioning, are repo and mirrorsort, respectively. The command:
 {% include coder.html line1="equo repo mirrorsort &lt;REPO&gt;" %}
 where `<REPO>` is the name of an Entropy repository (e.g., `sabayonlinux.org`, `sabayon-weekly` or `sabayon-limbo`), can be used to optimize the order of preference for the repository's mirrors, hence, potentially, accelerating the process by which Sabayon downloads software packages.
-{% include PMS/table6-equo-options.html %}
+{% include_relative PMS/table6-equo-options.html %}
 <br/>
-{% include PMS/table7-equo-actions.html %}
+{% include_relative PMS/table7-equo-actions.html %}

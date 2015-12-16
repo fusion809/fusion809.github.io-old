@@ -6,7 +6,7 @@ categories: sabayon, package-management, command-line
 ---
 {% include draft.html %}
 {% include note.md note1="This post contains links to external resources, which I have little, if any, control over and hence I cannot guarantee their accuracy." note2="Any instruction involving Portage or manual installation from source code, has the capability to break your system and cause other problems, so if you follow them you and you alone assume any and all responsibility for the consequences!" %}
-Often, on this blog, I write posts regarding installing software with Sabayon's two package managers: **Portage** which it borrows from Gentoo and **Entropy** which is wholly original. I felt I would dedicate this post to both package managers, giving you some tips on how to use them safely and most efficiently. Generally speaking when it comes to Sabayon, unless you know what you are doing (for future reference users that "know what they are doing" in this context will be referred to as *competent Sabayon users*), you are recommended to only use Entropy as your **package management system** (**PMS**), as working with Portage is more risky and mixing Entropy with Portage is known to quite easily lead to system breaks. I mix the two, even though I have no formal training in anything technology-related and I have only been using Sabayon since July/August 2015 and had no experience with Portage prior to this time. 
+Often, on this blog, I write posts regarding installing software with Sabayon's two package managers: **Portage** which it borrows from Gentoo and **Entropy** which is wholly original. I felt I would dedicate this post to both package managers, giving you some tips on how to use them safely and most efficiently. Generally speaking when it comes to Sabayon, unless you know what you are doing (for future reference users that "know what they are doing" in this context will be referred to as *competent Sabayon users*), you are recommended to only use Entropy as your **package management system** (**PMS**), as working with Portage is more risky and mixing Entropy with Portage is known to quite easily lead to system breaks. I mix the two, even though I have no formal training in anything technology-related and I have only been using Sabayon since July/August 2015 and had no experience with Portage prior to this time.
 
 This post will cover some of the basics of using Entropy and Portage and how to use them together, in the safest way possible. It will also cover other related topics like using Layman to add overlays and the basics on how to write ebuilds. You will probably notice that the command-line is featured heavily in this article, with little mention (usually all they will get is about a sentence mention each, if they are really notable) of graphical user interface (GUI) front-ends for these programs, this is because I tend to find command-line front-ends for package managers are more stable than their graphical counterparts.
 
@@ -28,7 +28,7 @@ Entropy, Layman and Portage are all written in Python, Bash script and to smalle
 
 ## The Algorithm
 If you come across a program you want to install on your Sabayon machine (and you know it is compatible with Linux systems) the following is an algorithm I would suggest you use to install it.
-{% include PMS/algorithm.html %}
+{% include_relative PMS/algorithm.html %}
 
 ### Examples
 {% include_relative PMS/openra.md %}

@@ -18,6 +18,6 @@ while to see the list of overlays currently installed, locally, on your machine 
 {% include coder.html line1="layman -l" %}
 To add a new overlay that is not within the Layman remote list, run:
 {% include coder.html line1="layman -o &lt;URL of repository XML file&gt; -f -a &lt;overlay name&gt;" %}
-{% include PMS/table4-options-for-layman.html %}
+{% include_relative PMS/table4-options-for-layman.html %}
 <br/>
-{% include PMS/table5-actions-for-layman.html %}
+{% include_relative PMS/table5-actions-for-layman.html %}
