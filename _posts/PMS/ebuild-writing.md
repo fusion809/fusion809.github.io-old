@@ -13,7 +13,7 @@ The sixth line, `inherit eutils games`, is where eclass functions are inherited 
 
 ebuilds also contain their own set of functions, that are specified in **table 10**.
 {% include PMS/table10-ebuild-functions.html %}
-
+<br/>
 ### Learning by Example
 I personally learn ebuild writing best by trying it out myself, aided by the documentation and guided by specific examples that share similarities with the ebuild I am writing, so in order to aid you in finding example ebuilds I have decided to include this Bash script that can be used to search for them:
 
@@ -29,6 +29,6 @@ Whenever I feel I am ready to test out an ebuild, to see if it works, what I do 
 
 {% include coder.html line1="ebuild &lt;PACKAGE&gt;.ebuild manifest && ebuild &lt;PACKAGE&gt;.ebuild package" %}
 
-if this command returns errors I go back to the ebuild and look for any errors I may have made, whilst simultaneously looking at the error message I received from `ebuild`. 
+if this command returns errors I go back to the ebuild and look for any errors I may have made, whilst simultaneously looking at the error message I received from `ebuild`.
 {% endcapture %}
 {{ my_capture1 | markdownify }}
