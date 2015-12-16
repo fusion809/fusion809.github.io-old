@@ -5,6 +5,7 @@ As previously mentioned **ebuilds** are specialized Bash scripts that are used b
 
 ebuilds in overlays, including the Portage Tree, often come with accompanying files. One of these files is called a manifest and can be shared by more than one ebuild, provided the ebuilds are for different versions of the same package. Manifests contain checksums for ebuild(s), the package's source code and accompanying files, other than itself. Another accompanying file that is sometimes seen (but not all ebuilds have one) is that of metadata.xml, which contains metadata for the package (such as a description, its home page, its maintainer, *etc.*). Some ebuilds will need patch files which are usually kept in a `files/` subdirectory of the directory in which the ebuild is found.
 
+### ebuild Syntax
 `ebuild` is also the name of a command used on Gentoo-based systems like Sabayon to create manifests, merge ebuild, build binary packages from ebuilds, *etc.* The `ebuild` command is included in the `sys-apps/portage` package and its syntax is shown below:
 {% include coder.html line1="ebuild &lt;FILE&gt; &lt;COMMAND&gt;" %}
 where `<FILE>` is the ebuild file you are running the `ebuild` command on, while `<COMMAND>` is any one of the commands listed in table 3.
