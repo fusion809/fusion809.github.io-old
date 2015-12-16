@@ -4,6 +4,7 @@
 
 ebuilds are so varied in their contents and structure that it is difficult for me to find a reasonable example with which to teach their general structure. This is partly because many ebuilds have components that are specific to them and take up so much space that I do not wish to include them here. This is probably the best ebuild example I can provide (which is in the Portage Tree, its name is `supertux-0.1.3.ebuild` and is in the `games-arcade` category):
 {% include PMS/supertux-0.1.3.html %}
+{% capture my_capture1 %}
 The header in lines one to three is common to all ebuilds, with the date `1999-2015` being adjusted every new year (e.g., in 2016 it will be adjusted to `1999-2016`). Lines 5, 8-10, 12-15, 17-21 are where ebuild variables are being defined. They (and other allowed variables) are explained in **table 8**. Table 8 and 9 are essentially modified versions of tables present in the [Gentoo Development Guide's Variables Entry](https://devmanual.gentoo.org/ebuild-writing/variables/index.html).
 
 {% include PMS/table8-ebuild-variables.html %}
@@ -15,10 +16,13 @@ ebuilds also contain their own set of functions, that are specified in **table 1
 
 I personally learn best by seeing a heap of examples, so in order to aid you in finding example ebuilds I have decided to include this Bash script that can be used to search for them:
 
-<div class="code"><span class="codeu">user $</span> &nbsp;grep --include='&#42;.ebuild' -R "&lt;PATTERN&gt;" &lt;DIRECTORY&gt;</div>
+{% include codeu.html line1="grep --include='&#42;.ebuild' -R &quot;&lt;PATTERN&gt;&quot; &lt;DIRECTORY&gt;" %}
 
 The most common choice of `<DIRECTORY>` would likely be `/usr/portage` (the Portage Tree), although for ebuilds found in the unofficial overlays managed by Layman the `<DIRECTORY>` variable can be set to `/var/lib/layman`. The `<PATTERN>` field depends on what you want in the ebuild examples you are searching for. For example:
 
-<div class="code"><span class="codeu">user $</span> &nbsp;grep --include='&#42;.ebuild' -R "pkg_config() {" /usr/portage</div>
+{% include codeu.html line1="grep --include='&#42;.ebuild' -R &quot;pkg_config() {&quot; /usr/portage" %}
 
 can be used to search for ebuilds in the Portage Tree with `pkg_config() {` appearing in them.
+{% endcapture %}
+
+{{ my_capture1 | markdownify }}
