@@ -2,6 +2,9 @@
 To ensure that everything in this post is clear as day to understand I felt I should explain some acronyms, [terminology](#binary-package) and formatting conventions adopted in this post.
 
 ### Terminology
+#### [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell))
+The **Bourne-Again Shell** that is developed as part of the GNU Project, which is the default command shell of Sabayon Linux and most other Linux distributions (including Gentoo Linux). It is covered in greater detail, by the [*Bash Scripting and the Command-Line: an Introduction for Sabayon Users*](../../../11/26/bash-scripting-and-the-command-line-an-introduction-for-sabayon-users) post.
+
 #### Binary package
 A type of [software package](#software-package) that contains an executable script that is ready to be run. They are usually produced from pre-compiled source code. Most package managers work with binary packages, example of package managers that work with binary packages by default, include:
 * [APT](https://en.wikipedia.org/wiki/Advanced_Packaging_Tool), the default command-line package manager used by Debian-based distributions, including Ubuntu. The binary packages used by APT have the `.deb` file extension.

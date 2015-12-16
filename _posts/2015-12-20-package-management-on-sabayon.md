@@ -15,7 +15,7 @@ This post will cover some of the basics of using Entropy and Portage and how to 
 {% include_relative PMS/Glossary.md %}
 
 ## Preliminaries
-Entropy, Layman and Portage are all written in Python, Bash script and to smaller extents other programming languages like C. [Entropy](#Entropy) is maintained by Fabio Erculiani and other developers of Sabayon, while [Layman](#Layman) and [Portage](#Portage) are both maintained by the Gentoo community. This section will cover some of the preliminary information for each of these programs, including their command-line syntax, so as to make the rest of this post easier to understand.
+Entropy, Layman and Portage are all written in Python, Bash script and to smaller extents other programming languages like C. [Entropy](#entropy) is maintained by Fabio Erculiani and other developers of Sabayon, while [Layman](#layman) and [Portage](#portage) are both maintained by the Gentoo community. This section will cover some of the preliminary information for each of these programs, including their command-line syntax, so as to make the rest of this post easier to understand.
 
 {% include_relative PMS/Portage.md %}
 
