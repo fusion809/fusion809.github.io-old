@@ -14,7 +14,8 @@ The sixth line, `inherit eutils games`, is where eclass functions are inherited 
 ebuilds also contain their own set of functions, that are specified in **table 10**.
 {% include PMS/table10-ebuild-functions.html %}
 
-I personally learn best by seeing a heap of examples, so in order to aid you in finding example ebuilds I have decided to include this Bash script that can be used to search for them:
+### Learning by Example
+I personally learn ebuild writing best by trying it out myself, aided by the documentation and guided by specific examples that share similarities with the ebuild I am writing, so in order to aid you in finding example ebuilds I have decided to include this Bash script that can be used to search for them:
 
 {% include codeu.html line1="grep --include='&#42;.ebuild' -R &quot;&lt;PATTERN&gt;&quot; &lt;DIRECTORY&gt;" %}
 
@@ -23,6 +24,11 @@ The most common choice of `<DIRECTORY>` would likely be `/usr/portage` (the Port
 {% include codeu.html line1="grep --include='&#42;.ebuild' -R &quot;pkg_config() {&quot; /usr/portage" %}
 
 can be used to search for ebuilds in the Portage Tree with `pkg_config() {` appearing in them.
-{% endcapture %}
 
+Whenever I feel I am ready to test out an ebuild, to see if it works, what I do is I run:
+
+{% include coder.html line1="ebuild &lt;PACKAGE&gt;.ebuild manifest && ebuild &lt;PACKAGE&gt;.ebuild package" %}
+
+if this command returns errors I go back to the ebuild and look for any errors I may have made, whilst simultaneously looking at the error message I received from `ebuild`. 
+{% endcapture %}
 {{ my_capture1 | markdownify }}
