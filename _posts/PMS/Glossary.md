@@ -1,5 +1,5 @@
 ## Glossary
-To ensure that everything in this post is clear as day to understand I felt I should explain some [acronyms](#acronyms), [terminology](#terminology) and formatting conventions adopted in this post.
+To ensure that everything in this post is clear as day to understand I felt I should explain some [acronyms](#acronyms), [terminology](#terminology) and [formatting conventions](#formatting) adopted in this post.
 
 ### Acronyms
 The acronyms used in this post include:
@@ -8,6 +8,8 @@ The acronyms used in this post include:
 * **GUI**: <b>g</b>raphical <b>u</b>ser <b>i</b>nterface.
 * **PMS**: <b>p</b>ackage <b>m</b>anagement <b>s</b>ystem.
 * **PT**: <b>P</b>ortage <b>T</b>ree, the main official overlay of the Gentoo Foundation.
+
+### Formatting
 
 ### Terminology
 #### [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell))
