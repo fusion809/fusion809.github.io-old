@@ -3,7 +3,7 @@
 {% include coder.html line1="emerge -av app-portage/layman" %}
 or with Entropy using the command:
 {% include coder.html line1="equo i -av app-portage/layman" %}
-I would recommend installing Layman using Entropy as it is less error-prone and the Layman package it installs was compiled with all the USE flags required to add every type of overlay available (including Bazaar (bzr), Git, Mercurial (hg) and Subversion (svn)). Layman-added overlays (and the ebuilds contained within them) are stored in <code>/var/lib/layman/</code>.
+I would recommend installing Layman using Entropy as it is less error-prone and the Layman package it installs was compiled with all the USE flags required to add every type of overlay available (including Bazaar (bzr), Git, Mercurial (hg) and Subversion (svn)). It is important to note that the Layman packages in the Entropy repositories do not have `dev-vcs/bazaar`, `dev-vcs/git`, `dev-vcs/mercurial` or `dev-vcs/subversion` listed amongst its dependencies, which means each of these packages will need to be installed manually in order to add overlays managed by them. Layman-added overlays (and the ebuilds contained within them) are stored in <code>/var/lib/layman/</code>.
 
 #### Layman Syntax
 The basic syntax for Layman is:
