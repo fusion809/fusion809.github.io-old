@@ -28,3 +28,10 @@ where `<REPO>` is the name of an Entropy repository (e.g., `sabayonlinux.org`, `
 {% include_relative PMS/table6-equo-options.html %}
 <br/>
 {% include_relative PMS/table7-equo-actions.html %}
+It is important to understand the output of Entropy, for example here is some of the output I obtained on 17 December 2015 when running {% include codeus.html line1="sudo equo upgrade" %}:
+{% include_relative PMS/entropy-output.html %}
+{% capture my_capture %}
+The first of these lines, indicates that the package `glibc` in the `sabayonlinux.org` repository is being upgrade from 2.20-r2 to 2.21-r1. Second
+{% endcapture %}
+
+{{ my_capture | markdownify }}

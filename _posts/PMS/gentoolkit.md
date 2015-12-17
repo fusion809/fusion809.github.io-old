@@ -1,3 +1,4 @@
+{% capture my_capture %}
 ### Gentoolkit
 {% include links.html program="Gentoolkit" package="app-portage/gentoolkit" gw="Gentoolkit" %} is a suite of tools that make Gentoo administration easier. Examples of these tools include:
 * [`eclean`](/man/eclean.1.html) which can be used to remove old source files and binary packages from one's system.
@@ -7,3 +8,5 @@
 
 The Gentoolkit can be installed using Entropy or Portage. Using Entropy one would install it using the command:
 {% include coder.html line1="equo i app-portage/gentoolkit" %}
+{% endcapture %}
+{{ my_capture | markdownify }}
