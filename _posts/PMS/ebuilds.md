@@ -8,7 +8,7 @@ ebuilds in overlays, including the Portage Tree, often come with accompanying fi
 #### ebuild Syntax
 `ebuild` is also the name of a command used on Gentoo-based systems like Sabayon to create manifests, merge ebuilds, build binary packages from ebuilds, *etc.* The `ebuild` command is included in the `sys-apps/portage` package and its syntax is shown below:
 {% include coder.html line1="ebuild &lt;FILE&gt; &lt;COMMAND&gt;" %}
-where `<FILE>` is the ebuild file you are running the `ebuild` command on, while `<COMMAND>` is any one of the commands listed in table 3.
+where `<FILE>` is the ebuild file you are running the `ebuild` command on, while `<COMMAND>` is any one of the commands listed in table 3. Note, however, that several commands can be used in the same line.
 {% include_relative PMS/table3-commands-for-ebuild.html %}
 
 For details on how to write ebuilds see the [Writing ebuilds](#writing-ebuilds) section of this post.
