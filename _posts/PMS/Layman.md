@@ -8,7 +8,7 @@ I would recommend installing Layman using Entropy as it is less error-prone and 
 #### Layman Syntax
 The basic syntax for Layman is:
 {% include coder.html line1="layman [<em>options</em>] [<em>action</em>]" %}
-As with emerge, I am not going to cover every option and action available for layman, as that would take too long, plus this is not meant to be a substitute for the manpages of the package managers and other tools covered in this post. Some of the more important/frequently-used actions and options are covered in tables 3 and 4. Please note that all actions when given in long form, if they require input (like `--add` does) this input must be specified with an equal sign and no spaces. For example to add the `sabayon` overlay you may run:
+As with emerge, I am not going to cover every option and action available for layman, as that would take too long, plus this is not meant to be a substitute for the manpages of the package managers and other tools covered in this post. Some of the more important/frequently-used actions and options are covered in tables 4 and 5. Please note that all actions when given in long form, if they require input (like `--add` does) this input must be specified with an equal sign and no spaces. For example to add the `sabayon` overlay you may run:
 {% include coder.html line1="layman --add=sabayon" %}
 or in shortened notation:
 {% include coder.html line1="layman -a sabayon" %}
