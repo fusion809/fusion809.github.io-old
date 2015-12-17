@@ -17,7 +17,11 @@ It is important to note that while this technique will add the `sabayon` overlay
 while to see the list of overlays currently installed, locally, on your machine run:
 {% include coder.html line1="layman -l" %}
 To add a new overlay that is not within the Layman remote list, run:
-{% include coder.html line1="layman -o &lt;URL of repository XML file&gt; -f -a &lt;overlay name&gt;" %}
+{% include coder.html line1="layman -o &lt;URL of repository XML file&gt; -f -a &lt;OVERLAY&gt;" %}
+For example, for my overlay [`sabayon-tools`](https://github.com/fusion809/sabayon-tools), you could add it with:
+{% include coder.html line1="layman -o https://raw.githubusercontent.com/fusion809/sabayon-tools/master/overlays.xml -f -a sabayon-tools "%}
+or as it is now in the Layman remote list you could add it with:
+{% include coder.html line1="layman -a sabayon-tools" %}
 {% include_relative PMS/table4-options-for-layman.html %}
 <br/>
 {% include_relative PMS/table5-actions-for-layman.html %}

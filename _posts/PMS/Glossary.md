@@ -10,6 +10,7 @@ The acronyms used in this post include:
 * **PT**: <b>P</b>ortage <b>T</b>ree, the main official overlay of the Gentoo Foundation.
 
 ### Formatting
+Angle brackets `<` and `>` with a word between them denotes user-provided variables. For example, `<PACKAGE>` denotes the name of a software package, `<OVERLAY>` denotes the name of a software overlay, `<FILE>` is the name of a file, including its extension (e.g., it may equal `atom-1.3.2.ebuild`, when are referring to ebuild files)
 
 ### Terminology
 #### [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell))
