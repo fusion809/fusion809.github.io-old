@@ -1,7 +1,7 @@
 ---
 layout:    page
 title:     About Me
-date:   2015-11-18 +1000
+date:      2015-11-18 +1000
 permalink: /about-me/
 ---
 {% include image.html image="operating-systems/Ubuntu_12.04.png" description="Desktop of Ubuntu 12.04, with its default wallpaper" id="1" width = "1034px" float="none" %}
