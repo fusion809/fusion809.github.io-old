@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+regsub(n)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+regsub(n)</td>
+<td class="head-vol">
+Tcl Built-In Commands</td>
+<td class="head-rtitle">
+regsub(n)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> regsub - Perform substitutions based on regular expression pattern matching</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <b>regsub </b>?<i>switches</i>? <i>exp string subSpec </i>?<i>varName</i>?<br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> This command matches the regular expression  <i>exp</i> against  <i>string</i>, and either copies  <i>string</i> to the variable whose name is given by  <i>varName</i> or returns <i>string</i> if <i>varName</i> is not present. (Regular expression matching is described in the  <b>re_syntax</b> reference page.) If there is a match, then while copying  <i>string</i> to <i>varName</i> (or to the result of this command if  <i>varName</i> is not present) the portion of  <i>string</i> that matched  <i>exp</i> is replaced with <i>subSpec</i>. If  <i>subSpec</i> contains a &#8220;&amp;&#8221; or &#8220;\0&#8221;, then it is replaced in the substitution with the portion of  <i>string</i> that matched <i>exp</i>. If  <i>subSpec</i> contains a &#8220;\ <i>n</i>&#8221;, where  <i>n</i> is a digit between 1 and 9, then it is replaced in the substitution with the portion of  <i>string</i> that matched the <i>n</i>'th parenthesized subexpression of  <i>exp</i>. Additional backslashes may be used in  <i>subSpec</i> to prevent special interpretation of &#8220;&amp;&#8221;, &#8220;\0&#8221;, &#8220;\ <i>n</i>&#8221; and backslashes. The use of backslashes in  <i>subSpec</i> tends to interact badly with the Tcl parser's use of backslashes, so it is generally safest to enclose  <i>subSpec</i> in braces if it includes backslashes.<div class="spacer">
+</div>
+If the initial arguments to <b>regsub</b> start with <b>-</b> then they are treated as switches.  The following switches are currently supported:<dl>
+<dt>
+<b>-all</b></dt>
+<dd>
+All ranges in <i>string</i> that match <i>exp</i> are found and substitution is performed for each of these ranges. Without this switch only the first matching range is found and substituted. If  <b>-all</b> is specified, then &#8220;&amp;&#8221; and &#8220;\ <i>n</i>&#8221; sequences are handled for each substitution using the information from the corresponding match.</dd>
+</dl>
+<dl>
+<dt>
+<b>-expanded</b></dt>
+<dd>
+Enables use of the expanded regular expression syntax where whitespace and comments are ignored.  This is the same as specifying the  <b>(?x)</b> embedded option (see the <b>re_syntax</b> manual page).</dd>
+</dl>
+<dl>
+<dt>
+<b>-line</b></dt>
+<dd>
+Enables newline-sensitive matching.  By default, newline is a completely ordinary character with no special meaning.  With this flag, &#8220;[^&#8221; bracket expressions and &#8220;.&#8221; never match newline, &#8220;^&#8221; matches an empty string after any newline in addition to its normal function, and &#8220;$&#8221; matches an empty string before any newline in addition to its normal function.  This flag is equivalent to specifying both  <b>-linestop</b> and <b>-lineanchor</b>, or the  <b>(?n)</b> embedded option (see the <b>re_syntax</b> manual page).</dd>
+</dl>
+<dl>
+<dt>
+<b>-linestop</b></dt>
+<dd>
+Changes the behavior of &#8220;[^&#8221; bracket expressions and &#8220;.&#8221; so that they stop at newlines.  This is the same as specifying the  <b>(?p)</b> embedded option (see the  <b>re_syntax</b> manual page).</dd>
+</dl>
+<dl>
+<dt>
+<b>-lineanchor</b></dt>
+<dd>
+Changes the behavior of &#8220;^&#8221; and &#8220;$&#8221; (the &#8220;anchors&#8221;) so they match the beginning and end of a line respectively.  This is the same as specifying the  <b>(?w)</b> embedded option (see the <b>re_syntax</b> manual page).</dd>
+</dl>
+<dl>
+<dt>
+<b>-nocase</b></dt>
+<dd>
+Upper-case characters in <i>string</i> will be converted to lower-case before matching against  <i>exp</i>;  however, substitutions specified by  <i>subSpec</i> use the original unconverted form of <i>string</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>-start</b> <i>index</i></dt>
+<dd>
+Specifies a character index offset into the string to start matching the regular expression at. The  <i>index</i> value is interpreted in the same manner as the  <i>index</i> argument to <b>string index</b>. When using this switch, &#8220;^&#8221; will not match the beginning of the line, and \A will still match the start of the string at  <i>index</i>.  <i>index</i> will be constrained to the bounds of the input string.</dd>
+</dl>
+<dl>
+<dt>
+<b>--</b></dt>
+<dd>
+Marks the end of switches.  The argument following this one will be treated as  <i>exp</i> even if it starts with a <b>-</b>.</dd>
+</dl>
+<div class="spacer">
+</div>
+If <i>varName</i> is supplied, the command returns a count of the number of matching ranges that were found and replaced, otherwise the string after replacement is returned. See the manual entry for  <b>regexp</b> for details on the interpretation of regular expressions.</div>
+<div class="section">
+<h1>EXAMPLES</h1> Replace (in the string in variable  <i>string</i>) every instance of  <b>foo</b> which is a word by itself with <b>bar</b>:<div style="margin-left: 5.00ex;">
+<br/>
+<b>regsub</b> -all {\mfoo\M} $string bar string<br/>
+</div>
+or (using the &#8220;basic regular expression&#8221; syntax):<div style="margin-left: 5.00ex;">
+<br/>
+<b>regsub</b> -all {(?b)\&lt;foo\&gt;} $string bar string<br/>
+</div>
+<div class="spacer">
+</div>
+Insert double-quotes around the first instance of the word  <b>interesting</b>, however it is capitalized.<div style="margin-left: 5.00ex;">
+<br/>
+<b>regsub</b> -nocase {\yinteresting\y} $string {&quot;&amp;&quot;} string<br/>
+</div>
+<div class="spacer">
+</div>
+Convert all non-ASCII and Tcl-significant characters into \u escape sequences by using  <b>regsub</b> and <b>subst</b> in combination:<div style="margin-left: 5.00ex;">
+<br/>
+# This RE is just a character class for almost everything &quot;bad&quot;<br/>
+set RE {[][{};#\\\$ \r\t\u0080-\uffff]}<div class="spacer">
+</div>
+<br/>
+# We will substitute with a fragment of Tcl script in brackets<br/>
+set substitution {[format \\\\u%04x [scan &quot;\\&amp;&quot; %c]]}<div class="spacer">
+</div>
+<br/>
+# Now we apply the substitution to get a subst-string that<br/>
+# will perform the computational parts of the conversion. Note<br/>
+# that newline is handled specially through <b>string map</b> since<br/>
+# backslash-newline is a special sequence.<br/>
+set quoted [subst [string map {\n {\\u000a}} \<br/>
+        [<b>regsub</b> -all $RE $string $substitution]]]<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> regexp(n), re_syntax(n), subst(n), string(n)</div>
+<div class="section">
+<h1>KEYWORDS</h1> match, pattern, quoting, regular expression, substitute</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+8.3</td>
+<td class="foot-os">
+Tcl</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

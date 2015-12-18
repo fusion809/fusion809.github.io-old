@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+Tk_ParseArgv(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+Tk_ParseArgv(3)</td>
+<td class="head-vol">
+Tk Library Procedures</td>
+<td class="head-rtitle">
+Tk_ParseArgv(3)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> Tk_ParseArgv - process command-line options</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+<b>#include &lt;tk.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+int<br/>
+<b>Tk_ParseArgv</b>(<i>interp, tkwin, argcPtr, argv, argTable, flags</i>)</div>
+<div class="section">
+<h1>ARGUMENTS</h1><dl>
+<dt>
+Tcl_Interp <i>*interp</i> (in)</dt>
+<dd>
+Interpreter to use for returning error messages.</dd>
+</dl>
+<dl>
+<dt>
+Tk_Window <i>tkwin</i> (in)</dt>
+<dd>
+Window to use when arguments specify Tk options.  If NULL, then no Tk options will be processed.</dd>
+</dl>
+<dl>
+<dt>
+int <i>argcPtr</i> (in/out)</dt>
+<dd>
+Pointer to number of arguments in argv;  gets modified to hold number of unprocessed arguments that remain after the call.</dd>
+</dl>
+<dl>
+<dt>
+const char <i>**argv</i> (in/out)</dt>
+<dd>
+Command line arguments passed to main program.  Modified to hold unprocessed arguments that remain after the call.</dd>
+</dl>
+<dl>
+<dt>
+Tk_ArgvInfo <i>*argTable</i> (in)</dt>
+<dd>
+Array of argument descriptors, terminated by element with type  <b>TK_ARGV_END</b>.</dd>
+</dl>
+<dl>
+<dt>
+int <i>flags</i> (in)</dt>
+<dd>
+If non-zero, then it specifies one or more flags that control the parsing of arguments.  Different flags may be OR'ed together. The flags currently defined are  <b>TK_ARGV_DONT_SKIP_FIRST_ARG</b>,  <b>TK_ARGV_NO_ABBREV</b>, <b>TK_ARGV_NO_LEFTOVERS</b>, and  <b>TK_ARGV_NO_DEFAULTS</b>.<br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>Tk_ParseArgv</b> processes an array of command-line arguments according to a table describing the kinds of arguments that are expected. Each of the arguments in  <i>argv</i> is processed in turn:  if it matches one of the entries in  <i>argTable</i>, the argument is processed according to that entry and discarded.  The arguments that do not match anything in  <i>argTable</i> are copied down to the beginning of  <i>argv</i> (retaining their original order) and returned to the caller.  At the end of the call  <b>Tk_ParseArgv</b> sets <i>*argcPtr</i> to hold the number of arguments that are left in  <i>argv</i>, and <i>argv[*argcPtr]</i> will hold the value NULL.  Normally,  <b>Tk_ParseArgv</b> assumes that  <i>argv[0]</i> is a command name, so it is treated like an argument that does not match  <i>argTable</i> and returned to the caller;  however, if the  <b>TK_ARGV_DONT_SKIP_FIRST_ARG</b> bit is set in  <i>flags</i> then <i>argv[0]</i> will be processed just like the other elements of  <i>argv</i>.<div class="spacer">
+</div>
+<b>Tk_ParseArgv</b> normally returns the value <b>TCL_OK</b>.  If an error occurs while parsing the arguments, then  <b>TCL_ERROR</b> is returned and  <b>Tk_ParseArgv</b> will leave an error message in <i>interp-&gt;result</i> in the standard Tcl fashion.  In the event of an error return,  <i>*argvPtr</i> will not have been modified, but  <i>argv</i> could have been partially modified.  The possible causes of errors are explained below.<div class="spacer">
+</div>
+The <i>argTable</i> array specifies the kinds of arguments that are expected;  each of its entries has the following structure:<div style="margin-left: 5.00ex;">
+<br/>
+typedef struct {<br/>
+    char *<i>key</i>;<br/>
+    int <i>type</i>;<br/>
+    char *<i>src</i>;<br/>
+    char *<i>dst</i>;<br/>
+    char *<i>help</i>;<br/>
+} Tk_ArgvInfo;<br/>
+</div>
+The <i>key</i> field is a string such as &#8220;-display&#8221; or &#8220;-bg&#8221; that is compared with the values in  <i>argv</i>.  <i>Type</i> indicates how to process an argument that matches  <i>key</i> (more on this below).   <i>Src</i> and <i>dst</i> are additional values used in processing the argument.  Their exact usage depends on  <i>type</i>, but typically <i>src</i> indicates a value and  <i>dst</i> indicates where to store the value.  The  <b>char *</b> declarations for <i>src</i> and <i>dst</i> are placeholders:  the actual types may be different.  Lastly,  <i>help</i> is a string giving a brief description of this option;  this string is printed when users ask for help about command-line options.<div class="spacer">
+</div>
+When processing an argument in <i>argv</i>, <b>Tk_ParseArgv</b> compares the argument to each of the  <i>key</i>'s in <i>argTable</i>.  <b>Tk_ParseArgv</b> selects the first specifier whose <i>key</i> matches the argument exactly, if such a specifier exists.  Otherwise  <b>Tk_ParseArgv</b> selects a specifier for which the argument is a unique abbreviation.  If the argument is a unique abbreviation for more than one specifier, then an error is returned.  If there is no matching entry in  <i>argTable</i>, then the argument is skipped and returned to the caller.<div class="spacer">
+</div>
+Once a matching argument specifier is found, <b>Tk_ParseArgv</b> processes the argument according to the  <i>type</i> field of the specifier.  The argument that matched  <i>key</i> is called &#8220;the matching argument&#8221; in the descriptions below.  As part of the processing,  <b>Tk_ParseArgv</b> may also use the next argument in <i>argv</i> after the matching argument, which is called &#8220;the following argument&#8221;. The legal values for  <i>type</i>, and the processing that they cause, are as follows:<dl>
+<dt>
+<b>TK_ARGV_END</b></dt>
+<dd>
+Marks the end of the table.  The last entry in <i>argTable</i> must have this type;  all of its other fields are ignored and it will never match any arguments.</dd>
+</dl>
+<dl>
+<dt>
+<b>TK_ARGV_CONSTANT</b></dt>
+<dd>
+<i>Src</i> is treated as an integer and <i>dst</i> is treated as a pointer to an integer.   <i>Src</i> is stored at <i>*dst</i>. The matching argument is discarded.</dd>
+</dl>
+<dl>
+<dt>
+<b>TK_ARGV_INT</b></dt>
+<dd>
+The following argument must contain an integer string in the format accepted by  <b>strtol</b> (e.g. &#8220;0&#8221; and &#8220;0x&#8221; prefixes may be used to specify octal or hexadecimal numbers, respectively).   <i>Dst</i> is treated as a pointer to an integer;  the following argument is converted to an integer value and stored at  <i>*dst</i>.  <i>Src</i> is ignored.  The matching and following arguments are discarded from  <i>argv</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>TK_ARGV_FLOAT</b></dt>
+<dd>
+The following argument must contain a floating-point number in the format accepted by  <b>strtol</b>.  <i>Dst</i> is treated as the address of a double-precision floating point value;  the following argument is converted to a double-precision value and stored at  <i>*dst</i>.  The matching and following arguments are discarded from  <i>argv</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>TK_ARGV_STRING</b></dt>
+<dd>
+In this form, <i>dst</i> is treated as a pointer to a (char *);  <b>Tk_ParseArgv</b> stores at <i>*dst</i> a pointer to the following argument, and discards the matching and following arguments from  <i>argv</i>.  <i>Src</i> is ignored.</dd>
+</dl>
+<dl>
+<dt>
+<b>TK_ARGV_UID</b></dt>
+<dd>
+This form is similar to <b>TK_ARGV_STRING</b>, except that the argument is turned into a Tk_Uid by calling  <b>Tk_GetUid</b>.  <i>Dst</i> is treated as a pointer to a Tk_Uid;  <b>Tk_ParseArgv</b> stores at <i>*dst</i> the Tk_Uid corresponding to the following argument, and discards the matching and following arguments from  <i>argv</i>.  <i>Src</i> is ignored.</dd>
+</dl>
+<dl>
+<dt>
+<b>TK_ARGV_CONST_OPTION</b></dt>
+<dd>
+This form causes a Tk option to be set (as if the <b>option</b> command had been invoked).  The  <i>src</i> field is treated as a pointer to a string giving the value of an option, and  <i>dst</i> is treated as a pointer to the name of the option.  The matching argument is discarded.  If  <i>tkwin</i> is NULL, then argument specifiers of this type are ignored (as if they did not exist).</dd>
+</dl>
+<dl>
+<dt>
+<b>TK_ARGV_OPTION_VALUE</b></dt>
+<dd>
+This form is similar to <b>TK_ARGV_CONST_OPTION</b>, except that the value of the option is taken from the following argument instead of from  <i>src</i>.  <i>Dst</i> is used as the name of the option.  <i>Src</i> is ignored.  The matching and following arguments are discarded.  If  <i>tkwin</i> is NULL, then argument specifiers of this type are ignored (as if they did not exist).</dd>
+</dl>
+<dl>
+<dt>
+<b>TK_ARGV_OPTION_NAME_VALUE</b></dt>
+<dd>
+In this case the following argument is taken as the name of a Tk option and the argument after that is taken as the value for that option.  Both  <i>src</i> and <i>dst</i> are ignored.  All three arguments are discarded from  <i>argv</i>.  If <i>tkwin</i> is NULL, then argument specifiers of this type are ignored (as if they did not exist).</dd>
+</dl>
+<dl>
+<dt>
+<b>TK_ARGV_HELP</b></dt>
+<dd>
+When this kind of option is encountered, <b>Tk_ParseArgv</b> uses the  <i>help</i> fields of <i>argTable</i> to format a message describing all the valid arguments.  The message is placed in  <i>interp-&gt;result</i> and  <b>Tk_ParseArgv</b> returns <b>TCL_ERROR</b>.  When this happens, the caller normally prints the help message and aborts.  If the  <i>key</i> field of a  <b>TK_ARGV_HELP</b> specifier is NULL, then the specifier will never match any arguments;  in this case the specifier simply provides extra documentation, which will be included when some other  <b>TK_ARGV_HELP</b> entry causes help information to be returned.</dd>
+</dl>
+<dl>
+<dt>
+<b>TK_ARGV_REST</b></dt>
+<dd>
+This option is used by programs or commands that allow the last several of their options to be the name and/or options for some other program.  If a  <b>TK_ARGV_REST</b> argument is found, then  <b>Tk_ParseArgv</b> does not process any of the remaining arguments;  it returns them all at the beginning of  <i>argv</i> (along with any other unprocessed arguments). In addition,  <b>Tk_ParseArgv</b> treats <i>dst</i> as the address of an integer value, and stores at  <i>*dst</i> the index of the first of the  <b>TK_ARGV_REST</b> options in the returned <i>argv</i>.  This allows the program to distinguish the  <b>TK_ARGV_REST</b> options from other unprocessed options that preceded the  <b>TK_ARGV_REST</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>TK_ARGV_FUNC</b></dt>
+<dd>
+For this kind of argument, <i>src</i> is treated as the address of a procedure, which is invoked to process the following argument. The procedure should have the following structure:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<div style="margin-left: 5.00ex;">
+<br/>
+int<br/>
+<i>func</i>(<i>dst</i>, <i>key</i>, <i>nextArg</i>)<br/>
+    char *<i>dst</i>;<br/>
+    char *<i>key</i>;<br/>
+    char *<i>nextArg</i>;<br/>
+{<br/>
+}<br/>
+</div>
+The <i>dst</i> and <i>key</i> parameters will contain the corresponding fields from the  <i>argTable</i> entry, and  <i>nextArg</i> will point to the following argument from <i>argv</i> (or NULL if there are not any more arguments left in  <i>argv</i>). If  <i>func</i> uses <i>nextArg</i> (so that  <b>Tk_ParseArgv</b> should discard it), then it should return 1.  Otherwise it should return 0 and  <b>TkParseArgv</b> will process the following argument in the normal fashion.  In either event the matching argument is discarded.</div>
+<dl>
+<dt>
+<b>TK_ARGV_GENFUNC</b></dt>
+<dd>
+This form provides a more general procedural escape.  It treats  <i>src</i> as the address of a procedure, and passes that procedure all of the remaining arguments.  The procedure should have the following form:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<div style="margin-left: 5.00ex;">
+<br/>
+int<br/>
+<i>genfunc</i>(dst, interp, key, argc, argv)<br/>
+    char *<i>dst</i>;<br/>
+    Tcl_Interp *<i>interp</i>;<br/>
+    char *<i>key</i>;<br/>
+    int <i>argc</i>;<br/>
+    char **<i>argv</i>;<br/>
+{<br/>
+}<br/>
+</div>
+The <i>dst</i> and <i>key</i> parameters will contain the corresponding fields from the  <i>argTable</i> entry.  <i>Interp</i> will be the same as the  <i>interp</i> argument to <b>Tcl_ParseArgv</b>.  <i>Argc</i> and <i>argv</i> refer to all of the options after the matching one.   <i>Genfunc</i> should behave in a fashion similar to  <b>Tk_ParseArgv</b>:  parse as many of the remaining arguments as it can, then return any that are left by compacting them to the beginning of  <i>argv</i> (starting at <i>argv</i>[0]).  <i>Genfunc</i> should return a count of how many arguments are left in  <i>argv</i>;  <b>Tk_ParseArgv</b> will process them.  If <i>genfunc</i> encounters an error then it should leave an error message in  <i>interp-&gt;result</i>, in the usual Tcl fashion, and return -1;  when this happens  <b>Tk_ParseArgv</b> will abort its processing and return <b>TCL_ERROR</b>.</div>
+</div>
+<div class="section">
+<h1>FLAGS</h1><dl>
+<dt>
+<b>TK_ARGV_DONT_SKIP_FIRST_ARG</b></dt>
+<dd>
+<b>Tk_ParseArgv</b> normally treats <i>argv[0]</i> as a program or command name, and returns it to the caller just as if it had not matched  <i>argTable</i>.  If this flag is given, then  <i>argv[0]</i> is not given special treatment.</dd>
+</dl>
+<dl>
+<dt>
+<b>TK_ARGV_NO_ABBREV</b></dt>
+<dd>
+Normally, <b>Tk_ParseArgv</b> accepts unique abbreviations for  <i>key</i> values in <i>argTable</i>.  If this flag is given then only exact matches will be acceptable.</dd>
+</dl>
+<dl>
+<dt>
+<b>TK_ARGV_NO_LEFTOVERS</b></dt>
+<dd>
+Normally, <b>Tk_ParseArgv</b> returns unrecognized arguments to the caller.  If this bit is set in  <i>flags</i> then <b>Tk_ParseArgv</b> will return an error if it encounters any argument that does not match  <i>argTable</i>.  The only exception to this rule is <i>argv[0]</i>, which will be returned to the caller with no errors as long as  <b>TK_ARGV_DONT_SKIP_FIRST_ARG</b> is not specified.</dd>
+</dl>
+<dl>
+<dt>
+<b>TK_ARGV_NO_DEFAULTS</b></dt>
+<dd>
+Normally, <b>Tk_ParseArgv</b> searches an internal table of standard argument specifiers in addition to  <i>argTable</i>.  If this bit is set in  <i>flags</i>, then <b>Tk_ParseArgv</b> will use only  <i>argTable</i> and not its default table.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>EXAMPLE</h1> Here is an example definition of an  <i>argTable</i> and some sample command lines that use the options.  Note the effect on  <i>argc</i> and <i>argv</i>;  arguments processed by <b>Tk_ParseArgv</b> are eliminated from  <i>argv</i>, and <i>argc</i> is updated to reflect reduced number of arguments.<div style="margin-left: 5.00ex;">
+<br/>
+/*<br/>
+ * Define and set default values for globals.<br/>
+ */<br/>
+int debugFlag = 0;<br/>
+int numReps = 100;<br/>
+char defaultFileName[] = &quot;out&quot;;<br/>
+char *fileName = defaultFileName;<br/>
+Boolean exec = FALSE;<div class="spacer">
+</div>
+<br/>
+/*<br/>
+ * Define option descriptions.<br/>
+ */<br/>
+Tk_ArgvInfo argTable[] = {<br/>
+    {&quot;-X&quot;, TK_ARGV_CONSTANT, (char *) 1, (char *) &amp;debugFlag,<br/>
+        &quot;Turn on debugging printfs&quot;},<br/>
+    {&quot;-N&quot;, TK_ARGV_INT, (char *) NULL, (char *) &amp;numReps,<br/>
+        &quot;Number of repetitions&quot;},<br/>
+    {&quot;-of&quot;, TK_ARGV_STRING, (char *) NULL, (char *) &amp;fileName,<br/>
+        &quot;Name of file for output&quot;},<br/>
+    {&quot;x&quot;, TK_ARGV_REST, (char *) NULL, (char *) &amp;exec,<br/>
+        &quot;File to exec, followed by any arguments (must be last argument).&quot;},<br/>
+    {(char *) NULL, TK_ARGV_END, (char *) NULL, (char *) NULL,<br/>
+        (char *) NULL}<br/>
+};<div class="spacer">
+</div>
+<br/>
+main(argc, argv)<br/>
+    int argc;<br/>
+    char *argv[];<br/>
+{<br/>
+    ...<div class="spacer">
+</div>
+<br/>
+    if (Tk_ParseArgv(interp, tkwin, &amp;argc, argv, argTable, 0) != TCL_OK) {<br/>
+        fprintf(stderr, &quot;%s\n&quot;, interp-&gt;result);<br/>
+        exit(1);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    /*<br/>
+     * Remainder of the program.<br/>
+     */<br/>
+}<br/>
+</div>
+<div class="spacer">
+</div>
+Note that default values can be assigned to variables named in  <i>argTable</i>:  the variables will only be overwritten if the particular arguments are present in  <i>argv</i>. Here are some example command lines and their effects.<div style="margin-left: 5.00ex;">
+<br/>
+prog -N 200 infile        # just sets the numReps variable to 200<br/>
+prog -of out200 infile    # sets fileName to reference &quot;out200&quot;<br/>
+prog -XN 10 infile        # sets the debug flag, also sets numReps<br/>
+</div>
+In all of the above examples, <i>argc</i> will be set by <b>Tk_ParseArgv</b> to 2,  <i>argv</i>[0] will be &#8220;prog&#8221;,  <i>argv</i>[1] will be &#8220;infile&#8221;, and  <i>argv</i>[2] will be NULL.</div>
+<div class="section">
+<h1>KEYWORDS</h1> arguments, command line, options</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+Tk</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

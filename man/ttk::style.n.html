@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+ttk::style(n)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+ttk::style(n)</td>
+<td class="head-vol">
+Tk Themed Widget</td>
+<td class="head-rtitle">
+ttk::style(n)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> ttk::style - Manipulate style database</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <b>ttk::style</b> <i>option</i> ?<i>args</i>?<br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NOTES</h1> See also the Tcl'2004 conference presentation, available at http://tktable.sourceforge.net/tile/tile-tcl2004.pdf</div>
+<div class="section">
+<h1>DEFINITIONS</h1> Each widget is assigned a  <i>style</i>, which specifies the set of elements making up the widget and how they are arranged, along with dynamic and default settings for element options. By default, the style name is the same as the widget's class; this may be overridden by the  <b>-style</b> option.<div class="spacer">
+</div>
+A <i>theme</i> is a collection of elements and styles which controls the overall look and feel of an application.</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <b>ttk::style</b> command takes the following arguments:<dl>
+<dt>
+<b>ttk::style configure </b><i>style</i> ?<i>-option</i> ?<i>value option value...</i>? ?</dt>
+<dd>
+Sets the default value of the specified option(s) in <i>style</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>ttk::style map </b><i>style</i> ?<i>-option</i><b> { </b><i>statespec value...</i><b> }</b>?</dt>
+<dd>
+Sets dynamic values of the specified option(s) in <i>style</i>. Each  <i>statespec / value</i> pair is examined in order; the value corresponding to the first matching  <i>statespec</i> is used.</dd>
+</dl>
+<dl>
+<dt>
+<b>ttk::style lookup </b><i>style</i> <i>-option </i>?<i>state </i>?<i>default</i>??</dt>
+<dd>
+Returns the value specified for <i>-option</i> in style <i>style</i> in state  <i>state</i>, using the standard lookup rules for element options.  <i>state</i> is a list of state names; if omitted, it defaults to all bits off (the &#8220;normal&#8221; state). If the  <i>default</i> argument is present, it is used as a fallback value in case no specification for  <i>-option</i> is found.</dd>
+</dl>
+<dl>
+<dt>
+<b>ttk::style layout </b><i>style</i> ?<i>layoutSpec</i>?</dt>
+<dd>
+Define the widget layout for style <i>style</i>. See  <b>LAYOUTS</b> below for the format of <i>layoutSpec</i>. If  <i>layoutSpec</i> is omitted, return the layout specification for style  <i>style</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>ttk::style element create</b> <i>elementName</i> <i>type</i> ?<i>args...</i>?</dt>
+<dd>
+Creates a new element in the current theme of type <i>type</i>. The only cross-platform built-in element type is  <i>image</i> (see  <b>ttk_image</b>(n)) but themes may define other element types (see  <b>Ttk_RegisterElementFactory</b>). On suitable versions of Windows an element factory is registered to create Windows theme elements (see  <b>ttk_vsapi</b>(n)).</dd>
+</dl>
+<dl>
+<dt>
+<b>ttk::style element names</b></dt>
+<dd>
+Returns the list of elements defined in the current theme.</dd>
+</dl>
+<dl>
+<dt>
+<b>ttk::style element options </b><i>element</i></dt>
+<dd>
+Returns the list of <i>element</i>'s options.</dd>
+</dl>
+<dl>
+<dt>
+<b>ttk::style theme create</b> <i>themeName</i> ?<b>-parent </b><i>basedon</i>? ?<b>-settings </b><i>script...</i> ?</dt>
+<dd>
+Creates a new theme.  It is an error if <i>themeName</i> already exists. If  <b>-parent</b> is specified, the new theme will inherit styles, elements, and layouts from the parent theme  <i>basedon</i>. If  <b>-settings</b> is present, <i>script</i> is evaluated in the context of the new theme as per  <b>ttk::style theme settings</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>ttk::style theme settings </b><i>themeName</i> <i>script</i></dt>
+<dd>
+Temporarily sets the current theme to <i>themeName</i>, evaluate  <i>script</i>, then restore the previous theme. Typically  <i>script</i> simply defines styles and elements, though arbitrary Tcl code may appear.</dd>
+</dl>
+<dl>
+<dt>
+<b>ttk::style theme names</b></dt>
+<dd>
+Returns a list of all known themes.</dd>
+</dl>
+<dl>
+<dt>
+<b>ttk::style theme use</b> ?<i>themeName</i>?</dt>
+<dd>
+Without an argument the result is the name of the current theme. Otherwise this command sets the current theme to  <i>themeName</i>, and refreshes all widgets.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>LAYOUTS</h1> A  <i>layout</i> specifies a list of elements, each followed by one or more options specifying how to arrange the element. The layout mechanism uses a simplified version of the  <b>pack</b> geometry manager: given an initial cavity, each element is allocated a parcel. Valid options are:<dl>
+<dt>
+<b>-side </b><i>side</i></dt>
+<dd>
+Specifies which side of the cavity to place the element; one of  <b>left</b>, <b>right</b>, <b>top</b>, or <b>bottom</b>. If omitted, the element occupies the entire cavity.</dd>
+</dl>
+<dl>
+<dt>
+<b>-sticky</b> <b>[</b><i>nswe</i><b>]</b></dt>
+<dd>
+Specifies where the element is placed inside its allocated parcel.</dd>
+</dl>
+<dl>
+<dt>
+<b>-children { </b><i>sublayout... </i><b>}</b></dt>
+<dd>
+Specifies a list of elements to place inside the element.</dd>
+</dl>
+<div class="spacer">
+</div>
+For example:<div style="margin-left: 5.00ex;">
+<br/>
+ttk::style layout Horizontal.TScrollbar {<br/>
+    Scrollbar.trough -children {<br/>
+        Scrollbar.leftarrow -side left<br/>
+        Scrollbar.rightarrow -side right<br/>
+        Horizontal.Scrollbar.thumb -side left -sticky ew<br/>
+    }<br/>
+}<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> ttk::intro(n), ttk::widget(n), photo(n), ttk_image(n)</div>
+<div class="section">
+<h1>KEYWORDS</h1> style, theme, appearance</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+8.5</td>
+<td class="foot-os">
+Tk</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+Tcl_DetachPids(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+Tcl_DetachPids(3)</td>
+<td class="head-vol">
+Tcl Library Procedures</td>
+<td class="head-rtitle">
+Tcl_DetachPids(3)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> Tcl_DetachPids, Tcl_ReapDetachedProcs, Tcl_WaitPid - manage child processes in background</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+<b>#include &lt;tcl.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>Tcl_DetachPids</b>(<i>numPids, pidPtr</i>)<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>Tcl_ReapDetachedProcs</b>()<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Tcl_Pid<br/>
+<b>Tcl_WaitPid</b>(<i>pid, statusPtr, options</i>)</div>
+<div class="section">
+<h1>ARGUMENTS</h1><dl>
+<dt>
+int <i>numPids</i> (in)</dt>
+<dd>
+Number of process ids contained in the array pointed to by <i>pidPtr</i>.</dd>
+</dl>
+<dl>
+<dt>
+int <i>*pidPtr</i> (in)</dt>
+<dd>
+Address of array containing <i>numPids</i> process ids.</dd>
+</dl>
+<dl>
+<dt>
+Tcl_Pid <i>pid</i> (in)</dt>
+<dd>
+The id of the process (pipe) to wait for.</dd>
+</dl>
+<dl>
+<dt>
+int <i>*statusPtr</i> (out)</dt>
+<dd>
+The result of waiting on a process (pipe). Either 0 or ECHILD.</dd>
+</dl>
+<dl>
+<dt>
+int <i>options</i> (in)</dt>
+<dd>
+The options controlling the wait. WNOHANG specifies not to wait when checking the process.<br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>Tcl_DetachPids</b> and <b>Tcl_ReapDetachedProcs</b> provide a mechanism for managing subprocesses that are running in background. These procedures are needed because the parent of a process must eventually invoke the  <b>waitpid</b> kernel call (or one of a few other similar kernel calls) to wait for the child to exit.  Until the parent waits for the child, the child's state cannot be completely reclaimed by the system.  If a parent continually creates children and doesn't wait on them, the system's process table will eventually overflow, even if all the children have exited.<div class="spacer">
+</div>
+<b>Tcl_DetachPids</b> may be called to ask Tcl to take responsibility for one or more processes whose process ids are contained in the  <i>pidPtr</i> array passed as argument.  The caller presumably has started these processes running in background and does not want to have to deal with them again.<div class="spacer">
+</div>
+<b>Tcl_ReapDetachedProcs</b> invokes the <b>waitpid</b> kernel call on each of the background processes so that its state can be cleaned up if it has exited.  If the process has not exited yet,  <b>Tcl_ReapDetachedProcs</b> does not wait for it to exit;  it will check again the next time it is invoked. Tcl automatically calls  <b>Tcl_ReapDetachedProcs</b> each time the  <b>exec</b> command is executed, so in most cases it is not necessary for any code outside of Tcl to invoke  <b>Tcl_ReapDetachedProcs</b>. However, if you call  <b>Tcl_DetachPids</b> in situations where the  <b>exec</b> command may never get executed, you may wish to call  <b>Tcl_ReapDetachedProcs</b> from time to time so that background processes can be cleaned up.<div class="spacer">
+</div>
+<b>Tcl_WaitPid</b> is a thin wrapper around the facilities provided by the operating system to wait on the end of a spawned process and to check a whether spawned process is still running. It is used by  <b>Tcl_ReapDetachedProcs</b> and the channel system to portably access the operating system.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>KEYWORDS</h1> background, child, detach, process, wait</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+Tcl</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

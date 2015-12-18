@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+Tcl_SetAssocData(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+Tcl_SetAssocData(3)</td>
+<td class="head-vol">
+Tcl Library Procedures</td>
+<td class="head-rtitle">
+Tcl_SetAssocData(3)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> Tcl_GetAssocData, Tcl_SetAssocData, Tcl_DeleteAssocData - manage associations of string keys and user specified data with Tcl interpreters</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+<b>#include &lt;tcl.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+ClientData<br/>
+<b>Tcl_GetAssocData</b>(<i>interp, key, delProcPtr</i>)<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>Tcl_SetAssocData</b>(<i>interp, key, delProc, clientData</i>)<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>Tcl_DeleteAssocData</b>(<i>interp, key</i>)</div>
+<div class="section">
+<h1>ARGUMENTS</h1><dl>
+<dt>
+Tcl_Interp <i>*interp</i> (in)</dt>
+<dd>
+Interpreter in which to execute the specified command.</dd>
+</dl>
+<dl>
+<dt>
+const char <i>*key</i> (in)</dt>
+<dd>
+Key for association with which to store data or from which to delete or retrieve data.  Typically the module prefix for a package.</dd>
+</dl>
+<dl>
+<dt>
+Tcl_InterpDeleteProc <i>*delProc</i> (in)</dt>
+<dd>
+Procedure to call when <i>interp</i> is deleted.</dd>
+</dl>
+<dl>
+<dt>
+Tcl_InterpDeleteProc <i>**delProcPtr</i> (in)</dt>
+<dd>
+Pointer to location in which to store address of current deletion procedure for association.  Ignored if NULL.</dd>
+</dl>
+<dl>
+<dt>
+ClientData <i>clientData</i> (in)</dt>
+<dd>
+Arbitrary one-word value associated with the given key in this interpreter.  This data is owned by the caller.<br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> These procedures allow extensions to associate their own data with a Tcl interpreter. An association consists of a string key, typically the name of the extension, and a one-word value, which is typically a pointer to a data structure holding data specific to the extension. Tcl makes no interpretation of either the key or the value for an association.<div class="spacer">
+</div>
+Storage management is facilitated by storing with each association a procedure to call when the interpreter is deleted. This procedure can dispose of the storage occupied by the client's data in any way it sees fit.<div class="spacer">
+</div>
+<b>Tcl_SetAssocData</b> creates an association between a string key and a user specified datum in the given interpreter. If there is already an association with the given  <i>key</i>,  <b>Tcl_SetAssocData</b> overwrites it with the new information. It is up to callers to organize their use of names to avoid conflicts, for example, by using package names as the keys. If the  <i>deleteProc</i> argument is non-NULL it specifies the address of a procedure to invoke if the interpreter is deleted before the association is deleted.   <i>DeleteProc</i> should have arguments and result that match the type  <b>Tcl_InterpDeleteProc</b>:<div style="margin-left: 5.00ex;">
+<br/>
+typedef void Tcl_InterpDeleteProc(<br/>
+        ClientData <i>clientData</i>,<br/>
+        Tcl_Interp *<i>interp</i>);<br/>
+</div>
+When <i>deleteProc</i> is invoked the <i>clientData</i> and <i>interp</i> arguments will be the same as the corresponding arguments passed to  <b>Tcl_SetAssocData</b>. The deletion procedure will  <i>not</i> be invoked if the association is deleted before the interpreter is deleted.<div class="spacer">
+</div>
+<b>Tcl_GetAssocData</b> returns the datum stored in the association with the specified key in the given interpreter, and if the  <i>delProcPtr</i> field is non- <b>NULL</b>, the address indicated by it gets the address of the delete procedure stored with this association. If no association with the specified key exists in the given interpreter  <b>Tcl_GetAssocData</b> returns  <b>NULL</b>.<div class="spacer">
+</div>
+<b>Tcl_DeleteAssocData</b> deletes an association with a specified key in the given interpreter.  Then it calls the deletion procedure.</div>
+<div class="section">
+<h1>KEYWORDS</h1> association, data, deletion procedure, interpreter, key</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+7.5</td>
+<td class="foot-os">
+Tcl</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

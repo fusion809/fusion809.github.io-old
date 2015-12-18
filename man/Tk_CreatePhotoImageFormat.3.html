@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+Tk_CreatePhotoImageFormat(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+Tk_CreatePhotoImageFormat(3)</td>
+<td class="head-vol">
+Tk Library Procedures</td>
+<td class="head-rtitle">
+Tk_CreatePhotoImageFormat(3)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> Tk_CreatePhotoImageFormat - define new file format for photo images</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+<b>#include &lt;tk.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>Tk_CreatePhotoImageFormat</b>(<i>formatPtr</i>)</div>
+<div class="section">
+<h1>ARGUMENTS</h1><dl>
+<dt>
+Tk_PhotoImageFormat <i>*formatPtr</i> (in)</dt>
+<dd>
+Structure that defines the new file format.<br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>Tk_CreatePhotoImageFormat</b> is invoked to define a new file format for image data for use with photo images.  The code that implements an image file format is called an image file format handler, or handler for short.  The photo image code maintains a list of handlers that can be used to read and write data to or from a file.  Some handlers may also support reading image data from a string or converting image data to a string format. The user can specify which handler to use with the  <b>-format</b> image configuration option or the  <b>-format</b> option to the  <b>read</b> and <b>write</b> photo image subcommands.<div class="spacer">
+</div>
+An image file format handler consists of a collection of procedures plus a Tk_PhotoImageFormat structure, which contains the name of the image file format and pointers to six procedures provided by the handler to deal with files and strings in this format.  The Tk_PhotoImageFormat structure contains the following fields:<div style="margin-left: 5.00ex;">
+<br/>
+typedef struct Tk_PhotoImageFormat {<br/>
+    char *<i>name</i>;<br/>
+    Tk_ImageFileMatchProc *<i>fileMatchProc</i>;<br/>
+    Tk_ImageStringMatchProc *<i>stringMatchProc</i>;<br/>
+    Tk_ImageFileReadProc *<i>fileReadProc</i>;<br/>
+    Tk_ImageStringReadProc *<i>stringReadProc</i>;<br/>
+    Tk_ImageFileWriteProc *<i>fileWriteProc</i>;<br/>
+    Tk_ImageStringWriteProc *<i>stringWriteProc</i>;<br/>
+} Tk_PhotoImageFormat;<br/>
+</div>
+<div class="spacer">
+</div>
+The handler need not provide implementations of all six procedures. For example, the procedures that handle string data would not be provided for a format in which the image data are stored in binary, and could therefore contain null characters.  If any procedure is not implemented, the corresponding pointer in the Tk_PhotoImageFormat structure should be set to NULL.  The handler must provide the  <i>fileMatchProc</i> procedure if it provides the <i>fileReadProc</i> procedure, and the  <i>stringMatchProc</i> procedure if it provides the  <i>stringReadProc</i> procedure.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1>  <i>formatPtr-&gt;name</i> provides a name for the image type. Once  <b>Tk_CreatePhotoImageFormat</b> returns, this name may be used in the  <b>-format</b> photo image configuration and subcommand option. The manual page for the photo image (photo(n)) describes how image file formats are chosen based on their names and the value given to the  <b>-format</b> option. The first character of <i>formatPtr-&gt;name</i> must not be an uppercase character from the ASCII character set (that is, one of the characters  <b>A</b>-<b>Z</b>).  Such names are used only for legacy interface support (see below).<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>FILEMATCHPROC</h1>  <i>formatPtr-&gt;fileMatchProc</i> provides the address of a procedure for Tk to call when it is searching for an image file format handler suitable for reading data in a given file.  <i>formatPtr-&gt;fileMatchProc</i> must match the following prototype:<div style="margin-left: 5.00ex;">
+<br/>
+typedef int Tk_ImageFileMatchProc(<br/>
+    Tcl_Channel <i>chan</i>,<br/>
+    const char *<i>fileName</i>,<br/>
+    Tcl_Obj *<i>format</i>,<br/>
+    int *<i>widthPtr</i>,<br/>
+    int *<i>heightPtr</i>,<br/>
+    Tcl_Interp *<i>interp</i>);<br/>
+</div>
+The <i>fileName</i> argument is the name of the file containing the image data, which is open for reading as  <i>chan</i>.  The  <i>format</i> argument contains the value given for the  <b>-format</b> option, or NULL if the option was not specified. If the data in the file appears to be in the format supported by this handler, the  <i>formatPtr-&gt;fileMatchProc</i> procedure should store the width and height of the image in * <i>widthPtr</i> and *<i>heightPtr</i> respectively, and return 1.  Otherwise it should return 0.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>STRINGMATCHPROC</h1>  <i>formatPtr-&gt;stringMatchProc</i> provides the address of a procedure for Tk to call when it is searching for an image file format handler for suitable for reading data from a given string.  <i>formatPtr-&gt;stringMatchProc</i> must match the following prototype:<div style="margin-left: 5.00ex;">
+<br/>
+typedef int Tk_ImageStringMatchProc(<br/>
+    Tcl_Obj *<i>data</i>,<br/>
+    Tcl_Obj *<i>format</i>,<br/>
+    int *<i>widthPtr</i>,<br/>
+    int *<i>heightPtr</i>,<br/>
+    Tcl_Interp *<i>interp</i>);<br/>
+</div>
+The <i>data</i> argument points to the object containing the image data.  The  <i>format</i> argument contains the value given for the  <b>-format</b> option, or NULL if the option was not specified. If the data in the string appears to be in the format supported by this handler, the  <i>formatPtr-&gt;stringMatchProc</i> procedure should store the width and height of the image in * <i>widthPtr</i> and * <i>heightPtr</i> respectively, and return 1.  Otherwise it should return 0.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>FILEREADPROC</h1>  <i>formatPtr-&gt;fileReadProc</i> provides the address of a procedure for Tk to call to read data from an image file into a photo image.  <i>formatPtr-&gt;fileReadProc</i> must match the following prototype:<div style="margin-left: 5.00ex;">
+<br/>
+typedef int Tk_ImageFileReadProc(<br/>
+    Tcl_Interp *<i>interp</i>,<br/>
+    Tcl_Channel <i>chan</i>,<br/>
+    const char *<i>fileName</i>,<br/>
+    Tcl_Obj *<i>format</i>,<br/>
+    PhotoHandle <i>imageHandle</i>,<br/>
+    int <i>destX</i>, int <i>destY</i>,<br/>
+    int <i>width</i>, int <i>height</i>,<br/>
+    int <i>srcX</i>, int <i>srcY</i>);<br/>
+</div>
+The <i>interp</i> argument is the interpreter in which the command was invoked to read the image; it should be used for reporting errors. The image data is in the file named  <i>fileName</i>, which is open for reading as  <i>chan</i>.  The <i>format</i> argument contains the value given for the  <b>-format</b> option, or NULL if the option was not specified.  The image data in the file, or a subimage of it, is to be read into the photo image identified by the handle  <i>imageHandle</i>.  The subimage of the data in the file is of dimensions  <i>width</i> x <i>height</i> and has its top-left corner at coordinates ( <i>srcX</i>,<i>srcY</i>).  It is to be stored in the photo image with its top-left corner at coordinates ( <i>destX</i>,<i>destY</i>) using the <b>Tk_PhotoPutBlock</b> procedure. The return value is a standard Tcl return value.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>STRINGREADPROC</h1>  <i>formatPtr-&gt;stringReadProc</i> provides the address of a procedure for Tk to call to read data from a string into a photo image.  <i>formatPtr-&gt;stringReadProc</i> must match the following prototype:<div style="margin-left: 5.00ex;">
+<br/>
+typedef int Tk_ImageStringReadProc(<br/>
+    Tcl_Interp *<i>interp</i>,<br/>
+    Tcl_Obj *<i>data</i>,<br/>
+    Tcl_Obj *<i>format</i>,<br/>
+    PhotoHandle <i>imageHandle</i>,<br/>
+    int <i>destX</i>, int <i>destY</i>,<br/>
+    int <i>width</i>, int <i>height</i>,<br/>
+    int <i>srcX</i>, int <i>srcY</i>);<br/>
+</div>
+The <i>interp</i> argument is the interpreter in which the command was invoked to read the image; it should be used for reporting errors. The  <i>data</i> argument points to the image data in object form. The  <i>format</i> argument contains the value given for the  <b>-format</b> option, or NULL if the option was not specified.  The image data in the string, or a subimage of it, is to be read into the photo image identified by the handle  <i>imageHandle</i>.  The subimage of the data in the string is of dimensions  <i>width</i> x <i>height</i> and has its top-left corner at coordinates ( <i>srcX</i>,<i>srcY</i>).  It is to be stored in the photo image with its top-left corner at coordinates ( <i>destX</i>,<i>destY</i>) using the <b>Tk_PhotoPutBlock</b> procedure. The return value is a standard Tcl return value.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>FILEWRITEPROC</h1>  <i>formatPtr-&gt;fileWriteProc</i> provides the address of a procedure for Tk to call to write data from a photo image to a file.  <i>formatPtr-&gt;fileWriteProc</i> must match the following prototype:<div style="margin-left: 5.00ex;">
+<br/>
+typedef int Tk_ImageFileWriteProc(<br/>
+    Tcl_Interp *<i>interp</i>,<br/>
+    const char *<i>fileName</i>,<br/>
+    Tcl_Obj *<i>format</i>,<br/>
+    Tk_PhotoImageBlock *<i>blockPtr</i>);<br/>
+</div>
+The <i>interp</i> argument is the interpreter in which the command was invoked to write the image; it should be used for reporting errors. The image data to be written are in memory and are described by the Tk_PhotoImageBlock structure pointed to by  <i>blockPtr</i>; see the manual page FindPhoto(3) for details.  The  <i>fileName</i> argument points to the string giving the name of the file in which to write the image data.  The  <i>format</i> argument contains the value given for the  <b>-format</b> option, or NULL if the option was not specified.  The format string can contain extra characters after the name of the format.  If appropriate, the  <i>formatPtr-&gt;fileWriteProc</i> procedure may interpret these characters to specify further details about the image file. The return value is a standard Tcl return value.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>STRINGWRITEPROC</h1>  <i>formatPtr-&gt;stringWriteProc</i> provides the address of a procedure for Tk to call to translate image data from a photo image into a string.  <i>formatPtr-&gt;stringWriteProc</i> must match the following prototype:<div style="margin-left: 5.00ex;">
+<br/>
+typedef int Tk_ImageStringWriteProc(<br/>
+    Tcl_Interp *<i>interp</i>,<br/>
+    Tcl_Obj *<i>format</i>,<br/>
+    Tk_PhotoImageBlock *<i>blockPtr</i>);<br/>
+</div>
+The <i>interp</i> argument is the interpreter in which the command was invoked to convert the image; it should be used for reporting errors. The image data to be converted are in memory and are described by the Tk_PhotoImageBlock structure pointed to by  <i>blockPtr</i>; see the manual page FindPhoto(3) for details.  The data for the string should be put in the interpreter  <i>interp</i> result. The  <i>format</i> argument contains the value given for the  <b>-format</b> option, or NULL if the option was not specified.  The format string can contain extra characters after the name of the format.  If appropriate, the  <i>formatPtr-&gt;stringWriteProc</i> procedure may interpret these characters to specify further details about the image file. The return value is a standard Tcl return value.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>LEGACY INTERFACE SUPPORT</h1> In Tk 8.2 and earlier, the definition of all the function pointer types stored in fields of a  <b>Tk_PhotoImageFormat</b> struct were incompatibly different.  Legacy programs and libraries dating from those days may still contain code that defines extended Tk photo image formats using the old interface.  The Tk header file will still support this legacy interface if the code is compiled with the macro  <b>USE_OLD_IMAGE</b> defined.  Alternatively, the legacy interfaces are used if the first character of  <i>formatPtr-&gt;name</i> is an uppercase ASCII character ( <b>A</b>-<b>Z</b>), and explicit casts are used to forgive the type mismatch.  For example,<div style="margin-left: 5.00ex;">
+<br/>
+static Tk_PhotoImageFormat myFormat = {<br/>
+    &quot;MyFormat&quot;,<br/>
+    (Tk_ImageFileMatchProc *) FileMatch,<br/>
+    NULL,<br/>
+    (Tk_ImageFileReadProc *) FileRead,<br/>
+    NULL,<br/>
+    NULL,<br/>
+    NULL<br/>
+};<br/>
+</div>
+would define a minimal <b>Tk_PhotoImageFormat</b> that operates provide only file reading capability, where  <b>FileMatch</b> and <b>FileRead</b> are written according to the legacy interfaces of Tk 8.2 or earlier.<div class="spacer">
+</div>
+Any stub-enabled extension providing an extended photo image format via the legacy interface enabled by the  <b>USE_OLD_IMAGE</b> macro that is compiled against Tk 8.5 headers and linked against the Tk 8.5 stub library will produce a file that can be loaded only into interps with Tk 8.5 or later; that is, the normal stub-compatibility rules.  If a developer needs to generate from such code a file that is loadable into interps with Tk 8.4 or earlier, they must use Tk 8.4 headers and stub libraries to do so.<div class="spacer">
+</div>
+Any new code written today should not make use of the legacy interfaces.  Expect their support to go away in Tk 9.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> Tk_FindPhoto, Tk_PhotoPutBlock<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>KEYWORDS</h1> photo image, image file</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+8.5</td>
+<td class="foot-os">
+Tk</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

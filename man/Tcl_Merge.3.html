@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+Tcl_SplitList(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+Tcl_SplitList(3)</td>
+<td class="head-vol">
+Tcl Library Procedures</td>
+<td class="head-rtitle">
+Tcl_SplitList(3)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> Tcl_SplitList, Tcl_Merge, Tcl_ScanElement, Tcl_ConvertElement, Tcl_ScanCountedElement, Tcl_ConvertCountedElement - manipulate Tcl lists</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+<b>#include &lt;tcl.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+int<br/>
+<b>Tcl_SplitList</b>(<i>interp, list, argcPtr, argvPtr</i>)<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+char *<br/>
+<b>Tcl_Merge</b>(<i>argc, argv</i>)<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+int<br/>
+<b>Tcl_ScanElement</b>(<i>src, flagsPtr</i>)<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+int<br/>
+<b>Tcl_ScanCountedElement</b>(<i>src, length, flagsPtr</i>)<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+int<br/>
+<b>Tcl_ConvertElement</b>(<i>src, dst, flags</i>)<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+int<br/>
+<b>Tcl_ConvertCountedElement</b>(<i>src, length, dst, flags</i>)</div>
+<div class="section">
+<h1>ARGUMENTS</h1><dl>
+<dt>
+Tcl_Interp <i>*interp</i> (out)</dt>
+<dd>
+Interpreter to use for error reporting.  If NULL, then no error message is left.</dd>
+</dl>
+<dl>
+<dt>
+char <i>*list</i> (in)</dt>
+<dd>
+Pointer to a string with proper list structure.</dd>
+</dl>
+<dl>
+<dt>
+int <i>*argcPtr</i> (out)</dt>
+<dd>
+Filled in with number of elements in <i>list</i>.</dd>
+</dl>
+<dl>
+<dt>
+const char <i>***argvPtr</i> (out)</dt>
+<dd>
+<i>*argvPtr</i> will be filled in with the address of an array of pointers to the strings that are the extracted elements of  <i>list</i>. There will be  <i>*argcPtr</i> valid entries in the array, followed by a NULL entry.</dd>
+</dl>
+<dl>
+<dt>
+int <i>argc</i> (in)</dt>
+<dd>
+Number of elements in <i>argv</i>.</dd>
+</dl>
+<dl>
+<dt>
+const char *const <i>*argv</i> (in)</dt>
+<dd>
+Array of strings to merge together into a single list. Each string will become a separate element of the list.</dd>
+</dl>
+<dl>
+<dt>
+const char <i>*src</i> (in)</dt>
+<dd>
+String that is to become an element of a list.</dd>
+</dl>
+<dl>
+<dt>
+int <i>*flagsPtr</i> (in)</dt>
+<dd>
+Pointer to word to fill in with information about <i>src</i>. The value of * <i>flagsPtr</i> must be passed to <b>Tcl_ConvertElement</b>.</dd>
+</dl>
+<dl>
+<dt>
+int <i>length</i> (in)</dt>
+<dd>
+Number of bytes in string <i>src</i>.</dd>
+</dl>
+<dl>
+<dt>
+char <i>*dst</i> (in)</dt>
+<dd>
+Place to copy converted list element.  Must contain enough characters to hold converted string.</dd>
+</dl>
+<dl>
+<dt>
+int <i>flags</i> (in)</dt>
+<dd>
+Information about <i>src</i>. Must be value returned by previous call to  <b>Tcl_ScanElement</b>, possibly OR-ed with  <b>TCL_DONT_USE_BRACES</b>.<br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> These procedures may be used to disassemble and reassemble Tcl lists.  <b>Tcl_SplitList</b> breaks a list up into its constituent elements, returning an array of pointers to the elements using  <i>argcPtr</i> and <i>argvPtr</i>. While extracting the arguments,  <b>Tcl_SplitList</b> obeys the usual rules for backslash substitutions and braces.  The area of memory pointed to by  <i>*argvPtr</i> is dynamically allocated;  in addition to the array of pointers, it also holds copies of all the list elements.  It is the caller's responsibility to free up all of this storage. For example, suppose that you have called  <b>Tcl_SplitList</b> with the following code:<div style="margin-left: 5.00ex;">
+<br/>
+int argc, code;<br/>
+char *string;<br/>
+char **argv;<br/>
+...<br/>
+code = Tcl_SplitList(interp, string, &amp;argc, &amp;argv);<br/>
+</div>
+Then you should eventually free the storage with a call like the following:<div style="margin-left: 5.00ex;">
+<br/>
+Tcl_Free((char *) argv);<br/>
+</div>
+<div class="spacer">
+</div>
+<b>Tcl_SplitList</b> normally returns <b>TCL_OK</b>, which means the list was successfully parsed. If there was a syntax error in  <i>list</i>, then <b>TCL_ERROR</b> is returned and the interpreter's result will point to an error message describing the problem (if  <i>interp</i> was not NULL). If  <b>TCL_ERROR</b> is returned then no memory is allocated and <i>*argvPtr</i> is not modified.<div class="spacer">
+</div>
+<b>Tcl_Merge</b> is the inverse of <b>Tcl_SplitList</b>:  it takes a collection of strings given by  <i>argc</i> and  <i>argv</i> and generates a result string that has proper list structure. This means that commands like  <b>index</b> may be used to extract the original elements again. In addition, if the result of  <b>Tcl_Merge</b> is passed to <b>Tcl_Eval</b>, it will be parsed into  <i>argc</i> words whose values will be the same as the  <i>argv</i> strings passed to <b>Tcl_Merge</b>.  <b>Tcl_Merge</b> will modify the list elements with braces and/or backslashes in order to produce proper Tcl list structure. The result string is dynamically allocated using  <b>Tcl_Alloc</b>;  the caller must eventually release the space using  <b>Tcl_Free</b>.<div class="spacer">
+</div>
+If the result of <b>Tcl_Merge</b> is passed to <b>Tcl_SplitList</b>, the elements returned by  <b>Tcl_SplitList</b> will be identical to those passed into  <b>Tcl_Merge</b>. However, the converse is not true:  if  <b>Tcl_SplitList</b> is passed a given string, and the resulting  <i>argc</i> and  <i>argv</i> are passed to <b>Tcl_Merge</b>, the resulting string may not be the same as the original string passed to  <b>Tcl_SplitList</b>. This is because  <b>Tcl_Merge</b> may use backslashes and braces differently than the original string.<div class="spacer">
+</div>
+<b>Tcl_ScanElement</b> and <b>Tcl_ConvertElement</b> are the procedures that do all of the real work of  <b>Tcl_Merge</b>.  <b>Tcl_ScanElement</b> scans its <i>src</i> argument and determines how to use backslashes and braces when converting it to a list element. It returns an overestimate of the number of characters required to represent  <i>src</i> as a list element, and it stores information in  <i>*flagsPtr</i> that is needed by  <b>Tcl_ConvertElement</b>.<div class="spacer">
+</div>
+<b>Tcl_ConvertElement</b> is a companion procedure to <b>Tcl_ScanElement</b>. It does the actual work of converting a string to a list element. Its  <i>flags</i> argument must be the same as the value returned by  <b>Tcl_ScanElement</b>.  <b>Tcl_ConvertElement</b> writes a proper list element to memory starting at * <i>dst</i> and returns a count of the total number of characters written, which will be no more than the result returned by  <b>Tcl_ScanElement</b>.  <b>Tcl_ConvertElement</b> writes out only the actual list element without any leading or trailing spaces: it is up to the caller to include spaces between adjacent list elements.<div class="spacer">
+</div>
+<b>Tcl_ConvertElement</b> uses one of two different approaches to handle the special characters in  <i>src</i>.  Wherever possible, it handles special characters by surrounding the string with braces. This produces clean-looking output, but cannot be used in some situations, such as when  <i>src</i> contains unmatched braces. In these situations,  <b>Tcl_ConvertElement</b> handles special characters by generating backslash sequences for them. The caller may insist on the second approach by OR-ing the flag value returned by  <b>Tcl_ScanElement</b> with  <b>TCL_DONT_USE_BRACES</b>. Although this will produce an uglier result, it is useful in some special situations, such as when  <b>Tcl_ConvertElement</b> is being used to generate a portion of an argument for a Tcl command. In this case, surrounding  <i>src</i> with curly braces would cause the command not to be parsed correctly.<div class="spacer">
+</div>
+By default, <b>Tcl_ConvertElement</b> will use quoting in its output to be sure the first character of an element is not the hash character (&#8220;#&#8221;.) This is to be sure the first element of any list passed to  <b>eval</b> is not mis-parsed as the beginning of a comment. When a list element is not the first element of a list, this quoting is not necessary.  When the caller can be sure that the element is not the first element of a list, it can disable quoting of the leading hash character by OR-ing the flag value returned by  <b>Tcl_ScanElement</b> with  <b>TCL_DONT_QUOTE_HASH</b>.<div class="spacer">
+</div>
+<b>Tcl_ScanCountedElement</b> and <b>Tcl_ConvertCountedElement</b> are the same as  <b>Tcl_ScanElement</b> and <b>Tcl_ConvertElement</b>, except the length of string  <i>src</i> is specified by the <i>length</i> argument, and the string may contain embedded nulls.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>KEYWORDS</h1> backslash, convert, element, list, merge, split, strings</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+8.0</td>
+<td class="foot-os">
+Tcl</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

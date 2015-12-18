@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+load(n)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+load(n)</td>
+<td class="head-vol">
+Tcl Built-In Commands</td>
+<td class="head-rtitle">
+load(n)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> load - Load machine code and initialize new commands</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <b>load </b><i>fileName</i><div style="height: 0.00em;">
+&#160;</div>
+<b>load </b><i>fileName packageName</i><div style="height: 0.00em;">
+&#160;</div>
+<b>load </b><i>fileName packageName interp</i><br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> This command loads binary code from a file into the application's address space and calls an initialization procedure in the package to incorporate it into an interpreter.   <i>fileName</i> is the name of the file containing the code;  its exact form varies from system to system but on most systems it is a shared library, such as a  <b>.so</b> file under Solaris or a DLL under Windows.  <i>packageName</i> is the name of the package, and is used to compute the name of an initialization procedure.  <i>interp</i> is the path name of the interpreter into which to load the package (see the  <b>interp</b> manual entry for details); if  <i>interp</i> is omitted, it defaults to the interpreter in which the  <b>load</b> command was invoked.<div class="spacer">
+</div>
+Once the file has been loaded into the application's address space, one of two initialization procedures will be invoked in the new code. Typically the initialization procedure will add new commands to a Tcl interpreter. The name of the initialization procedure is determined by  <i>packageName</i> and whether or not the target interpreter is a safe one.  For normal interpreters the name of the initialization procedure will have the form  <i>pkg</i><b>_Init</b>, where <i>pkg</i> is the same as  <i>packageName</i> except that the first letter is converted to upper case and all other letters are converted to lower case.  For example, if  <i>packageName</i> is  <b>foo</b> or <b>FOo</b>, the initialization procedure's name will be  <b>Foo_Init</b>.<div class="spacer">
+</div>
+If the target interpreter is a safe interpreter, then the name of the initialization procedure will be  <i>pkg</i><b>_SafeInit</b> instead of  <i>pkg</i><b>_Init</b>. The  <i>pkg</i><b>_SafeInit</b> function should be written carefully, so that it initializes the safe interpreter only with partial functionality provided by the package that is safe for use by untrusted code. For more information on Safe-Tcl, see the  <b>safe</b> manual entry.<div class="spacer">
+</div>
+The initialization procedure must match the following prototype:<div style="margin-left: 5.00ex;">
+<br/>
+typedef int Tcl_PackageInitProc(Tcl_Interp *<i>interp</i>);<br/>
+</div>
+The <i>interp</i> argument identifies the interpreter in which the package is to be loaded.  The initialization procedure must return  <b>TCL_OK</b> or <b>TCL_ERROR</b> to indicate whether or not it completed successfully;  in the event of an error it should set the interpreter's result to point to an error message.  The result of the  <b>load</b> command will be the result returned by the initialization procedure.<div class="spacer">
+</div>
+The actual loading of a file will only be done once for each <i>fileName</i> in an application.  If a given  <i>fileName</i> is loaded into multiple interpreters, then the first  <b>load</b> will load the code and call the initialization procedure;  subsequent  <b>load</b>s will call the initialization procedure without loading the code again. For Tcl versions lower than 8.5, it is not possible to unload or reload a package. From version 8.5 however, the  <b>unload</b> command allows the unloading of libraries loaded with  <b>load</b>, for libraries that are aware of the Tcl's unloading mechanism.<div class="spacer">
+</div>
+The <b>load</b> command also supports packages that are statically linked with the application, if those packages have been registered by calling the  <b>Tcl_StaticPackage</b> procedure. If  <i>fileName</i> is an empty string, then <i>packageName</i> must be specified.<div class="spacer">
+</div>
+If <i>packageName</i> is omitted or specified as an empty string, Tcl tries to guess the name of the package. This may be done differently on different platforms. The default guess, which is used on most UNIX platforms, is to take the last element of  <i>fileName</i>, strip off the first three characters if they are  <b>lib</b>, and use any following alphabetic and underline characters as the module name. For example, the command  <b>load libxyz4.2.so</b> uses the module name  <b>xyz</b> and the command <b>load bin/last.so {}</b> uses the module name  <b>last</b>.<div class="spacer">
+</div>
+If <i>fileName</i> is an empty string, then <i>packageName</i> must be specified. The  <b>load</b> command first searches for a statically loaded package (one that has been registered by calling the  <b>Tcl_StaticPackage</b> procedure) by that name; if one is found, it is used. Otherwise, the  <b>load</b> command searches for a dynamically loaded package by that name, and uses it if it is found.  If several different files have been  <b>load</b>ed with different versions of the package, Tcl picks the file that was loaded first.</div>
+<div class="section">
+<h1>PORTABILITY ISSUES</h1><dl>
+<dt>
+<b>Windows</b>&#8194;&#8194;&#8194;&#8194;&#8194;</dt>
+<dd>
+When a load fails with &#8220;library not found&#8221; error, it is also possible that a dependent library was not found.  To see the dependent libraries, type &#8220;dumpbin -imports &lt;dllname&gt;&#8221; in a DOS console to see what the library must import. When loading a DLL in the current directory, Windows will ignore &#8220;./&#8221; as a path specifier and use a search heuristic to find the DLL instead. To avoid this, load the DLL with:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<br/>
+<b>load</b> [file join [pwd] mylib.DLL]<br/>
+</div>
+</div>
+<div class="section">
+<h1>BUGS</h1> If the same file is  <b>load</b>ed by different <i>fileName</i>s, it will be loaded into the process's address space multiple times.  The behavior of this varies from system to system (some systems may detect the redundant loads, others may not).</div>
+<div class="section">
+<h1>EXAMPLE</h1> The following is a minimal extension:<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;">
+<br/>
+#include &lt;tcl.h&gt;<br/>
+#include &lt;stdio.h&gt;<br/>
+static int fooCmd(ClientData clientData,<br/>
+        Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {<br/>
+    printf(&quot;called with %d arguments\n&quot;, objc);<br/>
+    return TCL_OK;<br/>
+}<br/>
+int Foo_Init(Tcl_Interp *interp) {<br/>
+    if (Tcl_InitStubs(interp, &quot;8.1&quot;, 0) == NULL) {<br/>
+	return TCL_ERROR;<br/>
+    }<br/>
+    printf(&quot;creating foo command&quot;);<br/>
+    Tcl_CreateObjCommand(interp, &quot;foo&quot;, fooCmd, NULL, NULL);<br/>
+    return TCL_OK;<br/>
+}<br/>
+</div>
+<div class="spacer">
+</div>
+When built into a shared/dynamic library with a suitable name (e.g.  <b>foo.dll</b> on Windows, <b>libfoo.so</b> on Solaris and Linux) it can then be loaded into Tcl with the following:<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;">
+<br/>
+# Load the extension<br/>
+switch $tcl_platform(platform) {<br/>
+   windows {<br/>
+      <b>load</b> [file join [pwd] foo.dll]<br/>
+   }<br/>
+   unix {<br/>
+      <b>load</b> [file join [pwd] libfoo[info sharedlibextension]]<br/>
+   }<br/>
+}<div class="spacer">
+</div>
+<br/>
+# Now execute the command defined by the extension<br/>
+foo<br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> info sharedlibextension, Tcl_StaticPackage(3), safe(n)<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>KEYWORDS</h1> binary code, loading, safe interpreter, shared library</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+7.5</td>
+<td class="foot-os">
+Tcl</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

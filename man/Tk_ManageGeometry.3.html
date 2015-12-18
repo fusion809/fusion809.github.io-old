@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+Tk_ManageGeometry(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+Tk_ManageGeometry(3)</td>
+<td class="head-vol">
+Tk Library Procedures</td>
+<td class="head-rtitle">
+Tk_ManageGeometry(3)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> Tk_ManageGeometry - arrange to handle geometry requests for a window</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+<b>#include &lt;tk.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>Tk_ManageGeometry</b>(<i>tkwin, mgrPtr, clientData</i>)</div>
+<div class="section">
+<h1>ARGUMENTS</h1><dl>
+<dt>
+Tk_Window <i>tkwin</i> (in)</dt>
+<dd>
+Token for window to be managed.</dd>
+</dl>
+<dl>
+<dt>
+const Tk_GeomMgr <i>*mgrPtr</i> (in)</dt>
+<dd>
+Pointer to data structure containing information about the geometry manager, or NULL to indicate that  <i>tkwin</i>'s geometry should not be managed anymore. The data structure pointed to by  <i>mgrPtr</i> must be static: Tk keeps a reference to it as long as the window is managed.</dd>
+</dl>
+<dl>
+<dt>
+ClientData <i>clientData</i> (in)</dt>
+<dd>
+Arbitrary one-word value to pass to geometry manager callbacks.<br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>Tk_ManageGeometry</b> arranges for a particular geometry manager, described by the  <i>mgrPtr</i> argument, to control the geometry of a particular slave window, given by  <i>tkwin</i>. If  <i>tkwin</i> was previously managed by some other geometry manager, the previous manager loses control in favor of the new one. If  <i>mgrPtr</i> is NULL, geometry management is cancelled for  <i>tkwin</i>.<div class="spacer">
+</div>
+The structure pointed to by <i>mgrPtr</i> contains information about the geometry manager:<div style="margin-left: 5.00ex;">
+<br/>
+typedef struct {<br/>
+    const char *<i>name</i>;<br/>
+    Tk_GeomRequestProc *<i>requestProc</i>;<br/>
+    Tk_GeomLostSlaveProc *<i>lostSlaveProc</i>;<br/>
+} Tk_GeomMgr;<br/>
+</div>
+The <i>name</i> field is the textual name for the geometry manager, such as  <b>pack</b> or <b>place</b>;  this value will be returned by the command  <b>winfo manager</b>.<div class="spacer">
+</div>
+<i>requestProc</i> is a procedure in the geometry manager that will be invoked whenever  <b>Tk_GeometryRequest</b> is called by the slave to change its desired geometry.  <i>requestProc</i> should have arguments and results that match the type  <b>Tk_GeomRequestProc</b>:<div style="margin-left: 5.00ex;">
+<br/>
+typedef void Tk_GeomRequestProc(<br/>
+    ClientData <i>clientData</i>,<br/>
+    Tk_Window <i>tkwin</i>);<br/>
+</div>
+The parameters to <i>requestProc</i> will be identical to the corresponding parameters passed to  <b>Tk_ManageGeometry</b>.  <i>clientData</i> usually points to a data structure containing application-specific information about how to manage  <i>tkwin</i>'s geometry.<div class="spacer">
+</div>
+The <i>lostSlaveProc</i> field of <i>mgrPtr</i> points to another procedure in the geometry manager. Tk will invoke  <i>lostSlaveProc</i> if some other manager calls  <b>Tk_ManageGeometry</b> to claim  <i>tkwin</i> away from the current geometry manager.  <i>lostSlaveProc</i> is not invoked if <b>Tk_ManageGeometry</b> is called with a NULL value for  <i>mgrPtr</i> (presumably the current geometry manager has made this call, so it already knows that the window is no longer managed), nor is it called if  <i>mgrPtr</i> is the same as the window's current geometry manager.  <i>lostSlaveProc</i> should have arguments and results that match the following prototype:<div style="margin-left: 5.00ex;">
+<br/>
+typedef void Tk_GeomLostSlaveProc(<br/>
+    ClientData <i>clientData</i>,<br/>
+    Tk_Window <i>tkwin</i>);<br/>
+</div>
+The parameters to <i>lostSlaveProc</i> will be identical to the corresponding parameters passed to  <b>Tk_ManageGeometry</b>.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>KEYWORDS</h1> callback, geometry, managed, request, unmanaged</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+4.0</td>
+<td class="foot-os">
+Tk</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

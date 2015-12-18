@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+Tcl_GetTime(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+Tcl_GetTime(3)</td>
+<td class="head-vol">
+Tcl Library Procedures</td>
+<td class="head-rtitle">
+Tcl_GetTime(3)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> Tcl_GetTime, Tcl_SetTimeProc, Tcl_QueryTimeProc - get date and time</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+<b>#include &lt;tcl.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>Tcl_GetTime</b>(<i>timePtr</i>)<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>Tcl_SetTimeProc</b>(<i>getProc, scaleProc, clientData</i>)<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>Tcl_QueryTimeProc</b>(<i>getProcPtr, scaleProcPtr, clientDataPtr</i>)</div>
+<div class="section">
+<h1>ARGUMENTS</h1><dl>
+<dt>
+Tcl_Time * <i>timePtr</i> (out)</dt>
+<dd>
+Points to memory in which to store the date and time information.</dd>
+</dl>
+<dl>
+<dt>
+Tcl_GetTimeProc * <i>getProc</i> (in)</dt>
+<dd>
+Pointer to handler function replacing <b>Tcl_GetTime</b>'s access to the OS.</dd>
+</dl>
+<dl>
+<dt>
+Tcl_ScaleTimeProc * <i>scaleProc</i> (in)</dt>
+<dd>
+Pointer to handler function for the conversion of time delays in the virtual domain to real-time.</dd>
+</dl>
+<dl>
+<dt>
+ClientData * <i>clientData</i> (in)</dt>
+<dd>
+Value passed through to the two handler functions.</dd>
+</dl>
+<dl>
+<dt>
+Tcl_GetTimeProc ** <i>getProcPtr</i> (inout)</dt>
+<dd>
+Pointer to place the currently registered get handler function into.</dd>
+</dl>
+<dl>
+<dt>
+Tcl_ScaleTimeProc ** <i>scaleProcPtr</i> (inout)</dt>
+<dd>
+Pointer to place the currently registered scale handler function into.</dd>
+</dl>
+<dl>
+<dt>
+ClientData ** <i>clientDataPtr</i> (inout)</dt>
+<dd>
+Pointer to place the currently registered pass-through value into.<br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <b>Tcl_GetTime</b> function retrieves the current time as a  <i>Tcl_Time</i> structure in memory the caller provides.  This structure has the following definition:<div style="margin-left: 5.00ex;">
+<br/>
+typedef struct Tcl_Time {<br/>
+    long sec;<br/>
+    long usec;<br/>
+} Tcl_Time;<br/>
+</div>
+<div class="spacer">
+</div>
+On return, the <i>sec</i> member of the structure is filled in with the number of seconds that have elapsed since the  <i>epoch:</i> the epoch is the point in time of 00:00 UTC, 1 January 1970.  This number does  <i>not</i> count leap seconds - an interval of one day advances it by 86400 seconds regardless of whether a leap second has been inserted.<div class="spacer">
+</div>
+The <i>usec</i> member of the structure is filled in with the number of microseconds that have elapsed since the start of the second designated by  <i>sec</i>.  The Tcl library makes every effort to keep this number as precise as possible, subject to the limitations of the computer system.  On multiprocessor variants of Windows, this number may be limited to the 10- or 20-ms granularity of the system clock. (On single-processor Windows systems, the  <i>usec</i> field is derived from a performance counter and is highly precise.)<div class="spacer">
+</div>
+The <b>Tcl_SetTime</b> function registers two related handler functions with the core. The first handler function is a replacement for  <b>Tcl_GetTime</b>, or rather the OS access made by  <b>Tcl_GetTime</b>. The other handler function is used by the Tcl notifier to convert wait/block times from the virtual domain into real time.<div class="spacer">
+</div>
+The <b>Tcl_QueryTime</b> function returns the currently registered handler functions. If no external handlers were set then this will return the standard handlers accessing and processing the native time of the OS. The arguments to the function are allowed to be NULL; and any argument which is NULL is ignored and not set.<div class="spacer">
+</div>
+Any handler pair specified has to return data which is consistent between them. In other words, setting one handler of the pair to something assuming a 10-times slowdown, and the other handler of the pair to something assuming a two-times slowdown is wrong and not allowed.<div class="spacer">
+</div>
+The set handler functions are allowed to run the delivered time backwards, however this should be avoided. We have to allow it as the native time can run backwards as the user can fiddle with the system time one way or other. Note that the insertion of the hooks will not change the behaviour of the Tcl core with regard to this situation, i.e. the existing behaviour is retained.</div>
+<div class="section">
+<h1>SEE ALSO</h1> clock</div>
+<div class="section">
+<h1>KEYWORDS</h1> date, time</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+8.4</td>
+<td class="foot-os">
+Tcl</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

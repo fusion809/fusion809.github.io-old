@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+Safe Tcl(n)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+Safe Tcl(n)</td>
+<td class="head-vol">
+Tcl Built-In Commands</td>
+<td class="head-rtitle">
+Safe Tcl(n)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> Safe&#160;Base - A mechanism for creating and manipulating safe interpreters</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <b>::safe::interpCreate</b> ?<i>slave</i>? ?<i>options...</i>?<div style="height: 1.00em;">
+&#160;</div>
+<b>::safe::interpInit</b> <i>slave</i> ?<i>options...</i>?<div style="height: 1.00em;">
+&#160;</div>
+<b>::safe::interpConfigure</b> <i>slave</i> ?<i>options...</i>?<div style="height: 1.00em;">
+&#160;</div>
+<b>::safe::interpDelete</b> <i>slave</i><div style="height: 1.00em;">
+&#160;</div>
+<b>::safe::interpAddToAccessPath</b> <i>slave</i> <i>directory</i><div style="height: 1.00em;">
+&#160;</div>
+<b>::safe::interpFindInAccessPath</b> <i>slave</i> <i>directory</i><div style="height: 1.00em;">
+&#160;</div>
+<b>::safe::setLogCmd</b> ?<i>cmd arg...</i>?<div class="subsection">
+<h2>OPTIONS</h2> ? <b>-accessPath</b> <i>pathList</i>? ? <b>-statics</b> <i>boolean</i>? ?<b>-noStatics</b>? ? <b>-nested</b> <i>boolean</i>? ?<b>-nestedLoadOk</b>? ? <b>-deleteHook</b> <i>script</i>?<br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> Safe Tcl is a mechanism for executing untrusted Tcl scripts safely and for providing mediated access by such scripts to potentially dangerous functionality.<div class="spacer">
+</div>
+The Safe Base ensures that untrusted Tcl scripts cannot harm the hosting application. The Safe Base prevents integrity and privacy attacks. Untrusted Tcl scripts are prevented from corrupting the state of the hosting application or computer. Untrusted scripts are also prevented from disclosing information stored on the hosting computer or in the hosting application to any party.<div class="spacer">
+</div>
+The Safe Base allows a master interpreter to create safe, restricted interpreters that contain a set of predefined aliases for the  <b>source</b>,  <b>load</b>, <b>file</b>, <b>encoding</b>, and <b>exit</b> commands and are able to use the auto-loading and package mechanisms.<div class="spacer">
+</div>
+No knowledge of the file system structure is leaked to the safe interpreter, because it has access only to a virtualized path containing tokens. When the safe interpreter requests to source a file, it uses the token in the virtual path as part of the file name to source; the master interpreter transparently translates the token into a real directory name and executes the requested operation (see the section  <b>SECURITY</b> below for details). Different levels of security can be selected by using the optional flags of the commands described below.<div class="spacer">
+</div>
+All commands provided in the master interpreter by the Safe Base reside in the  <b>safe</b> namespace.</div>
+<div class="section">
+<h1>COMMANDS</h1> The following commands are provided in the master interpreter:<dl>
+<dt>
+<b>::safe::interpCreate</b> ?<i>slave</i>? ?<i>options...</i>?</dt>
+<dd>
+Creates a safe interpreter, installs the aliases described in the section  <b>ALIASES</b> and initializes the auto-loading and package mechanism as specified by the supplied  <i>options</i>. See the  <b>OPTIONS</b> section below for a description of the optional arguments. If the  <i>slave</i> argument is omitted, a name will be generated.  <b>::safe::interpCreate</b> always returns the interpreter name.</dd>
+</dl>
+<dl>
+<dt>
+<b>::safe::interpInit</b> <i>slave</i> ?<i>options...</i>?</dt>
+<dd>
+This command is similar to <b>interpCreate</b> except it that does not create the safe interpreter.  <i>slave</i> must have been created by some other means, like  <b>interp create -safe</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>::safe::interpConfigure</b> <i>slave</i> ?<i>options...</i>?</dt>
+<dd>
+If no <i>options</i> are given, returns the settings for all options for the named safe interpreter as a list of options and their current values for that  <i>slave</i>. If a single additional argument is provided, it will return a list of 2 elements  <i>name</i> and <i>value</i> where  <i>name</i> is the full name of that option and <i>value</i> the current value for that option and the  <i>slave</i>. If more than two additional arguments are provided, it will reconfigure the safe interpreter and change each and only the provided options. See the section on  <b>OPTIONS</b> below for options description. Example of use:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;">
+<br/>
+# Create new interp with the same configuration as &quot;$i0&quot;:<br/>
+set i1 [safe::interpCreate {*}[safe::interpConfigure $i0]]<div class="spacer">
+</div>
+<br/>
+# Get the current deleteHook<br/>
+set dh [safe::interpConfigure $i0  -del]<div class="spacer">
+</div>
+<br/>
+# Change (only) the statics loading ok attribute of an<br/>
+# interp and its deleteHook (leaving the rest unchanged):<br/>
+safe::interpConfigure $i0  -delete {foo bar} -statics 0<br/>
+</div>
+</div>
+<dl>
+<dt>
+<b>::safe::interpDelete</b> <i>slave</i></dt>
+<dd>
+Deletes the safe interpreter and cleans up the corresponding master interpreter data structures. If a  <i>deleteHook</i> script was specified for this interpreter it is evaluated before the interpreter is deleted, with the name of the interpreter as an additional argument.</dd>
+</dl>
+<dl>
+<dt>
+<b>::safe::interpFindInAccessPath</b> <i>slave</i> <i>directory</i></dt>
+<dd>
+This command finds and returns the token for the real directory  <i>directory</i> in the safe interpreter's current virtual access path. It generates an error if the directory is not found. Example of use:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;">
+<br/>
+$slave eval [list set tk_library \<br/>
+      [::safe::interpFindInAccessPath $name $tk_library]]<br/>
+</div>
+</div>
+<dl>
+<dt>
+<b>::safe::interpAddToAccessPath</b> <i>slave</i> <i>directory</i></dt>
+<dd>
+This command adds <i>directory</i> to the virtual path maintained for the safe interpreter in the master, and returns the token that can be used in the safe interpreter to obtain access to files in that directory. If the directory is already in the virtual path, it only returns the token without adding the directory to the virtual path again. Example of use:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;">
+<br/>
+$slave eval [list set tk_library \<br/>
+      [::safe::interpAddToAccessPath $name $tk_library]]<br/>
+</div>
+</div>
+<dl>
+<dt>
+<b>::safe::setLogCmd</b> ?<i>cmd arg...</i>?</dt>
+<dd>
+This command installs a script that will be called when interesting life cycle events occur for a safe interpreter. When called with no arguments, it returns the currently installed script. When called with one argument, an empty string, the currently installed script is removed and logging is turned off. The script will be invoked with one additional argument, a string describing the event of interest. The main purpose is to help in debugging safe interpreters. Using this facility you can get complete error messages while the safe interpreter gets only generic error messages. This prevents a safe interpreter from seeing messages about failures and other events that might contain sensitive information such as real directory names.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<div class="spacer">
+</div>
+Example of use:<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;">
+<br/>
+::safe::setLogCmd puts stderr<br/>
+</div>
+<div class="spacer">
+</div>
+Below is the output of a sample session in which a safe interpreter attempted to source a file not found in its virtual access path. Note that the safe interpreter only received an error message saying that the file was not found:<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;">
+<br/>
+NOTICE for slave interp10 : Created<br/>
+NOTICE for slave interp10 : Setting accessPath=(/foo/bar) staticsok=1 nestedok=0 deletehook=()<br/>
+NOTICE for slave interp10 : auto_path in interp10 has been set to {$p(:0:)}<br/>
+ERROR for slave interp10 : /foo/bar/init.tcl: no such file or directory<br/>
+</div>
+</div>
+<div class="subsection">
+<h2>OPTIONS</h2> The following options are common to  <b>::safe::interpCreate</b>, <b>::safe::interpInit</b>, and  <b>::safe::interpConfigure</b>. Any option name can be abbreviated to its minimal non-ambiguous name. Option names are not case sensitive.<dl>
+<dt>
+<b>-accessPath</b> <i>directoryList</i></dt>
+<dd>
+This option sets the list of directories from which the safe interpreter can  <b>source</b> and <b>load</b> files. If this option is not specified, or if it is given as the empty list, the safe interpreter will use the same directories as its master for auto-loading. See the section  <b>SECURITY</b> below for more detail about virtual paths, tokens and access control.</dd>
+</dl>
+<dl>
+<dt>
+<b>-statics</b> <i>boolean</i></dt>
+<dd>
+This option specifies if the safe interpreter will be allowed to load statically linked packages (like  <b>load {} Tk</b>). The default value is  <b>true</b> : safe interpreters are allowed to load statically linked packages.</dd>
+</dl>
+<dl>
+<dt>
+<b>-noStatics</b></dt>
+<dd>
+This option is a convenience shortcut for <b>-statics false</b> and thus specifies that the safe interpreter will not be allowed to load statically linked packages.</dd>
+</dl>
+<dl>
+<dt>
+<b>-nested</b> <i>boolean</i></dt>
+<dd>
+This option specifies if the safe interpreter will be allowed to load packages into its own sub-interpreters. The default value is  <b>false</b> : safe interpreters are not allowed to load packages into their own sub-interpreters.</dd>
+</dl>
+<dl>
+<dt>
+<b>-nestedLoadOk</b></dt>
+<dd>
+This option is a convenience shortcut for <b>-nested true</b> and thus specifies the safe interpreter will be allowed to load packages into its own sub-interpreters.</dd>
+</dl>
+<dl>
+<dt>
+<b>-deleteHook</b> <i>script</i></dt>
+<dd>
+When this option is given a non-empty <i>script</i>, it will be evaluated in the master with the name of the safe interpreter as an additional argument just before actually deleting the safe interpreter. Giving an empty value removes any currently installed deletion hook script for that safe interpreter. The default value ( <b>{}</b>) is not to have any deletion call back.</dd>
+</dl>
+</div>
+</div>
+<div class="section">
+<h1>ALIASES</h1> The following aliases are provided in a safe interpreter:<dl>
+<dt>
+<b>source</b> <i>fileName</i></dt>
+<dd>
+The requested file, a Tcl source file, is sourced into the safe interpreter if it is found. The  <b>source</b> alias can only source files from directories in the virtual path for the safe interpreter. The  <b>source</b> alias requires the safe interpreter to use one of the token names in its virtual path to denote the directory in which the file to be sourced can be found. See the section on  <b>SECURITY</b> for more discussion of restrictions on valid filenames.</dd>
+</dl>
+<dl>
+<dt>
+<b>load</b> <i>fileName</i></dt>
+<dd>
+The requested file, a shared object file, is dynamically loaded into the safe interpreter if it is found. The filename must contain a token name mentioned in the virtual path for the safe interpreter for it to be found successfully. Additionally, the shared object file must contain a safe entry point; see the manual page for the  <b>load</b> command for more details.</dd>
+</dl>
+<dl>
+<dt>
+<b>file</b> ?<i>subCmd args...</i>?</dt>
+<dd>
+The <b>file</b> alias provides access to a safe subset of the subcommands of the  <b>file</b> command; it allows only <b>dirname</b>, <b>join</b>,  <b>extension</b>, <b>root</b>, <b>tail</b>, <b>pathname</b> and <b>split</b> subcommands. For more details on what these subcommands do see the manual page for the  <b>file</b> command.</dd>
+</dl>
+<dl>
+<dt>
+<b>encoding</b> ?<i>subCmd args...</i>?</dt>
+<dd>
+The <b>encoding</b> alias provides access to a safe subset of the subcommands of the  <b>encoding</b> command;  it disallows setting of the system encoding, but allows all other subcommands including  <b>system</b> to check the current encoding.</dd>
+</dl>
+<dl>
+<dt>
+<b>exit</b></dt>
+<dd>
+The calling interpreter is deleted and its computation is stopped, but the Tcl process in which this interpreter exists is not terminated.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>SECURITY</h1> The Safe Base does not attempt to completely prevent annoyance and denial of service attacks. These forms of attack prevent the application or user from temporarily using the computer to perform useful work, for example by consuming all available CPU time or all available screen real estate. These attacks, while aggravating, are deemed to be of lesser importance in general than integrity and privacy attacks that the Safe Base is to prevent.<div class="spacer">
+</div>
+The commands available in a safe interpreter, in addition to the safe set as defined in  <b>interp</b> manual page, are mediated aliases for  <b>source</b>, <b>load</b>, <b>exit</b>, and safe subsets of  <b>file</b> and <b>encoding</b>. The safe interpreter can also auto-load code and it can request that packages be loaded.<div class="spacer">
+</div>
+Because some of these commands access the local file system, there is a potential for information leakage about its directory structure. To prevent this, commands that take file names as arguments in a safe interpreter use tokens instead of the real directory names. These tokens are translated to the real directory name while a request to, e.g., source a file is mediated by the master interpreter. This virtual path system is maintained in the master interpreter for each safe interpreter created by  <b>::safe::interpCreate</b> or initialized by  <b>::safe::interpInit</b> and the path maps tokens accessible in the safe interpreter into real path names on the local file system thus preventing safe interpreters from gaining knowledge about the structure of the file system of the host on which the interpreter is executing. The only valid file names arguments for the  <b>source</b> and <b>load</b> aliases provided to the slave are path in the form of  <b>[file join </b><i>token filename</i><b>]</b> (i.e. when using the native file path formats:  <i>token</i><b>/</b><i>filename</i> on Unix and  <i>token</i><b>\</b><i>filename</i> on Windows), where  <i>token</i> is representing one of the directories of the  <i>accessPath</i> list and <i>filename</i> is one file in that directory (no sub directories access are allowed).<div class="spacer">
+</div>
+When a token is used in a safe interpreter in a request to source or load a file, the token is checked and translated to a real path name and the file to be sourced or loaded is located on the file system. The safe interpreter never gains knowledge of the actual path name under which the file is stored on the file system.<div class="spacer">
+</div>
+To further prevent potential information leakage from sensitive files that are accidentally included in the set of files that can be sourced by a safe interpreter, the  <b>source</b> alias restricts access to files meeting the following constraints: the file name must fourteen characters or shorter, must not contain more than one dot (&#8220; <b>.</b>&#8221;), must end up with the extension (&#8220; <b>.tcl</b>&#8221;) or be called (&#8220; <b>tclIndex</b>&#8221;.)<div class="spacer">
+</div>
+Each element of the initial access path list will be assigned a token that will be set in the slave  <b>auto_path</b> and the first element of that list will be set as the  <b>tcl_library</b> for that slave.<div class="spacer">
+</div>
+If the access path argument is not given or is the empty list, the default behavior is to let the slave access the same packages as the master has access to (Or to be more precise: only packages written in Tcl (which by definition cannot be dangerous as they run in the slave interpreter) and C extensions that provides a _SafeInit entry point). For that purpose, the master's  <b>auto_path</b> will be used to construct the slave access path. In order that the slave successfully loads the Tcl library files (which includes the auto-loading mechanism itself) the  <b>tcl_library</b> will be added or moved to the first position if necessary, in the slave access path, so the slave  <b>tcl_library</b> will be the same as the master's (its real path will still be invisible to the slave though). In order that auto-loading works the same for the slave and the master in this by default case, the first-level sub directories of each directory in the master  <b>auto_path</b> will also be added (if not already included) to the slave access path. You can always specify a more restrictive path for which sub directories will never be searched by explicitly specifying your directory list with the  <b>-accessPath</b> flag instead of relying on this default mechanism.<div class="spacer">
+</div>
+When the <i>accessPath</i> is changed after the first creation or initialization (i.e. through  <b>interpConfigure -accessPath </b><i>list</i>), an  <b>auto_reset</b> is automatically evaluated in the safe interpreter to synchronize its  <b>auto_index</b> with the new token list.</div>
+<div class="section">
+<h1>SEE ALSO</h1> interp(n), library(n), load(n), package(n), source(n), unknown(n)</div>
+<div class="section">
+<h1>KEYWORDS</h1> alias, auto-loading, auto_mkindex, load, master interpreter, safe interpreter, slave interpreter, source</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+8.0</td>
+<td class="foot-os">
+Tcl</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

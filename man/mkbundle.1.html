@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+mkbundle(mkbundle 1.0)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+mkbundle(mkbundle 1.0)</td>
+<td class="head-vol">
+</td>
+<td class="head-rtitle">
+mkbundle(mkbundle 1.0)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> mkbundle, mkbundle2 - Creates a bundled executable.</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>mkbundle [options] assembly1 [assembly2 ...]</b></div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <i>mkbundle</i> generates an executable program that will contain static copies of the assemblies listed on the command line.  By default only the assemblies specified in the command line will be included in the bundle.  To automatically include all of the dependencies referenced, use the &quot;--deps&quot; command line option.<div class="spacer">
+</div>
+Use <i>mkbundle when you want the startup runtime to load the 1.0</i>  <i>profile, and use </i><i>mkbundle2</i><i> when you want the startup runtime to load</i>  <i>the 2.0 profile.</i><div class="spacer">
+</div>
+For example, to create a bundle for hello world, use the following command:<br/>
+	$ mkbundle -o hello hello.exe<br/>
+<div class="spacer">
+</div>
+The above will pull hello.exe into a native program called &quot;hello&quot;.  Notice that the produced image still contains the CIL image and no precompilation is done.<div class="spacer">
+</div>
+In addition, it is possible to control whether <i>mkbundle</i> should compile the resulting executable or not with the -c option.  This is useful if you want to link additional libraries or control the generated output in more detail. For example, this could be used to link some libraries statically:<br/>
+	$ mkbundle -c -o host.c -oo bundles.o --deps hello.exe<div class="spacer">
+</div>
+<br/>
+	$ cc host.c bundles.o /usr/lib/libmono.a -lc -lrt<br/>
+<div class="spacer">
+</div>
+You may also use <i>mkbundle</i> to generate a bundle you can use when embedding the Mono runtime in a native application.  In that case, use both the -c and --nomain options.  The resulting host.c file will not have a main() function.  Call mono_mkbundle_init() before initializing the JIT in your code so that the bundled assemblies are available to the embedded runtime.</div>
+<div class="section">
+<h1>OPTIONS</h1><dl>
+<dt>
+<i>-c</i></dt>
+<dd>
+Produce the stub file, do not compile the resulting stub.</dd>
+</dl>
+<dl>
+<dt>
+<i>-o filename</i></dt>
+<dd>
+Places the output on `out'.  If the flag -c is specified, this is the C host program.  If not, this contains the resulting executable.</dd>
+</dl>
+<dl>
+<dt>
+<i>-oo filename</i></dt>
+<dd>
+Specifies the name to be used for the helper object file that contains the bundle.</dd>
+</dl>
+<dl>
+<dt>
+<i>-L path</i></dt>
+<dd>
+Adds the `path' do the search list for assemblies.  The rules are the same as for the compiler -lib: or -L flags.</dd>
+</dl>
+<dl>
+<dt>
+Specifies that a machine.config file must be bundled as well.</dt>
+<dd>
+Typically this is $prefix/etc/mono/1.0/machine.config or $prefix/etc/mono/2.0/machine.config depending on the profile that you are using (1.0 or 2.0)</dd>
+</dl>
+<dl>
+<dt>
+<i>--nodeps</i></dt>
+<dd>
+This is the default: <i>mkbundle</i> will only include the assemblies that were specified on the command line to reduce the size of the resulting image created.</dd>
+</dl>
+<dl>
+<dt>
+<i>--deps</i></dt>
+<dd>
+This option will bundle all of the referenced assemblies for the assemblies listed on the command line option.  This is useful to distribute a self-contained image.</dd>
+</dl>
+<dl>
+<dt>
+<i>--keeptemp</i></dt>
+<dd>
+By default <i>mkbundle</i> will delete the temporary files that it uses to produce the bundle.  This option keeps the file around.</dd>
+</dl>
+<dl>
+<dt>
+<i>--machine-config FILE</i></dt>
+<dd>
+Uses the given FILE as the machine.config file for the generated application.</dd>
+</dl>
+<dl>
+<dt>
+<i>--nomain</i></dt>
+<dd>
+With the -c option, generate the host stub without a main() function.</dd>
+</dl>
+<dl>
+<dt>
+<i>--config-dir DIR</i></dt>
+<dd>
+When passed, DIR will be set for the MONO_CFG_DIR environment variable</dd>
+</dl>
+<dl>
+<dt>
+<i>--static</i></dt>
+<dd>
+By default <i>mkbundle</i> dynamically links to mono and glib.  This option causes it to statically link instead.</dd>
+</dl>
+<dl>
+<dt>
+<b>Important:</b></dt>
+<dd>
+Since the Mono runtime is licensed under the LGPL, even if you use static you should transfer the component pieces of the mkbundle to your users so they are able to upgrade the Mono runtime on their own.</dd>
+</dl>
+<dl>
+<dt>
+If you want to use this for commercial licenses, you must obtain a</dt>
+<dd>
+proprietary license for Mono from mono@novell.com</dd>
+</dl>
+<dl>
+<dt>
+<i>-z</i></dt>
+<dd>
+Compresses the assemblies before embedding. This results in smaller executable files, but increases startup time and requires zlib to be installed on the target system.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>WINDOWS</h1> On Windows systems, it it necessary to have  Unix-like toolchain to be installed for  <i>mkbundle</i> to work.  You can use cygwin's and install gcc, gcc-mingw and as packages.</div>
+<div class="section">
+<h1>ENVIRONMENT VARIABLES</h1><dl>
+<dt>
+<i>AS</i></dt>
+<dd>
+Assembler command. The default is &quot;as&quot;.</dd>
+</dl>
+<dl>
+<dt>
+<i>CC</i></dt>
+<dd>
+C compiler command. The default is &quot;cc&quot; under Linux and &quot;gcc&quot; under Windows.</dd>
+</dl>
+<dl>
+<dt>
+<i>MONO_BUNDLED_OPTIONS</i></dt>
+<dd>
+Options to be passed to the bundled Mono runtime, separated by spaces. See the mono(1) manual page or run mono --help.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>FILES</h1> This program will load referenced assemblies from the Mono assembly cache.</div>
+<div class="section">
+<h1>BUGS</h1> The option &quot;--static&quot; is not supported under Windows. Moreover, a full cygwin environment containing at least &quot;gcc&quot; and &quot;as&quot; is required for the build process. The generated executable does not depend on cygwin.</div>
+<div class="section">
+<h1>MAILING LISTS</h1> Visit http://lists.ximian.com/mailman/listinfo/mono-devel-list for details.</div>
+<div class="section">
+<h1>WEB SITE</h1> Visit: http://www.mono-project.com for details</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>mcs(1),</b>mono(1),<b>mono-config(5).</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+Tk_CreateGenericHandler(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+Tk_CreateGenericHandler(3)</td>
+<td class="head-vol">
+Tk Library Procedures</td>
+<td class="head-rtitle">
+Tk_CreateGenericHandler(3)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> Tk_CreateGenericHandler, Tk_DeleteGenericHandler - associate procedure callback with all X events</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+<b>#include &lt;tk.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>Tk_CreateGenericHandler</b>(<i>proc, clientData</i>)<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>Tk_DeleteGenericHandler</b>(<i>proc, clientData</i>)</div>
+<div class="section">
+<h1>ARGUMENTS</h1><dl>
+<dt>
+Tk_GenericProc <i>*proc</i> (in)</dt>
+<dd>
+Procedure to invoke whenever any X event occurs on any display.</dd>
+</dl>
+<dl>
+<dt>
+ClientData <i>clientData</i> (in)</dt>
+<dd>
+Arbitrary one-word value to pass to <i>proc</i>.<br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>Tk_CreateGenericHandler</b> arranges for <i>proc</i> to be invoked in the future whenever any X event occurs.  This mechanism is  <i>not</i> intended for dispatching X events on windows managed by Tk (you should use  <b>Tk_CreateEventHandler</b> for this purpose).  <b>Tk_CreateGenericHandler</b> is intended for other purposes, such as tracing X events, monitoring events on windows not owned by Tk, accessing X-related libraries that were not originally designed for use with Tk, and so on.<div class="spacer">
+</div>
+The callback to <i>proc</i> will be made by <b>Tk_HandleEvent</b>; this mechanism only works in programs that dispatch events through  <b>Tk_HandleEvent</b> (or through other Tk procedures that call  <b>Tk_HandleEvent</b>, such as <b>Tk_DoOneEvent</b> or  <b>Tk_MainLoop</b>).<div class="spacer">
+</div>
+<i>Proc</i> should have arguments and result that match the type  <b>Tk_GenericProc</b>:<div style="margin-left: 5.00ex;">
+<br/>
+typedef int Tk_GenericProc(<br/>
+    ClientData <i>clientData</i>,<br/>
+    XEvent *<i>eventPtr</i>);<br/>
+</div>
+The <i>clientData</i> parameter to <i>proc</i> is a copy of the <i>clientData</i> argument given to  <b>Tk_CreateGenericHandler</b> when the callback was created.  Typically,  <i>clientData</i> points to a data structure containing application-specific information about how to handle events.  <i>EventPtr</i> is a pointer to the X event.<div class="spacer">
+</div>
+Whenever an X event is processed by <b>Tk_HandleEvent</b>, <i>proc</i> is called.  The return value from  <i>proc</i> is normally 0. A non-zero return value indicates that the event is not to be handled further; that is,  <i>proc</i> has done all processing that is to be allowed for the event.<div class="spacer">
+</div>
+If there are multiple generic event handlers, each one is called for each event, in the order in which they were established.<div class="spacer">
+</div>
+<b>Tk_DeleteGenericHandler</b> may be called to delete a previously-created generic event handler:  it deletes each handler it finds that matches the  <i>proc</i> and <i>clientData</i> arguments.  If no such handler exists, then  <b>Tk_DeleteGenericHandler</b> returns without doing anything.  Although Tk supports it, it's probably a bad idea to have more than one callback with the same  <i>proc</i> and <i>clientData</i> arguments.<div class="spacer">
+</div>
+Establishing a generic event handler does nothing to ensure that the process will actually receive the X events that the handler wants to process. For example, it is the caller's responsibility to invoke  <b>XSelectInput</b> to select the desired events, if that is necessary.</div>
+<div class="section">
+<h1>KEYWORDS</h1> bind, callback, event, handler</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+Tk</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

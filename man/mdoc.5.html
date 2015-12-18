@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+mdoc(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+mdoc(5)</td>
+<td class="head-vol">
+File Formats Manual</td>
+<td class="head-rtitle">
+mdoc(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> mdoc - Mono Documentation XML Format</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The assorted Mono documentation programs generate or manipulate XML files following the mono documentation schema:<dl>
+<dt>
+<i>mdoc update</i></dt>
+<dd>
+Creates or updates mono documentation XML for a set of assemblies.</dd>
+</dl>
+<dl>
+<dt>
+<i>mdoc validate</i></dt>
+<dd>
+Validates the mono documentation XML against the mono documentation XML schema.</dd>
+</dl>
+<dl>
+<dt>
+<i>mdoc assemble</i></dt>
+<dd>
+Converts the mono documentation XML within a directory structure into a set of files for use with  <b>monodoc</b>(1).</dd>
+</dl>
+<dl>
+<dt>
+<i>mdoc export-html</i></dt>
+<dd>
+Converts the mono documentation XML within a directory structure into a set of HTML files that can be viewed with a web browser.</dd>
+</dl>
+<div class="spacer">
+</div>
+All of these tools (and more) use the common XML schema described in this man page.</div>
+<div class="section">
+<h1>FILE/DIRECTORY STRUCTURE</h1> There are three sets of Mono documentation XML files:<dl>
+<dt>
+<b>*</b></dt>
+<dd>
+<b>index.xml:</b> contains a list of all assemblies within the containing directory, and all types and namespaces within those assemblies.</dd>
+</dl>
+<dl>
+<dt>
+<b>*</b></dt>
+<dd>
+<b>ns-*.xml:</b> There is one ns-*.xml file for each namespace within the assembly; these files are siblings to <i>index.xml</i> .<div style="height: 1.00em;">
+&#160;</div>
+Examples of <i>ns-*.xml</i> files include:  <i>ns-System.xml</i>, <i>ns-System.Collections.xml</i>, and  <i>ns-.xml</i> (for the root namespace, though it is recommended to NOT place types into the root namespace, as  <b>monodoc</b>(1) doesn't display them).<div style="height: 1.00em;">
+&#160;</div>
+The <i>ns-*.xml</i> files contain per-namespace documentation.</dd>
+</dl>
+<dl>
+<dt>
+<b>*</b></dt>
+<dd>
+<b>NamespaceName/TypeName.xml:</b> These files are within a dotted <i>NamespaceName</i> directory, and <i>TypeName</i> is the name of the type.<div style="height: 1.00em;">
+&#160;</div>
+Examples include: <i>RootType.xml</i> (if the type has no namespace),  <i>System/String.xml</i>,  <i>System.Collections/IEnumerable.xml</i>, and  <i>System.Collections.Generic/List`1+Enumerator.xml</i> (the <i>`1</i> is the number of generic type parameters the type accepts, and everything after the <i>+</i> is a nested type).</dd>
+</dl>
+<div class="spacer">
+</div>
+Thus, typical directory contents would resemble:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    index.xml<br/>
+    ns-System.xml<br/>
+    ns-System.Collections.Generic.xml<br/>
+    System/String.xml<br/>
+    System.Collections.Generic/List`1.xml<br/>
+</div>
+<div class="section">
+<h1>DOCUMENTATION FORMAT</h1><div class="subsection">
+<h2><b>index.xml File Format</b></h2> The <i>index.xml</i> file contains a list of the assemblies nested under the directory containing <i>index.xml</i> and all namespaces and types within those assemblies.  It looks something like this:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    &lt;Overview&gt;<br/>
+      &lt;Assemblies&gt;<br/>
+        &lt;Assembly Name=&quot;mscorlib&quot; Version=&quot;2.0.0.0&quot; /&gt;<br/>
+        &lt;!-- other &lt;Assembly/&gt; elements... --&gt;<br/>
+      &lt;/Assemblies&gt;<br/>
+      &lt;Remarks&gt;To be added.&lt;/Remarks&gt;<br/>
+      &lt;Copyright&gt;To be added.&lt;/Copyright&gt;<br/>
+      &lt;Types&gt;<br/>
+        &lt;Namespace Name=&quot;System&quot;&gt;<br/>
+          &lt;Type Name=&quot;String&quot; /&gt;<br/>
+          &lt;!-- Other &lt;Type/&gt; elements --&gt;<br/>
+        &lt;/Namespace&gt;<br/>
+        &lt;Namespace Name=&quot;System.Collections.Generic&quot;&gt;<br/>
+          &lt;Type Name=&quot;List`1&quot; DisplayName=&quot;List&amp;lt;T&amp;gt;&quot; /&gt;<br/>
+          &lt;!-- Other &lt;Type/&gt; elements --&gt;<br/>
+        &lt;/Namespace&gt;<br/>
+        &lt;!-- other &lt;Namespace/&gt; elements --&gt;<br/>
+      &lt;/Types&gt;<br/>
+      &lt;Title&gt;DocTest&lt;/Title&gt;<br/>
+    &lt;/Overview&gt;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+Most of this is maintained automatically, in particular the <i>/Overview/Assemblies</i> and <i>/Overview/Types</i> elements.<div class="spacer">
+</div>
+The <i>//Namespace/@Name</i> attribute corresponds to a directory which contains files named  <i>//Type/@Name</i>.xml, while the <i>//Type/@DisplayName</i> attribute contains a C# type name (if  <i>//Type/@DisplayName</i> isn't found, then  <i>//Type/@Name</i> is used as the display name).  There should also be a  <i>ns-[//Namespace/@Name].xml</i> file.<div class="spacer">
+</div>
+There are three elements of interest to authors:  <i>/Overview/Remarks</i>, <i>/Overview/Copyright</i>, and  <i>/Overview/Title</i>, which contain assembly-level documentation. These elements can contain any of the following XML elements (documented in the  <b>Documentation XML Elements</b> section):  <i>block</i>,  <i>code</i>,  <i>example</i>,  <i>list</i>,  <i>para</i>,  <i>paramref</i>,  <i>typeparamref</i>,  <i>see</i>, and  <i>ul</i>.</div>
+<div class="subsection">
+<h2><b>ns-*.xml File Format</b></h2> The  <i>ns-*.xml</i> files contain namespace documentation:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    &lt;Namespace Name=&quot;System&quot;&gt;<br/>
+      &lt;Docs&gt;<br/>
+        &lt;summary&gt;To be added.&lt;/summary&gt;<br/>
+        &lt;remarks&gt;To be added.&lt;/remarks&gt;<br/>
+      &lt;/Docs&gt;<br/>
+    &lt;/Namespace&gt;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+The <i>/Namespace/Docs/summary</i> and <i>/Namespace/Docs/remarks</i> elements should contain namespace documentation.<div class="spacer">
+</div>
+The <i>remarks</i> and <i>summary</i> elements are documented in the  <b>Documentation XML Elements</b> section.</div>
+<div class="subsection">
+<h2><b>NamespaceName/TypeName.xml File Format</b></h2> The <i>mono documentation format</i> is similar to the Ecma documentation format, as described in ECMA-335 3rd Edition, Partition IV, Chapter 7. The principal difference from the ECMA format is that each type gets its own file, within a directory identical to the namespace of the type.  There is a lot of information that is maintained automatically by  <b>mdoc</b>(1); Most of the information within the documentation should <i>not</i> be edited.  This includes the type name ( <i>/Type/@FullName</i>), implemented interfaces ( <i>/Type/Interfaces</i>), member information ( <i>/Type/Members/Member/@MemberName</i>,  <i>/Type/Members/Member/MemberSignature</i>,  <i>/Type/Members/Member/MemberType</i>,  <i>/Type/Members/Member/Parameters</i>, etc.).<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    &lt;Type Name=&quot;DocAttribute&quot; FullName=&quot;Mono.DocTest.DocAttribute&quot;&gt;<br/>
+      &lt;TypeSignature Language=&quot;C#&quot; Value=&quot;public class DocAttribute : Attribute&quot; /&gt;<br/>
+      &lt;AssemblyInfo&gt;<br/>
+        &lt;AssemblyName&gt;DocTest&lt;/AssemblyName&gt;<br/>
+        &lt;AssemblyVersion&gt;0.0.0.0&lt;/AssemblyVersion&gt;<br/>
+      &lt;/AssemblyInfo&gt;<br/>
+      &lt;Base&gt;<br/>
+        &lt;BaseTypeName&gt;System.Attribute&lt;/BaseTypeName&gt;<br/>
+      &lt;/Base&gt;<br/>
+      &lt;Interfaces /&gt;<br/>
+      &lt;Attributes&gt;<br/>
+        &lt;Attribute&gt;<br/>
+          &lt;AttributeName&gt;System.AttributeUsage(System.AttributeTargets.All)&lt;/AttributeName&gt;<br/>
+        &lt;/Attribute&gt;<br/>
+      &lt;/Attributes&gt;<br/>
+      &lt;Docs&gt;<br/>
+        &lt;summary&gt;To be added.&lt;/summary&gt;<br/>
+        &lt;remarks&gt;To be added.&lt;/remarks&gt;<br/>
+      &lt;/Docs&gt;<br/>
+      &lt;Members&gt;<br/>
+        &lt;Member MemberName=&quot;.ctor&quot;&gt;<br/>
+          &lt;MemberSignature Language=&quot;C#&quot; Value=&quot;public DocAttribute (string docs);&quot; /&gt;<br/>
+          &lt;MemberType&gt;Constructor&lt;/MemberType&gt;<br/>
+          &lt;AssemblyInfo&gt;<br/>
+            &lt;AssemblyVersion&gt;0.0.0.0&lt;/AssemblyVersion&gt;<br/>
+          &lt;/AssemblyInfo&gt;<br/>
+          &lt;Parameters&gt;<br/>
+            &lt;Parameter Name=&quot;docs&quot; Type=&quot;System.String&quot; /&gt;<br/>
+          &lt;/Parameters&gt;<br/>
+          &lt;Docs&gt;<br/>
+            &lt;param name=&quot;docs&quot;&gt;To be added.&lt;/param&gt;<br/>
+            &lt;summary&gt;To be added.&lt;/summary&gt;<br/>
+            &lt;remarks&gt;To be added.&lt;/remarks&gt;<br/>
+          &lt;/Docs&gt;<br/>
+        &lt;/Member&gt;<br/>
+      &lt;/Members&gt;<br/>
+    &lt;/Type&gt;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+The only elements that normally need to be edited are children of the  <i>//Docs</i> elements, which usually contain the text <i>To be added.</i> The  <i>/Type/Docs</i> element contains type-level documentation, while the  <i>/Type/Members/Member/Docs</i> element contains per-member documentation.<div class="spacer">
+</div>
+The <i>//Docs</i> elements can contain the following elements:  <i>altcompliant</i>,  <i>altmember</i>,  <i>example</i>,  <i>exception</i>,  <i>param</i>,  <i>permission</i>,  <i>remarks</i>,  <i>returns</i>,  <i>since</i>,  <i>summary</i>,  <i>threadsafe</i>,  <i>typeparam</i>, and  <i>value</i>.<div class="spacer">
+</div>
+Nested types are not members; they are types, and are documented in their own file.  Consequently, the  <i>NamespaceName/TypeName.xml</i> files are not recursive; you do not store a  <i>&lt;Type/&gt;</i> element within a <i>&lt;Type/&gt;</i> element.</div>
+<div class="subsection">
+<h2><b>Documentation XML Elements</b></h2> The contents of the  <i>Docs</i> element is <i>identical</i> in semantics and structure to the inline C# documentation format, consisting of these elements (listed in ECMA-334 3rd Edition, Annex E, Section 2).  The following are used within the element descriptions:<dl>
+<dt>
+<i>CREF</i></dt>
+<dd>
+Refers to a class (or member) reference, and is a string in the format described below in the  <b>CREF FORMAT</b> section.</dd>
+</dl>
+<dl>
+<dt>
+<i>TEXT</i></dt>
+<dd>
+Non-XML text, and XML should not be nested.</dd>
+</dl>
+<dl>
+<dt>
+<i>XML</i></dt>
+<dd>
+Only XML elements should be nested (which indirectly may contain text), but non-whitespace text should not be an immediate child node.</dd>
+</dl>
+<dl>
+<dt>
+<i>XML_TEXT</i></dt>
+<dd>
+Free-form text and XML, so that other XML elements may be nested.</dd>
+</dl>
+<div class="spacer">
+</div>
+The following elements are used in documentation:<dl>
+<dt>
+<i>&lt;altmember cref=&quot;CREF&quot; /&gt;</i></dt>
+<dd>
+<i>&lt;altmember/&gt;</i> is a top-level element, and should be nested directly under the <i>&lt;Docs/&gt;</i> element.<div style="height: 1.00em;">
+&#160;</div>
+Allows an entry to be generated for the <i>See Also</i> section.  Use  <i>&lt;see/&gt;</i> to specify a link from within text.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    &lt;altmember cref=&quot;P:System.Exception.Message&quot; /&gt;<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<i>&lt;block subset=&quot;SUBSET&quot; type=&quot;TYPE&quot;&gt;XML_TEXT&lt;/block&gt;</i></dt>
+<dd>
+Create a block of text, similar in concept to a paragraph, but is used to create divisions within the text.  To some extent, a &lt;block/&gt; is equivalent to the HTML &lt;h2/&gt; tag.<div style="height: 1.00em;">
+&#160;</div>
+<i>SUBSET</i> should always be the value  <i>&quot;none&quot;</i>.<div style="height: 1.00em;">
+&#160;</div>
+<i>TYPE</i> specifies the heading and formatting to use.  Recognized types are:<div style="height: 1.00em;">
+&#160;</div>
+<i>behaviors</i> Creates a section with the heading  <i>Operation</i>.<div style="height: 1.00em;">
+&#160;</div>
+<i>note</i> Creates a section with the heading  <i>Note:</i>.<div style="height: 1.00em;">
+&#160;</div>
+<i>overrides</i> Creates a section with the heading  <i>Note to Inheritors</i>.<div style="height: 1.00em;">
+&#160;</div>
+<i>usage</i> Creates a section with the heading  <i>Usage</i>.<div style="height: 1.00em;">
+&#160;</div>
+The <i>block</i> element can contain the following elements:  <i>block</i>,  <i>c</i>,  <i>code</i>,  <i>list</i>,  <i>para</i>,  <i>paramref</i>,  <i>see</i>,  <i>subscript</i>,  <i>sup</i>, and  <i>typeparamref</i>.</dd>
+</dl>
+<dl>
+<dt>
+<i>&lt;c&gt;XML_TEXT&lt;/c&gt;</i></dt>
+<dd>
+Set text in a code-like font (similar to the HTML &lt;tt/&gt; element).<div style="height: 1.00em;">
+&#160;</div>
+The <i>c</i> element can contain the following elements:  <i>code</i>,  <i>para</i>,  <i>paramref</i>,  <i>see</i>, and  <i>typeparamref</i>.</dd>
+</dl>
+<dl>
+<dt>
+<i>&lt;code lang=&quot;LANGUAGE&quot; src=&quot;SOURCE&quot;&gt;TEXT&lt;/code&gt;</i></dt>
+<dd>
+Display multiple lines of text in a code-like font (similar to the HTML &lt;pre/&gt; element).<div style="height: 1.00em;">
+&#160;</div>
+<i>LANGUAGE</i> is the language this code block is for.  For example, if  <i>LANGUAGE</i> is  <b>C#</b>, then <i>TEXT</i> will get syntax highlighting for the C# language within the Mono Documentation Browser.<div style="height: 1.00em;">
+&#160;</div>
+<i>SOURCE</i> is only interpreted by  <b>mdoc-update</b>(1).  If the <i>src</i> attribute is present when  <b>mdoc-update</b>(1) is run, then <i>SOURCE</i> is a file (relative to  <b>mdoc-update</b>(1)'s <b>--out</b> directory) that should be inserted as the value for  <i>TEXT</i>. The contents of  <i>TEXT</i> will be ignored by <b>mdoc-update</b>(1) and replaced on every invocation.   <i>SOURCE</i> can also contain an &quot;anchor&quot;, e.g.  <i>src=&quot;path/to/file.cs#RegionMarker&quot;</i>.  If an anchor is present,  <i>and</i> <i>LANGUAGE</i> is <i>C#</i>, then <i>#region RegionMarker</i> will be searched for, and the contents between the  <i>#region</i> and the following  <i>#endregion</i> will be inserted as the value for <i>TEXT</i> element.</dd>
+</dl>
+<dl>
+<dt>
+<i>&lt;example&gt;XML_TEXT&lt;/example&gt;</i></dt>
+<dd>
+Indicates an example that should be displayed specially.  For example:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    &lt;example&gt;<br/>
+      &lt;para&gt;An introductory paragraph.&lt;/para&gt;<br/>
+      &lt;code lang=&quot;C#&quot;&gt;<br/>
+        class Example {<br/>
+          public static void Main ()<br/>
+          {<br/>
+            System.Console.WriteLine (&quot;Hello, World!&quot;);<br/>
+          }<br/>
+        }<br/>
+      &lt;/code&gt;<br/>
+    &lt;/example&gt;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+The <i>example</i> element can contain the following elements:  <i>c</i>,  <i>code</i>,  <i>list</i>,  <i>para</i>, and  <i>see</i>.</dd>
+</dl>
+<dl>
+<dt>
+<i>&lt;exception cref=&quot;CREF&quot;&gt;XML_TEXT&lt;/exception&gt;</i></dt>
+<dd>
+Identifies an exception that can be thrown by the documented member.<div style="height: 1.00em;">
+&#160;</div>
+<i>&lt;exception/&gt;</i> is a top-level element, and should be nested directly under the <i>&lt;Docs/&gt;</i> element.<div style="height: 1.00em;">
+&#160;</div>
+<i>CREF</i> is the exception type that is thrown, while <i>XML_TEXT</i> contains the circumstances that would cause <i>CREF</i> to be thrown.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    &lt;exception cref=&quot;T:System.ArgumentNullException&quot;&gt;<br/>
+      &lt;paramref name=&quot;foo&quot; /&gt; was &lt;see langword=&quot;null&quot; /&gt;.<br/>
+    &lt;/exception&gt;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+The <i>exception</i> element can contain the following elements:  <i>block</i>,  <i>para</i>,  <i>paramref</i>,  <i>see</i>, and  <i>typeparamref</i>.</dd>
+</dl>
+<dl>
+<dt>
+<i>&lt;format type=&quot;TYPE&quot;&gt;XML_TEXT&lt;/format&gt;</i></dt>
+<dd>
+The <i>&lt;format/&gt;</i> element is an &quot;escape hatch,&quot; for including (possibly XML) content that is not valid  <b>mdoc</b>(5) content.  It's the moral equivalent of  <b>perlpod</b>(1) <i>=begin format</i> blocks.<div style="height: 1.00em;">
+&#160;</div>
+<i>TYPE</i> is the mime type of <i>XML_TEXT</i>.  <b>mdoc</b>(5) processors may skip  <i>format/&gt;</i> blocks of they use a type that isn't supported.<div style="height: 1.00em;">
+&#160;</div>
+For example:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    &lt;format type=&quot;text/html&quot;&gt;<br/>
+      &lt;table width=&quot;100%&quot;&gt;<br/>
+        &lt;tr&gt;&lt;td style=&quot;color:red&quot;&gt;Hello, world!&lt;/td&gt;&lt;/tr&gt;<br/>
+      &lt;/table&gt;<br/>
+    &lt;/format&gt;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+would cause the embedded HTML <i>&lt;table/&gt;</i> element to be inserted inline into the resulting HTML document when  <b>mdoc-export-html</b>(1) processes the file.  (Likewise, it may be skipped if processed by another program.)<div style="height: 1.00em;">
+&#160;</div>
+<i>format/&gt;</i> is intended to simplify importing documentation from existing documentation sources.  It should not be relied upon, if at all possible.</dd>
+</dl>
+<dl>
+<dt>
+<i>&lt;list&gt;XML&lt;/list&gt;</i></dt>
+<dd>
+Create a list or table of items. <i>&lt;list/&gt;</i> makes use of nested  <i>&lt;item&gt;XML&lt;/item&gt;</i>, <i>&lt;listheader&gt;XML&lt;/listheader&gt;</i>,  <i>&lt;term&gt;XML_TEXT&lt;/term&gt;</i>, and <i>&lt;description&gt;XML_TEXT&lt;/description&gt;</i> elements.<div style="height: 1.00em;">
+&#160;</div>
+<i>Lists</i> have the syntax:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    &lt;list type=&quot;bullet&quot;&gt; &lt;!-- or type=&quot;number&quot; --&gt;<br/>
+      &lt;item&gt;&lt;term&gt;Bullet 1&lt;/term&gt;&lt;/item&gt;<br/>
+      &lt;item&gt;&lt;term&gt;Bullet 2&lt;/term&gt;&lt;/item&gt;<br/>
+      &lt;item&gt;&lt;term&gt;Bullet 3&lt;/term&gt;&lt;/item&gt;<br/>
+    &lt;/list&gt;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<i>Tables</i> have the syntax:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    &lt;list type=&quot;table&quot;&gt;<br/>
+      &lt;listheader&gt; &lt;!-- listheader bolds this row --&gt;<br/>
+        &lt;term&gt;Column 1&lt;/term&gt;<br/>
+        &lt;description&gt;Column 2&lt;/description&gt;<br/>
+        &lt;description&gt;Column 3&lt;/description&gt;<br/>
+      &lt;/listheader&gt;<br/>
+      &lt;item&gt;<br/>
+        &lt;term&gt;Item 1-A&lt;/term&gt;<br/>
+        &lt;description&gt;Item 1-B&lt;/description&gt;<br/>
+        &lt;description&gt;Item 1-C&lt;/description&gt;<br/>
+      &lt;/item&gt;<br/>
+      &lt;item&gt;<br/>
+        &lt;term&gt;Item 2-A&lt;/term&gt;<br/>
+        &lt;description&gt;Item 2-B&lt;/description&gt;<br/>
+        &lt;description&gt;Item 2-C&lt;/description&gt;<br/>
+      &lt;/item&gt;<br/>
+    &lt;/list&gt;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+The <i>item</i> and <i>description</i> elements can each contain text and the following elements:  <i>block</i>,  <i>c</i>,  <i>para</i>,  <i>paramref</i>,  <i>see</i>,  <i>sup</i>, and  <i>typeparamref</i>.</dd>
+</dl>
+<dl>
+<dt>
+<i>&lt;para&gt;XML_TEXT&lt;/para&gt;</i></dt>
+<dd>
+Insert a paragraph of <i>XML_TEXT</i>. For example,<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    &lt;para&gt;<br/>
+      This is a paragraph of text.<br/>
+    &lt;/para&gt;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+The <i>para</i> element can contain the following elements:  <i>block</i>,  <i>c</i>,  <i>example</i>,  <i>link</i>,  <i>list</i>,  <i>onequarter</i>,  <i>paramref</i>,  <i>see</i>,  <i>sub</i>,  <i>sup</i>,  <i>typeparamref</i>, and  <i>ul</i>.</dd>
+</dl>
+<dl>
+<dt>
+<i>&lt;param name=&quot;NAME&quot;&gt;XML_TEXT&lt;/param&gt;</i></dt>
+<dd>
+<i>&lt;param/&gt;</i> is a top-level element, and should be nested directly under the <i>&lt;Docs/&gt;</i> element.<div style="height: 1.00em;">
+&#160;</div>
+Describes the parameter <i>NAME</i> of the current constructor, method, or property:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    &lt;param name=&quot;count&quot;&gt;<br/>
+      A &lt;see cref=&quot;T:System.Int32&quot; /&gt; containing the number<br/>
+      of widgets to process.<br/>
+    &lt;/param&gt;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+The <i>param</i> element can contain the following elements:  <i>block</i>,  <i>c</i>,  <i>example</i>,  <i>para</i>,  <i>paramref</i>,  <i>see</i>, and  <i>typeparamref</i>.</dd>
+</dl>
+<dl>
+<dt>
+<i>&lt;paramref name=&quot;NAME&quot; /&gt;</i></dt>
+<dd>
+Indicates that <i>NAME</i> is a parameter.<div style="height: 1.00em;">
+&#160;</div>
+This usually renders <i>NAME</i> as italic text, so it is frequently (ab)used as an equivalent to the HTML &lt;i/&gt; element.  See the  <i>&lt;exception/&gt;</i> documentation (above) for an example.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<i>&lt;permission cref=&quot;CREF&quot;&gt;XML_TEXT&lt;/permission&gt;</i></dt>
+<dd>
+Documents the security accessibility requirements of the current member.<div style="height: 1.00em;">
+&#160;</div>
+<i>&lt;permission/&gt;</i> is a top-level element, and should be nested directly under the <i>&lt;Docs/&gt;</i> element.<div style="height: 1.00em;">
+&#160;</div>
+<i>CREF</i> is a type reference to the security permission required, while  <i>XML_TEXT</i> is a description of why the permission is required.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    &lt;permission cref=&quot;T:System.Security.Permissions.FileIOPermission&quot;&gt;<br/>
+      Requires permission for reading and writing files. See <br/>
+      &lt;see cref=&quot;F:System.Security.Permissions.FileIOPermissionAccess.Read&quot; /&gt;, <br/>
+      &lt;see cref=&quot;F:System.Security.Permissions.FileIOPermissionAccess.Write&quot; /&gt;.<br/>
+    &lt;/permission&gt;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+The <i>permission</i> element can contain the following elements:  <i>block</i>,  <i>para</i>,  <i>paramref</i>,  <i>see</i>, and  <i>typeparamref</i>.</dd>
+</dl>
+<dl>
+<dt>
+<i>&lt;remarks&gt;XML_TEXT&lt;/remarks&gt;</i></dt>
+<dd>
+Contains detailed information about a member.<div style="height: 1.00em;">
+&#160;</div>
+<i>&lt;remarks/&gt;</i> is a top-level element, and should be nested directly under the <i>&lt;Docs/&gt;</i> element.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    &lt;remarks&gt;<br/>
+      Insert detailed information here.<br/>
+    &lt;/remarks&gt;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+The <i>remarks</i> element can contain the following elements:  <i>block</i>,  <i>c</i>,  <i>code</i>,  <i>example</i>,  <i>list</i>,  <i>para</i>,  <i>paramref</i>,  <i>see</i>, and  <i>typeparamref</i>.</dd>
+</dl>
+<dl>
+<dt>
+<i>&lt;returns&gt;XML_TEXT&lt;/returns&gt;</i></dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+<i>&lt;returns/&gt;</i> is a top-level element, and should be nested directly under the <i>&lt;Docs/&gt;</i> element.<div style="height: 1.00em;">
+&#160;</div>
+Describes the return value of a method:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    &lt;returns&gt;<br/>
+      A &lt;see cref=&quot;T:System.Boolean&quot; /&gt; specifying whether <br/>
+      or not the process can access <br/>
+      &lt;see cref=&quot;P:Mono.Unix.UnixFileSystemInfo.FullName&quot; /&gt;.<br/>
+    &lt;/returns&gt;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+The <i>returns</i> element can contain the following elements:  <i>c</i>,  <i>format</i>,  <i>list</i>,  <i>para</i>,  <i>paramref</i>,  <i>see</i>, and  <i>typeparamref</i>.</dd>
+</dl>
+<dl>
+<dt>
+<i>&lt;see cref=&quot;CREF&quot; /&gt;</i>, <i>&lt;see langword=&quot;LANGWORD&quot; /&gt;</i></dt>
+<dd>
+Creates a link to the specified member within the current text:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    &lt;see cref=&quot;M:Some.Namespace.With.Type.Method&quot; /&gt;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+or specifies that <i>LANGWORD</i> is a language keyword:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    &lt;see langword=&quot;null&quot; /&gt;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<i>&lt;seealso cref=&quot;CREF&quot; /&gt;</i></dt>
+<dd>
+Do not use <i>seealso</i>, use <i>altmember</i>.</dd>
+</dl>
+<dl>
+<dt>
+<i>&lt;since version=&quot;VERSION&quot; /&gt;</i></dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+<i>&lt;since/&gt;</i> is a top-level element, and should be nested directly under the  <i>&lt;Docs/&gt;</i> element.<div style="height: 1.00em;">
+&#160;</div>
+Permits specification of which version introduced the specified type or member.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    &lt;since version=&quot;Gtk# 2.4&quot; /&gt;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+This generally isn't required, as the <i>//AssemblyInfo/AssemblyVersion</i> elements track which assembly versions contain type or member.</dd>
+</dl>
+<dl>
+<dt>
+<i>&lt;summary&gt;XML_TEXT&lt;/summary&gt;</i></dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+<i>&lt;summary/&gt;</i> is a top-level element, and should be nested directly under the <i>&lt;Docs/&gt;</i> element.<div style="height: 1.00em;">
+&#160;</div>
+Provides a (brief!) overview about a type or type member.<div style="height: 1.00em;">
+&#160;</div>
+This is usually displayed as part of a class declaration, and should be a reasonably short description of the type/member.  Use <i>&lt;remarks/&gt;</i> for more detailed information.<div style="height: 1.00em;">
+&#160;</div>
+The <i>summary</i> element can contain the following elements:  <i>block</i>,  <i>list</i>,  <i>para</i>,  <i>paramref</i>,  <i>see</i>, and  <i>typeparamref</i>.</dd>
+</dl>
+<dl>
+<dt>
+<i>&lt;typeparam name=&quot;NAME&quot;&gt;XML_TEXT&lt;/typeparam&gt;</i></dt>
+<dd>
+<i>&lt;typeparam/&gt;</i> is a top-level element, and should be nested directly under the <i>&lt;Docs/&gt;</i> element.<div style="height: 1.00em;">
+&#160;</div>
+This is used to document a type parameter for a generic type or generic method.<div style="height: 1.00em;">
+&#160;</div>
+<i>NAME</i> is the name of the type parameter, while <i>XML_TEXT</i> contains a description of the parameter (what it's used for, what restrictions it must meet, etc.).<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    &lt;typeparam name=&quot;T&quot;&gt;<br/>
+      The type of the underlying collection<br/>
+    &lt;/typeparam&gt;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+The <i>typeparam</i> element can contain the following elements:  <i>block</i>,  <i>c</i>,  <i>para</i>,  <i>paramref</i>,  <i>see</i>, and  <i>typeparamref</i>.</dd>
+</dl>
+<dl>
+<dt>
+<i>&lt;typeparamref name=&quot;NAME&quot;&gt;</i></dt>
+<dd>
+Used to indicate that <i>NAME</i> is a type parameter.</dd>
+</dl>
+<dl>
+<dt>
+<i>&lt;value&gt;XML_TEXT&lt;/value&gt;</i></dt>
+<dd>
+<i>&lt;value/&gt;</i> is a top-level element, and should be nested directly under the <i>&lt;Docs/&gt;</i> element.<div style="height: 1.00em;">
+&#160;</div>
+Allows a property to be described.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    &lt;value&gt;<br/>
+      A &lt;see cref=&quot;T:System.String&quot; /&gt; containing a widget name.<br/>
+    &lt;/value&gt;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+The <i>value</i> element can contain the following elements:  <i>block</i>,  <i>c</i>,  <i>example</i>,  <i>list</i>,  <i>para</i>,  <i>paramref</i>,  <i>see</i>, and  <i>typeparamref</i>.</dd>
+</dl>
+</div>
+</div>
+<div class="section">
+<h1>CREF FORMAT</h1> String IDs ( <i>CREF</i>s) are used to refer to a type or member of a type. String IDs are documented in ECMA-334 3rd Edition, Annex E.3.1.  They consist of a  <i>member type prefix</i>, the full type name (namespace + name, separated by  <i>.</i>), possibly followed by the member name and other information.<div class="spacer">
+</div>
+Member type prefixes:<dl>
+<dt>
+<i>C:</i></dt>
+<dd>
+The CREF refers to a constructor.  The (optional) parameter list is enclosed in parenthesis and follows the type name:  <i>C:System.String(System.Char,System.Int32)</i>.</dd>
+</dl>
+<dl>
+<dt>
+<i>E:</i></dt>
+<dd>
+The CREF refers to an event.  The event name follows the type name:  <i>E:System.AppDomain.AssemblyLoad</i>.</dd>
+</dl>
+<dl>
+<dt>
+<i>F:</i></dt>
+<dd>
+The CREF refers to a field.  The field name follows the type name:  <i>F:System.Runtime.InteropServices.DllImportAttribute.SetLastError</i>.</dd>
+</dl>
+<dl>
+<dt>
+<i>M:</i></dt>
+<dd>
+Refers to a constructor or method.  Constructors may append <i>.ctor</i> to the type name (instead of using the above <i>C:</i> constructor format), while methods append the method name and an (optional) count of the number of generic parameters.  Both constructors and methods may append the method parameter list enclosed in parenthesis.<div style="height: 1.00em;">
+&#160;</div>
+Examples:  <i>M:System.Object..ctor</i>,  <i>M:System.String..ctor(System.Char[])</i>,  <i>M:System.String.Concat(System.Object)</i>,  <i>M:System.Array.Sort``1(``0[])</i>,  <i>M:System.Collections.Generic.List`1..ctor</i>,  <i>M:System.Collections.Generic.List`1.Add(`0)</i>.</dd>
+</dl>
+<dl>
+<dt>
+<i>N:</i></dt>
+<dd>
+Refers to a namespace, e.g. <i>N:System</i>.</dd>
+</dl>
+<dl>
+<dt>
+<i>P:</i></dt>
+<dd>
+Refers to a property.  If the property is an indexer or takes parameters, the parameter types are appended to the property name and enclosed with paranthesis:  <i>P:System.String.Length</i>,  <i>P:System.String.Chars(System.Int32)</i>.</dd>
+</dl>
+<dl>
+<dt>
+<i>T:</i></dt>
+<dd>
+The CREF refers to a type, with the number of generic types appended:  <i>T:System.String</i>,  <i>T:System.Collections.Generic.List`1</i>,  <i>T:System.Collections.Generic.List`1.Enumerator</i>.</dd>
+</dl>
+<div class="spacer">
+</div>
+To make matters more interesting, generic types &amp; members have two representations: the &quot;unbound&quot; representation (shown in examples above), in which class names have the count of generic parameters appended to their name. There is also a &quot;bound&quot; representation, in which the binding of generic parameters is listed within '{' and '}' or '&lt;' and '&gt;'. (Use of '&lt;' and '&gt;' is less common, as within an XML document their escaped character entities must instead be used, leading to '&amp;lt;' and '&amp;gt;'.)<div class="spacer">
+</div>
+<b>Unbound:</b><dl>
+<dt>
+<b>*</b></dt>
+<dd>
+<i>T:System.Collections.Generic.List`1</i></dd>
+</dl>
+<dl>
+<dt>
+<b>*</b></dt>
+<dd>
+<i>T:System.Collections.Generic.Dictionary`2</i></dd>
+</dl>
+<div class="spacer">
+</div>
+<b>Bound:</b><dl>
+<dt>
+<b>*</b></dt>
+<dd>
+<i>T:System.Collections.Generic.List{System.Int32}</i></dd>
+</dl>
+<dl>
+<dt>
+<b>*</b></dt>
+<dd>
+<i>T:System.Collections.Generic.List&lt;System.Int32&gt;</i></dd>
+</dl>
+<dl>
+<dt>
+<b>*</b></dt>
+<dd>
+<i>T:System.Collections.Generic.List&amp;lt;System.Int32&amp;gt;</i></dd>
+</dl>
+<dl>
+<dt>
+<b>*</b></dt>
+<dd>
+<i>T:System.Predicate{System.Action{System.String}}</i></dd>
+</dl>
+<div class="spacer">
+</div>
+As you can see, bound variants can be arbitrarily complex (just like generics).<div class="spacer">
+</div>
+Furthermore, if a generic parameter is bound to the generic parameter of a type or method, the &quot;index&quot; of the type/method's generic parameter is used as the binding, so given<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    class FooType {<br/>
+      public static void Foo&lt;T&gt; (System.Predicate&lt;T&gt; predicate)<br/>
+      {<br/>
+      }<br/>
+    }<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+The CREF for this method is  <i>M:FooType.Foo``1(System.Predicate{``0})</i>, <i>``0</i> is the 0th generic parameter index which is bound to  <i>System.Predicate&lt;T&gt;</i>.</div>
+<div class="section">
+<h1>SEE ALSO</h1> mdoc(1), monodocer(1)</div>
+<div class="section">
+<h1>MAILING LISTS</h1><dl>
+<dt>
+Visit http://lists.ximian.com/mailman/listinfo/mono-docs-list for details.</dt>
+<dd>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>WEB SITE</h1> Visit http://www.mono-project.com for details</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+Tcl_GetIndexFromObj(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+Tcl_GetIndexFromObj(3)</td>
+<td class="head-vol">
+Tcl Library Procedures</td>
+<td class="head-rtitle">
+Tcl_GetIndexFromObj(3)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> Tcl_GetIndexFromObj, Tcl_GetIndexFromObjStruct - lookup string in table of keywords</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+<b>#include &lt;tcl.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+int<br/>
+<b>Tcl_GetIndexFromObj</b>(<i>interp, objPtr, tablePtr, msg, flags,</i><br/>
+<i>indexPtr</i>)<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+int<br/>
+<b>Tcl_GetIndexFromObjStruct</b>(<i>interp, objPtr, structTablePtr, offset,</i><br/>
+<i>                          msg, flags, indexPtr</i>)</div>
+<div class="section">
+<h1>ARGUMENTS</h1><dl>
+<dt>
+Tcl_Interp <i>*interp</i> (in)</dt>
+<dd>
+Interpreter to use for error reporting; if NULL, then no message is provided on errors.</dd>
+</dl>
+<dl>
+<dt>
+Tcl_Obj <i>*objPtr</i> (in/out)</dt>
+<dd>
+The string value of this object is used to search through <i>tablePtr</i>. The internal representation is modified to hold the index of the matching table entry.</dd>
+</dl>
+<dl>
+<dt>
+const char <i>**tablePtr</i> (in)</dt>
+<dd>
+An array of null-terminated strings.  The end of the array is marked by a NULL string pointer. Note that references to the  <i>tablePtr</i> may be retained in the internal representation of  <i>objPtr</i>, so this should represent the address of a statically-allocated array.</dd>
+</dl>
+<dl>
+<dt>
+const void <i>*structTablePtr</i> (in)</dt>
+<dd>
+An array of arbitrary type, typically some <b>struct</b> type. The first member of the structure must be a null-terminated string. The size of the structure is given by  <i>offset</i>. Note that references to the  <i>structTablePtr</i> may be retained in the internal representation of  <i>objPtr</i>, so this should represent the address of a statically-allocated array of structures.</dd>
+</dl>
+<dl>
+<dt>
+int <i>offset</i> (in)</dt>
+<dd>
+The offset to add to structTablePtr to get to the next entry. The end of the array is marked by a NULL string pointer.</dd>
+</dl>
+<dl>
+<dt>
+const char <i>*msg</i> (in)</dt>
+<dd>
+Null-terminated string describing what is being looked up, such as  <b>option</b>.  This string is included in error messages.</dd>
+</dl>
+<dl>
+<dt>
+int <i>flags</i> (in)</dt>
+<dd>
+OR-ed combination of bits providing additional information for operation.  The only bit that is currently defined is  <b>TCL_EXACT</b>.</dd>
+</dl>
+<dl>
+<dt>
+int <i>*indexPtr</i> (out)</dt>
+<dd>
+The index of the string in <i>tablePtr</i> that matches the value of  <i>objPtr</i> is returned here.<br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> These procedures provide an efficient way for looking up keywords, switch names, option names, and similar things where the value of an object must be one of a predefined set of values.  <b>Tcl_GetIndexFromObj</b> compares <i>objPtr</i> against each of the strings in  <i>tablePtr</i> to find a match.  A match occurs if  <i>objPtr</i>'s string value is identical to one of the strings in  <i>tablePtr</i>, or if it is a non-empty unique abbreviation for exactly one of the strings in  <i>tablePtr</i> and the  <b>TCL_EXACT</b> flag was not specified; in either case the index of the matching entry is stored at  <i>*indexPtr</i> and  <b>TCL_OK</b> is returned.<div class="spacer">
+</div>
+If there is no matching entry,  <b>TCL_ERROR</b> is returned and an error message is left in <i>interp</i>'s result if  <i>interp</i> is not NULL.  <i>Msg</i> is included in the error message to indicate what was being looked up.  For example, if  <i>msg</i> is <b>option</b> the error message will have a form like &#8220; <b>bad option &quot;firt&quot;: must be first, second, or third</b>&#8221;.<div class="spacer">
+</div>
+If <b>Tcl_GetIndexFromObj</b> completes successfully it modifies the internal representation of  <i>objPtr</i> to hold the address of the table and the index of the matching entry.  If  <b>Tcl_GetIndexFromObj</b> is invoked again with the same  <i>objPtr</i> and <i>tablePtr</i> arguments (e.g. during a reinvocation of a Tcl command), it returns the matching index immediately without having to redo the lookup operation.  Note:  <b>Tcl_GetIndexFromObj</b> assumes that the entries in  <i>tablePtr</i> are static: they must not change between invocations.  If the value of  <i>objPtr</i> is the empty string,  <b>Tcl_GetIndexFromObj</b> will treat it as a non-matching value and return  <b>TCL_ERROR</b>.<div class="spacer">
+</div>
+<b>Tcl_GetIndexFromObjStruct</b> works just like  <b>Tcl_GetIndexFromObj</b>, except that instead of treating  <i>tablePtr</i> as an array of string pointers, it treats it as a pointer to the first string in a series of strings that have  <i>offset</i> bytes between them (i.e. that there is a pointer to the first array of characters at  <i>tablePtr</i>, a pointer to the second array of characters at  <i>tablePtr</i>+<i>offset</i> bytes, etc.) This is particularly useful when processing things like  <b>Tk_ConfigurationSpec</b>, whose string keys are in the same place in each of several array elements.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> Tcl_WrongNumArgs<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>KEYWORDS</h1> index, object, table lookup</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+8.1</td>
+<td class="foot-os">
+Tcl</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+Tcl_CreateTrace(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+Tcl_CreateTrace(3)</td>
+<td class="head-vol">
+Tcl Library Procedures</td>
+<td class="head-rtitle">
+Tcl_CreateTrace(3)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> Tcl_CreateTrace, Tcl_CreateObjTrace, Tcl_DeleteTrace - arrange for command execution to be traced</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+<b>#include &lt;tcl.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Tcl_Trace<br/>
+<b>Tcl_CreateTrace</b>(<i>interp, level, proc, clientData</i>)<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Tcl_Trace<br/>
+<b>Tcl_CreateObjTrace</b>(<i>interp, level, flags, objProc, clientData, deleteProc</i>)<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>Tcl_DeleteTrace</b>(<i>interp, trace</i>)</div>
+<div class="section">
+<h1>ARGUMENTS</h1><dl>
+<dt>
+Tcl_Interp <i>*interp</i> (in)</dt>
+<dd>
+Interpreter containing command to be traced or untraced.</dd>
+</dl>
+<dl>
+<dt>
+int <i>level</i> (in)</dt>
+<dd>
+Only commands at or below this nesting level will be traced unless 0 is specified.  1 means top-level commands only, 2 means top-level commands or those that are invoked as immediate consequences of executing top-level commands (procedure bodies, bracketed commands, etc.) and so on. A value of 0 means that commands at any level are traced.</dd>
+</dl>
+<dl>
+<dt>
+int <i>flags</i> (in)</dt>
+<dd>
+Flags governing the trace execution.  See below for details.</dd>
+</dl>
+<dl>
+<dt>
+Tcl_CmdObjTraceProc <i>*objProc</i> (in)</dt>
+<dd>
+Procedure to call for each command that is executed.  See below for details of the calling sequence.</dd>
+</dl>
+<dl>
+<dt>
+Tcl_CmdTraceProc <i>*proc</i> (in)</dt>
+<dd>
+Procedure to call for each command that is executed.  See below for details on the calling sequence.</dd>
+</dl>
+<dl>
+<dt>
+ClientData <i>clientData</i> (in)</dt>
+<dd>
+Arbitrary one-word value to pass to <i>objProc</i> or <i>proc</i>.</dd>
+</dl>
+<dl>
+<dt>
+Tcl_CmdObjTraceDeleteProc <i>*deleteProc</i> (in)</dt>
+<dd>
+Procedure to call when the trace is deleted.  See below for details of the calling sequence.  A NULL pointer is permissible and results in no callback when the trace is deleted.</dd>
+</dl>
+<dl>
+<dt>
+Tcl_Trace <i>trace</i> (in)</dt>
+<dd>
+Token for trace to be removed (return value from previous call to  <b>Tcl_CreateTrace</b>).<br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>Tcl_CreateObjTrace</b> arranges for command tracing.  After it is called,  <i>objProc</i> will be invoked before the Tcl interpreter calls any command procedure when evaluating commands in  <i>interp</i>. The return value from  <b>Tcl_CreateObjTrace</b> is a token for the trace, which may be passed to  <b>Tcl_DeleteTrace</b> to remove the trace. There may be many traces in effect simultaneously for the same interpreter.<div class="spacer">
+</div>
+<i>objProc</i> should have arguments and result that match the type,  <b>Tcl_CmdObjTraceProc</b>:<div style="margin-left: 5.00ex;">
+<br/>
+typedef int <b>Tcl_CmdObjTraceProc</b>( <br/>
+        <b>ClientData</b> <i>clientData</i>,<br/>
+        <b>Tcl_Interp</b>* <i>interp</i>,<br/>
+        int <i>level</i>,<br/>
+        const char *<i>command</i>,<br/>
+        <b>Tcl_Command</b> <i>commandToken</i>,<br/>
+        int <i>objc</i>,<br/>
+        <b>Tcl_Obj</b> *const <i>objv</i>[] );<br/>
+</div>
+The <i>clientData</i> and <i>interp</i> parameters are copies of the corresponding arguments given to  <b>Tcl_CreateTrace</b>.  <i>ClientData</i> typically points to an application-specific data structure that describes what to do when  <i>objProc</i> is invoked.  The  <i>level</i> parameter gives the nesting level of the command (1 for top-level commands passed to  <b>Tcl_Eval</b> by the application, 2 for the next-level commands passed to  <b>Tcl_Eval</b> as part of parsing or interpreting level-1 commands, and so on). The  <i>command</i> parameter points to a string containing the text of the command, before any argument substitution.  The  <i>commandToken</i> parameter is a Tcl command token that identifies the command to be invoked.  The token may be passed to  <b>Tcl_GetCommandName</b>,  <b>Tcl_GetCommandInfoFromToken</b>, or <b>Tcl_SetCommandInfoFromToken</b> to manipulate the definition of the command. The  <i>objc</i> and <i>objv</i> parameters designate the final parameter count and parameter vector that will be passed to the command, and have had all substitutions performed.<div class="spacer">
+</div>
+The <i>objProc</i> callback is expected to return a standard Tcl status return code.  If this code is  <b>TCL_OK</b> (the normal case), then the Tcl interpreter will invoke the command.  Any other return code is treated as if the command returned that status, and the command is  <i>not</i> invoked.<div class="spacer">
+</div>
+The <i>objProc</i> callback must not modify <i>objv</i> in any way.  It is, however, permissible to change the command by calling  <b>Tcl_SetCommandTokenInfo</b> prior to returning.  Any such change takes effect immediately, and the command is invoked with the new information.<div class="spacer">
+</div>
+Tracing will only occur for commands at nesting level less than or equal to the  <i>level</i> parameter (i.e. the <i>level</i> parameter to  <i>objProc</i> will always be less than or equal to the  <i>level</i> parameter to <b>Tcl_CreateTrace</b>).<div class="spacer">
+</div>
+Tracing has a significant effect on runtime performance because it causes the bytecode compiler to refrain from generating in-line code for Tcl commands such as  <b>if</b> and <b>while</b> in order that they may be traced.  If traces for the built-in commands are not required, the  <i>flags</i> parameter may be set to the constant value  <b>TCL_ALLOW_INLINE_COMPILATION</b>.  In this case, traces on built-in commands may or may not result in trace callbacks, depending on the state of the interpreter, but run-time performance will be improved significantly.  (This functionality is desirable, for example, when using  <b>Tcl_CreateObjTrace</b> to implement an execution time profiler.)<div class="spacer">
+</div>
+Calls to <i>objProc</i> will be made by the Tcl parser immediately before it calls the command procedure for the command ( <i>cmdProc</i>).  This occurs after argument parsing and substitution, so tracing for substituted commands occurs before tracing of the commands containing the substitutions.  If there is a syntax error in a command, or if there is no command procedure associated with a command name, then no tracing will occur for that command.  If a string passed to Tcl_Eval contains multiple commands (bracketed, or on different lines) then multiple calls to  <i>objProc</i> will occur, one for each command.<div class="spacer">
+</div>
+<b>Tcl_DeleteTrace</b> removes a trace, so that no future calls will be made to the procedure associated with the trace.  After  <b>Tcl_DeleteTrace</b> returns, the caller should never again use the  <i>trace</i> token.<div class="spacer">
+</div>
+When <b>Tcl_DeleteTrace</b> is called, the interpreter invokes the  <i>deleteProc</i> that was passed as a parameter to  <b>Tcl_CreateObjTrace</b>.  The <i>deleteProc</i> must match the type,  <b>Tcl_CmdObjTraceDeleteProc</b>:<div style="margin-left: 5.00ex;">
+<br/>
+typedef void <b>Tcl_CmdObjTraceDeleteProc</b>( <br/>
+        <b>ClientData</b> <i>clientData</i>);<br/>
+</div>
+The <i>clientData</i> parameter will be the same as the  <i>clientData</i> parameter that was originally passed to  <b>Tcl_CreateObjTrace</b>.<div class="spacer">
+</div>
+<b>Tcl_CreateTrace</b> is an alternative interface for command tracing,  <i>not recommended for new applications</i>.  It is provided for backward compatibility with code that was developed for older versions of the Tcl interpreter.  It is similar to  <b>Tcl_CreateObjTrace</b>, except that its  <i>proc</i> parameter should have arguments and result that match the type  <b>Tcl_CmdTraceProc</b>:<div style="margin-left: 5.00ex;">
+<br/>
+typedef void Tcl_CmdTraceProc(<br/>
+        ClientData <i>clientData</i>,<br/>
+        Tcl_Interp *<i>interp</i>,<br/>
+        int <i>level</i>,<br/>
+        char *<i>command</i>,<br/>
+        Tcl_CmdProc *<i>cmdProc</i>,<br/>
+        ClientData <i>cmdClientData</i>,<br/>
+        int <i>argc</i>,<br/>
+        const char *<i>argv</i>[]);<br/>
+</div>
+The parameters to the <i>proc</i> callback are similar to those of the  <i>objProc</i> callback above. The <i>commandToken</i> is replaced with  <i>cmdProc</i>, a pointer to the (string-based) command procedure that will be invoked; and  <i>cmdClientData</i>, the client data that will be passed to the procedure.  The  <i>objc</i> parameter is replaced with an  <i>argv</i> parameter, that gives the arguments to the command as character strings.  <i>Proc</i> must not modify the <i>command</i> or <i>argv</i> strings.<div class="spacer">
+</div>
+If a trace created with <b>Tcl_CreateTrace</b> is in effect, inline compilation of Tcl commands such as  <b>if</b> and <b>while</b> is always disabled.  There is no notification when a trace created with  <b>Tcl_CreateTrace</b> is deleted. There is no way to be notified when the trace created by  <b>Tcl_CreateTrace</b> is deleted.  There is no way for the <i>proc</i> associated with a call to  <b>Tcl_CreateTrace</b> to abort execution of  <i>command</i>.</div>
+<div class="section">
+<h1>KEYWORDS</h1> command, create, delete, interpreter, trace</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+Tcl</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

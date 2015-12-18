@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+csharp(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+csharp(1)</td>
+<td class="head-vol">
+General Commands Manual</td>
+<td class="head-rtitle">
+csharp(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> csharp, gsharp - Interactive C# Shell</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>csharp [--attach PID] [-e EXPRESSION] [file1 [file2]]</b> [options]<div class="spacer">
+</div>
+<b>gsharp [file1 [file2]]</b></div>
+<div class="section">
+<h1>DESCRIPTION</h1> The <i>csharp</i> is an interactive C# shell that allows the user to enter and evaluate C# statements and expressions from the command line.   The regular <i>mcs</i> command line options can be used in this version of the compiler.<div class="spacer">
+</div>
+The <i>gsharp</i> command is a GUI version of the C# interpreter that uses Gtk# and provides an area to attach widgets as well.      This version can be attached to other Gtk# applications in a safe way as it injects itself into the main loop of a Gtk# application, avoiding any problems arising from the multi-threaded nature of injecting itself into a target process.<div class="spacer">
+</div>
+Files specified in the command line will be loaded and executed as scripts.<div class="spacer">
+</div>
+Starting with Mono 2.10, the <i>csharp</i> command can be used as an interpreter executed by executables flagged with the Unix execute attribute.   To do this, make the first line of your C# source code look like this:<br/>
+&quot;#!/usr/bin/csharp&quot; <br/>
+Console.WriteLine (&quot;Hello, World&quot;);<br/>
+</div>
+<div class="section">
+<h1>OPTIONS</h1> The commands accept all of the commands that are available to the <i>mcs</i> command, so you can reference assemblies, specify paths, language level and so on from the command line.   In addition, the following command line options are supported:<dl>
+<dt>
+<i>--attach</i></dt>
+<dd>
+This is an advanced option and should only be used if you have a deep understanding of multi-threading.     This option is availble on the <i>csharp</i> command and allows the compiler to be injected into other processes. This is done by injecting the C# shell in a separate thread that runs concurrently with your application.  This means that you must take special measures to avoid crashing the target application while using it.  For example, you might have to take the proper locks before issuing any commands that might affect the target process state, or sending commands through a method dispatcher.</dd>
+</dl>
+<dl>
+<dt>
+<i>-e EXPRESSION</i></dt>
+<dd>
+This will evaluate the specified C# EXPRESSION and exit</dd>
+</dl>
+</div>
+<div class="section">
+<h1>OPERATION</h1> Once you launch the csharp command, you will be greeted with the interactive prompt:<div class="spacer">
+</div>
+<br/>
+$ csharp<br/>
+Mono C# Shell, type &quot;help;&quot; for help<br/>
+ <br/>
+Enter statements below.<br/>
+csharp&gt;<br/>
+<div class="spacer">
+</div>
+A number of namespaces are pre-defined with C# these include System, System.Linq, System.Collections and System.Collections.Generic. Unlike the compiled mode, it is possible to add new using statements as you type code, for example:<div class="spacer">
+</div>
+<br/>
+csharp&gt; new XmlDocument ();<br/>
+&lt;interactive&gt;(1,6): error CS0246: The type or namespace name `XmlDocument' could not be found. Are you missing a using directive or an assembly reference?<br/>
+csharp&gt; using System.Xml;<br/>
+csharp&gt; new XmlDocument (); <br/>
+System.Xml.XmlDocument<br/>
+<div class="spacer">
+</div>
+Every time a command is typed, the scope of that command is one of a class that derives from the class Mono.CSharp.InteractiveBase.   This class defines a number of static properties and methods.   To display a list of available commands access the `help' property:<br/>
+csharp&gt; help;<br/>
+&quot;Static methods:<br/>
+  LoadPackage (pkg); - Loads the given Package (like -pkg:FILE)<br/>
+  [...]<br/>
+  ShowVars ();       - Shows defined local variables.<br/>
+  ShowUsing ();      - Show active using decltions.<br/>
+  help;<br/>
+&quot;<br/>
+csharp&gt;<br/>
+<div class="spacer">
+</div>
+When expressions are entered, the C# shell will display the result of executing the expression:<div class="spacer">
+</div>
+<br/>
+csharp&gt; Math.Sin (Math.PI/4); <br/>
+0.707106781186547<br/>
+csharp&gt; 1+1;<br/>
+2<br/>
+csharp&gt; &quot;Hello, world&quot;.IndexOf (',');<br/>
+5<br/>
+<div class="spacer">
+</div>
+The C# shell uses the ToString() method on the returned object to display the object, this sometimes can be limiting since objects that do not override the ToString() method will get the default behavior from System.Object which is merely to display their type name:<div class="spacer">
+</div>
+<br/>
+csharp&gt; var a = new XmlDocument ();<br/>
+csharp&gt; a;<br/>
+System.Xml.Document<br/>
+csharp&gt; csharp&gt; a.Name;    <br/>
+&quot;#document&quot;<br/>
+csharp&gt;<br/>
+<div class="spacer">
+</div>
+A few datatypes are handled specially by the C# interactive shell like arrays, System.Collections.Hashtable, objects that implement System.Collections.IEnumerable and IDictionary and are rendered specially instead of just using ToString ():<div class="spacer">
+</div>
+<br/>
+csharp&gt; var pages = new Hashtable () { <br/>
+      &gt;  { &quot;Mono&quot;,    &quot;http://www.mono-project.com/&quot; },<br/>
+      &gt;  { &quot;Linux&quot;,   &quot;http://kernel.org&quot; } };<br/>
+csharp&gt; pages;<br/>
+{{ &quot;Mono&quot;, &quot;http://www.mono-project.com/&quot; }, { &quot;Linux&quot;, &quot;http://kernel.org&quot; }}<br/>
+<div class="spacer">
+</div>
+It is possible to use LINQ directly in the C# interactive shell since the System.Linq namespace has been imported at startup.   The following sample gets a list of all the files that have not been accessed in a week from /tmp:<div class="spacer">
+</div>
+<br/>
+csharp&gt; using System.IO;<br/>
+csharp&gt; var last_week = DateTime.Now - TimeSpan.FromDays (7);<br/>
+csharp&gt; var old_files = from f in Directory.GetFiles (&quot;/tmp&quot;) <br/>
+      &gt;   let fi = new FileInfo (f) <br/>
+      &gt;   where fi.LastAccessTime &lt; LastWeek select f;<br/>
+csharp&gt;<br/>
+<div class="spacer">
+</div>
+You can of course print the results in a single statement as well:<div class="spacer">
+</div>
+<br/>
+csharp&gt; using System.IO;<br/>
+csharp&gt; var last_week = DateTime.Now - TimeSpan.FromDays (7);<br/>
+csharp&gt; from f in Directory.GetFiles (&quot;/tmp&quot;) <br/>
+      &gt;   let fi = new FileInfo (f) <br/>
+      &gt;   where fi.LastAccessTime &lt; last_week select f;<br/>
+[...]<br/>
+csharp&gt;<br/>
+<div class="spacer">
+</div>
+LINQ and its functional foundation produce on-demand code for IEnumerable return values.  For instance, the return value from a using `from' is an IEnumerable that is evaluated on demand.   The automatic rendering of IEnumerables on the command line will trigger the IEnumerable pipeline to execute at that point instead of having its execution delayed until a later point.<div class="spacer">
+</div>
+If you want to avoid having the IEnumerable rendered at this point, simply assign the value to a variable.<div class="spacer">
+</div>
+Unlike compiled C#, the type of a variable can be changed if a new declaration is entered, for example:<div class="spacer">
+</div>
+<br/>
+csharp&gt; var a = 1;<br/>
+csharp&gt; a.GetType ();<br/>
+System.Int32<br/>
+csharp&gt; var a = &quot;Hello&quot;;<br/>
+csharp&gt; a.GetType ();<br/>
+System.String<br/>
+csharp&gt; ShowVars ();<br/>
+string a = &quot;Hello&quot;<br/>
+<div class="spacer">
+</div>
+In the case that an expression or a statement is not completed in a single line, a continuation prompt is displayed, for example:<div class="spacer">
+</div>
+<br/>
+csharp&gt; var protocols = new string [] {<br/>
+      &gt;    &quot;ftp&quot;,<br/>
+      &gt;    &quot;http&quot;,<br/>
+      &gt;    &quot;gopher&quot; <br/>
+      &gt; };<br/>
+csharp&gt; protocols;<br/>
+{ &quot;ftp&quot;, &quot;http&quot;, &quot;gopher&quot; }<br/>
+<div class="spacer">
+</div>
+Long running computations can be interrupted by using the Control-C sequence:<div class="spacer">
+</div>
+<br/>
+csharp&gt; var done = false;<br/>
+csharp&gt; while (!done) { }<br/>
+Interrupted!<br/>
+System.Threading.ThreadAbortException: Thread was being aborted<br/>
+  at Class1.Host (System.Object&amp; $retval) [0x00000] <br/>
+  at Mono.CSharp.InteractiveShell.ExecuteBlock (Mono.CSharp.Class host, Mono.CSharp.Undo undo) [0x00000] <br/>
+csharp&gt;<br/>
+</div>
+<div class="section">
+<h1>INTERACTIVE EDITING</h1> The C# interactive shell contains a line-editor that provides a more advanced command line editing functionality than the operating system provides.   These are available in the command line version, the GUI versions uses the standard Gtk# key bindings.<div class="spacer">
+</div>
+The command set is similar to many other applications (cursor keys) and incorporates some of the Emacs commands for editing as well as a history mechanism to<div class="spacer">
+</div>
+The following keyboard input is supported:<dl>
+<dt>
+<i>Home Key, Control-a</i></dt>
+<dd>
+Goes to the beginning of the line.</dd>
+</dl>
+<dl>
+<dt>
+<i>End Key, Control-e</i></dt>
+<dd>
+Goes to the end of the line.</dd>
+</dl>
+<dl>
+<dt>
+<i>Left Arrow Key, Control-b</i></dt>
+<dd>
+Moves the cursor back one character.</dd>
+</dl>
+<dl>
+<dt>
+<i>Right Arrow Key, Control-f</i></dt>
+<dd>
+Moves the cursor forward one character.</dd>
+</dl>
+<dl>
+<dt>
+<i>Up Arrow Key, Control-p</i></dt>
+<dd>
+Goes back in the history, replaces the current line with the previous line in the history.</dd>
+</dl>
+<dl>
+<dt>
+<i>Down Arrow Key, Control-n</i></dt>
+<dd>
+Moves forward in the history, replaces the current line with the next lien in the history.</dd>
+</dl>
+<dl>
+<dt>
+<i>Return</i></dt>
+<dd>
+Executes the current line if the statement or expression is complete, or waits for further input.</dd>
+</dl>
+<dl>
+<dt>
+<i>Control-C</i></dt>
+<dd>
+Cancel the current line being edited.  This will kill any currently in-progress edits or partial editing and go back to a toplevel definition.</dd>
+</dl>
+<dl>
+<dt>
+<i>Backspace Key</i></dt>
+<dd>
+Deletes the character before the cursor</dd>
+</dl>
+<dl>
+<dt>
+<i>Delete Key, Control-d</i></dt>
+<dd>
+Deletes the character at the current cursor position.</dd>
+</dl>
+<dl>
+<dt>
+<i>Control-k</i></dt>
+<dd>
+Erases the contents of the line until the end of the line and places the result in the cut and paste buffer.</dd>
+</dl>
+<dl>
+<dt>
+<i>Alt-D</i></dt>
+<dd>
+Deletes the word starting at the cursor position and appends into the cut and paste buffer.    By pressing Alt-d repeatedly, multiple words can be appended into the paste buffer.</dd>
+</dl>
+<dl>
+<dt>
+<i>Control-Y</i></dt>
+<dd>
+Pastes the content of the kill buffer at the current cursor position.</dd>
+</dl>
+<dl>
+<dt>
+<i>Control-Q</i></dt>
+<dd>
+This is the quote character.   It allows the user to enter control-characters that are otherwise taken by the command editing facility.   Press Control-Q followed by the character you want to insert, and it will be inserted verbatim into the command line.</dd>
+</dl>
+<dl>
+<dt>
+<i>Control-D</i></dt>
+<dd>
+Terminates the program.   This terminates the input for the program.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>STATIC PROPERTIES AND METHODS</h1> Since the methods and properties of the base class from where the statements and expressions are executed are static, they can be invoked directly from the shell.   These are the available properties and methods:<dl>
+<dt>
+<i>void LoadAssembly(string assembly)</i></dt>
+<dd>
+Loads the given assembly.   This is equivalent to passing the compiler the -r: flag with the specified string.</dd>
+</dl>
+<dl>
+<dt>
+<i>void LoadPackage(string package)</i></dt>
+<dd>
+Imports the package specified.   This is equivalent to invoking the compiler with the -pkg: flag with the specified string.</dd>
+</dl>
+<dl>
+<dt>
+<i>string Prompt { get; set }</i></dt>
+<dd>
+The prompt used by the shell.  It defaults to the value &quot;csharp&gt; &quot;. <i>string ContinuationPrompt { get; set; }</i> The prompt used by the shell when further input is required to complete the expression or statement.</dd>
+</dl>
+<dl>
+<dt>
+<i>void ShowVars()</i></dt>
+<dd>
+Displays all the variables that have been defined so far and their types.    In the csharp shell declaring new variables will shadow previous variable declarations, this is different than C# when compiled. <i>void ShowUsing()</i> Displays all the using statements in effect. <i>TimeSpan Time (Action a)</i> Handy routine to time the time that some code takes to execute.   The parameter is an Action delegate, and the return value is a TimeSpan. For example:</dd>
+</dl>
+<div class="spacer">
+</div>
+<br/>
+csharp&gt; Time (() =&gt; { for (int i = 0; i &lt; 5; i++) Console.WriteLine (i);});<br/>
+0<br/>
+1<br/>
+2<br/>
+3<br/>
+4<br/>
+00:00:00.0043230<br/>
+csharp&gt;<br/>
+<div class="spacer">
+</div>
+The return value is a TimeSpan, that you can store in a variable for benchmarking purposes.</div>
+<div class="section">
+<h1>GUI METHODS AND PROPERTIES</h1> In addition to the methods and properties available in the console version there are a handful of extra properties available on the GUI version.   For example a &quot;PaneContainer&quot; Gtk.Container is exposed that you can use to host Gtk# widgets while prototyping or the &quot;MainWindow&quot; property that gives you access to the current toplevel window.</div>
+<div class="section">
+<h1>STARTUP FILES</h1> The C# shell will load all the Mono assemblies and C# script files located in the ~/.config/csharp directory on Unix.  The assemblies are loaded before the source files are loaded.<div class="spacer">
+</div>
+C# script files are files that have the extension .cs and they should only contain statements and expressions, they can not contain full class definitions (at least not as of Mono 2.0).  Full class definitions should be compiled into dlls and stored in that directory.</div>
+<div class="section">
+<h1>AUTHORS</h1> The Mono C# Compiler was written by Miguel de Icaza, Ravi Pratap, Martin Baulig, Marek Safar and Raja Harinath.  The development was funded by Ximian, Novell and Marek Safar.</div>
+<div class="section">
+<h1>LICENSE</h1> The Mono Compiler Suite is released under the terms of the GNU GPL or the MIT X11.  Please read the accompanying `COPYING' file for details. Alternative licensing for the compiler is available from Novell.</div>
+<div class="section">
+<h1>SEE ALSO</h1> gmcs(1), mcs(1), mdb(1), mono(1), pkg-config(1)</div>
+<div class="section">
+<h1>BUGS</h1> To report bugs in the compiler, you must file them on our bug tracking system, at: http://www.mono-project.com/community/bugs/</div>
+<div class="section">
+<h1>MAILING LIST</h1> The Mono Mailing lists are listed at http://www.mono-project.com/community/help/mailing-lists/</div>
+<div class="section">
+<h1>MORE INFORMATION</h1> The Mono C# compiler was developed by Novell, Inc (http://www.novell.com, http) and is based on the ECMA C# language standard available here: http://www.ecma.ch/ecma1/STAND/ecma-334.htm<div class="spacer">
+</div>
+The home page for the Mono C# compiler is at http://www.mono-project.com/docs/about-mono/languages/csharp/ information about the interactive mode for C# is available in http://mono-project.com/docs/tools+libraries/tools/repl/</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+4 September 2008</td>
+<td class="foot-os">
+</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

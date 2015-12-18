@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+send(n)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+send(n)</td>
+<td class="head-vol">
+Tk Built-In Commands</td>
+<td class="head-rtitle">
+send(n)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> send - Execute a command in a different application</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <b>send ?</b><i>options</i>? <i>app cmd </i>?<i>arg arg ...</i>?<br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> This command arranges for  <i>cmd</i> (and <i>arg</i>s) to be executed in the application named by  <i>app</i>.  It returns the result or error from that command execution.  <i>App</i> may be the name of any application whose main window is on the display containing the sender's main window;  it need not be within the same process. If no  <i>arg</i> arguments are present, then the command to be executed is contained entirely within the  <i>cmd</i> argument.  If one or more  <i>arg</i>s are present, they are concatenated to form the command to be executed, just as for the  <b>eval</b> command.<div class="spacer">
+</div>
+If the initial arguments of the command begin with &#8220;-&#8221; they are treated as options.  The following options are currently defined:<dl>
+<dt>
+<b>-async</b></dt>
+<dd>
+Requests asynchronous invocation.  In this case the <b>send</b> command will complete immediately without waiting for  <i>cmd</i> to complete in the target application;  no result will be available and errors in the sent command will be ignored. If the target application is in the same process as the sending application then the  <b>-async</b> option is ignored.</dd>
+</dl>
+<dl>
+<dt>
+<b>-displayof</b> <i>pathName</i></dt>
+<dd>
+Specifies that the target application's main window is on the display of the window given by  <i>pathName</i>, instead of the display containing the application's main window.</dd>
+</dl>
+<dl>
+<dt>
+<b>--</b></dt>
+<dd>
+Serves no purpose except to terminate the list of options.  This option is needed only if  <i>app</i> could contain a leading &#8220;-&#8221; character.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>APPLICATION NAMES</h1> The name of an application is set initially from the name of the program or script that created the application. You can query and change the name of an application with the  <b>tk appname</b> command.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>DISABLING SENDS</h1> If the  <b>send</b> command is removed from an application (e.g. with the command  <b>rename send {}</b>) then the application will not respond to incoming send requests anymore,  nor will it be able to issue outgoing requests. Communication can be reenabled by invoking the  <b>tk appname</b> command.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SECURITY</h1> The  <b>send</b> command is potentially a serious security loophole. On Unix, any application that can connect to your X server can send scripts to your applications. These incoming scripts can use Tcl to read and write your files and invoke subprocesses under your name. Host-based access control such as that provided by  <b>xhost</b> is particularly insecure, since it allows anyone with an account on particular hosts to connect to your server, and if disabled it allows anyone anywhere to connect to your server. In order to provide at least a small amount of security, Tk checks the access control being used by the server and rejects incoming sends unless (a)  <b>xhost</b>-style access control is enabled (i.e. only certain hosts can establish connections) and (b) the list of enabled hosts is empty. This means that applications cannot connect to your server unless they use some other form of authorization such as that provide by  <b>xauth</b>. Under Windows,  <b>send</b> is currently disabled.  Most of the functionality is provided by the  <b>dde</b> command instead.</div>
+<div class="section">
+<h1>EXAMPLE</h1> This script fragment can be used to make an application that only runs once on a particular display.<div style="margin-left: 5.00ex;">
+<br/>
+if {[tk appname FoobarApp] ne &quot;FoobarApp&quot;} {<br/>
+    <b>send</b> -async FoobarApp RemoteStart $argv<br/>
+    exit<br/>
+}<br/>
+# The command that will be called remotely, which raises<br/>
+# the application main window and opens the requested files<br/>
+proc RemoteStart args {<br/>
+    raise .<br/>
+    foreach filename $args {<br/>
+        OpenFile $filename<br/>
+    }<br/>
+}<br/>
+</div>
+</div>
+<div class="section">
+<h1>KEYWORDS</h1> application, dde, name, remote execution, security, send</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+4.0</td>
+<td class="foot-os">
+Tk</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

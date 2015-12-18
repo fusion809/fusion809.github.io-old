@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+mdoc-assemble(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+mdoc-assemble(1)</td>
+<td class="head-vol">
+General Commands Manual</td>
+<td class="head-rtitle">
+mdoc-assemble(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> mdoc assemble - Compile documentation for use in  <b>monodoc</b>(1)</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>mdoc assemble</b> [OPTIONS]+ PATHS+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>mdoc assemble</b> creates <i>.tree</i> and <i>.zip</i> files from <i>PATHS</i> for use in the  <b>monodoc</b>(1) documentation browser.<div class="spacer">
+</div>
+The input files must have a supported <i>format</i>, specified with the  <i>--format</i> option.<div class="spacer">
+</div>
+The <i>.tree</i> and <i>.zip</i> files are copied into <b>monodoc</b>'s  <i>sources</i> directory, alongside a <i>.source</i> file which is used by  <b>monodoc</b>(1) to specify where the documentation should be displayed.<div class="spacer">
+</div>
+The <i>.source</i> file has the following format:<div class="spacer">
+</div>
+<br/>
+  &lt;?xml version=&quot;1.0&quot;?&gt;<br/>
+  &lt;monodoc&gt;<br/>
+    &lt;node label=&quot;LABEL&quot; name=&quot;PATH&quot; parent=&quot;PARENT&quot;&gt;<br/>
+      &lt;node label=&quot;LABEL2&quot; name=&quot;PATH2&quot; /&gt;<br/>
+      &lt;!-- ... --&gt;<br/>
+    &lt;/node&gt;<br/>
+    &lt;source provider=&quot;PROVIDER&quot; basefile=&quot;BASEFILE&quot; path=&quot;PATH&quot; /&gt;<br/>
+    &lt;!-- other &lt;source/&gt; elements --&gt;<br/>
+  &lt;/monodoc&gt;<div class="spacer">
+</div>
+<br/>
+The <i>/monodoc/node</i> node is an optional node that specifies where in the monodoc tree the documentation should be displayed, and  <i>//node</i> elements may be nested to any depth to create trees.   <i>//node/@label</i> is the label that will be displayed within the monodoc tree.<div class="spacer">
+</div>
+<i>//node/@name</i> is the name of the monodoc tree node, and may be used as the value of the  <i>/monodoc/source/@path</i> value.<div class="spacer">
+</div>
+<i>//node/@parent</i> is the node name to use as the parent node.  <i>$MONO_INSTALL_PREFIX/lib/monodoc/monodoc.xml</i> contains a list of such names, and this can be any  <i>//node/@name</i> value.  If the  <i>//node/@parent</i> value isn't found, then it's inserted under the &quot;Various&quot; tree node.<div class="spacer">
+</div>
+The <i>/monodoc/source/@provider</i> attribute specifies which format provider should be used when reading the  <i>.tree</i> and <i>.zip</i> files; this  <i>must</i> correspond to one of the <i>--format</i> values.<div class="spacer">
+</div>
+The <i>/monodoc/source/@basefile</i> attribute specifies the filename prefix for the documentation files.  This must be the same prefix as used with the  <i>--out</i> parameter.  There should be <i>no</i> filename extension on this value.<div class="spacer">
+</div>
+The <i>/monodoc/source/@path</i> attribute specifies the parent node in  <b>monodoc</b>(1)'s tree view where the documentation will be inserted. See the  <i>$MONO_INSTALL_PREFIX/lib/monodoc/monodoc.xml</i> file for a list of  <i>PATH</i> values (the <i>//node/@name</i> values), or it may be a  <i>//node/@name</i> value in the same <i>.source</i> file.<div class="spacer">
+</div>
+Once the <i>BASEFILE.source</i> has been written, the documentation can be installed so that  <b>monodoc</b>(1) will display the documentation with the command:<div class="spacer">
+</div>
+<br/>
+  cp BASEFILE.source BASEFILE.tree BASEFILE.zip \<br/>
+    `pkg-config monodoc --variable=sourcesdir`<div class="spacer">
+</div>
+<br/>
+</div>
+<div class="section">
+<h1>OPTIONS</h1><dl>
+<dt>
+<b>-f</b>, <b>--format</b>=<i>FORMAT</i></dt>
+<dd>
+Specifies the documentation format used within <i>PATHS</i>.  Valid  <i>FORMAT</i> values include:  <i>ecma</i>,  <i>ecmaspec</i>,  <i>error</i>,  <i>hb</i>,  <i>man</i>,  <i>simple</i>, and  <i>xhtml</i>.<div style="height: 1.00em;">
+&#160;</div>
+See the <i>FORMATS</i> section below for more information about these formats.<div style="height: 1.00em;">
+&#160;</div>
+The default format (if none is specifed) is <i>ecma</i>.<div style="height: 1.00em;">
+&#160;</div>
+The <i>--format</i> option may be interleaved with <i>PATHS</i> to change the format used for the remaining parameters (until the next  <i>--format</i> option is seen), e.g.:<div class="spacer">
+</div>
+<br/>
+  mdoc assemble -o PREFIX A B --format=man C D --format=xhtml E<div class="spacer">
+</div>
+<br/>
+will assemble directories <i>A</i> and <i>B</i> with the <i>ecma</i> format, files  <i>C</i> and <i>D</i> with the <i>man</i> formt, and directory  <i>E</i> with the <i>xhtml</i> format.</dd>
+</dl>
+<dl>
+<dt>
+<b>-o</b>, <b>--out</b>=<i>PREFIX</i></dt>
+<dd>
+Specify the output file prefix.  <b>mdoc assemble</b> creates the files  <i>PREFIX.zip</i> and <i>PREFIX.tree</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>, <b>-?</b>, <b>--help</b></dt>
+<dd>
+Display a help message and exit.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>FORMATS</h1> The following documentation formats are supported:<div class="subsection">
+<h2>ecma</h2> The  <i>Mono ECMA Documentation Format</i>, an XML documentation format with one file per type.<div class="spacer">
+</div>
+See the <b>mdoc</b>(5) man page for more information.</div>
+<div class="subsection">
+<h2>ecmaspec</h2> The  <i>Mono ECMA Specification Documentation Format</i>. This is not the format you're looking for; it is the format used to represent the ECMA-334 (C#) standard within  <b>monodoc</b>(1).  It is not used to display class library documentation; for class library documentation, use the <b>ecma</b> format.</div>
+<div class="subsection">
+<h2>error</h2> The  <i>Error Documentation Format</i> is used to present detailed error messages, and is used in  <b>monodoc</b>(1)'s &quot;C# Compiler Error Reference&quot; tree.<div class="spacer">
+</div>
+In this format, <i>PATHS</i> is a configuration file, containing the XML:<div class="spacer">
+</div>
+<br/>
+    &lt;ErrorProviderConfig&gt;<br/>
+        &lt;FilesPath&gt;../../mcs/errors&lt;/FilesPath&gt;<br/>
+        &lt;Match&gt;cs????*.cs&lt;/Match&gt;<br/>
+        &lt;ErrorNumSubstringStart&gt;2&lt;/ErrorNumSubstringStart&gt;<br/>
+        &lt;ErrorNumSubstringLength&gt;4&lt;/ErrorNumSubstringLength&gt;<br/>
+        &lt;FriendlyFormatString&gt;CS{0:0###}&lt;/FriendlyFormatString&gt;<br/>
+    &lt;/ErrorProviderConfig&gt;<div class="spacer">
+</div>
+<br/>
+The elements mean:<dl>
+<dt>
+<i>/ErrorProviderConfig/FilesPath</i></dt>
+<dd>
+Specifies where to look for files.</dd>
+</dl>
+<dl>
+<dt>
+<i>/ErrorProviderConfig/Match</i></dt>
+<dd>
+Specifies the filename pattern to look for within the  <i>/ErrorProviderConfig/FilesPath</i> directory.</dd>
+</dl>
+<dl>
+<dt>
+<i>/ErrorProviderConfig/ErrorNumSubstringStart</i></dt>
+<dd>
+Specifies where within the filename the error number starts.</dd>
+</dl>
+<dl>
+<dt>
+<i>/ErrorProviderConfig/ErrorNumSubstringLength</i></dt>
+<dd>
+Specifies how many characters after  <i>/ErrorProviderConfig/ErrorNumSubstringStart</i> to use for the error number.</dd>
+</dl>
+<dl>
+<dt>
+<i>/ErrorProviderConfig/FriendlyFormatString</i></dt>
+<dd>
+Specifies the formatting/display of the node in the <b>monodoc</b>(1) tree.</dd>
+</dl>
+<div class="spacer">
+</div>
+For each file found, it is converted to HTML with C# syntax coloring applied.</div>
+<div class="subsection">
+<h2>simple</h2> The  <i>Simple Documentation Format</i> file format recursively adds all files and directories underneath  <i>PATHS</i>.  When displayed, HTML files are displayed as-is.  Text files are converted into HTML by translating each newline into an HTML  <i>&lt;br&gt;</i> element.  No other file type is supported.</div>
+<div class="subsection">
+<h2>man</h2> The  <i>Man Page Documentation Format</i> displays groff man pages.  (This is  <i>not</i> a full groff parser, and only handles the man page constructs used within the mono man pages.)<div class="spacer">
+</div>
+<i>PATHS</i> is a set of XML files containing:<div class="spacer">
+</div>
+<br/>
+  &lt;?xml version=&quot;1.0&quot;?&gt;<br/>
+  &lt;manpages&gt;<br/>
+    &lt;manpage name=&quot;NAME&quot; page=&quot;FILE&quot; /&gt;<br/>
+  &lt;/manpages&gt;<div class="spacer">
+</div>
+<br/>
+There may be multiple <i>//manpage</i> elements within the root <i>/manpage</i> element.<div class="spacer">
+</div>
+The <i>/manpages/manpage/@name</i> attribute contains the display name for the tree view node, which is also the URL of the man page when using  <b>monodoc</b>(1)'s <i>Lookup URL</i> command (before prefixing with a  <i>man:</i> prefix).  Thus, if <i>/manpages/manpage/@name</i> contains  <i>mono(1)</i>, then <i>man:mono(1)</i> can be used in the <i>Lookup URL</i> command to view the  <i>mono(1)</i> man page.<div class="spacer">
+</div>
+The <i>/manpages/manpage/@page</i> attribute is the filename that contains the man page.  If this file does not exist, then  <i>/manpages/manpage/@name</i> will not be displayed within the tree view.</div>
+<div class="subsection">
+<h2>xhtml</h2> The XHTML provider interprets  <i>PATHS</i> as a Windows Help file XHTML TOC file and looks for referenced documents to create the help source.</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1>  <b>mdoc</b>(1),  <b>mdoc</b>(5),  <b>monodoc</b>(1)</div>
+<div class="section">
+<h1>MAILING LISTS</h1><dl>
+<dt>
+Visit http://lists.ximian.com/mailman/listinfo/mono-docs-list for details.</dt>
+<dd>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>WEB SITE</h1> See also: http://www.mono-project.com/docs/tools+libraries/tools/mdoc/</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

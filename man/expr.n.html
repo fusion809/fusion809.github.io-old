@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+expr(n)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+expr(n)</td>
+<td class="head-vol">
+Tcl Built-In Commands</td>
+<td class="head-rtitle">
+expr(n)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> expr - Evaluate an expression</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <b>expr </b><i>arg </i>?<i>arg arg ...</i>?<br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> Concatenates  <i>arg</i>s (adding separator spaces between them), evaluates the result as a Tcl expression, and returns the value. The operators permitted in Tcl expressions include a subset of the operators permitted in C expressions.  For those operators common to both Tcl and C, Tcl applies the same meaning and precedence as the corresponding C operators. Expressions almost always yield numeric results (integer or floating-point values). For example, the expression<div style="margin-left: 5.00ex;">
+<br/>
+<b>expr 8.2 + 6</b><br/>
+</div>
+evaluates to 14.2. Tcl expressions differ from C expressions in the way that operands are specified.  Also, Tcl expressions support non-numeric operands and string comparisons, as well as some additional operators not found in C.<div class="subsection">
+<h2>OPERANDS</h2> A Tcl expression consists of a combination of operands, operators, and parentheses. White space may be used between the operands and operators and parentheses; it is ignored by the expression's instructions. Where possible, operands are interpreted as integer values. Integer values may be specified in decimal (the normal case), in binary (if the first two characters of the operand are  <b>0b</b>), in octal (if the first two characters of the operand are  <b>0o</b>), or in hexadecimal (if the first two characters of the operand are  <b>0x</b>).  For compatibility with older Tcl releases, an octal integer value is also indicated simply when the first character of the operand is  <b>0</b>, whether or not the second character is also  <b>o</b>. If an operand does not have one of the integer formats given above, then it is treated as a floating-point number if that is possible.  Floating-point numbers may be specified in any of several common formats making use of the decimal digits, the decimal point  <b>.</b>, the characters  <b>e</b> or <b>E</b> indicating scientific notation, and the sign characters  <b>+</b> or <b>-</b>.  For example, all of the following are valid floating-point numbers:  2.1, 3., 6e4, 7.91e+16. Also recognized as floating point values are the strings  <b>Inf</b> and  <b>NaN</b> making use of any case for each character. If no numeric interpretation is possible (note that all literal operands that are not numeric or boolean must be quoted with either braces or with double quotes), then an operand is left as a string (and only a limited set of operators may be applied to it).<div class="spacer">
+</div>
+Operands may be specified in any of the following ways:<dl>
+<dt>
+[1]</dt>
+<dd>
+As a numeric value, either integer or floating-point.</dd>
+</dl>
+<dl>
+<dt>
+[2]</dt>
+<dd>
+As a boolean value, using any form understood by <b>string is boolean</b>.</dd>
+</dl>
+<dl>
+<dt>
+[3]</dt>
+<dd>
+As a Tcl variable, using standard <b>$</b> notation. The variable's value will be used as the operand.</dd>
+</dl>
+<dl>
+<dt>
+[4]</dt>
+<dd>
+As a string enclosed in double-quotes. The expression parser will perform backslash, variable, and command substitutions on the information between the quotes, and use the resulting value as the operand</dd>
+</dl>
+<dl>
+<dt>
+[5]</dt>
+<dd>
+As a string enclosed in braces. The characters between the open brace and matching close brace will be used as the operand without any substitutions.</dd>
+</dl>
+<dl>
+<dt>
+[6]</dt>
+<dd>
+As a Tcl command enclosed in brackets. The command will be executed and its result will be used as the operand.</dd>
+</dl>
+<dl>
+<dt>
+[7]</dt>
+<dd>
+As a mathematical function whose arguments have any of the above forms for operands, such as  <b>sin($x)</b>.  See <b>MATH FUNCTIONS</b> below for a discussion of how mathematical functions are handled.</dd>
+</dl>
+<div class="spacer">
+</div>
+Where the above substitutions occur (e.g. inside quoted strings), they are performed by the expression's instructions. However, the command parser may already have performed one round of substitution before the expression processor was called. As discussed below, it is usually best to enclose expressions in braces to prevent the command parser from performing substitutions on the contents.<div class="spacer">
+</div>
+For some examples of simple expressions, suppose the variable  <b>a</b> has the value 3 and the variable  <b>b</b> has the value 6. Then the command on the left side of each of the lines below will produce the value on the right side of the line:<div style="margin-left: 5.00ex;">
+<br/>
+<b>expr</b> 3.1 + $a	<i>6.1</i><br/>
+<b>expr</b> 2 + &quot;$a.$b&quot;	<i>5.6</i><br/>
+<b>expr</b> 4*[llength &quot;6 2&quot;]	<i>8</i><br/>
+<b>expr</b> {{word one} &lt; &quot;word $a&quot;}	<i>0</i><br/>
+</div>
+</div>
+<div class="subsection">
+<h2>OPERATORS</h2> The valid operators (most of which are also available as commands in the  <b>tcl::mathop</b> namespace; see the <b>mathop</b>(n) manual page for details) are listed below, grouped in decreasing order of precedence:<dl>
+<dt>
+<b>-&#8194;&#8194;+&#8194;&#8194;~&#8194;&#8194;!</b></dt>
+<dd>
+Unary minus, unary plus, bit-wise NOT, logical NOT.  None of these operators may be applied to string operands, and bit-wise NOT may be applied only to integers.</dd>
+</dl>
+<dl>
+<dt>
+<b>**</b></dt>
+<dd>
+Exponentiation.  Valid for any numeric operands.</dd>
+</dl>
+<dl>
+<dt>
+<b>*&#8194;&#8194;/&#8194;&#8194;%</b></dt>
+<dd>
+Multiply, divide, remainder.  None of these operators may be applied to string operands, and remainder may be applied only to integers. The remainder will always have the same sign as the divisor and an absolute value smaller than the absolute value of the divisor.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<div class="spacer">
+</div>
+When applied to integers, the division and remainder operators can be considered to partition the number line into a sequence of equal-sized adjacent non-overlapping pieces where each piece is the size of the divisor; the division result identifies which piece the divisor lay within, and the remainder result identifies where within that piece the divisor lay. A consequence of this is that the result of &#8220;-57  <b>/</b> 10&#8221; is always -6, and the result of &#8220;-57  <b>%</b> 10&#8221; is always 3.</div>
+<dl>
+<dt>
+<b>+&#8194;&#8194;-</b></dt>
+<dd>
+Add and subtract.  Valid for any numeric operands.</dd>
+</dl>
+<dl>
+<dt>
+<b>&lt;&lt;&#8194;&#8194;&gt;&gt;</b></dt>
+<dd>
+Left and right shift.  Valid for integer operands only. A right shift always propagates the sign bit.</dd>
+</dl>
+<dl>
+<dt>
+<b>&lt;&#8194;&#8194;&gt;&#8194;&#8194;&lt;=&#8194;&#8194;&gt;=</b></dt>
+<dd>
+Boolean less, greater, less than or equal, and greater than or equal. Each operator produces 1 if the condition is true, 0 otherwise. These operators may be applied to strings as well as numeric operands, in which case string comparison is used.</dd>
+</dl>
+<dl>
+<dt>
+<b>==&#8194;&#8194;!=</b></dt>
+<dd>
+Boolean equal and not equal.  Each operator produces a zero/one result. Valid for all operand types.</dd>
+</dl>
+<dl>
+<dt>
+<b>eq&#8194;&#8194;ne</b></dt>
+<dd>
+Boolean string equal and string not equal.  Each operator produces a zero/one result.  The operand types are interpreted only as strings.</dd>
+</dl>
+<dl>
+<dt>
+<b>in&#8194;&#8194;ni</b></dt>
+<dd>
+List containment and negated list containment.  Each operator produces a zero/one result and treats its first argument as a string and its second argument as a Tcl list.  The  <b>in</b> operator indicates whether the first argument is a member of the second argument list; the  <b>ni</b> operator inverts the sense of the result.</dd>
+</dl>
+<dl>
+<dt>
+<b>&amp;</b></dt>
+<dd>
+Bit-wise AND.  Valid for integer operands only.</dd>
+</dl>
+<dl>
+<dt>
+<b>^</b></dt>
+<dd>
+Bit-wise exclusive OR.  Valid for integer operands only.</dd>
+</dl>
+<dl>
+<dt>
+<b>|</b></dt>
+<dd>
+Bit-wise OR.  Valid for integer operands only.</dd>
+</dl>
+<dl>
+<dt>
+<b>&amp;&amp;</b></dt>
+<dd>
+Logical AND.  Produces a 1 result if both operands are non-zero, 0 otherwise. Valid for boolean and numeric (integers or floating-point) operands only.</dd>
+</dl>
+<dl>
+<dt>
+<b>||</b></dt>
+<dd>
+Logical OR.  Produces a 0 result if both operands are zero, 1 otherwise. Valid for boolean and numeric (integers or floating-point) operands only.</dd>
+</dl>
+<dl>
+<dt>
+<i>x</i><b>?</b><i>y</i><b>:</b><i>z</i></dt>
+<dd>
+If-then-else, as in C.  If <i>x</i> evaluates to non-zero, then the result is the value of  <i>y</i>. Otherwise the result is the value of  <i>z</i>. The  <i>x</i> operand must have a boolean or numeric value.</dd>
+</dl>
+<div class="spacer">
+</div>
+See the C manual for more details on the results produced by each operator. The exponentiation operator promotes types like the multiply and divide operators, and produces a result that is the same as the output of the  <b>pow</b> function (after any type conversions.) All of the binary operators group left-to-right within the same precedence level.  For example, the command<div style="margin-left: 5.00ex;">
+<br/>
+<b>expr</b> {4*2 &lt; 7}<br/>
+</div>
+returns 0.<div class="spacer">
+</div>
+The <b>&amp;&amp;</b>, <b>||</b>, and <b>?:</b> operators have &#8220;lazy evaluation&#8221;, just as in C, which means that operands are not evaluated if they are not needed to determine the outcome.  For example, in the command<div style="margin-left: 5.00ex;">
+<br/>
+<b>expr {$v ? [a] : [b]}</b><br/>
+</div>
+only one of &#8220; <b>[a]</b>&#8221; or &#8220; <b>[b]</b>&#8221; will actually be evaluated, depending on the value of  <b>$v</b>.  Note, however, that this is only true if the entire expression is enclosed in braces;  otherwise the Tcl parser will evaluate both &#8220; <b>[a]</b>&#8221; and &#8220; <b>[b]</b>&#8221; before invoking the  <b>expr</b> command.</div>
+<div class="subsection">
+<h2>MATH FUNCTIONS</h2> When the expression parser encounters a mathematical function such as  <b>sin($x)</b>, it replaces it with a call to an ordinary Tcl function in the  <b>tcl::mathfunc</b> namespace.  The processing of an expression such as:<div style="margin-left: 5.00ex;">
+<br/>
+<b>expr {sin($x+$y)}</b><br/>
+</div>
+is the same in every way as the processing of:<div style="margin-left: 5.00ex;">
+<br/>
+<b>expr {[tcl::mathfunc::sin [expr {$x+$y}]]}</b><br/>
+</div>
+which in turn is the same as the processing of:<div style="margin-left: 5.00ex;">
+<br/>
+<b>tcl::mathfunc::sin [expr {$x+$y}]</b><br/>
+</div>
+<div class="spacer">
+</div>
+The executor will search for <b>tcl::mathfunc::sin</b> using the usual rules for resolving functions in namespaces. Either  <b>::tcl::mathfunc::sin</b> or <b>[namespace</b>  <b>current]::tcl::mathfunc::sin</b> will satisfy the request, and others may as well (depending on the current  <b>namespace path</b> setting).<div class="spacer">
+</div>
+See the <b>mathfunc</b>(n) manual page for the math functions that are available by default.</div>
+<div class="subsection">
+<h2>TYPES, OVERFLOW, AND PRECISION</h2> All internal computations involving integers are done calling on the LibTomMath multiple precision integer library as required so that all integer calculations are performed exactly.  Note that in Tcl releases prior to 8.5, integer calculations were performed with one of the C types  <i>long int</i> or <i>Tcl_WideInt</i>, causing implicit range truncation in those calculations where values overflowed the range of those types. Any code that relied on these implicit truncations will need to explicitly add  <b>int()</b> or <b>wide()</b> function calls to expressions at the points where such truncation is required to take place.<div class="spacer">
+</div>
+All internal computations involving floating-point are done with the C type  <i>double</i>. When converting a string to floating-point, exponent overflow is detected and results in the  <i>double</i> value of <b>Inf</b> or  <b>-Inf</b> as appropriate.  Floating-point overflow and underflow are detected to the degree supported by the hardware, which is generally pretty reliable.<div class="spacer">
+</div>
+Conversion among internal representations for integer, floating-point, and string operands is done automatically as needed. For arithmetic computations, integers are used until some floating-point number is introduced, after which floating-point is used. For example,<div style="margin-left: 5.00ex;">
+<br/>
+<b>expr</b> {5 / 4}<br/>
+</div>
+returns 1, while<div style="margin-left: 5.00ex;">
+<br/>
+<b>expr</b> {5 / 4.0}<br/>
+<b>expr</b> {5 / ( [string length &quot;abcd&quot;] + 0.0 )}<br/>
+</div>
+both return 1.25. Floating-point values are always returned with a &#8220; <b>.</b>&#8221; or an &#8220; <b>e</b>&#8221; so that they will not look like integer values.  For example,<div style="margin-left: 5.00ex;">
+<br/>
+<b>expr</b> {20.0/5.0}<br/>
+</div>
+returns <b>4.0</b>, not <b>4</b>.</div>
+<div class="subsection">
+<h2>STRING OPERATIONS</h2> String values may be used as operands of the comparison operators, although the expression evaluator tries to do comparisons as integer or floating-point when it can, i.e., when all arguments to the operator allow numeric interpretations, except in the case of the  <b>eq</b> and <b>ne</b> operators. If one of the operands of a comparison is a string and the other has a numeric value, a canonical string representation of the numeric operand value is generated to compare with the string operand. Canonical string representation for integer values is a decimal string format.  Canonical string representation for floating-point values is that produced by the  <b>%g</b> format specifier of Tcl's  <b>format</b> command.  For example, the commands<div style="margin-left: 5.00ex;">
+<br/>
+<b>expr {&quot;0x03&quot; &gt; &quot;2&quot;}</b><br/>
+<b>expr {&quot;0y&quot; &gt; &quot;0x12&quot;}</b><br/>
+</div>
+both return 1.  The first comparison is done using integer comparison, and the second is done using string comparison. Because of Tcl's tendency to treat values as numbers whenever possible, it is not generally a good idea to use operators like  <b>==</b> when you really want string comparison and the values of the operands could be arbitrary;  it is better in these cases to use the  <b>eq</b> or <b>ne</b> operators, or the <b>string</b> command instead.</div>
+</div>
+<div class="section">
+<h1>PERFORMANCE CONSIDERATIONS</h1> Enclose expressions in braces for the best speed and the smallest storage requirements. This allows the Tcl bytecode compiler to generate the best code.<div class="spacer">
+</div>
+As mentioned above, expressions are substituted twice: once by the Tcl parser and once by the  <b>expr</b> command. For example, the commands<div style="margin-left: 5.00ex;">
+<br/>
+<b>set a 3</b><br/>
+<b>set b {$a + 2}</b><br/>
+<b>expr $b*4</b><br/>
+</div>
+return 11, not a multiple of 4. This is because the Tcl parser will first substitute  <b>$a + 2</b> for the variable  <b>b</b>, then the  <b>expr</b> command will evaluate the expression <b>$a + 2*4</b>.<div class="spacer">
+</div>
+Most expressions do not require a second round of substitutions. Either they are enclosed in braces or, if not, their variable and command substitutions yield numbers or strings that do not themselves require substitutions. However, because a few unbraced expressions need two rounds of substitutions, the bytecode compiler must emit additional instructions to handle this situation. The most expensive code is required for unbraced expressions that contain command substitutions. These expressions must be implemented by generating new code each time the expression is executed. When the expression is unbraced to allow the substitution of a function or operator, consider using the commands documented in the  <b>mathfunc</b>(n) or  <b>mathop</b>(n) manual pages directly instead.</div>
+<div class="section">
+<h1>EXAMPLES</h1> Define a procedure that computes an &#8220;interesting&#8221; mathematical function:<div style="margin-left: 5.00ex;">
+<br/>
+proc tcl::mathfunc::calc {x y} {<br/>
+    <b>expr</b> { ($x**2 - $y**2) / exp($x**2 + $y**2) }<br/>
+}<br/>
+</div>
+<div class="spacer">
+</div>
+Convert polar coordinates into cartesian coordinates:<div style="margin-left: 5.00ex;">
+<br/>
+# convert from ($radius,$angle)<br/>
+set x [<b>expr</b> { $radius * cos($angle) }]<br/>
+set y [<b>expr</b> { $radius * sin($angle) }]<br/>
+</div>
+<div class="spacer">
+</div>
+Convert cartesian coordinates into polar coordinates:<div style="margin-left: 5.00ex;">
+<br/>
+# convert from ($x,$y)<br/>
+set radius [<b>expr</b> { hypot($y, $x) }]<br/>
+set angle  [<b>expr</b> { atan2($y, $x) }]<br/>
+</div>
+<div class="spacer">
+</div>
+Print a message describing the relationship of two string values to each other:<div style="margin-left: 5.00ex;">
+<br/>
+puts &quot;a and b are [<b>expr</b> {$a eq $b ? {equal} : {different}}]&quot;<br/>
+</div>
+<div class="spacer">
+</div>
+Set a variable to whether an environment variable is both defined at all and also set to a true boolean value:<div style="margin-left: 5.00ex;">
+<br/>
+set isTrue [<b>expr</b> {<br/>
+    [info exists ::env(SOME_ENV_VAR)] &amp;&amp;<br/>
+    [string is true -strict $::env(SOME_ENV_VAR)]<br/>
+}]<br/>
+</div>
+<div class="spacer">
+</div>
+Generate a random integer in the range 0..99 inclusive:<div style="margin-left: 5.00ex;">
+<br/>
+set randNum [<b>expr</b> { int(100 * rand()) }]<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> array(n), for(n), if(n), mathfunc(n), mathop(n), namespace(n), proc(n), string(n), Tcl(n), while(n)</div>
+<div class="section">
+<h1>KEYWORDS</h1> arithmetic, boolean, compare, expression, fuzzy comparison</div>
+<div class="section">
+<h1>COPYRIGHT</h1><br/>
+Copyright (c) 1993 The Regents of the University of California.<br/>
+Copyright (c) 1994-2000 Sun Microsystems Incorporated.<br/>
+Copyright (c) 2005 by Kevin B. Kenny &lt;kennykb@acm.org&gt;. All rights reserved.<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+8.5</td>
+<td class="foot-os">
+Tcl</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

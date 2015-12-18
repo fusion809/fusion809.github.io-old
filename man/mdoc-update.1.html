@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+mdoc-update(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+mdoc-update(1)</td>
+<td class="head-vol">
+General Commands Manual</td>
+<td class="head-rtitle">
+mdoc-update(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> mdoc update -  <b>mdoc</b>(5) documentation format support</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <b>mdoc update</b> [OPTIONS]* ASSEMBLIES</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>mdoc update</b> is responsible for the following:<dl>
+<dt>
+<b>*</b></dt>
+<dd>
+Creating documentation stubs based on <i>ASSEMBLIES</i>.  The stub-creation process will create new  <b>mdoc</b>(5) XML files for each type within  <i>ASSEMBLIES</i>, and provide documentation stubs for each member of those types.</dd>
+</dl>
+<dl>
+<dt>
+<b>*</b></dt>
+<dd>
+Update documentation stubs based on <i>ASSEMBLIES</i>.  Existing <b>mdoc</b>(5) documentation can be updated to reflect changes within  <i>ASSEMBLIES</i>, such as added types and members, while preserving existing documentation.<div style="height: 1.00em;">
+&#160;</div>
+In some limited circumstances, renames will be tracked, minimizing the documentation burden when e.g. a parameter is renamed.</dd>
+</dl>
+<div class="spacer">
+</div>
+<b>mdoc update</b> does not rely on documentation found within source code, though it can import XML Documentation Comments via the  <b>-i</b> option.<div class="spacer">
+</div>
+See <b>mdoc</b>(1) and <b>mdoc</b>(5) for more information.</div>
+<div class="section">
+<h1>OPTIONS</h1><dl>
+<dt>
+<b>--delete</b></dt>
+<dd>
+Allow <b>mdoc update</b> to delete members from documentation files. The only members deleted are members which are no longer present within  <i>ASSEMBLIES</i> and are not present in any other assembly versions.<div style="height: 1.00em;">
+&#160;</div>
+If a type is no longer present, the documentation file is <i>not</i> deleted, but is instead  <i>renamed</i> to have a <b>.remove </b> extension.<div style="height: 1.00em;">
+&#160;</div>
+Version detection is done with the <i>//AssemblyVersion</i> elements; if there are no  <i>//AssemblyVersion</i> elements for a given <i>&lt;Type&gt;</i> or  <i>&lt;Member/&gt;</i>, then the <i>&lt;Type&gt;</i> will be renamed and/or the  <i>&lt;Member/&gt;</i> will be removed.</dd>
+</dl>
+<dl>
+<dt>
+<b>--exceptions</b>[=<i>SOURCES</i>]</dt>
+<dd>
+EXPERIMENTAL.  This is not 100% reliable, but is intended to serve as an aid for documentation writers.<div style="height: 1.00em;">
+&#160;</div>
+Inspect member bodies to determine what exceptions can be generated from the member.<div style="height: 1.00em;">
+&#160;</div>
+<i>SOURCES</i> is an optional comma-separated list of the following sources that should be searched for exceptions:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+        added   Only generate &lt;exception/&gt; elements for members <br/>
+                  added during the current program execution.<br/>
+                  This keeps mdoc-update from re-generating<br/>
+                  &lt;exception/&gt; elements for all members (and thus<br/>
+                  prevents re-insertion for members that had the<br/>
+                  &lt;exception/&gt; elements removed).<br/>
+        all     Find exceptions created in the member itself, <br/>
+                  references to members in the same assembly, <br/>
+                  and references to members in dependent <br/>
+                  assemblies.<br/>
+        asm     Find exceptions created in the member itself and<br/>
+                  references to members within the same assembly<br/>
+                  as the member.<br/>
+        depasm  Find exceptions created in the member itself and<br/>
+                  references to members within dependent <br/>
+                  assemblies.<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+If <i>SOURCES</i> isn't provided (the default), then only exceptions created within the member itself will be documented.<div style="height: 1.00em;">
+&#160;</div>
+LIMITATIONS: Exception searching is currently implemented by looking for the exception types that are explicitly created based on the known compile-time types.  This has the following limitations:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+<b>*</b></dt>
+<dd>
+This will not find exceptions which are implicit to the IL, such as NullReferenceException and IndexOutOfRangeException.</dd>
+</dl>
+<dl>
+<dt>
+<b>*</b></dt>
+<dd>
+This will find exceptions which are <i>not</i> thrown, e.g.<div class="spacer">
+</div>
+<br/>
+    public void CreateAnException ()<br/>
+    {<br/>
+        Exception e = new Exception ();<br/>
+    }<div class="spacer">
+</div>
+<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>*</b></dt>
+<dd>
+This will not &quot;follow&quot; delegate and interface calls:<div class="spacer">
+</div>
+<br/>
+    public void UsesDelegates ()<br/>
+    {<br/>
+        Func&lt;int, int&gt; a = x =&gt; {throw new Exception ();};<br/>
+        a (4);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+The function <i>UsesDelegates()</i> won't have any exceptions documented.</dd>
+</dl>
+<dl>
+<dt>
+<b>*</b></dt>
+<dd>
+This will find exceptions which &quot;cannot happen&quot;, such as ArgumentNullExceptions for arguments which are &quot;known&quot; to be non-null:<div class="spacer">
+</div>
+<br/>
+    public void A ()<br/>
+    {<br/>
+        B (&quot;this parameter isn't null&quot;);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    public void B (string s)<br/>
+    {<br/>
+        if (s == null)<br/>
+            throw new ArgumentNullException (&quot;s&quot;);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+For the above, if <b>--exceptions=asm</b> is provided then <i>A()</i> will be documented as throwing an ArgumentNullException, which cannot happen.</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>-f</b>=<i>FLAG</i></dt>
+<dd>
+Specify a flag to alter behavior.  Valid flags include:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+<b>no-assembly-versions</b></dt>
+<dd>
+See the <b>-fno-assembly-versions</b> documentation, below.</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>-fno-assembly-versions</b></dt>
+<dd>
+Do not generate <i>/Type/AssemblyInfo/AssemblyVersion</i> and  <i>/Type/Members/Member/AssemblyInfo</i> elements.<div style="height: 1.00em;">
+&#160;</div>
+This is useful to prevent &quot;churn&quot; during updates.  Normally, if a type or member hasn't changed but the assembly version has changed, then all types and members will be updated to include a new  <i>//AssemblyVersion</i> element, thus increasing the amount of changes that need review before committing (assuming all changes are actually reviewed before commit).<div style="height: 1.00em;">
+&#160;</div>
+WARNING: This <i>will</i> interact badly with the <b>--delete</b> option, as  <b>--delete</b> uses the <i>//AssemblyVersion</i> elements to track version changes.  Thus, if you have a member which is present in an early assembly version and is removed in a subsequent assembly version, such as  <i>System.Text.UTF8Encoding.GetBytes(string)</i> (which is present in .NET 1.0 but not in .NET 2.0), then the member will be removed when the  <b>--delete -fno-assembly-versions</b> options are specified, the member was present in an earlier version of the assembly, and the current version of the assembly does not contain the member.<div style="height: 1.00em;">
+&#160;</div>
+Consequently, this option should <i>only</i> be specified if types and members will  <i>never</i> be removed from an assembly.</dd>
+</dl>
+<dl>
+<dt>
+<b>-i</b>, <b>--import</b>=<i>FILE</i></dt>
+<dd>
+Import documentation found within <i>FILE</i>.<div style="height: 1.00em;">
+&#160;</div>
+<i>FILE</i> may contain either <i>csc /doc</i> XML or <i>ECMA-335</i> XML.</dd>
+</dl>
+<dl>
+<dt>
+<b>-L</b>, <b>--lib</b>=<i>DIRECTORY</i></dt>
+<dd>
+Add <i>DIRECTORY</i> to the assembly search path, so that dependencies of  <i>ASSEMBLIES</i> can be found without documenting those assemblies.</dd>
+</dl>
+<dl>
+<dt>
+<b>-o</b>, <b>--out</b>=<i>DIRECTORY</i></dt>
+<dd>
+Place the generated stubs into <i>DIRECTORY</i>.<div style="height: 1.00em;">
+&#160;</div>
+When updating documentation, <i>DIRECTORY</i> is also the source directory.</dd>
+</dl>
+<dl>
+<dt>
+<b>-r</b>=<i>ASSEMBLY</i></dt>
+<dd>
+<i>ASSEMBLY</i> is a dependency for one of <i>ASSEMBLIES</i> which should  <i>not</i> be documented but is required to process one of <i>ASSEMBLIES</i>. Add the directory containing  <i>ASSEMBLY</i> to the assembly search path.<div style="height: 1.00em;">
+&#160;</div>
+This option is equivalent to specifying <b>-L</b> `<i>dirname</i> ASSEMBLY`.</dd>
+</dl>
+<dl>
+<dt>
+<b>--since</b>=<i>VERSION</i></dt>
+<dd>
+When <i>updating</i> documentation for an assembly, if a type or member is encountered which didn't exist in the previous version of the assembly a  <b>&lt;since version=&quot;</b><i>VERSION</i><b>&quot;/&gt;</b> element will be inserted.</dd>
+</dl>
+<dl>
+<dt>
+<b>--type</b>=<i>TYPE</i></dt>
+<dd>
+Only update documentation for the type <i>TYPE</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h, -?, --help</b></dt>
+<dd>
+Display a help message and exit.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> mdoc(1), mdoc(5), mdoc-assemble(1), mdoc-export-html(1), mdoc-validate(1),</div>
+<div class="section">
+<h1>MAILING LISTS</h1><dl>
+<dt>
+Visit http://lists.ximian.com/mailman/listinfo/mono-docs-list for details.</dt>
+<dd>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>WEB SITE</h1> Visit http://www.mono-project.com for details</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

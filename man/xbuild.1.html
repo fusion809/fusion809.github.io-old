@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+xbuild(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+xbuild(1)</td>
+<td class="head-vol">
+General Commands Manual</td>
+<td class="head-rtitle">
+xbuild(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> xbuild - Mono's tool to build MSBuild project files</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>xbuild</b> [option] [project-file]</div>
+<div class="section">
+<h1>DESCRIPTION</h1> xbuild can be used to build MSBuild project files. Integrated Development Environments like MonoDevelop and &quot;Microsoft Visual Studio .NET&quot; use msbuild project file format.<div style="height: 1.00em;">
+&#160;</div>
+xbuild takes the path of the project or solution file to build, as the main argument. If no file is specified then it tries to build any solution file or project file in the current directory, that has a *proj extension.</div>
+<div class="section">
+<h1>OPTIONS</h1><dl>
+<dt>
+<b>//target:T1[,TN]</b></dt>
+<dd>
+List of targets to build</dd>
+</dl>
+<dl>
+<dt>
+<b>//property:Name=Value</b></dt>
+<dd>
+Set or override project properties</dd>
+</dl>
+<dl>
+<dt>
+<b>//logger:&lt;logger&gt;</b></dt>
+<dd>
+Custom logger to log build events</dd>
+</dl>
+<dl>
+<dt>
+<b>//toolsversion:version , /tv:version</b></dt>
+<dd>
+Specify the toolset version to use.<div style="height: 1.00em;">
+&#160;</div>
+Eg. /tv:4.0<br/>
+    This would cause 4.0 version of the Microsoft.Common.targets (among others) to be used. This overrides<br/>
+    the value specified in a project file.<div style="height: 1.00em;">
+&#160;</div>
+Valid values: 2.0, 3.0, 3.5 and 4.0</dd>
+</dl>
+<dl>
+<dt>
+<b>//verbosity:&lt;level&gt;</b></dt>
+<dd>
+Logger verbosity level : quiet, minimal, normal, detailed, diagnostic</dd>
+</dl>
+<dl>
+<dt>
+<b>//validate</b></dt>
+<dd>
+Validate the project file against the schema</dd>
+</dl>
+<dl>
+<dt>
+<b>//validate:&lt;schema&gt;</b></dt>
+<dd>
+Validate the project file against the specified schema</dd>
+</dl>
+<dl>
+<dt>
+<b>//consoleloggerparameters:&lt;params&gt; , /clp:&lt;params&gt;</b></dt>
+<dd>
+Parameters for the console logger : PerfomanceSummary, Summary, NoSummary, NoItemAndPropertyList, Verbosity</dd>
+</dl>
+<dl>
+<dt>
+<b>//filelogger[n] , /fl[n]</b></dt>
+<dd>
+Logs the output to a file, named 'msbuild.log' by default. If the optional number 'n' is specified, then it logs to 'msbuild[n].log' . Parameters for this logger, including the log file name can be specified via a corresponding /flp[n] option. Default verbosity for file loggers is 'detailed. 'n' can be between 1-9.</dd>
+</dl>
+<dl>
+<dt>
+<b>//fileloggerparameters[n]:&lt;params&gt; , /flp[n]:&lt;params&gt;</b></dt>
+<dd>
+Parameters for a file logger. This implies a corresponding /fl[n]. 'n' can be between 1-9, and is used to add upto 10 file loggers. Parameters can be, besides the ones available for console logger:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+<i>LogFile=&lt;file&gt;</i></dt>
+<dd>
+File to which the build log will be written.</dd>
+</dl>
+<dl>
+<dt>
+<i>Append</i></dt>
+<dd>
+If this is used, then the log file is appended to, else a new one will be created.</dd>
+</dl>
+<dl>
+<dt>
+<i>Encoding=&lt;encoding&gt;</i></dt>
+<dd>
+Encoding to use for the log file, eg. UTF-8, ASCII.</dd>
+</dl>
+<dl>
+<dt>
+Eg: xbuild foo.csproj /flp:Verbosity=normal &quot;/flp1:LogFile=build.log;Append;Encoding=ASCII&quot;</dt>
+<dd>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>//nologo</b></dt>
+<dd>
+Don't show the initial xbuild banner</dd>
+</dl>
+<dl>
+<dt>
+<b>//help</b></dt>
+<dd>
+Show xbuild usage</dd>
+</dl>
+<dl>
+<dt>
+<b>//version</b></dt>
+<dd>
+Display xbuild version</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ENVIRONMENT VARIABLES</h1><dl>
+<dt>
+<i>XBUILD_EMIT_SOLUTION</i></dt>
+<dd>
+If this variable is set, then the project file generated from a solution file is emitted.</dd>
+</dl>
+<dl>
+<dt>
+<i>XBUILD_LOG_REFERENCE_RESOLVER</i></dt>
+<dd>
+References are resolved by trying a list of assembly search paths ($(AssemblySearchPaths)). If xbuild is unable to resolve a reference, then it logs details of why the various search paths failed. If this variable is set, then it logs the same even for references that were resolved successfully. These logs show up if the verbosity is set to detailed or higher.</dd>
+</dl>
+<dl>
+<dt>
+<i>MSBuildExtensionsPath</i></dt>
+<dd>
+MSBuild extensions are usually installed in $(MSBuildExtensionsPath), which xbuild resolves to $prefix/lib/mono/xbuild . When used in Import, like:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+  &lt;Import Project=&quot;$(MSBuildExtensionsPath)\TestTargets.targets&quot;/&gt;<div style="height: 1.00em;">
+&#160;</div>
+xbuild tries various values for the msbuild property $(MSBuildExtensionsPath), in order:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+  1. Paths specified in the environment variable $MSBuildExtensionsPath.<br/>
+  2. /Library/Frameworks/Mono.framework/External/xbuild on Mac OSX.<br/>
+  3. $XDG_CONFIG_HOME/xbuild/tasks (or Environment.SpecialFolder.ApplicationData)<br/>
+  4. $prefix/lib/mono/xbuild (default location)<div style="height: 1.00em;">
+&#160;</div>
+Anywhere else in the project files, $(MSBuildExtensionsPath) will always resolve to the default location. This is a xbuild-only feature. This is also applicable for the properties $(MSBuildExtensionsPath32) and $(MSBuildExtensionsPath64), and the environment variables have the corresponding names - MSBuildExtensionsPath32/64 .</dd>
+</dl>
+<dl>
+<dt>
+<i>XBUILD_FRAMEWORK_FOLDERS_PATH</i></dt>
+<dd>
+With ToolsVersion 4.0, projects can target arbitrary frameworks referenced by TargetFrameworkMoniker, which is of the format:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+  Identifier,Version=&lt;version&gt;[,Profile=&lt;profile&gt;]<div style="height: 1.00em;">
+&#160;</div>
+Eg. &quot;.NETFramework,Version=v4.0&quot;<div style="height: 1.00em;">
+&#160;</div>
+The 3 parts of the moniker are given by the msbuild properties:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+  $(TargetFrameworkIdentifier), $(TargetFrameworkVersion) and $(TargetFrameworkProfile)<div style="height: 1.00em;">
+&#160;</div>
+This moniker maps to a framework description file on disk:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+  &lt;framework_root&gt;/Identifier/Version/[Profile]/RedistList/FrameworkList.xml<div style="height: 1.00em;">
+&#160;</div>
+This file is used to determine the path where to find the framework assemblies for this particular framework.<div style="height: 1.00em;">
+&#160;</div>
+Framework root here is configurable and is resolved in the following order:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+  1. Paths specified in the environment variable $XBUILD_FRAMEWORK_FOLDERS_PATH<br/>
+  2. /Library/Frameworks/Mono.framework/External/xbuild-frameworks on Mac OSX.<br/>
+  3. MSBuild property $(TargetFrameworkRoot)<br/>
+  4. $prefix/lib/mono/xbuild-frameworks (default location)<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+XBuild tries the paths given above, in order, till it finds a FrameworkList.xml for the moniker. Running with /v:detailed or higher verbosity will show the various paths that it tries.<div style="height: 1.00em;">
+&#160;</div>
+The FrameworkList.xml itself just has a root element like:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+  &lt;FileList  Name=&quot;.NET Framework 3.5&quot; TargetFrameworkDirectory=&quot;..\..\..\..\3.5&quot; IncludeFramework=&quot;v3.0&quot;&gt;<br/>
+  &lt;/FileList&gt;<div style="height: 1.00em;">
+&#160;</div>
+Here the TargetFrameworkDirectory attribute specifies the directory where the assemblies for this particular framework can be found. If this is not set, then the parent of the folder containing the xml file is taken as the framework directory.<div style="height: 1.00em;">
+&#160;</div>
+IncludeFramework attribute specifies the version of a framework (under the *same* $(TargetFrameworkIdentifier)) which should be included in the final list of Target framework directories.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<i>XBUILD_COLORS</i></dt>
+<dd>
+If this variable is set, it contains a string of the form &quot;type=foreground,type=..&quot; that specifies which color to use to display errors/warnings etc on some terminals. Type here can be:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+	errors, warnings, messages or events<div class="spacer">
+</div>
+<br/>
+	events: These are project/target/task start and end event<br/>
+	        messages.<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+The possible colors for foreground are: <b>black, red, brightred, green, brightgreen, yellow, brightyellow,</b> blue, brightblue, magenta, brightmagenta, cyan, brightcyan, grey, white and brightwhite.<div style="height: 1.00em;">
+&#160;</div>
+For example, you could set this variable from your shell:<br/>
+	export XBUILD_COLORS<br/>
+	XBUILD_COLORS=errors=brightred,warnings=blue<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+You can disable the built-in color scheme by setting this variable to &quot;disable&quot;.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>NOTES</h1> On Mac OSX, for locating pkg-config (.pc) files, xbuild additionally looks in &quot;/Library/Frameworks/Mono.framework/External/pkgconfig&quot; .<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>mono(1),</b>mcs(1)</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright (C) 2011 Novell, Inc (http://www.novell.com)</div>
+<div class="section">
+<h1>MAILING LISTS</h1> Visit http://lists.ximian.com/mailman/listinfo/mono-devel-list for details.</div>
+<div class="section">
+<h1>WEB SITE</h1> Visit: http://www.mono-project.com for details</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

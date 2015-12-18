@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+CIL(Linker)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+CIL(Linker)</td>
+<td class="head-vol">
+</td>
+<td class="head-rtitle">
+CIL(Linker)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> Mono CIL Linker</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>monolinker [-o output_directory][-l i18n_assemblies][-c skip | copy | link] -x descriptor | -a assembly | -i info_file ...</b></div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <i>monolinker</i> is a CIL Linker. The linker is a tool one can use to only ship the minimal possible set of functions that a set of programs might require to run as opposed to the full libraries.<div class="spacer">
+</div>
+The linker analyses the intermediate code (CIL) produced by every compiler targeting the Mono platform like mcs, gmcs, vbnc, booc or others. It will walk through all the code that it is given to it, and remove all the unused methods and classes.  This is done using a mark and sweep operation on all the code that it is referenced.<div class="spacer">
+</div>
+The generated output from the monolinker can be later processed by the <i>mkbundle</i> tool to generate small native self-contained executables.<div class="spacer">
+</div>
+Do not confuse this with the Assembly Linker (al) which creates assemblies from manifests, modules and resource files.</div>
+<div class="section">
+<h1>OPTIONS</h1><dl>
+<dt>
+<i>-d search_directory</i></dt>
+<dd>
+Specify a directory to the linker where to look for assemblies.</dd>
+</dl>
+<dl>
+<dt>
+<i>-o output_directory</i></dt>
+<dd>
+Specify the output directory, default is 'output'.<div style="height: 1.00em;">
+&#160;</div>
+If you specify the directory `.', please ensure that you won't write over important assemblies of yours.</dd>
+</dl>
+<dl>
+<dt>
+<i>-b true | false</i></dt>
+<dd>
+Specify whether to generate debug symbols or not, default is false.</dd>
+</dl>
+<dl>
+<dt>
+<i>-g true | false</i></dt>
+<dd>
+Specify whether to generate a new guid for each linked module or reuse the existing one, default is true.</dd>
+</dl>
+<dl>
+<dt>
+<i>-l i18n_assemblies</i></dt>
+<dd>
+Specify what to do with the region specific assemblies<div style="height: 1.00em;">
+&#160;</div>
+Mono have a few assemblies which contains everything region specific:<br/>
+	I18N.CJK.dll<br/>
+	I18N.MidEast.dll<br/>
+	I18N.Other.dll<br/>
+	I18N.Rare.dll<br/>
+	I18N.West.dll<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+By default, they will all be copied to the output directory, but you can specify which one you want using this command. The choice can either be: none, all, cjk, mideast, other, rare or west. You can combine the values with a comma.</dd>
+</dl>
+<dl>
+<dt>
+<i>-c action</i></dt>
+<dd>
+Specify the action to apply to the core assemblies.<div style="height: 1.00em;">
+&#160;</div>
+Core assemblies are the assemblies that belongs to the base class library, like mscorlib.dll, System.dll or System.Windows.Forms.dll.<div style="height: 1.00em;">
+&#160;</div>
+The linker supports three operations on these assemblies, you can specify one of the following actions:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+<i>skip</i></dt>
+<dd>
+This instructs the linker to skip them and do nothing with them.</dd>
+</dl>
+<dl>
+<dt>
+<i>copy</i></dt>
+<dd>
+This instructs the linker to copy them to the output directory,</dd>
+</dl>
+<dl>
+<dt>
+<i>link</i></dt>
+<dd>
+This instructs the linker to apply the linking process and reduce their size.</dd>
+</dl>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<dl>
+<dt>
+<i>-p action assembly</i></dt>
+<dd>
+Specify per assembly which action to apply.</dd>
+</dl>
+<dl>
+<dt>
+<i>-x descriptor</i></dt>
+<dd>
+Use an XML descriptor as a source for the linker.<div style="height: 1.00em;">
+&#160;</div>
+Here is an example that shows all the possibilities of this format:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+&lt;linker&gt;<br/>
+	&lt;assembly fullname=&quot;Library&quot;&gt;<br/>
+		&lt;type fullname=&quot;Foo&quot; /&gt;<br/>
+		&lt;type fullname=&quot;Bar&quot; preserve=&quot;nothing&quot; required=&quot;false&quot; /&gt;<br/>
+		&lt;type fullname=&quot;Baz&quot; preserve=&quot;fields&quot; required=&quot;false&quot; /&gt;<br/>
+		&lt;type fullname=&quot;Gazonk&quot;&gt;<br/>
+			&lt;method signature=&quot;System.Void .ctor(System.String)&quot; /&gt;<br/>
+			&lt;field signature=&quot;System.String _blah&quot; /&gt;<br/>
+			&lt;field name=&quot;someFieldName&quot; /&gt;<br/>
+		&lt;/type&gt;<br/>
+	&lt;/assembly&gt;<br/>
+&lt;/linker&gt;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+In this example, the linker will link the types Foo, Bar, Baz and Gazonk.<div style="height: 1.00em;">
+&#160;</div>
+The preserve attribute ensures that all the fields of the type Baz will be always be linked, not matter if they are used or not, but that neither the fields or the methods of Bar will be linked if they are not used. Not specifying a preserve attribute implies that we are preserving everything in the specified type.<div style="height: 1.00em;">
+&#160;</div>
+The required attribute specifies that if the type is not marked, during the mark operation, it will not be linked.<div style="height: 1.00em;">
+&#160;</div>
+The type Gazonk will be linked, as well as its constructor taking a string as a parameter, and it's _blah field.<div style="height: 1.00em;">
+&#160;</div>
+You can have multiple assembly nodes.</dd>
+</dl>
+<dl>
+<dt>
+<i>-a assemblies</i></dt>
+<dd>
+use an assembly as a source for the linker.<div style="height: 1.00em;">
+&#160;</div>
+The linker will walk through all the methods of the assembly to generate only what is necessary for this assembly to run.</dd>
+</dl>
+<dl>
+<dt>
+<i>-i info_file</i></dt>
+<dd>
+use a .info xml file as a source for the linker.<div style="height: 1.00em;">
+&#160;</div>
+An info file is a file produced by the tool mono-api-info. The linker will use it to generate an assembly that contains only what the public API defined in the info file needs.</dd>
+</dl>
+<dl>
+<dt>
+<i>-s [StepBefore:]StepFullName,StepAssembly[:StepAfter]</i></dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+You can ask the linker to execute custom steps by using the -s command. This command takes the standard TypeFullName,Assembly format to locate the step. You can customize its position in the pipeline by either adding it before a step, or after.<div style="height: 1.00em;">
+&#160;</div>
+Example:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+using System;<div class="spacer">
+</div>
+<br/>
+using Mono.Linker;<br/>
+using Mono.Linker.Steps;<div class="spacer">
+</div>
+<br/>
+namespace Foo {<div class="spacer">
+</div>
+<br/>
+	public class FooStep : IStep {<div class="spacer">
+</div>
+<br/>
+		public void Process (LinkContext context)<br/>
+		{<br/>
+			foreach (IStep step in context.Pipeline.GetSteps ()) {<br/>
+				Console.WriteLine (step.GetType ().Name);<br/>
+			}<br/>
+		}<br/>
+	}<br/>
+}<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+If you compile this custom against monolinker to a Foo.dll assembly, you can use the <i>-s</i> switch as follows.   To add the FooStep at the end of the pipeline:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+	monolinker -s Foo.FooStep,Foo -a program.exe<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+This commanand will add the FooStep after the MarkStep:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+	monolinker -s MarkStep:Foo.FooStep,Foo -a program.exe<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+This command will add the FooStep before the MarkStep:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+	monolinker -s Foo.FooStep,Foo:MarkStep -a program.exe<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+This command will add the FooStep before the MarkStep</dd>
+</dl>
+<dl>
+<dt>
+<i>-m CustomParam ParamValue</i></dt>
+<dd>
+Specify a parameter for a custom step.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright (C) 2007 Novell, Inc (http://www.novell.com)</div>
+<div class="section">
+<h1>BUGS</h1> Bugs report are welcome at http://bugzilla.xamarin.com<div class="spacer">
+</div>
+Product Mono Tools, Component linker.</div>
+<div class="section">
+<h1>MAILING LISTS</h1> Mailing lists are listed at http://www.mono-project.com/community/help/mailing-lists/</div>
+<div class="section">
+<h1>WEB SITE</h1> http://www.mono-project.com/docs/tools+libraries/tools/linker/</div>
+<div class="section">
+<h1>AUTHORS</h1> The linker has been written by Jb Evain, and have been partially founded by the Google Summer of Code.</div>
+<div class="section">
+<h1>LICENSE</h1> The linker is licensed under the MIT/X11 license. Please read the accompayning MIT.X11 file for details.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>al(1),mkbundle(1),mono(1),mcs(1).</b></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+monolinker</td>
+<td class="foot-os">
+</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

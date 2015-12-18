@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+Mono(Mono 1.0)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+Mono(Mono 1.0)</td>
+<td class="head-vol">
+</td>
+<td class="head-rtitle">
+Mono(Mono 1.0)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> mono-config - Mono runtime file format configuration</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The Mono runtime will load configuration data from the installation prefix /etc/mono/config file, the ~/.mono/config or from the file pointed by the MONO_CONFIG environment variable.<div class="spacer">
+</div>
+For each assembly loaded a config file with the name: /path/to/the/assembly.exe.config is loaded as well as the ~/.mono/assemblies/ASSEMBLY/ASSEMBLY.EXT.config file.<div class="spacer">
+</div>
+This file controls the behavior of the runtime.<div class="spacer">
+</div>
+The file contains an XML-like file with various sections, all of them contained inside a section (It actually uses GMarkup to parse the file).<div class="spacer">
+</div>
+This page describes the Unix-specific and Mono-specific extensions to the configuration file;   For complete details, see the http://www.mono-project.com/Config web page.</div>
+<div class="section">
+<h1>&lt;dllmap&gt; directive</h1> You use the dllmap directive to map shared libraries referenced by P/Invoke in your assemblies to a different shared library.<div class="spacer">
+</div>
+This is typically used to map Windows libraries to Unix library names. The <b>dllmap</b> element takes two attributes:<dl>
+<dt>
+<i>dll</i></dt>
+<dd>
+This should be the same string used in the DllImport attribute, optionally prefixed with &quot;i:&quot; to indicate that the string must be matched in a case-insensitive way</dd>
+</dl>
+<dl>
+<dt>
+<i>target</i></dt>
+<dd>
+This should be the name of the library where the function can be found: this name should be suitable for use with the platform native shared library loading routines (dlopen etc.), so you may want to check the manpages for that, too.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>&lt;dllentry&gt; directive</h1> This directive can be used to map a specific dll/function pair to a different library and also a different function name. It should appear inside a <b>dllmap</b> element with only the dll attribute specified.<div class="spacer">
+</div>
+The <b>dllentry</b> element takes 3 attributes:<dl>
+<dt>
+<i>dll</i></dt>
+<dd>
+This is the target library, where the function can be found.</dd>
+</dl>
+<dl>
+<dt>
+<i>name</i></dt>
+<dd>
+This is the name of the function as it appears in the metadata: it is the name of the P/Invoke method.</dd>
+</dl>
+<dl>
+<dt>
+<i>target</i></dt>
+<dd>
+This is the name of the function to lookup instead of the name specified in the P/Invoke method.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>Mapping based on operating system and cpu</h1> Both the <b>dllmap</b> and the <b>dllentry</b> elements allow the following two attributes which make it easy to use a single configuration file and support multiple operating systems and architectures with different mapping requirements:<dl>
+<dt>
+<i>os</i></dt>
+<dd>
+This is the name of the operating system for which the mapping should be applied. Allowed values are: linux, osx, solaris, freebsd, openbsd, netbsd, windows, aix, hpux.</dd>
+</dl>
+<dl>
+<dt>
+<i>cpu</i></dt>
+<dd>
+This is the name of the architecture for which the mapping should be applied. Allowed values are: x86, x86-64, sparc, ppc, s390, s390x, arm, mips, alpha, hppa, ia64.</dd>
+</dl>
+<dl>
+<dt>
+<i>wordsize</i></dt>
+<dd>
+This is the size of registers on the target architecture, it can be either 32 or 64.</dd>
+</dl>
+<div class="spacer">
+</div>
+The attribute value for both attributes can be a comma-separated list of the allowed values. Additionally, the first character may be a <i>'!'</i> to reverse the meaning. An attribute value of &quot;!windows,osx&quot;, for example, would mean that the entry is considered on all operating systems, except on Windows and OS X. No spaces are allowed in any part of the value.<div class="spacer">
+</div>
+Note that later entries will override the entries defined earlier in the file.</div>
+<div class="section">
+<h1>EXAMPLES</h1> The following example maps references to the `cygwin1.dll' shared library to the `libc.so.6' file.<br/>
+&lt;configuration&gt;<br/>
+	&lt;dllmap dll=&quot;i:cygwin1.dll&quot; target=&quot;libc.so.6&quot;/&gt;<br/>
+&lt;/configuration&gt;<br/>
+The library name in the DllImport attribute is allowed to be in any case variant, like the following examples:<br/>
+	[DllImport (&quot;cygwin1.dll&quot;)]<br/>
+	[DllImport (&quot;Cygwin1.dll&quot;)]<br/>
+	[DllImport (&quot;cygwiN1.Dll&quot;)]<br/>
+<div class="spacer">
+</div>
+This one maps the following C# method:<br/>
+	[DllImport (&quot;libc&quot;)]<br/>
+	static extern void somefunction ();<br/>
+to <b>differentfunction</b> in <b>libdifferent.so</b> , but to the same function in the library <b>libanother.so</b> when running under the Solaris and FreeBSD operating systems.<br/>
+&lt;configuration&gt;<br/>
+	&lt;dllmap dll=&quot;libc&quot;&gt;<br/>
+		&lt;dllentry dll=&quot;libdifferent.so&quot; name=&quot;somefunction&quot; target=&quot;differentfunction&quot; /&gt;<br/>
+		&lt;dllentry os=&quot;solaris,freebsd&quot; dll=&quot;libanother.so&quot; name=&quot;somefunction&quot; target=&quot;differentfunction&quot; /&gt;<br/>
+	&lt;/dllmap&gt;<br/>
+&lt;/configuration&gt;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>mono(1),</b>monodis(1),<b>mint(1)</b></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

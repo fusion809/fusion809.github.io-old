@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+Tcl_CreateFileHandler(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+Tcl_CreateFileHandler(3)</td>
+<td class="head-vol">
+Tcl Library Procedures</td>
+<td class="head-rtitle">
+Tcl_CreateFileHandler(3)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> Tcl_CreateFileHandler, Tcl_DeleteFileHandler - associate procedure callbacks with files or devices (Unix only)</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+<b>#include &lt;tcl.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>Tcl_CreateFileHandler</b>(<i>fd, mask, proc, clientData</i>)<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>Tcl_DeleteFileHandler</b>(<i>fd</i>)</div>
+<div class="section">
+<h1>ARGUMENTS</h1><dl>
+<dt>
+int <i>fd</i> (in)</dt>
+<dd>
+Unix file descriptor for an open file or device.</dd>
+</dl>
+<dl>
+<dt>
+int <i>mask</i> (in)</dt>
+<dd>
+Conditions under which <i>proc</i> should be called: OR-ed combination of  <b>TCL_READABLE</b>, <b>TCL_WRITABLE</b>, and  <b>TCL_EXCEPTION</b>.  May be set to 0 to temporarily disable a handler.</dd>
+</dl>
+<dl>
+<dt>
+Tcl_FileProc <i>*proc</i> (in)</dt>
+<dd>
+Procedure to invoke whenever the file or device indicated by  <i>file</i> meets the conditions specified by <i>mask</i>.</dd>
+</dl>
+<dl>
+<dt>
+ClientData <i>clientData</i> (in)</dt>
+<dd>
+Arbitrary one-word value to pass to <i>proc</i>.<br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>Tcl_CreateFileHandler</b> arranges for <i>proc</i> to be invoked in the future whenever I/O becomes possible on a file or an exceptional condition exists for the file.  The file is indicated by  <i>fd</i>, and the conditions of interest are indicated by  <i>mask</i>.  For example, if <i>mask</i> is  <b>TCL_READABLE</b>, <i>proc</i> will be called when the file is readable. The callback to  <i>proc</i> is made by <b>Tcl_DoOneEvent</b>, so  <b>Tcl_CreateFileHandler</b> is only useful in programs that dispatch events through  <b>Tcl_DoOneEvent</b> or through Tcl commands such as  <b>vwait</b>.<div class="spacer">
+</div>
+<i>Proc</i> should have arguments and result that match the type  <b>Tcl_FileProc</b>:<div style="margin-left: 5.00ex;">
+<br/>
+typedef void Tcl_FileProc(<br/>
+        ClientData <i>clientData</i>,<br/>
+        int <i>mask</i>);<br/>
+</div>
+The <i>clientData</i> parameter to <i>proc</i> is a copy of the  <i>clientData</i> argument given to  <b>Tcl_CreateFileHandler</b> when the callback was created.  Typically,  <i>clientData</i> points to a data structure containing application-specific information about the file.   <i>Mask</i> is an integer mask indicating which of the requested conditions actually exists for the file;  it will contain a subset of the bits in the  <i>mask</i> argument to  <b>Tcl_CreateFileHandler</b>.<div class="spacer">
+</div>
+There may exist only one handler for a given file at a given time. If  <b>Tcl_CreateFileHandler</b> is called when a handler already exists for  <i>fd</i>, then the new callback replaces the information that was previously recorded.<div class="spacer">
+</div>
+<b>Tcl_DeleteFileHandler</b> may be called to delete the file handler for  <i>fd</i>;  if no handler exists for the file given by  <i>fd</i> then the procedure has no effect.<div class="spacer">
+</div>
+The purpose of file handlers is to enable an application to respond to events while waiting for files to become ready for I/O.  For this to work correctly, the application may need to use non-blocking I/O operations on the files for which handlers are declared.  Otherwise the application may block if it reads or writes too much data; while waiting for the I/O to complete the application will not be able to service other events. Use  <b>Tcl_SetChannelOption</b> with <b>-blocking</b> to set the channel into blocking or nonblocking mode as required.<div class="spacer">
+</div>
+Note that these interfaces are only supported by the Unix implementation of the Tcl notifier.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>KEYWORDS</h1> callback, file, handler</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+8.0</td>
+<td class="foot-os">
+Tcl</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

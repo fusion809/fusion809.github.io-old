@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+lset(n)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+lset(n)</td>
+<td class="head-vol">
+Tcl Built-In Commands</td>
+<td class="head-rtitle">
+lset(n)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> lset - Change an element in a list</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <b>lset </b><i>varName ?index...? newValue</i><br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <b>lset</b> command accepts a parameter, <i>varName</i>, which it interprets as the name of a variable containing a Tcl list. It also accepts zero or more  <i>indices</i> into the list.  The indices may be presented either consecutively on the command line, or grouped in a Tcl list and presented as a single argument. Finally, it accepts a new value for an element of  <i>varName</i>.<div class="spacer">
+</div>
+If no indices are presented, the command takes the form:<div style="margin-left: 5.00ex;">
+<br/>
+lset varName newValue<br/>
+</div>
+or<div style="margin-left: 5.00ex;">
+<br/>
+lset varName {} newValue<br/>
+</div>
+In this case, <i>newValue</i> replaces the old value of the variable  <i>varName</i>.<div class="spacer">
+</div>
+When presented with a single index, the <b>lset</b> command treats the content of the  <i>varName</i> variable as a Tcl list. It addresses the  <i>index</i>'th element in it (0 refers to the first element of the list). When interpreting the list,  <b>lset</b> observes the same rules concerning braces and quotes and backslashes as the Tcl command interpreter; however, variable substitution and command substitution do not occur. The command constructs a new list in which the designated element is replaced with  <i>newValue</i>.  This new list is stored in the variable  <i>varName</i>, and is also the return value from the <b>lset</b> command.<div class="spacer">
+</div>
+If <i>index</i> is negative or greater than or equal to the number of elements in  <i>$varName</i>, then an error occurs.<div class="spacer">
+</div>
+The interpretation of each simple <i>index</i> value is the same as for the command  <b>string index</b>, supporting simple index arithmetic and indices relative to the end of the list.<div class="spacer">
+</div>
+If additional <i>index</i> arguments are supplied, then each argument is used in turn to address an element within a sublist designated by the previous indexing operation, allowing the script to alter elements in sublists.  The command,<div style="margin-left: 5.00ex;">
+<br/>
+lset a 1 2 newValue<br/>
+</div>
+or<div style="margin-left: 5.00ex;">
+<br/>
+lset a {1 2} newValue<br/>
+</div>
+replaces element 2 of sublist 1 with <i>newValue</i>.<div class="spacer">
+</div>
+The integer appearing in each <i>index</i> argument must be greater than or equal to zero.  The integer appearing in each  <i>index</i> argument must be strictly less than the length of the corresponding list.  In other words, the  <b>lset</b> command cannot change the size of a list.  If an index is outside the permitted range, an error is reported.</div>
+<div class="section">
+<h1>EXAMPLES</h1> In each of these examples, the initial value of  <i>x</i> is:<div style="margin-left: 5.00ex;">
+<br/>
+set x [list [list a b c] [list d e f] [list g h i]]<br/>
+      <i>&#8594; {a b c} {d e f} {g h i}</i><br/>
+</div>
+The indicated return value also becomes the new value of <i>x</i> (except in the last case, which is an error which leaves the value of  <i>x</i> unchanged.)<div style="margin-left: 5.00ex;">
+<br/>
+<b>lset</b> x {j k l}<br/>
+      <i>&#8594; j k l</i><br/>
+<b>lset</b> x {} {j k l}<br/>
+      <i>&#8594; j k l</i><br/>
+<b>lset</b> x 0 j<br/>
+      <i>&#8594; j {d e f} {g h i}</i><br/>
+<b>lset</b> x 2 j<br/>
+      <i>&#8594; {a b c} {d e f} j</i><br/>
+<b>lset</b> x end j<br/>
+      <i>&#8594; {a b c} {d e f} j</i><br/>
+<b>lset</b> x end-1 j<br/>
+      <i>&#8594; {a b c} j {g h i}</i><br/>
+<b>lset</b> x 2 1 j<br/>
+      <i>&#8594; {a b c} {d e f} {g j i}</i><br/>
+<b>lset</b> x {2 1} j<br/>
+      <i>&#8594; {a b c} {d e f} {g j i}</i><br/>
+<b>lset</b> x {2 3} j<br/>
+      <i>&#8594; list index out of range</i><br/>
+</div>
+In the following examples, the initial value of <i>x</i> is:<div style="margin-left: 5.00ex;">
+<br/>
+set x [list [list [list a b] [list c d]] \<br/>
+            [list [list e f] [list g h]]]<br/>
+      <i>&#8594; {{a b} {c d}} {{e f} {g h}}</i><br/>
+</div>
+The indicated return value also becomes the new value of <i>x</i>.<div style="margin-left: 5.00ex;">
+<br/>
+<b>lset</b> x 1 1 0 j<br/>
+      <i>&#8594; {{a b} {c d}} {{e f} {j h}}</i><br/>
+<b>lset</b> x {1 1 0} j<br/>
+      <i>&#8594; {{a b} {c d}} {{e f} {j h}}</i><br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> list(n), lappend(n), lindex(n), linsert(n), llength(n), lsearch(n), lsort(n), lrange(n), lreplace(n), string(n)<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>KEYWORDS</h1> element, index, list, replace, set</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+8.4</td>
+<td class="foot-os">
+Tcl</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

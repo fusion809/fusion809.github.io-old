@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+ttk::intro(n)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+ttk::intro(n)</td>
+<td class="head-vol">
+Tk Themed Widget</td>
+<td class="head-rtitle">
+ttk::intro(n)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> ttk::intro - Introduction to the Tk theme engine<br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>OVERVIEW</h1> The Tk themed widget set is based on a revised and enhanced version of TIP #48 (http://tip.tcl.tk/48) specified style engine. The main concepts are described below. The basic idea is to separate, to the extent possible, the code implementing a widget's behavior from the code implementing its appearance. Widget class bindings are primarily responsible for maintaining the widget state and invoking callbacks; all aspects of the widget's appearance are controlled by the style of the widget (i.e. the style of the elements of the widget).</div>
+<div class="section">
+<h1>THEMES</h1> A  <i>theme</i> is a collection of elements and styles that determine the look and feel of the widget set. Themes can be used to:<dl>
+<dt>
+&#8226;</dt>
+<dd>
+isolate platform differences (X11 vs. classic Windows vs. XP vs. Aqua ...)</dd>
+</dl>
+<dl>
+<dt>
+&#8226;</dt>
+<dd>
+adapt to display limitations (low-color, grayscale, monochrome, tiny screens)</dd>
+</dl>
+<dl>
+<dt>
+&#8226;</dt>
+<dd>
+accessibility (high contrast, large type)</dd>
+</dl>
+<dl>
+<dt>
+&#8226;</dt>
+<dd>
+application suite branding</dd>
+</dl>
+<dl>
+<dt>
+&#8226;</dt>
+<dd>
+blend in with the rest of the desktop (Gnome, KDE, Java)</dd>
+</dl>
+<dl>
+<dt>
+&#8226;</dt>
+<dd>
+and, of course: eye candy.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ELEMENTS</h1> An  <i>element</i> displays an individual part of a widget. For example, a vertical scrollbar widget contains  <b>uparrow</b>,  <b>downarrow</b>, <b>trough</b> and <b>slider</b> elements.<div class="spacer">
+</div>
+Element names use a recursive dotted notation. For example,  <b>uparrow</b> identifies a generic arrow element, and  <b>Scrollbar.uparrow</b> and <b>Combobox.uparrow</b> identify widget-specific elements. When looking for an element, the style engine looks for the specific name first, and if an element of that name is not found it looks for generic elements by stripping off successive leading components of the element name.<div class="spacer">
+</div>
+Like widgets, elements have <i>options</i> which specify what to display and how to display it. For example, the  <b>text</b> element (which displays a text string) has  <b>-text</b>, <b>-font</b>, <b>-foreground</b>, <b>-background</b>,  <b>-underline</b>, and <b>-width</b> options. The value of an element option is taken from:<dl>
+<dt>
+&#8226;</dt>
+<dd>
+an option of the same name and type in the widget containing the element;</dd>
+</dl>
+<dl>
+<dt>
+&#8226;</dt>
+<dd>
+a dynamic setting specified by <b>style map</b> and the current state;</dd>
+</dl>
+<dl>
+<dt>
+&#8226;</dt>
+<dd>
+the default setting specified by <b>style configure</b>; or</dd>
+</dl>
+<dl>
+<dt>
+&#8226;</dt>
+<dd>
+the element's built-in default value for the option.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>LAYOUTS</h1> A  <i>layout</i> specifies which elements make up a widget and how they are arranged. The layout engine uses a simplified version of the  <b>pack</b> algorithm: starting with an initial cavity equal to the size of the widget, elements are allocated a parcel within the cavity along the side specified by the  <b>-side</b> option, and placed within the parcel according to the  <b>-sticky</b> option. For example, the layout for a horizontal scrollbar is:<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;">
+<br/>
+ttk::<b>style layout</b> Horizontal.TScrollbar {<br/>
+    Scrollbar.trough -children {<br/>
+	Scrollbar.leftarrow -side left -sticky w<br/>
+	Scrollbar.rightarrow -side right -sticky e<br/>
+	Scrollbar.thumb -side left -expand true -sticky ew<br/>
+    }<br/>
+}<br/>
+</div>
+<div class="spacer">
+</div>
+By default, the layout for a widget is the same as its class name. Some widgets may override this (for example, the  <b>ttk::scrollbar</b> widget chooses different layouts based on the  <b>-orient</b> option).</div>
+<div class="section">
+<h1>STATES</h1> In standard Tk, many widgets have a  <b>-state</b> option which (in most cases) is either  <b>normal</b> or <b>disabled</b>. Some widgets support additional states, such as the  <b>entry</b> widget which has a <b>readonly</b> state and the various flavors of buttons which have  <b>active</b> state.<div class="spacer">
+</div>
+The themed Tk widgets generalizes this idea: every widget has a bitmap of independent state flags. Widget state flags include  <b>active</b>, <b>disabled</b>,  <b>pressed</b>, <b>focus</b>, etc., (see  <i>ttk::widget(n)</i> for the full list of state flags).<div class="spacer">
+</div>
+Instead of a <b>-state</b> option, every widget now has a  <b>state</b> widget command which is used to set or query the state. A  <i>state specification</i> is a list of symbolic state names indicating which bits are set, each optionally prefixed with an exclamation point indicating that the bit is cleared instead.<div class="spacer">
+</div>
+For example, the class bindings for the <b>ttk::button</b> widget are:<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;">
+<br/>
+bind TButton &lt;Enter&gt;		{ %W state active }<br/>
+bind TButton &lt;Leave&gt;		{ %W state !active }<br/>
+bind TButton &lt;ButtonPress-1&gt;	{ %W state pressed }<br/>
+bind TButton &lt;Button1-Leave&gt;	{ %W state !pressed }<br/>
+bind TButton &lt;Button1-Enter&gt;	{ %W state pressed }<br/>
+bind TButton &lt;ButtonRelease-1&gt;	\<br/>
+    { %W instate {pressed} { %W state !pressed ; %W invoke } }<br/>
+</div>
+<div class="spacer">
+</div>
+This specifies that the widget becomes <b>active</b> when the pointer enters the widget, and inactive when it leaves. Similarly it becomes  <b>pressed</b> when the mouse button is pressed, and  <b>!pressed</b> on the ButtonRelease event. In addition, the button unpresses if pointer is dragged outside the widget while Button-1 is held down, and represses if it's dragged back in. Finally, when the mouse button is released, the widget's  <b>-command</b> is invoked, but only if the button is currently in the  <b>pressed</b> state. (The actual bindings are a little more complicated than the above, but not by much).</div>
+<div class="section">
+<h1>STYLES</h1> Each widget is associated with a  <i>style</i>, which specifies values for element options. Style names use a recursive dotted notation like layouts and elements; by default, widgets use the class name to look up a style in the current theme. For example:<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;">
+<br/>
+ttk::<b>style configure</b> TButton \<br/>
+	-background #d9d9d9 \<br/>
+	-foreground black \<br/>
+	-relief raised \<br/>
+	;<br/>
+</div>
+<div class="spacer">
+</div>
+Many elements are displayed differently depending on the widget state. For example, buttons have a different background when they are active, a different foreground when disabled, and a different relief when pressed. The  <b>style map</b> command specifies dynamic option settings for a particular style:<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;">
+<br/>
+ttk::<b>style map</b> TButton \<br/>
+	-background [list disabled #d9d9d9  active #ececec] \<br/>
+	-foreground [list disabled #a3a3a3] \<br/>
+	-relief [list {pressed !disabled} sunken] \<br/>
+	;<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> ttk::widget(n), ttk::style(n)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+8.5</td>
+<td class="foot-os">
+Tk</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

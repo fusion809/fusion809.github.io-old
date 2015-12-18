@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+unload(n)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+unload(n)</td>
+<td class="head-vol">
+Tcl Built-In Commands</td>
+<td class="head-rtitle">
+unload(n)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> unload - Unload machine code</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <b>unload </b>?<i>switches</i>? <i>fileName</i><div style="height: 0.00em;">
+&#160;</div>
+<b>unload </b>?<i>switches</i>? <i>fileName packageName</i><div style="height: 0.00em;">
+&#160;</div>
+<b>unload </b>?<i>switches</i>? <i>fileName packageName interp</i><br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> This command tries to unload shared libraries previously loaded with  <b>load</b> from the application's address space.  <i>fileName</i> is the name of the file containing the library file to be unload;  it must be the same as the filename provided to  <b>load</b> for loading the library. The  <i>packageName</i> argument is the name of the package (as determined by or passed to  <b>load</b>), and is used to compute the name of the unload procedure; if not supplied, it is computed from  <i>fileName</i> in the same manner as <b>load</b>. The  <i>interp</i> argument is the path name of the interpreter from which to unload the package (see the  <b>interp</b> manual entry for details); if  <i>interp</i> is omitted, it defaults to the interpreter in which the  <b>unload</b> command was invoked.<div class="spacer">
+</div>
+If the initial arguments to <b>unload</b> start with <b>-</b> then they are treated as switches.  The following switches are currently supported:<dl>
+<dt>
+<b>-nocomplain</b></dt>
+<dd>
+Suppresses all error messages. If this switch is given, <b>unload</b> will never report an error.</dd>
+</dl>
+<dl>
+<dt>
+<b>-keeplibrary</b></dt>
+<dd>
+This switch will prevent <b>unload</b> from issuing the operating system call that will unload the library from the process.</dd>
+</dl>
+<dl>
+<dt>
+<b>--</b></dt>
+<dd>
+Marks the end of switches.  The argument following this one will be treated as a  <i>fileName</i> even if it starts with a <b>-</b>.</dd>
+</dl>
+<div class="subsection">
+<h2>UNLOAD OPERATION</h2> When a file containing a shared library is loaded through the  <b>load</b> command, Tcl associates two reference counts to the library file. The first counter shows how many times the library has been loaded into normal (trusted) interpreters while the second describes how many times the library has been loaded into safe interpreters. As a file containing a shared library can be loaded only once by Tcl (with the first  <b>load</b> call on the file), these counters track how many interpreters use the library. Each subsequent call to  <b>load</b> after the first simply increments the proper reference count.<div class="spacer">
+</div>
+<b>unload</b> works in the opposite direction. As a first step, <b>unload</b> will check whether the library is unloadable: an unloadable library exports a special unload procedure. The name of the unload procedure is determined by  <i>packageName</i> and whether or not the target interpreter is a safe one.  For normal interpreters the name of the initialization procedure will have the form  <i>pkg</i><b>_Unload</b>, where <i>pkg</i> is the same as  <i>packageName</i> except that the first letter is converted to upper case and all other letters are converted to lower case.  For example, if  <i>packageName</i> is  <b>foo</b> or <b>FOo</b>, the initialization procedure's name will be  <b>Foo_Unload</b>. If the target interpreter is a safe interpreter, then the name of the initialization procedure will be  <i>pkg</i><b>_SafeUnload</b> instead of  <i>pkg</i><b>_Unload</b>.<div class="spacer">
+</div>
+If <b>unload</b> determines that a library is not unloadable (or unload functionality has been disabled during compilation), an error will be returned. If the library is unloadable, then  <b>unload</b> will call the unload procedure. If the unload procedure returns  <b>TCL_OK</b>, <b>unload</b> will proceed and decrease the proper reference count (depending on the target interpreter type). When both reference counts have reached 0, the library will be detached from the process.</div>
+<div class="subsection">
+<h2>UNLOAD HOOK PROTOTYPE</h2> The unload procedure must match the following prototype:<div style="margin-left: 5.00ex;">
+<br/>
+typedef int Tcl_PackageUnloadProc(Tcl_Interp *<i>interp</i>, int <i>flags</i>);<br/>
+</div>
+<div class="spacer">
+</div>
+The <i>interp</i> argument identifies the interpreter from which the library is to be unloaded.  The unload procedure must return  <b>TCL_OK</b> or <b>TCL_ERROR</b> to indicate whether or not it completed successfully;  in the event of an error it should set the interpreter's result to point to an error message.  In this case, the result of the  <b>unload</b> command will be the result returned by the unload procedure.<div class="spacer">
+</div>
+The <i>flags</i> argument can be either <b>TCL_UNLOAD_DETACH_FROM_INTERPRETER</b> or  <b>TCL_UNLOAD_DETACH_FROM_PROCESS</b>. In case the library will remain attached to the process after the unload procedure returns (i.e. because the library is used by other interpreters),  <b>TCL_UNLOAD_DETACH_FROM_INTERPRETER</b> will be defined. However, if the library is used only by the target interpreter and the library will be detached from the application as soon as the unload procedure returns, the  <i>flags</i> argument will be set to <b>TCL_UNLOAD_DETACH_FROM_PROCESS</b>.</div>
+<div class="subsection">
+<h2>NOTES</h2> The  <b>unload</b> command cannot unload libraries that are statically linked with the application. If  <i>fileName</i> is an empty string, then the <i>packageName</i> argument must be specified.<div class="spacer">
+</div>
+If <i>packageName</i> is omitted or specified as an empty string, Tcl tries to guess the name of the package. This may be done differently on different platforms. The default guess, which is used on most UNIX platforms, is to take the last element of  <i>fileName</i>, strip off the first three characters if they are  <b>lib</b>, and use any following alphabetic and underline characters as the module name. For example, the command  <b>unload libxyz4.2.so</b> uses the module name  <b>xyz</b> and the command <b>unload bin/last.so {}</b> uses the module name  <b>last</b>.</div>
+</div>
+<div class="section">
+<h1>PORTABILITY ISSUES</h1><dl>
+<dt>
+<b>Unix</b>&#8194;&#8194;&#8194;&#8194;&#8194;</dt>
+<dd>
+Not all unix operating systems support library unloading. Under such an operating system  <b>unload</b> returns an error (unless <b>-nocomplain</b> has been specified).</dd>
+</dl>
+</div>
+<div class="section">
+<h1>BUGS</h1> If the same file is  <b>load</b>ed by different <i>fileName</i>s, it will be loaded into the process's address space multiple times.  The behavior of this varies from system to system (some systems may detect the redundant loads, others may not). In case a library has been silently detached by the operating system (and as a result Tcl thinks the library is still loaded), it may be dangerous to use  <b>unload</b> on such a library (as the library will be completely detached from the application while some interpreters will continue to use it).</div>
+<div class="section">
+<h1>EXAMPLE</h1> If an unloadable module in the file  <b>foobar.dll</b> had been loaded using the  <b>load</b> command like this (on Windows):<div style="margin-left: 5.00ex;">
+<br/>
+load c:/some/dir/foobar.dll<br/>
+</div>
+then it would be unloaded like this:<div style="margin-left: 5.00ex;">
+<br/>
+<b>unload</b> c:/some/dir/foobar.dll<br/>
+</div>
+<div class="spacer">
+</div>
+This allows a C code module to be installed temporarily into a long-running Tcl program and then removed again (either because it is no longer needed or because it is being updated with a new version) without having to shut down the overall Tcl process.</div>
+<div class="section">
+<h1>SEE ALSO</h1> info sharedlibextension, load(n), safe(n)</div>
+<div class="section">
+<h1>KEYWORDS</h1> binary code, unloading, safe interpreter, shared library</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+8.5</td>
+<td class="foot-os">
+Tcl</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

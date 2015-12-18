@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+regexp(n)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+regexp(n)</td>
+<td class="head-vol">
+Tcl Built-In Commands</td>
+<td class="head-rtitle">
+regexp(n)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> regexp - Match a regular expression against a string<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <b>regexp </b>?<i>switches</i>? <i>exp string </i>?<i>matchVar</i>? ?<i>subMatchVar subMatchVar ...</i>?<br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> Determines whether the regular expression  <i>exp</i> matches part or all of  <i>string</i> and returns 1 if it does, 0 if it does not, unless  <b>-inline</b> is specified (see below). (Regular expression matching is described in the  <b>re_syntax</b> reference page.)<div class="spacer">
+</div>
+If additional arguments are specified after <i>string</i> then they are treated as the names of variables in which to return information about which part(s) of  <i>string</i> matched <i>exp</i>.  <i>MatchVar</i> will be set to the range of <i>string</i> that matched all of  <i>exp</i>.  The first <i>subMatchVar</i> will contain the characters in  <i>string</i> that matched the leftmost parenthesized subexpression within  <i>exp</i>, the next <i>subMatchVar</i> will contain the characters that matched the next parenthesized subexpression to the right in  <i>exp</i>, and so on.<div class="spacer">
+</div>
+If the initial arguments to <b>regexp</b> start with <b>-</b> then they are treated as switches.  The following switches are currently supported:<dl>
+<dt>
+<b>-about</b></dt>
+<dd>
+Instead of attempting to match the regular expression, returns a list containing information about the regular expression.  The first element of the list is a subexpression count.  The second element is a list of property names that describe various attributes of the regular expression. This switch is primarily intended for debugging purposes.</dd>
+</dl>
+<dl>
+<dt>
+<b>-expanded</b></dt>
+<dd>
+Enables use of the expanded regular expression syntax where whitespace and comments are ignored.  This is the same as specifying the  <b>(?x)</b> embedded option (see the <b>re_syntax</b> manual page).</dd>
+</dl>
+<dl>
+<dt>
+<b>-indices</b></dt>
+<dd>
+Changes what is stored in the <i>subMatchVar</i>s. Instead of storing the matching characters from  <i>string</i>, each variable will contain a list of two decimal strings giving the indices in  <i>string</i> of the first and last characters in the matching range of characters.</dd>
+</dl>
+<dl>
+<dt>
+<b>-line</b></dt>
+<dd>
+Enables newline-sensitive matching.  By default, newline is a completely ordinary character with no special meaning.  With this flag, &#8220;[^&#8221; bracket expressions and &#8220;.&#8221; never match newline, &#8220;^&#8221; matches an empty string after any newline in addition to its normal function, and &#8220;$&#8221; matches an empty string before any newline in addition to its normal function.  This flag is equivalent to specifying both  <b>-linestop</b> and <b>-lineanchor</b>, or the  <b>(?n)</b> embedded option (see the <b>re_syntax</b> manual page).</dd>
+</dl>
+<dl>
+<dt>
+<b>-linestop</b></dt>
+<dd>
+Changes the behavior of &#8220;[^&#8221; bracket expressions and &#8220;.&#8221; so that they stop at newlines.  This is the same as specifying the  <b>(?p)</b> embedded option (see the  <b>re_syntax</b> manual page).</dd>
+</dl>
+<dl>
+<dt>
+<b>-lineanchor</b></dt>
+<dd>
+Changes the behavior of &#8220;^&#8221; and &#8220;$&#8221; (the &#8220;anchors&#8221;) so they match the beginning and end of a line respectively.  This is the same as specifying the  <b>(?w)</b> embedded option (see the <b>re_syntax</b> manual page).</dd>
+</dl>
+<dl>
+<dt>
+<b>-nocase</b></dt>
+<dd>
+Causes upper-case characters in <i>string</i> to be treated as lower case during the matching process.</dd>
+</dl>
+<dl>
+<dt>
+<b>-all</b></dt>
+<dd>
+Causes the regular expression to be matched as many times as possible in the string, returning the total number of matches found.  If this is specified with match variables, they will contain information for the last match only.</dd>
+</dl>
+<dl>
+<dt>
+<b>-inline</b></dt>
+<dd>
+Causes the command to return, as a list, the data that would otherwise be placed in match variables.  When using  <b>-inline</b>, match variables may not be specified.  If used with  <b>-all</b>, the list will be concatenated at each iteration, such that a flat list is always returned.  For each match iteration, the command will append the overall match data, plus one element for each subexpression in the regular expression.  Examples are:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<br/>
+<b>regexp</b> -inline -- {\w(\w)} &quot; inlined &quot;<br/>
+      <i>&#8594; in n</i><br/>
+<b>regexp</b> -all -inline -- {\w(\w)} &quot; inlined &quot;<br/>
+      <i>&#8594; in n li i ne e</i><br/>
+</div>
+<dl>
+<dt>
+<b>-start</b> <i>index</i></dt>
+<dd>
+Specifies a character index offset into the string to start matching the regular expression at. The  <i>index</i> value is interpreted in the same manner as the  <i>index</i> argument to <b>string index</b>. When using this switch, &#8220;^&#8221; will not match the beginning of the line, and \A will still match the start of the string at  <i>index</i>.  If <b>-indices</b> is specified, the indices will be indexed starting from the absolute beginning of the input string.  <i>index</i> will be constrained to the bounds of the input string.</dd>
+</dl>
+<dl>
+<dt>
+<b>--</b></dt>
+<dd>
+Marks the end of switches.  The argument following this one will be treated as  <i>exp</i> even if it starts with a <b>-</b>.</dd>
+</dl>
+<div class="spacer">
+</div>
+If there are more <i>subMatchVar</i>s than parenthesized subexpressions within  <i>exp</i>, or if a particular subexpression in  <i>exp</i> does not match the string (e.g. because it was in a portion of the expression that was not matched), then the corresponding  <i>subMatchVar</i> will be set to &#8220; <b>-1 -1</b>&#8221; if  <b>-indices</b> has been specified or to an empty string otherwise.</div>
+<div class="section">
+<h1>EXAMPLES</h1> Find the first occurrence of a word starting with  <b>foo</b> in a string that is not actually an instance of  <b>foobar</b>, and get the letters following it up to the end of the word into a variable:<div style="margin-left: 5.00ex;">
+<br/>
+<b>regexp</b> {\mfoo(?!bar\M)(\w*)} $string -&gt; restOfWord<br/>
+</div>
+Note that the whole matched substring has been placed in the variable &#8220; <b>-&gt;</b>&#8221;, which is a name chosen to look nice given that we are not actually interested in its contents.<div class="spacer">
+</div>
+Find the index of the word <b>badger</b> (in any case) within a string and store that in the variable  <b>location</b>:<div style="margin-left: 5.00ex;">
+<br/>
+<b>regexp</b> -indices {(?i)\mbadger\M} $string location<br/>
+</div>
+This could also be written as a <i>basic</i> regular expression (as opposed to using the default syntax of  <i>advanced</i> regular expressions) match by prefixing the expression with a suitable flag:<div style="margin-left: 5.00ex;">
+<br/>
+<b>regexp</b> -indices {(?ib)\&lt;badger\&gt;} $string location<br/>
+</div>
+<div class="spacer">
+</div>
+This counts the number of octal digits in a string:<div style="margin-left: 5.00ex;">
+<br/>
+<b>regexp</b> -all {[0-7]} $string<br/>
+</div>
+<div class="spacer">
+</div>
+This lists all words (consisting of all sequences of non-whitespace characters) in a string, and is useful as a more powerful version of the  <b>split</b> command:<div style="margin-left: 5.00ex;">
+<br/>
+<b>regexp</b> -all -inline {\S+} $string<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> re_syntax(n), regsub(n), string(n)</div>
+<div class="section">
+<h1>KEYWORDS</h1> match, parsing, pattern, regular expression, splitting, string</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+8.3</td>
+<td class="foot-os">
+Tcl</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

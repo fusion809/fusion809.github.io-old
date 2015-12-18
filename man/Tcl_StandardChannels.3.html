@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+Standard Channels(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+Standard Channels(3)</td>
+<td class="head-vol">
+Tcl Library Procedures</td>
+<td class="head-rtitle">
+Standard Channels(3)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> Tcl_StandardChannels - How the Tcl library deals with the standard channels<br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> This page explains the initialization and use of standard channels in the Tcl library.<div class="spacer">
+</div>
+The term <i>standard channels</i> comes out of the Unix world and refers to the three channels automatically opened by the OS for each new application. They are  <b>stdin</b>, <b>stdout</b> and  <b>stderr</b>. The first is the standard input an application can read from, the other two refer to writable channels, one for regular output and the other for error messages.<div class="spacer">
+</div>
+Tcl generalizes this concept in a cross-platform way and exposes standard channels to the script level.<div class="subsection">
+<h2>APPLICATION PROGRAMMING INTERFACES</h2> The public API procedures dealing directly with standard channels are  <b>Tcl_GetStdChannel</b> and <b>Tcl_SetStdChannel</b>. Additional public APIs to consider are  <b>Tcl_RegisterChannel</b>,  <b>Tcl_CreateChannel</b> and <b>Tcl_GetChannel</b>.</div>
+</div>
+<div class="section">
+<h1>INITIALIZATION OF TCL STANDARD CHANNELS</h1> Standard channels are initialized by the Tcl library in three cases: when explicitly requested, when implicitly required before returning channel information, or when implicitly required during registration of a new channel.<div class="spacer">
+</div>
+These cases differ in how they handle unavailable platform- specific standard channels.  (A channel is not &#8220;available&#8221; if it could not be successfully opened; for example, in a Tcl application run as a Windows NT service.)<dl>
+<dt>
+1)</dt>
+<dd>
+A single standard channel is initialized when it is explicitly specified in a call to  <b>Tcl_SetStdChannel</b>.  The states of the other standard channels are unaffected.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<div class="spacer">
+</div>
+Missing platform-specific standard channels do not matter here. This approach is not available at the script level.</div>
+<dl>
+<dt>
+2)</dt>
+<dd>
+All uninitialized standard channels are initialized to platform-specific default values:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+(a)</dt>
+<dd>
+when open channels are listed with <b>Tcl_GetChannelNames</b> (or the  <b>file channels</b> script command), or</dd>
+</dl>
+<dl>
+<dt>
+(b)</dt>
+<dd>
+when information about any standard channel is requested with a call to  <b>Tcl_GetStdChannel</b>, or with a call to <b>Tcl_GetChannel</b> which specifies one of the standard names ( <b>stdin</b>, <b>stdout</b> and  <b>stderr</b>).</dd>
+</dl>
+<div class="spacer">
+</div>
+In case of missing platform-specific standard channels, the Tcl standard channels are considered as initialized and then immediately closed. This means that the first three Tcl channels then opened by the application are designated as the Tcl standard channels.</div>
+<dl>
+<dt>
+3)</dt>
+<dd>
+All uninitialized standard channels are initialized to platform-specific default values when a user-requested channel is registered with  <b>Tcl_RegisterChannel</b>.</dd>
+</dl>
+<div class="spacer">
+</div>
+In case of unavailable platform-specific standard channels the channel whose creation caused the initialization of the Tcl standard channels is made a normal channel.  The next three Tcl channels opened by the application are designated as the Tcl standard channels.  In other words, of the first four Tcl channels opened by the application the second to fourth are designated as the Tcl standard channels.</div>
+<div class="section">
+<h1>RE-INITIALIZATION OF TCL STANDARD CHANNELS</h1> Once a Tcl standard channel is initialized through one of the methods above, closing this Tcl standard channel will cause the next call to  <b>Tcl_CreateChannel</b> to make the new channel the new standard channel, too. If more than one Tcl standard channel was closed  <b>Tcl_CreateChannel</b> will fill the empty slots in the order  <b>stdin</b>, <b>stdout</b> and <b>stderr</b>.<div class="spacer">
+</div>
+<b>Tcl_CreateChannel</b> will not try to reinitialize an empty slot if that slot was not initialized before. It is this behavior which enables an application to employ method 1 of initialization, i.e. to create and designate their own Tcl standard channels.</div>
+<div class="section">
+<h1>SHELL-SPECIFIC DETAILS</h1><div class="subsection">
+<h2>tclsh</h2> The Tcl shell (or rather the function  <b>Tcl_Main</b>, which forms the core of the shell's implementation) uses method 2 to initialize the standard channels.</div>
+<div class="subsection">
+<h2>wish</h2> The windowing shell (or rather the function  <b>Tk_MainEx</b>, which forms the core of the shell's implementation) uses method 1 to initialize the standard channels (See  <b>Tk_InitConsoleChannels</b>) on non-Unix platforms.  On Unix platforms,  <b>Tk_MainEx</b> implicitly uses method 2 to initialize the standard channels.</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> Tcl_CreateChannel(3), Tcl_RegisterChannel(3), Tcl_GetChannel(3), Tcl_GetStdChannel(3), Tcl_SetStdChannel(3), Tk_InitConsoleChannels(3), tclsh(1), wish(1), Tcl_Main(3), Tk_MainEx(3)</div>
+<div class="section">
+<h1>KEYWORDS</h1> standard channels</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+7.5</td>
+<td class="foot-os">
+Tcl</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

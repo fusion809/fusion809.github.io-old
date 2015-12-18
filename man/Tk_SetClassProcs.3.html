@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+Tk_SetClassProcs(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+Tk_SetClassProcs(3)</td>
+<td class="head-vol">
+Tk Library Procedures</td>
+<td class="head-rtitle">
+Tk_SetClassProcs(3)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> Tk_SetClassProcs - register widget specific procedures</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+<b>#include &lt;tk.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>Tk_SetClassProcs</b>(<i>tkwin, procs, instanceData</i>)</div>
+<div class="section">
+<h1>ARGUMENTS</h1><dl>
+<dt>
+Tk_Window <i>tkwin</i> (in)</dt>
+<dd>
+Token for window to modify.</dd>
+</dl>
+<dl>
+<dt>
+Tk_ClassProcs <i>*procs</i> (in)</dt>
+<dd>
+Pointer to data structure containing widget specific procedures. The data structure pointed to by  <i>procs</i> must be static: Tk keeps a reference to it as long as the window exists.</dd>
+</dl>
+<dl>
+<dt>
+ClientData <i>instanceData</i> (in)</dt>
+<dd>
+Arbitrary one-word value to pass to widget callbacks.<br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>Tk_SetClassProcs</b> is called to register a set of procedures that are used as callbacks in different places.<div class="spacer">
+</div>
+The structure pointed to by <i>procs</i> contains the following:<div style="margin-left: 5.00ex;">
+<br/>
+typedef struct Tk_ClassProcs {<br/>
+    unsigned int <i>size</i>;<br/>
+    Tk_ClassWorldChangedProc *<i>worldChangedProc</i>;<br/>
+    Tk_ClassCreateProc *<i>createProc</i>;<br/>
+    Tk_ClassModalProc *<i>modalProc</i>;<br/>
+} Tk_ClassProcs;<br/>
+</div>
+The <i>size</i> field is used to simplify future expansion of the structure. It should always be set to (literally)  <b>sizeof(Tk_ClassProcs)</b>.<div class="spacer">
+</div>
+<i>worldChangedProc</i> is invoked when the system has altered in some way that requires some reaction from the widget.  For example, when a font alias (see the  <b>font</b> manual entry) is reconfigured, widgets configured to use that font alias must update their display accordingly.   <i>worldChangedProc</i> should have arguments and results that match the type  <b>Tk_ClassWorldChangedProc</b>:<div style="margin-left: 5.00ex;">
+<br/>
+typedef void Tk_ClassWorldChangedProc(<br/>
+    ClientData <i>instanceData</i>);<br/>
+</div>
+The <i>instanceData</i> parameter passed to the <i>worldChangedProc</i> will be identical to the  <i>instanceData</i> parameter passed to  <b>Tk_SetClassProcs</b>.<div class="spacer">
+</div>
+<i>createProc</i> is used to create platform-dependant windows.  It is invoked by  <b>Tk_MakeWindowExist</b>.  <i>createProc</i> should have arguments and results that match the type  <b>Tk_ClassCreateProc</b>:<div style="margin-left: 5.00ex;">
+<br/>
+typedef Window Tk_ClassCreateProc(<br/>
+    Tk_Window <i>tkwin</i>,<br/>
+    Window <i>parent</i>,<br/>
+    ClientData <i>instanceData</i>);<br/>
+</div>
+The <i>tkwin</i> and <i>instanceData</i> parameters will be identical to the  <i>tkwin</i> and <i>instanceData</i> parameters passed to  <b>Tk_SetClassProcs</b>.  The <i>parent</i> parameter will be the parent of the window to be created.  The  <i>createProc</i> should return the created window.<div class="spacer">
+</div>
+<i>modalProc</i> is invoked after all bindings on a widget have been triggered in order to handle a modal loop.   <i>modalProc</i> should have arguments and results that match the type  <b>Tk_ClassModalProc</b>:<div style="margin-left: 5.00ex;">
+<br/>
+typedef void Tk_ClassModalProc(<br/>
+    Tk_Window <i>tkwin</i>,<br/>
+    XEvent *<i>eventPtr</i>);<br/>
+</div>
+The <i>tkwin</i> parameter to <i>modalProc</i> will be identical to the  <i>tkwin</i> parameter passed to <b>Tk_SetClassProcs</b>.  The  <i>eventPtr</i> parameter will be a pointer to an XEvent structure describing the event being processed.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>KEYWORDS</h1> callback, class</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+8.4</td>
+<td class="foot-os">
+Tk</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

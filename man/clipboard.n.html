@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+clipboard(n)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+clipboard(n)</td>
+<td class="head-vol">
+Tk Built-In Commands</td>
+<td class="head-rtitle">
+clipboard(n)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> clipboard - Manipulate Tk clipboard</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <b>clipboard </b><i>option</i> ?<i>arg arg ...</i>?<br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> This command provides a Tcl interface to the Tk clipboard, which stores data for later retrieval using the selection mechanism (via the  <b>-selection CLIPBOARD</b> option). In order to copy data into the clipboard,  <b>clipboard clear</b> must be called, followed by a sequence of one or more calls to  <b>clipboard</b>  <b>append</b>.  To ensure that the clipboard is updated atomically, all appends should be completed before returning to the event loop.<div class="spacer">
+</div>
+The first argument to <b>clipboard</b> determines the format of the rest of the arguments and the behavior of the command.  The following forms are currently supported:<dl>
+<dt>
+<b>clipboard clear</b> ?<b>-displayof</b> <i>window</i>?</dt>
+<dd>
+Claims ownership of the clipboard on <i>window</i>'s display and removes any previous contents.   <i>Window</i> defaults to &#8220;.&#8221;. Returns an empty string.</dd>
+</dl>
+<dl>
+<dt>
+<b>clipboard append</b> ?<b>-displayof</b> <i>window</i>? ?<b>-format</b> <i>format</i>? ?<b>-type</b> <i>type</i>? ?<b>--</b>? <i>data</i></dt>
+<dd>
+Appends <i>data</i> to the clipboard on <i>window</i>'s display in the form given by  <i>type</i> with the representation given by  <i>format</i> and claims ownership of the clipboard on <i>window</i>'s display.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<div class="spacer">
+</div>
+<i>Type</i> specifies the form in which the selection is to be returned (the desired &#8220;target&#8221; for conversion, in ICCCM terminology), and should be an atom name such as STRING or FILE_NAME; see the Inter-Client Communication Conventions Manual for complete details.  <i>Type</i> defaults to STRING.<div class="spacer">
+</div>
+The <i>format</i> argument specifies the representation that should be used to transmit the selection to the requester (the second column of Table 2 of the ICCCM), and defaults to STRING.  If  <i>format</i> is STRING, the selection is transmitted as 8-bit ASCII characters.  If  <i>format</i> is ATOM, then the <i>data</i> is divided into fields separated by white space; each field is converted to its atom value, and the 32-bit atom value is transmitted instead of the atom name.  For any other  <i>format</i>,  <i>data</i> is divided into fields separated by white space and each field is converted to a 32-bit integer; an array of integers is transmitted to the selection requester.  Note that strings passed to  <b>clipboard append</b> are concatenated before conversion, so the caller must take care to ensure appropriate spacing across string boundaries.  All items appended to the clipboard with the same  <i>type</i> must have the same <i>format</i>.<div class="spacer">
+</div>
+The <i>format</i> argument is needed only for compatibility with clipboard requesters that do not use Tk.  If the Tk toolkit is being used to retrieve the CLIPBOARD selection then the value is converted back to a string at the requesting end, so  <i>format</i> is irrelevant.<div class="spacer">
+</div>
+A <b>--</b> argument may be specified to mark the end of options:  the next argument will always be used as  <i>data</i>. This feature may be convenient if, for example,  <i>data</i> starts with a  <b>-</b>.</div>
+<dl>
+<dt>
+<b>clipboard get</b> ?<b>-displayof</b> <i>window</i>? ?<b>-type</b> <i>type</i>?</dt>
+<dd>
+Retrieve data from the clipboard on <i>window</i>'s display.  <i>Window</i> defaults to &#8220;.&#8221;.  <i>Type</i> specifies the form in which the data is to be returned and should be an atom name such as STRING or FILE_NAME.   <i>Type</i> defaults to STRING.  This command is equivalent to &#8220; <b>selection get -selection CLIPBOARD</b>&#8221;.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<div class="spacer">
+</div>
+Note that on modern X11 systems, the most useful type to retrieve for transferred strings is not  <b>STRING</b>, but rather <b>UTF8_STRING</b>.</div>
+</div>
+<div class="section">
+<h1>EXAMPLES</h1> Get the current contents of the clipboard.<div style="margin-left: 5.00ex;">
+<br/>
+if {[catch {<b>clipboard get</b>} contents]} {<br/>
+    # There were no clipboard contents at all<br/>
+}<br/>
+</div>
+<div class="spacer">
+</div>
+Set the clipboard to contain a fixed string.<div style="margin-left: 5.00ex;">
+<br/>
+<b>clipboard clear</b><br/>
+<b>clipboard append</b> &quot;some fixed string&quot;<br/>
+</div>
+<div class="spacer">
+</div>
+You can put custom data into the clipboard by using a custom <b>-type</b> option. This is not necessarily portable, but can be very useful. The method of passing Tcl scripts this way is effective, but should be mixed with safe interpreters in production code.<div style="margin-left: 5.00ex;">
+<br/>
+# This is a very simple canvas serializer;<br/>
+# it produces a script that recreates the item(s) when executed<br/>
+proc getItemConfig {canvas tag} {<br/>
+   set script {}<br/>
+   foreach item [$canvas find withtag $tag] {<br/>
+      append script {$canvas create } [$canvas type $item]<br/>
+      append script { } [$canvas coords $item] { }<br/>
+      foreach config [$canvas itemconf $item] {<br/>
+         lassign $config name - - - value<br/>
+         append script [list $name $value] { }<br/>
+      }<br/>
+      append script \n<br/>
+   }<br/>
+   return [string trim $script]<br/>
+}<div class="spacer">
+</div>
+<br/>
+# Set up a binding on a canvas to cut and paste an item<br/>
+set c [canvas .c]<br/>
+pack $c<br/>
+$c create text 150 30 -text &quot;cut and paste me&quot;<br/>
+bind $c &lt;&lt;Cut&gt;&gt; {<br/>
+   <b>clipboard clear</b><br/>
+   <b>clipboard append -type</b> TkCanvasItem \<br/>
+         [getItemConfig %W current]<br/>
+   # Delete because this is cut, not copy.<br/>
+   %W delete current<br/>
+}<br/>
+bind $c &lt;&lt;Paste&gt;&gt; {<br/>
+   catch {<br/>
+      set canvas %W<br/>
+      eval [<b>clipboard get -type</b> TkCanvasItem]<br/>
+   }<br/>
+}<br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> interp(n), selection(n)<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>KEYWORDS</h1> clear, format, clipboard, append, selection, type</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+8.4</td>
+<td class="foot-os">
+Tk</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

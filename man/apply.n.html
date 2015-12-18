@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+apply(n)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+apply(n)</td>
+<td class="head-vol">
+Tcl Built-In Commands</td>
+<td class="head-rtitle">
+apply(n)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> apply - Apply an anonymous function</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <b>apply </b><i>func</i> ?<i>arg1 arg2 ...</i>?<br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The command  <b>apply</b> applies the function <i>func</i> to the arguments  <i>arg1 arg2 ...</i> and returns the result.<div class="spacer">
+</div>
+The function <i>func</i> is a two element list <i>{args body}</i> or a three element list  <i>{args body namespace}</i> (as if the  <b>list</b> command had been used). The first element  <i>args</i> specifies the formal arguments to  <i>func</i>. The specification of the formal arguments <i>args</i> is shared with the  <b>proc</b> command, and is described in detail in the corresponding manual page.<div class="spacer">
+</div>
+The contents of <i>body</i> are executed by the Tcl interpreter after the local variables corresponding to the formal arguments are given the values of the actual parameters  <i>arg1 arg2 ...</i>. When  <i>body</i> is being executed, variable names normally refer to local variables, which are created automatically when referenced and deleted when  <b>apply</b> returns.  One local variable is automatically created for each of the function's arguments. Global variables can only be accessed by invoking the  <b>global</b> command or the <b>upvar</b> command. Namespace variables can only be accessed by invoking the  <b>variable</b> command or the <b>upvar</b> command.<div class="spacer">
+</div>
+The invocation of <b>apply</b> adds a call frame to Tcl's evaluation stack (the stack of frames accessed via  <b>uplevel</b>). The execution of <i>body</i> proceeds in this call frame, in the namespace given by  <i>namespace</i> or in the global namespace if none was specified. If given,  <i>namespace</i> is interpreted relative to the global namespace even if its name does not start with &#8220;::&#8221;.<div class="spacer">
+</div>
+The semantics of <b>apply</b> can also be described by:<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;">
+<br/>
+proc apply {fun args} {<br/>
+   set len [llength $fun]<br/>
+   if {($len &lt; 2) || ($len &gt; 3)} {<br/>
+      error &quot;can't interpret \&quot;$fun\&quot; as anonymous function&quot;<br/>
+   }<br/>
+   lassign $fun argList body ns<br/>
+   set name ::$ns::[getGloballyUniqueName]<br/>
+   set body0 {<br/>
+      rename [lindex [info level 0] 0] {}<br/>
+   }<br/>
+   proc $name $argList ${body0}$body<br/>
+   set code [catch {uplevel 1 $name $args} res opt]<br/>
+   return -options $opt $res<br/>
+}<br/>
+</div>
+</div>
+<div class="section">
+<h1>EXAMPLES</h1> This shows how to make a simple general command that applies a transformation to each element of a list.<div style="margin-left: 5.00ex;">
+<br/>
+proc map {lambda list} {<br/>
+   set result {}<br/>
+   foreach item $list {<br/>
+      lappend result [<b>apply</b> $lambda $item]<br/>
+   }<br/>
+   return $result<br/>
+}<br/>
+map {x {return [string length $x]:$x}} {a bb ccc dddd}<br/>
+      <i>&#8594; 1:a 2:bb 3:ccc 4:dddd</i><br/>
+map {x {expr {$x**2 + 3*$x - 2}}} {-4 -3 -2 -1 0 1 2 3 4}<br/>
+      <i>&#8594; 2 -2 -4 -4 -2 2 8 16 26</i><br/>
+</div>
+<div class="spacer">
+</div>
+The <b>apply</b> command is also useful for defining callbacks for use in the  <b>trace</b> command:<div style="margin-left: 5.00ex;">
+<br/>
+set vbl &quot;123abc&quot;<br/>
+trace add variable vbl write {<b>apply</b> {{v1 v2 op} {<br/>
+   upvar 1 $v1 v<br/>
+   puts &quot;updated variable to \&quot;$v\&quot;&quot;<br/>
+}}}<br/>
+set vbl 123<br/>
+set vbl abc<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> proc(n), uplevel(n)</div>
+<div class="section">
+<h1>KEYWORDS</h1> argument, procedure, anonymous function</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+Tcl</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

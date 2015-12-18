@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+genxs(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+genxs(1)</td>
+<td class="head-vol">
+General Commands Manual</td>
+<td class="head-rtitle">
+genxs(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> genxs - Mono's Xml Serializer Generator</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>genxs</b> configurationFile [destinationFolder]</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <i>genxs</i> is a tool for generating custom XML serialization writers and readers for classes.<div class="spacer">
+</div>
+<i>configurationFile</i> is configuration file which specifies several information, such as the class for which to generate the reader and writer, the name and namespace of the classes to generate, and a collection of hooks to apply. By using hooks it is possible to customize the behavior of the serializer without needing to modify the generated file, so you can safely regenerate it if the source class is modified.<div class="spacer">
+</div>
+<i>destinationFolder</i> specifies the folder where the files will be generated.<div class="spacer">
+</div>
+<b>NOTE:</b> This tool only runs in the Mono runtime, since it uses some internal classes not available in other runtimes.</div>
+<div class="section">
+<h1>CONFIGURATION FILE FORMAT</h1> The configuration file is an xml document based on the following grammar (&quot;?&quot; means optional, &quot;*&quot; 0 or more):<div class="spacer">
+</div>
+<br/>
+	&lt;configuration&gt;<br/>
+		&lt;serializer class=&quot;name&quot; assembly=&quot;name&quot;&gt; *<br/>
+			&lt;reader&gt;name&lt;/reader&gt; ?<br/>
+			&lt;writer&gt;name&lt;/writer&gt; ?<br/>
+			&lt;namespace&gt;name&lt;/namespace&gt; ?<br/>
+			&lt;outFileName&gt;name&lt;/outFileName&gt; ?<br/>
+			&lt;readerHooks&gt; ?<br/>
+				&lt;hook ...&gt; *<br/>
+			&lt;/readerHooks&gt;<br/>
+			&lt;writerHooks&gt; ?<br/>
+				&lt;hook ...&gt; *<br/>
+			&lt;/writerHooks&gt;<br/>
+		&lt;/serializer&gt;<br/>
+	&lt;/configuration&gt;<br/>
+<div class="spacer">
+</div>
+A configuration file can have multiple &quot;serializer&quot; elements, each of which specifies the class for which to generate a serializer together with several generation options. The source class is specified in the following attributes:<dl>
+<dt>
+   *</dt>
+<dd>
+<i>class</i> : name of the class (including namespace).</dd>
+</dl>
+<dl>
+<dt>
+   *</dt>
+<dd>
+<i>assembly</i> : assembly name. It can include the complete path.</dd>
+</dl>
+<div class="spacer">
+</div>
+Generation options are specified in child elements:<dl>
+<dt>
+   *</dt>
+<dd>
+<i>reader</i> : name of the reader class.</dd>
+</dl>
+<dl>
+<dt>
+   *</dt>
+<dd>
+<i>noReader</i> : if &quot;true&quot;, it does not generate reader class.</dd>
+</dl>
+<dl>
+<dt>
+   *</dt>
+<dd>
+<i>writer</i> : name of the writer class.</dd>
+</dl>
+<dl>
+<dt>
+   *</dt>
+<dd>
+<i>baseSerializer</i> : name of the base xml serializer class. This item is 2.0 only.</dd>
+</dl>
+<dl>
+<dt>
+   *</dt>
+<dd>
+<i>implementation</i> : name of the serializer implementation class. This item is 2.0 only.</dd>
+</dl>
+<dl>
+<dt>
+   *</dt>
+<dd>
+<i>noWriter</i> : if &quot;true&quot;, it does not generate writer class.</dd>
+</dl>
+<dl>
+<dt>
+   *</dt>
+<dd>
+<i>namespace</i> : namespace of the reader and writer classes.</dd>
+</dl>
+<dl>
+<dt>
+   *</dt>
+<dd>
+<i>generateAsInternal</i> : if &quot;true&quot;, it generates classes as internal.</dd>
+</dl>
+<dl>
+<dt>
+   *</dt>
+<dd>
+<i>outFileName</i> : name of the generated file.</dd>
+</dl>
+<dl>
+<dt>
+   *</dt>
+<dd>
+<i>readerHooks</i> : a list of hooks to apply to the reader.</dd>
+</dl>
+<dl>
+<dt>
+   *</dt>
+<dd>
+<i>writerHooks</i> : a list of hooks to apply to the writer.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>SPECIFYING HOOKS</h1> Using hooks you can customize the behavior of readers and writers. A hook specification follows this grammar:<div class="spacer">
+</div>
+<br/>
+	&lt;hook type=&quot;name&quot;&gt;<br/>
+		&lt;select&gt; ?<br/>
+			&lt;typeName&gt;name&lt;/typeName&gt; ?<br/>
+			&lt;typeAttribute&gt;name&lt;/typeAttribute&gt; *<br/>
+			&lt;typeMember&gt;name&lt;/typeMember&gt; ?<br/>
+		&lt;/select&gt;<br/>
+		&lt;replace&gt;source code&lt;/replace&gt; ?<br/>
+		&lt;insertBefore&gt;source code&lt;/insertBefore&gt; ?<br/>
+		&lt;insertAfter&gt;source code&lt;/insertAfter&gt; ?<br/>
+	&lt;/hook&gt;<br/>
+<div class="spacer">
+</div>
+The &quot;type&quot; attribute specifies the context in which the hook is applied. It can be one of the following:<dl>
+<dt>
+   *</dt>
+<dd>
+<i>attributes</i> : hook is applied where attributes are serialized/deserialized.</dd>
+</dl>
+<dl>
+<dt>
+   *</dt>
+<dd>
+<i>elements</i> : hook is applied where elements are serialized/deserialized.</dd>
+</dl>
+<dl>
+<dt>
+   *</dt>
+<dd>
+<i>unknownAttribute</i> : hook is applied where unknown attributes are processed.</dd>
+</dl>
+<dl>
+<dt>
+   *</dt>
+<dd>
+<i>unknownElement</i> : hook is applied where unknown elements are processed.</dd>
+</dl>
+<dl>
+<dt>
+   *</dt>
+<dd>
+<i>member</i> : hook is applied where a member is serialized/deserialized.</dd>
+</dl>
+<dl>
+<dt>
+   *</dt>
+<dd>
+<i>type</i> : hook is applied for the whole type.</dd>
+</dl>
+<div class="spacer">
+</div>
+The &quot;select&quot; element specifies the classes and members to which the hook has to be added. It can contain the following elements:<dl>
+<dt>
+   *</dt>
+<dd>
+<i>typeName</i> : the class with that name will be selected (must include namespace)</dd>
+</dl>
+<dl>
+<dt>
+   *</dt>
+<dd>
+<i>typeAttribute</i> : all classes which have that attribute applied will be selected (specify the full attribute class name, including namespace). Several attribute names can be specified.</dd>
+</dl>
+<dl>
+<dt>
+   *</dt>
+<dd>
+<i>typeMember</i> : name of the class member for which the hook must be added.</dd>
+</dl>
+<div class="spacer">
+</div>
+The hook source code can be specified using any of the following elements:<dl>
+<dt>
+   *</dt>
+<dd>
+<i>replace</i> : the provided source code will replace all serialization/deserialization operations in the hook context.</dd>
+</dl>
+<dl>
+<dt>
+   *</dt>
+<dd>
+<i>insertBefore</i> : the source code will be added before the hook context.</dd>
+</dl>
+<dl>
+<dt>
+   *</dt>
+<dd>
+<i>insertAfter</i> : the source code will be added after the hook context.</dd>
+</dl>
+<div class="spacer">
+</div>
+When writing the code for a hook you can use some special variables that are defined during the code generation process. The variables are the following:<dl>
+<dt>
+   *</dt>
+<dd>
+<i>$TYPE:</i> name of the class being generated, without namespace.</dd>
+</dl>
+<dl>
+<dt>
+   *</dt>
+<dd>
+<i>$FULLTYPE:</i> full name of the class being generated, including namespace.</dd>
+</dl>
+<dl>
+<dt>
+   *</dt>
+<dd>
+<i>$OBJECT:</i> the object being serialized or deserialized. When using a replace reader hook of type &quot;type&quot;, the hook code must assign the deserialized object to this variable.</dd>
+</dl>
+<dl>
+<dt>
+   *</dt>
+<dd>
+-I $ELEMENT: name of the element of the object being serialized/deserialized.</dd>
+</dl>
+<dl>
+<dt>
+   *</dt>
+<dd>
+<i>$NAMESPACE:</i> namespace of the element of the object being serialized/deserialized.</dd>
+</dl>
+<dl>
+<dt>
+   *</dt>
+<dd>
+<i>$MEMBER:</i> name of the member being serialized/deserialized. Only valid in the &quot;member&quot; context.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>HOOK EXAMPLES</h1> The following example adds a call to a Validate method after the deserialization of any object:<div class="spacer">
+</div>
+<br/>
+&lt;hook type=&quot;type&quot;&gt;<br/>
+	&lt;insertAfter&gt;<br/>
+		System.Xml.Schema.XmlSchema.Validate$TYPE ($OBJECT);<br/>
+	&lt;/insertAfter&gt;<br/>
+&lt;/hook&gt;<br/>
+<div class="spacer">
+</div>
+This example specifies the code to be used to deserialize the XmlSchema class:<div class="spacer">
+</div>
+<br/>
+&lt;hook type=&quot;type&quot;&gt;<br/>
+	&lt;select&gt;<br/>
+		&lt;typeName&gt;System.Xml.Schema.XmlSchema&lt;/typeName&gt;<br/>
+	&lt;/select&gt;<br/>
+	&lt;replace&gt;<br/>
+		$OBJECT = System.Xml.Schema.XmlSchema.Read (Reader, null);<br/>
+	&lt;/replace&gt;<br/>
+&lt;/hook&gt;<br/>
+<div class="spacer">
+</div>
+That one specifies the code to be used to read XmlSchema instances:<div class="spacer">
+</div>
+<br/>
+&lt;hook type=&quot;type&quot;&gt;<br/>
+	&lt;select&gt;<br/>
+		&lt;typeName&gt;System.Xml.Schema.XmlSchema&lt;/typeName&gt;<br/>
+	&lt;/select&gt;<br/>
+	&lt;replace&gt;$OBJECT.Write (Writer);&lt;/replace&gt;<br/>
+&lt;/hook&gt;<br/>
+<div class="spacer">
+</div>
+With this two hooks the serializer will print some information when serializing the class &quot;MyClass&quot;:<div class="spacer">
+</div>
+<br/>
+&lt;hook type=&quot;type&quot;&gt;<br/>
+	&lt;select&gt;<br/>
+		&lt;typeName&gt;MyNamespace.MyClass&lt;/typeName&gt;<br/>
+	&lt;/select&gt;<br/>
+	&lt;insertBefore&gt;Console.WriteLine (&quot;Serializing MyClass&quot;);&lt;/replace&gt;<br/>
+	&lt;insertAfter&gt;Console.WriteLine (&quot;MyClass serialized&quot;);&lt;/insertAfter&gt;<br/>
+&lt;/hook&gt;<br/>
+&lt;hook type=&quot;member&quot;&gt;<br/>
+	&lt;select&gt;<br/>
+		&lt;typeName&gt;MyNamespace.MyClass&lt;/typeName&gt;<br/>
+	&lt;/select&gt;<br/>
+	&lt;insertAfter&gt;<br/>
+		Console.WriteLine (&quot;Serialized member $MEMBER&quot;);<br/>
+	&lt;/insertAfter&gt;<br/>
+&lt;/hook&gt;<br/>
+<div class="spacer">
+</div>
+This hook writes an additional element for all types that have the custom attribute &quot;MyAttribute&quot;:<div class="spacer">
+</div>
+<br/>
+&lt;hook type=&quot;elements&quot;&gt;<br/>
+	&lt;select&gt;<br/>
+		&lt;typeAttribute&gt;MyNamespace.MyAttribute&lt;/typeAttribute&gt;<br/>
+	&lt;/select&gt;<br/>
+	&lt;insertAfter&gt;<br/>
+		Writer.WriteStartElement (&quot;privateData&quot;);<br/>
+		Writer.WriteString ($OBJECT.PrivateData);<br/>
+		Writer.WriteEndElement ();<br/>
+	&lt;/insertAfter&gt;<br/>
+&lt;/hook&gt;<br/>
+</div>
+<div class="section">
+<h1>CONFIGURATION FILE EXAMPLE</h1> This is the configuration file used to generate the serializer for ServiceDescription:<div class="spacer">
+</div>
+<br/>
+&lt;configuration&gt;<br/>
+	&lt;serializer class=&quot;System.Web.Services.Description.ServiceDescription&quot; assembly=&quot;System.Web.Services&quot;&gt;<br/>
+		&lt;reader&gt;ServiceDescriptionReaderBase&lt;/reader&gt;<br/>
+		&lt;writer&gt;ServiceDescriptionWriterBase&lt;/writer&gt;<br/>
+		&lt;namespace&gt;System.Web.Services.Description&lt;/namespace&gt;<br/>
+		&lt;outFileName&gt;ServiceDescriptionSerializerBase.cs&lt;/outFileName&gt;<br/>
+		&lt;readerHooks&gt;<br/>
+			&lt;hook type=&quot;unknownElement&quot;&gt;<br/>
+				&lt;select&gt;<br/>
+					&lt;typeAttribute&gt;System.Web.Services.Configuration.XmlFormatExtensionPointAttribute&lt;/typeAttribute&gt;<br/>
+				&lt;/select&gt;<br/>
+				&lt;replace&gt;ServiceDescription.ReadExtension (Reader, $OBJECT);&lt;/replace&gt;<br/>
+			&lt;/hook&gt;<br/>
+			&lt;hook type=&quot;type&quot;&gt;<br/>
+				&lt;select&gt;<br/>
+					&lt;typeName&gt;System.Xml.Schema.XmlSchema&lt;/typeName&gt;<br/>
+				&lt;/select&gt;<br/>
+				&lt;replace&gt;$OBJECT = System.Xml.Schema.XmlSchema.Read (Reader, null);&lt;/replace&gt;<br/>
+			&lt;/hook&gt;<br/>
+		&lt;/readerHooks&gt;<br/>
+		&lt;writerHooks&gt;<br/>
+			&lt;hook type=&quot;elements&quot;&gt;<br/>
+				&lt;select&gt;<br/>
+					&lt;typeAttribute&gt;System.Web.Services.Configuration.XmlFormatExtensionPointAttribute&lt;/typeAttribute&gt;<br/>
+				&lt;/select&gt;<br/>
+				&lt;insertBefore&gt;ServiceDescription.WriteExtensions (Writer, $OBJECT);&lt;/insertBefore&gt;<br/>
+			&lt;/hook&gt;<br/>
+			&lt;hook type=&quot;type&quot;&gt;<br/>
+				&lt;select&gt;<br/>
+					&lt;typeName&gt;System.Xml.Schema.XmlSchema&lt;/typeName&gt;<br/>
+				&lt;/select&gt;<br/>
+				&lt;replace&gt;$OBJECT.Write (Writer);&lt;/replace&gt;<br/>
+			&lt;/hook&gt;<br/>
+		&lt;/writerHooks&gt;<br/>
+	&lt;/serializer&gt;<br/>
+&lt;/configuration&gt;<br/>
+</div>
+<div class="section">
+<h1>AUTHORS</h1> Lluis Sanchez Gual (lluis@ximian.com)</div>
+<div class="section">
+<h1>LICENSE</h1> GenXS is released under the terms of the GNU GPL.</div>
+<div class="section">
+<h1>SEE ALSO</h1> mono(1), mcs(1), sgen(1)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

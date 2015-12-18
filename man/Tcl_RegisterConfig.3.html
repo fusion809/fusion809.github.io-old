@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+Tcl_RegisterConfig(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+Tcl_RegisterConfig(3)</td>
+<td class="head-vol">
+Tcl Library Procedures</td>
+<td class="head-rtitle">
+Tcl_RegisterConfig(3)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> Tcl_RegisterConfig - procedures to register embedded configuration information</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+<b>#include &lt;tcl.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+void<br/>
+<b>Tcl_RegisterConfig</b>(<i>interp, pkgName, configuration, valEncoding</i>)<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>ARGUMENTS</h1><dl>
+<dt>
+Tcl_Interp <i>*interp</i> (in)</dt>
+<dd>
+Refers to the interpreter the embedded configuration information is registered for. Must not be NULL.</dd>
+</dl>
+<dl>
+<dt>
+const char <i>*pkgName</i> (in)</dt>
+<dd>
+Contains the name of the package registering the embedded configuration as ASCII string. This means that this information is in UTF-8 too. Must not be NULL.</dd>
+</dl>
+<dl>
+<dt>
+Tcl_Config <i>*configuration</i> (in)</dt>
+<dd>
+Refers to an array of Tcl_Config entries containing the information embedded in the binary library. Must not be NULL. The end of the array is signaled by either a key identical to NULL, or a key referring to the empty string.</dd>
+</dl>
+<dl>
+<dt>
+const char <i>*valEncoding</i> (in)</dt>
+<dd>
+Contains the name of the encoding used to store the configuration values as ASCII string. This means that this information is in UTF-8 too. Must not be NULL.<br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The function described here has its base in TIP 59 and provides extensions with support for the embedding of configuration information into their binary library and the generation of a Tcl-level interface for querying this information.<div class="spacer">
+</div>
+To embed configuration information into their binary library an extension has to define a non-volatile array of Tcl_Config entries in one if its source files and then call  <b>Tcl_RegisterConfig</b> to register that information.<div class="spacer">
+</div>
+<b>Tcl_RegisterConfig</b> takes four arguments; first, a reference to the interpreter we are registering the information with, second, the name of the package registering its configuration information, third, a pointer to an array of structures, and fourth a string declaring the encoding used by the configuration values.<div class="spacer">
+</div>
+The string <i>valEncoding</i> contains the name of an encoding known to Tcl.  All these names are use only characters in the ASCII subset of UTF-8 and are thus implicitly in the UTF-8 encoding. It is expected that keys are legible English text and therefore using the ASCII subset of UTF-8. In other words, they are expected to be in UTF-8 too. The values associated with the keys can be any string however. For these the contents of  <i>valEncoding</i> define which encoding was used to represent the characters of the strings.<div class="spacer">
+</div>
+Each element of the <i>configuration</i> array refers to two strings containing the key and the value associated with that key. The end of the array is signaled by either an empty key or a key identical to NULL. The function makes  <b>no</b> copy of the <i>configuration</i> array. This means that the caller has to make sure that the memory holding this array is never released. This is the meaning behind the word  <b>non-volatile</b> used earlier. The easiest way to accomplish this is to define a global static array of Tcl_Config entries. See the file &#8220;generic/tclPkgConfig.c&#8221; in the sources of the Tcl core for an example.<div class="spacer">
+</div>
+When called <b>Tcl_RegisterConfig</b> will<dl>
+<dt>
+(1)</dt>
+<dd>
+create a namespace having the provided <i>pkgName</i>, if not yet existing.</dd>
+</dl>
+<dl>
+<dt>
+(2)</dt>
+<dd>
+create the command <b>pkgconfig</b> in that namespace and link it to the provided information so that the keys from _configuration_ and their associated values can be retrieved through calls to  <b>pkgconfig</b>.</dd>
+</dl>
+<div class="spacer">
+</div>
+The command <b>pkgconfig</b> will provide two subcommands, <b>list</b> and  <b>get</b>:<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+::<i>pkgName</i>::<b>pkgconfig</b> list</dt>
+<dd>
+Returns a list containing the names of all defined keys.</dd>
+</dl>
+<dl>
+<dt>
+::<i>pkgName</i>::<b>pkgconfig</b> get <i>key</i></dt>
+<dd>
+Returns the configuration value associated with the specified  <i>key</i>.</dd>
+</dl>
+</div>
+</div>
+<div class="section">
+<h1>TCL_CONFIG</h1> The  <b>Tcl_Config</b> structure contains the following fields:<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;">
+<br/>
+typedef struct Tcl_Config {<br/>
+    const char* key;<br/>
+    const char* value;<br/>
+} Tcl_Config;<br/>
+</div>
+</div>
+<div class="section">
+<h1>KEYWORDS</h1> embedding, configuration, binary library</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+8.4</td>
+<td class="foot-os">
+Tcl</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

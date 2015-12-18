@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+mdoc(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+mdoc(1)</td>
+<td class="head-vol">
+General Commands Manual</td>
+<td class="head-rtitle">
+mdoc(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> mdoc - Mono documentation management tool</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>mdoc</b> <i>command</i> [ <i>options</i>] [<i>args</i>]</div>
+<div class="section">
+<h1>OVERVIEW</h1>  <i>mdoc</i> is an assembly-based documentation management system.<div class="spacer">
+</div>
+<i>mdoc</i> permits creating and updating documentation <i>stubs</i> based on the contents of an assembly.  It does not rely on documentation found within the source code.<div class="spacer">
+</div>
+The advantages are:<dl>
+<dt>
+<b>*</b></dt>
+<dd>
+<b>Code readability.</b> Good documentation is frequently (a) verbose, and (b) filled with examples.  (For comparison, compare Microsoft .NET Framework documentation, which is often a page or more of docs for each member, to JavaDoc documentation, which can often be a sentence for each member.)<div style="height: 1.00em;">
+&#160;</div>
+Inserting good documentation into the source code can frequently bloat the source file, as the documentation can be longer than the actual method that is being documented.</dd>
+</dl>
+<dl>
+<dt>
+<b>*</b></dt>
+<dd>
+<b>Localization.</b> In-source documentation formats (such as  <i>csc /doc</i>) have no support for multiple human languages.  If you need to support more than one human language for documentation purposes,  <i>mdoc</i> is useful as it permits each language's output to reside in its own directory, and  <i>mdoc</i> can add types/members for each separate documentation directory.</dd>
+</dl>
+<dl>
+<dt>
+<b>*</b></dt>
+<dd>
+<b>Administration.</b> It's not unusual to have separate documentation and development teams.  It's also possible that the documentation team will have minimal experience with the programming language being used.  In such circumstances, inline documentation is not desirable as the documentation team could inadvertantly insert an error into the source code while updating the documentation. Alternatively, you may not want the documentation team to have access to the source code for security reasons.   <i>mdoc</i> allows the documentation to be kept  <i>completely</i> separate and distinct from the source code used to create the assembly.</dd>
+</dl>
+<div class="spacer">
+</div>
+Documentation can be generated using the <b>mdoc update</b> command:<div class="spacer">
+</div>
+<br/>
+    mdoc update -o docs/en ProjectName.dll<div class="spacer">
+</div>
+<br/>
+Once the documentation stubs have been generated (and hopefully later filled in with actual documentation), there are three ways to view the documentation:<dl>
+<dt>
+<b>*</b></dt>
+<dd>
+To generate a simple directory of HTML pages (one HTML file per type), use  <b>mdoc export-html</b>:<div class="spacer">
+</div>
+<br/>
+    mdoc export-html -o /srv/www/htdocs/ProjectName docs/en<div class="spacer">
+</div>
+<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>*</b></dt>
+<dd>
+To use an ASP.NET webapp to display the sources, see:  <i>http://anonsvn.mono-project.com/source/trunk/monodoc/engine/web/</i>.<div style="height: 1.00em;">
+&#160;</div>
+From a <i>monodoc</i> source checkout, you can do this:<div class="spacer">
+</div>
+<br/>
+    cd engine<br/>
+    make web<div class="spacer">
+</div>
+<br/>
+This will use <b>xsp</b>(1) to serve the ASP.NET webapp; Visit  <i>http://localhost:8080/</i> to view the documentation.</dd>
+</dl>
+<dl>
+<dt>
+<b>*</b></dt>
+<dd>
+To use the <b>monodoc</b>(1) documentation browser, you must first  <i>assemble</i> the documentation:<div class="spacer">
+</div>
+<br/>
+    mdoc assemble -o ProjectName docs/en<div class="spacer">
+</div>
+<br/>
+The above command creates the files <i>ProjectName.tree</i> and  <i>ProjectName.zip</i>.  An additional <i>ProjectName.sources</i> file must be provided which describes where in the help system the documentation should be hooked up; it is a very simple XML file, like this:<div class="spacer">
+</div>
+<br/>
+    &lt;?xml version=&quot;1.0&quot;?&gt;<br/>
+    &lt;monodoc&gt;<br/>
+      &lt;source provider=&quot;ecma&quot; basefile=&quot;ProjectName&quot;<br/>
+        path=&quot;various&quot; /&gt;<br/>
+    &lt;/monodoc&gt;<div class="spacer">
+</div>
+<br/>
+The above configuration file describes that the documentation is in ECMA format, that the base file name is  <i>ProjectName</i> and that it should be hooked up in the  <i>&quot;various&quot;</i> part of the documentation tree. If you want to look at the various nodes defined in the documentation, you can look at the  <i>monodoc.xml</i> file which is typically installed in  <i>/usr/lib/monodoc/monodoc.xml</i>.<div style="height: 1.00em;">
+&#160;</div>
+Once you have all of the required files (.zip, .tree and .sources) you can install them into the system with the following command:<div class="spacer">
+</div>
+<br/>
+    cp ProjectName.tree ProjectName.zip ProjectName.source \<br/>
+      `pkg-config monodoc --variable sourcesdir`<div class="spacer">
+</div>
+<br/>
+The above will copy the files into the directory that Monodoc has registered; you might need root permissions to do this.  The actual directory is returned by the  <i>pkg-config</i> invocation.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>MDOC COMMANDS</h1>  <b>mdoc assemble</b><div style="margin-left: 4.00ex;">
+Compiles documentation for use within the <b>monodoc</b>(1) browser.<div class="spacer">
+</div>
+See the <b>mdoc-assemble</b>(1) man page for details.</div>
+<div class="spacer">
+</div>
+<b>mdoc export-html</b><div style="margin-left: 4.00ex;">
+Exports documentation into a directory structure of HTML files.<div class="spacer">
+</div>
+See the <b>mdoc-export-html</b>(1) man page for details.</div>
+<div class="spacer">
+</div>
+<b>mdoc export-msxdoc</b><div style="margin-left: 4.00ex;">
+Exports documentation into the single-file  <i>Microsoft XML Documentation</i> format.<div class="spacer">
+</div>
+See the <b>mdoc-export-msxdoc</b>(1) man page for details.</div>
+<div class="spacer">
+</div>
+<b>mdoc help</b><div style="margin-left: 4.00ex;">
+View internal help for a given command.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    mdoc help assemble<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+is equivalent to:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    mdoc assemble --help<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+Multiple sub-commands may be listed at once:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    mdoc help assemble export-html update validate<br/>
+</div>
+<div class="spacer">
+</div>
+<b>mdoc update</b><div style="margin-left: 4.00ex;">
+Updates documentation, adding and removing members based upon a reference assembly.<div class="spacer">
+</div>
+See the <b>mdoc-update</b>(1) man page for details.</div>
+<div class="spacer">
+</div>
+<b>mdoc validate</b><div style="margin-left: 4.00ex;">
+Validates the documentation against the Mono documentation schema.<div class="spacer">
+</div>
+See the <b>mdoc-validate</b>(1) man page for details.</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> mdoc(5), mdoc-assemble(1), mdoc-export-html(1), mdoc-update(1), mdoc-validate(1)</div>
+<div class="section">
+<h1>MAILING LISTS</h1><dl>
+<dt>
+Visit http://lists.ximian.com/mailman/listinfo/mono-docs-list for details.</dt>
+<dd>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>WEB SITE</h1> Visit http://www.mono-project.com/docs/tools+libraries/tools/mdoc/ for details</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

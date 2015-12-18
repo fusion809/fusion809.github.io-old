@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+Mono(certmgr)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+Mono(certmgr)</td>
+<td class="head-vol">
+</td>
+<td class="head-rtitle">
+Mono(certmgr)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> certmgr - Mono Certificate Manager (CLI version)</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>certmgr [action] [object type] [options] store [filename]</b> or <b>certmgr -ssl [options] url</b></div>
+<div class="section">
+<h1>DESCRIPTION</h1> This tool allow to list, add, remove or extract certificates, certificate revocation lists (CRL) or certificate trust lists (CTL) to/from a certificate store. Certificate stores are used to build and validate certificate chains for Authenticode(r) code signing validation and SSL server certificates.</div>
+<div class="section">
+<h1>ACTIONS</h1><dl>
+<dt>
+<i>-list</i></dt>
+<dd>
+List the certificates, CTL or CTL in the specified store.</dd>
+</dl>
+<dl>
+<dt>
+<i>-add</i></dt>
+<dd>
+Add a certificate, CRL or CTL to specified store. If filename it's a pkcs12 or pfx file, and it contains a private key, it will be imported to local key pair container.</dd>
+</dl>
+<dl>
+<dt>
+<i>-del</i></dt>
+<dd>
+Remove a certificate, CRL or CTL from specified store. You must specify the object to be removed with it's hash value (and not a filename). This hash value is shown when doing a <b>-list</b> on the store.</dd>
+</dl>
+<dl>
+<dt>
+<i>-put</i></dt>
+<dd>
+Copy a certificate, CRL or CTL from a store to a file.</dd>
+</dl>
+<dl>
+<dt>
+<i>-ssl</i></dt>
+<dd>
+Download and add the certificates from a SSL session. You'll be asked to confirm the addition of every certificate received from the server. Note that SSL/TLS protocols do not requires a server to send the root certificate. This action assume an certificate (-c) object type and will import the certificates in appropriate stores (i.e. server certificate in the OtherPeople store, the root certificate in the Trust store, any other intermediate certificates in the IntermediateCA store).</dd>
+</dl>
+<dl>
+<dt>
+<i>-importKey</i></dt>
+<dd>
+Allows importing a private key from a pkcs12 file into a local key pair store. (Usefull when you already have the key's corresponding certificate installed at the specific store.)<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>OBJECT TYPES</h1><dl>
+<dt>
+<i>-c , -cert , -certificate</i></dt>
+<dd>
+Add, Delete or Put certificates. That is the specified file must/will contains X.509 certificates in DER binary encoding.</dd>
+</dl>
+<dl>
+<dt>
+<i>-crl</i></dt>
+<dd>
+Add, Delete or Put certificate revocation lists (CRL). That is the specified file must/will contains X.509 CRL in DER binary encoding.</dd>
+</dl>
+<dl>
+<dt>
+<i>-ctl</i></dt>
+<dd>
+Add, Delete or Put certificate trust lists (CRL). UNSUPPORTED.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>OPTIONS</h1><dl>
+<dt>
+<i>-m</i></dt>
+<dd>
+Use the machine's certificate stores (instead of the default user's stores).</dd>
+</dl>
+<dl>
+<dt>
+<i>-v</i></dt>
+<dd>
+More details displayed on the console.</dd>
+</dl>
+<dl>
+<dt>
+<i>-p password</i></dt>
+<dd>
+Use the specify password when accessing a pkcs12 file.</dd>
+</dl>
+<dl>
+<dt>
+<i>-help , -h , -? , /?</i></dt>
+<dd>
+Display help about this tool.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>FILES</h1> <b>WARNING: This details the current behavior of Mono and could change between releases.</b> The only safe way to interact with certificate stores is to use the certmgr tool. The current releases of Mono keeps all the user certificate stores in separates directories under <i>~/.config/.mono/certs/</i><dl>
+<dt>
+For example the trusted root certificates for a user would be kept under</dt>
+<dd>
+<i>~/.config/.mono/certs/Trust/</i></dd>
+</dl>
+<dl>
+<dt>
+Certificates files are kept in DER (binary) format (extension .cer).</dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+The filenames either starts with</dt>
+<dd>
+<i>tbp</i> (thumbprint) or <i>ski</i> (subject key identifier).</dd>
+</dl>
+<dl>
+<dt>
+The rest of the filename is the base64-encoded value (tbp or ski).</dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+Private key data is stored under</dt>
+<dd>
+<i>~/.config/.mono/keypairs/</i><div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>EXAMPLES</h1><dl>
+<dt>
+<b>mono certmgr.exe -list -c -m Trust</b></dt>
+<dd>
+List all certificates in the machine Trust store. This will display the hash value for each certificate. This value can be used to identify uniquely a certificate for some operations (e.g. delete). E.g. <b>Unique Hash: FFA3AC0084DA1673B5A031EBB2156B3E8FBBF6D8</b></dd>
+</dl>
+<dl>
+<dt>
+<b>mono certmgr.exe -del -c -m Trust FFA3AC0084DA1673B5A031EBB2156B3E8FBBF6D8</b></dt>
+<dd>
+Remove the certificate, represented by the hash value, from the machine Trust store. Note that the machine store is normally restricted. The following error message will appear if the current user doesn't have the minimum access rights to remove the certificate: <b>Access to the machine 'Trust' certificate store has been denied.</b></dd>
+</dl>
+<dl>
+<dt>
+<b>certmgr -ssl https://www.verisign.com</b></dt>
+<dd>
+Import certificates from www.verisign.com used for HTTP over SSL. See KNOWN ISSUES (MD2) if you're downloading from www.verisign.com.</dd>
+</dl>
+<dl>
+<dt>
+<b>certmgr -ssl ldaps://www.nldap.com:636</b></dt>
+<dd>
+Import the certificates from www.nldap.com used for secure LDAP. This works even if we don't know how to speak LDAP because we stop the communication shortly after the SSL handshake (which gives us the certificate).<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>KNOWN ISSUES</h1><dl>
+<dt>
+<b>MD2</b></dt>
+<dd>
+Some Certificate Authorities (CA) old root certificates use the MD2 hash algorithm. MD2 is old enough not to be part of the standard .NET framework. This makes it impossible to validate a digital signature made with MD2. For this reason MD2 is included in the Mono.Security.dll assembly. However the machine.config file must be updated so the OID for MD2 is known at runtime.<div style="height: 1.00em;">
+&#160;</div>
+To correct this insert the following XML snippet inside the &lt;configuration&gt; element of your machine.config file.<br/>
+  &lt;mscorlib&gt;<br/>
+    &lt;cryptographySettings&gt;<br/>
+      &lt;cryptoNameMapping&gt;<br/>
+        &lt;cryptoClasses&gt;<br/>
+          &lt;cryptoClass monoMD2=&quot;Mono.Security.Cryptography.MD2Managed, Mono.Security, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756&quot; /&gt;<br/>
+        &lt;/cryptoClasses&gt;<br/>
+        &lt;nameEntry name=&quot;MD2&quot; class=&quot;monoMD2&quot; /&gt;<br/>
+      &lt;/cryptoNameMapping&gt;<br/>
+      &lt;oidMap&gt;<br/>
+        &lt;oidEntry OID=&quot;1.2.840.113549.2.2&quot; name=&quot;MD2&quot; /&gt;<br/>
+      &lt;/oidMap&gt;<br/>
+    &lt;/cryptographySettings&gt;<br/>
+  &lt;/mscorlib&gt;<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>AUTHOR</h1> Written by Sebastien Pouliot<div style="height: 1.00em;">
+&#160;</div>
+Minor additions by Pablo Ruiz Garc&#237;a</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright (C) 2004-2005 Novell.</div>
+<div class="section">
+<h1>MAILING LISTS</h1> Visit http://lists.ximian.com/mailman/listinfo/mono-list for details.</div>
+<div class="section">
+<h1>WEB SITE</h1> Visit http://www.mono-project.com for details</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>makecert(1),</b>setreg(1)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

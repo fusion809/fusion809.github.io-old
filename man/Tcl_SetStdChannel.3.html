@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+Tcl_GetStdChannel(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+Tcl_GetStdChannel(3)</td>
+<td class="head-vol">
+Tcl Library Procedures</td>
+<td class="head-rtitle">
+Tcl_GetStdChannel(3)</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<br/>
+<div class="section">
+<h1>NAME</h1> Tcl_GetStdChannel, Tcl_SetStdChannel - procedures for retrieving and replacing the standard channels</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+<b>#include &lt;tcl.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Tcl_Channel<br/>
+<b>Tcl_GetStdChannel</b>(<i>type</i>)<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>Tcl_SetStdChannel</b>(<i>channel, type</i>)<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>ARGUMENTS</h1><dl>
+<dt>
+int <i>type</i> (in)</dt>
+<dd>
+The identifier for the standard channel to retrieve or modify.  Must be one of  <b>TCL_STDIN</b>, <b>TCL_STDOUT</b>, or <b>TCL_STDERR</b>.</dd>
+</dl>
+<dl>
+<dt>
+Tcl_Channel <i>channel</i> (in)</dt>
+<dd>
+The channel to use as the new value for the specified standard channel.<br/>
+<br/>
+<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> Tcl defines three special channels that are used by various I/O related commands if no other channels are specified.  The standard input channel has a channel name of  <b>stdin</b> and is used by <b>read</b> and <b>gets</b>. The standard output channel is named  <b>stdout</b> and is used by  <b>puts</b>.  The standard error channel is named <b>stderr</b> and is used for reporting errors.  In addition, the standard channels are inherited by any child processes created using  <b>exec</b> or <b>open</b> in the absence of any other redirections.<div class="spacer">
+</div>
+The standard channels are actually aliases for other normal channels.  The current channel associated with a standard channel can be retrieved by calling  <b>Tcl_GetStdChannel</b> with one of  <b>TCL_STDIN</b>, <b>TCL_STDOUT</b>, or <b>TCL_STDERR</b> as the <i>type</i>.  The return value will be a valid channel, or NULL.<div class="spacer">
+</div>
+A new channel can be set for the standard channel specified by <i>type</i> by calling  <b>Tcl_SetStdChannel</b> with a new channel or NULL in the  <i>channel</i> argument.  If the specified channel is closed by a later call to  <b>Tcl_Close</b>, then the corresponding standard channel will automatically be set to NULL.<div class="spacer">
+</div>
+If a non-NULL value for <i>channel</i> is passed to <b>Tcl_SetStdChannel</b>, then that same value should be passed to  <b>Tcl_RegisterChannel</b>, like so:<div style="margin-left: 5.00ex;">
+<br/>
+Tcl_RegisterChannel(NULL, channel);<br/>
+</div>
+This is a workaround for a misfeature in <b>Tcl_SetStdChannel</b> that it fails to do some reference counting housekeeping.  This misfeature cannot be corrected without contradicting the assumptions of some existing code that calls  <b>Tcl_SetStdChannel</b>.<div class="spacer">
+</div>
+If <b>Tcl_GetStdChannel</b> is called before <b>Tcl_SetStdChannel</b>, Tcl will construct a new channel to wrap the appropriate platform-specific standard file handle.  If  <b>Tcl_SetStdChannel</b> is called before  <b>Tcl_GetStdChannel</b>, then the default channel will not be created.<div class="spacer">
+</div>
+If one of the standard channels is set to NULL, either by calling  <b>Tcl_SetStdChannel</b> with a NULL <i>channel</i> argument, or by calling  <b>Tcl_Close</b> on the channel, then the next call to <b>Tcl_CreateChannel</b> will automatically set the standard channel with the newly created channel.  If more than one standard channel is NULL, then the standard channels will be assigned starting with standard input, followed by standard output, with standard error being last.<div class="spacer">
+</div>
+See <b>Tcl_StandardChannels</b> for a general treatise about standard channels and the behaviour of the Tcl library with regard to them.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> Tcl_Close(3), Tcl_CreateChannel(3), Tcl_Main(3), tclsh(1)<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>KEYWORDS</h1> standard channel, standard input, standard output, standard error</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+7.5</td>
+<td class="foot-os">
+Tcl</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+
