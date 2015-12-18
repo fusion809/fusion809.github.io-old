@@ -1,1334 +1,1323 @@
-<HTML><HEAD><TITLE>Manpage of MAKE.CONF</TITLE>
-<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
-</HEAD><BODY>
-<H1>MAKE.CONF</H1>
-Section: Portage (5)<BR>Updated: Jan 2015<BR><A HREF="#index">Index</A>
-<A HREF="http://localhost/cgi-bin/man/man2html">Return to Main Contents</A><HR>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+MAKE.CONF(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+MAKE.CONF(5)</td>
+<td class="head-vol">
+Portage</td>
+<td class="head-rtitle">
+MAKE.CONF(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> make.conf - custom settings for Portage</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <b>/etc/make.conf</b> and <b>/etc/portage/make.conf</b></div>
+<div class="section">
+<h1>DESCRIPTION</h1> This file contains various variables that are used by Portage. The file has a newline-delimited list of  <i>&lt;key&gt;=&lt;value&gt;</i> pairs (see the default file for examples) which are accessible from the environment of ebuilds. It supports simple shell-like expansion of the form  <i>var=&quot;${var}&quot;</i>, the source keyword and variable substitution, but not some of the more advanced BASH features like arrays and special parameter expansions. For more details, see the Simple lexical analysis documentation: http://docs.python.org/3/library/shlex.html. Note that if you source files, they need to be in the same shlex syntax for portage to read them. If make.conf is a directory, then all the files in that directory will be sorted in ascending alphabetical order by file name and summed together as if it were a single file.<div style="height: 0.00em;">
+&#160;</div>
+Portage will check the currently-defined environment variables first for any settings.  If no environment settings are found, Portage then checks the make.conf files. Both /etc/make.conf and /etc/portage/make.conf are checked (if present), and settings from /etc/portage/make.conf will override settings from /etc/make.conf. If no setting is found in the make.conf files, Portage checks make.globals. If no setting is found there, the profile's default setting is grabbed from /etc/portage/make.profile/make.defaults. Please note that all user settings should be made in the environment or in the make.conf files, which are intended to be customized by the user.<div style="height: 0.00em;">
+&#160;</div>
+Exceptions are incremental variables such as USE, CONFIG_PROTECT*, and ACCEPT_KEYWORDS.  Incremental variables are propagated down from make.defaults to make.globals to make.conf to the environment settings.  Clearing these variables requires a clear-all as in: export USE=&quot;-*&quot;<div style="height: 0.00em;">
+&#160;</div>
+In order to create per-package environment settings, refer to  <b>package.env</b> in <b>portage</b>(5).</div>
+<div class="section">
+<h1>VARIABLES</h1><dl>
+<dt>
+<b>ACCEPT_CHOSTS</b> = <i>[space delimited list of CHOST values]</i></dt>
+<dd>
+Specifies acceptable <b>CHOST</b> values. Regular expression syntax is supported, so it is necessary to escape  <b>CHOST</b> characters if they have special meaning in regular expressions.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to the value of $CHOST.</dd>
+</dl>
+<dl>
+<dt>
+<b>ACCEPT_KEYWORDS</b> = <i>[space delimited list of KEYWORDS]</i></dt>
+<dd>
+Enable testing of ebuilds that have not yet been deemed 'stable'.  Users of the 'x86' architecture would set this to '~x86' while ppc users would set this to '~ppc'.  This is an incremental variable.  Only define a ~arch.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to the value of $ARCH.</dd>
+</dl>
+<dl>
+<dt>
+<b>ACCEPT_LICENSE</b> = <i>[space delimited list of licenses or groups]</i></dt>
+<dd>
+This variable is used to mask packages based on licensing restrictions. It may contain both license and group names, where group names are prefixed with the '@' symbol. License groups are defined in the  <i>license_groups</i> file (see  <b>portage</b>(5)). In addition to license and group names, the  <i>*</i> and <i>-*</i> wildcard tokens are also supported. Refer to GLEP 23 for further information:  <i>http://www.gentoo.org/proj/en/glep/glep-0023.html</i>.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to the value of * -@EULA.<div style="height: 0.00em;">
+&#160;</div>
+<i>Examples:</i><br/>
+# Only accept licenses in the FREE license group (i.e. Free Software)<br/>
+ACCEPT_LICENSE=&quot;-* @FREE&quot;<br/>
+# As before, but exclude the &quot;Artistic&quot; license<br/>
+ACCEPT_LICENSE=&quot;-* @FREE -Artistic&quot;<br/>
+# Accept any license except those in the EULA license group (default)<br/>
+ACCEPT_LICENSE=&quot;* -@EULA&quot;<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>ACCEPT_PROPERTIES</b> = <i>[space delimited list of properties]</i></dt>
+<dd>
+This variable is used to mask packages based on PROPERTIES restrictions. In addition to property names, the  <i>*</i> and <i>-*</i> wildcard tokens are also supported. This variable can be temporarily overridden using the  <b>--accept-properties</b> option of <b>emerge</b>(1). See  <b>ebuild</b>(5) for more information about PROPERTIES.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to the value of *.<div style="height: 0.00em;">
+&#160;</div>
+<i>Examples:</i><br/>
+# Accept any properties<br/>
+ACCEPT_PROPERTIES=&quot;*&quot;<br/>
+# Accept any properties except the &quot;interactive&quot; property<br/>
+ACCEPT_PROPERTIES=&quot;* -interactive&quot;<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>ACCEPT_RESTRICT</b> = <i>[space delimited list of RESTRICT tokens]</i></dt>
+<dd>
+This variable is used to mask packages based on RESTRICT tokens. In addition to RESTRICT tokens, the  <i>*</i> and <i>-*</i> wildcard tokens are also supported. This variable can be temporarily overridden using the  <b>--accept-restrict</b> option of <b>emerge</b>(1). See  <b>ebuild</b>(5) for more information about RESTRICT.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to the value of *.<div style="height: 0.00em;">
+&#160;</div>
+<i>Examples:</i><br/>
+# Accept any restrict tokens<br/>
+ACCEPT_RESTRICT=&quot;*&quot;<br/>
+# Accept any tokens except &quot;bindist&quot;<br/>
+ACCEPT_RESTRICT=&quot;* -bindist&quot;<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>CBUILD</b></dt>
+<dd>
+This variable is passed by the <i>ebuild scripts</i> to the <i>configure</i> as  <i>--build=${CBUILD}</i> only if it is defined.  Do not set this yourself unless you know what you are doing.</dd>
+</dl>
+<dl>
+<dt>
+<b>CCACHE_DIR</b> = <i>[path]</i></dt>
+<dd>
+Defines the location of the ccache working directory.  See the <b>ccache</b>(1) man page for more information.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to /var/tmp/ccache</dd>
+</dl>
+<dl>
+<dt>
+<b>CCACHE_SIZE</b> = <i>&quot;size&quot;</i></dt>
+<dd>
+This controls the space use limitations for ccache.  See the <i>-M</i> flag in the  <b>ccache</b>(1) man page for more information.</dd>
+</dl>
+<dl>
+<dt>
+<b>CFLAGS CXXFLAGS</b></dt>
+<dd>
+Use these variables to set the desired optimization/CPU instruction settings for applications that you compile.  These two variables are passed to the C and C++ compilers, respectively. (CXX is used to refer to the C++ compiler within many buildsystems.) Nearly all ebuild files will take advantage of your custom settings, resulting in a Gentoo Linux that is fully customized to your specifications.  Please use sane settings as some packages will fail to compile/run if the optimizations are too extreme.<div style="height: 1.00em;">
+&#160;</div>
+For more information, see the <i>Invoking GCC</i> section of the gcc manual:<div style="height: 0.00em;">
+&#160;</div>
+http://gcc.gnu.org/onlinedocs/</dd>
+</dl>
+<dl>
+<dt>
+<b>CHOST</b></dt>
+<dd>
+This variable is passed by the <i>ebuild scripts</i> to the <i>configure</i> step as  <i>--host=${CHOST}</i>.  This way you can force the build-host.<div style="height: 1.00em;">
+&#160;</div>
+For more information:<div style="height: 0.00em;">
+&#160;</div>
+http://gcc.gnu.org/onlinedocs/gcc-4.1.1/gcc/Submodel-Options.html<div style="height: 0.00em;">
+&#160;</div>
+http://gcc.gnu.org/onlinedocs/gcc-3.3/gcc/Submodel-Options.html<div style="height: 0.00em;">
+&#160;</div>
+http://gcc.gnu.org/onlinedocs/gcc-3.2/gcc/Submodel-Options.html<div style="height: 0.00em;">
+&#160;</div>
+http://gcc.gnu.org/onlinedocs/gcc-2.95.3/gcc_2.html</dd>
+</dl>
+<dl>
+<dt>
+<b>CLEAN_DELAY</b> = <i>integer</i></dt>
+<dd>
+Determines how long the countdown delay will be after running `emerge --unmerge`.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to 5 seconds.</dd>
+</dl>
+<dl>
+<dt>
+<b>COLLISION_IGNORE</b> = <i>[space delimited list of fnmatch patterns]</i></dt>
+<dd>
+This variable allows the user to disable <i>collision-protect</i> and  <i>protect-owned</i> for specific <b>fnmatch</b>(3) patterns. For backward compatibility, directories that are listed without a fnmatch pattern will automatically have /* appended to them.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to &quot;/lib/modules/* *.py[co]&quot;.</dd>
+</dl>
+<dl>
+<dt>
+<b>CONFIG_PROTECT</b> = <i>[space delimited list of files and/or directories]</i></dt>
+<dd>
+All files and/or directories that are defined here will have &quot;config file protection&quot; enabled for them. See the  <b>CONFIGURATION FILES</b> section of  <b>emerge</b>(1) for more information.</dd>
+</dl>
+<dl>
+<dt>
+<b>CONFIG_PROTECT_MASK</b> = <i>[space delimited list of files and/or directories]</i></dt>
+<dd>
+All files and/or directories that are defined here will have &quot;config file protection&quot; disabled for them. See the  <b>CONFIGURATION FILES</b> section of  <b>emerge</b>(1) for more information.</dd>
+</dl>
+<dl>
+<dt>
+<b>CTARGET</b></dt>
+<dd>
+This variable is passed by the <i>ebuild scripts</i> to the <i>configure</i> as  <i>--target=${CTARGET}</i> only if it is defined.</dd>
+</dl>
+<dl>
+<dt>
+<b>DCO_SIGNED_OFF_BY</b></dt>
+<dd>
+This variable may contain a name and email address which will be used by  <b>repoman</b>(1) to add a Signed-off-by line to each commit message.</dd>
+</dl>
+<dl>
+<dt>
+<b>DISTDIR</b> = <i>[path]</i></dt>
+<dd>
+Defines the location of your local source file repository. After packages are built, it is safe to remove any and all files from this directory since they will be automatically fetched on demand for a given build. If you would like to selectively prune obsolete files from this directory, see  <b>eclean</b>(1) from the gentoolkit package.<div style="height: 1.00em;">
+&#160;</div>
+Use the <b>PORTAGE_RO_DISTDIRS</b> variable to specify one or more read-only directories containing distfiles.<div style="height: 1.00em;">
+&#160;</div>
+Note that locations under /usr/portage are not necessarily safe for data storage. See the  <b>PORTDIR</b> documentation for more information.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to /usr/portage/distfiles.</dd>
+</dl>
+<dl>
+<dt>
+<b>DOC_SYMLINKS_DIR</b></dt>
+<dd>
+If this variable contains a directory then symlinks to html documentation will be installed into it.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBEEP_IGNORE</b></dt>
+<dd>
+Defines whether or not to ignore audible beeps when displaying important informational messages.  This variable is unset by default.</dd>
+</dl>
+<dl>
+<dt>
+<b>EMERGE_DEFAULT_OPTS</b></dt>
+<dd>
+Options to append to the end of the <b>emerge</b>(1) command line on every invocation. These options will not be appended to the command line if --ignore-default-opts is specified.</dd>
+</dl>
+<dl>
+<dt>
+<b>EMERGE_LOG_DIR</b></dt>
+<dd>
+Controls the location of emerge.log and emerge-fetch.log.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to /var/log.</dd>
+</dl>
+<dl>
+<dt>
+<b>EMERGE_WARNING_DELAY</b> = <i>integer</i></dt>
+<dd>
+Determines how long the countdown delay will be after running `emerge --unmerge` for a system package.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to 10 seconds.</dd>
+</dl>
+<dl>
+<dt>
+<b>EPAUSE_IGNORE</b></dt>
+<dd>
+Defines whether or not to ignore short pauses that occur when displaying important informational messages.  This variable is unset by default. If it is set to any value pauses are ignored.</dd>
+</dl>
+<dl>
+<dt>
+<b>EXTRA_ECONF</b> = <i>[configure options string]</i></dt>
+<dd>
+Contains additional options that <b>econf</b> will append to configure script arguments (see  <b>ebuild</b>(5)).</dd>
+</dl>
+<dl>
+<dt>
+<b>FEATURES</b> = <i>&quot;sandbox&quot;</i></dt>
+<dd>
+Defines actions portage takes by default. This is an incremental variable. Most of these settings are for developer use, but some are available to non-developers as well. The  <b>sandbox</b> feature is very important and should not be disabled by default.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+<b>assume-digests</b></dt>
+<dd>
+When commiting work to cvs with <b>repoman</b>(1), assume that all existing SRC_URI digests are correct.  This feature also affects digest generation via  <b>ebuild</b>(1) and <b>emerge</b>(1) (emerge generates digests only when the  <i>digest</i> feature is enabled). Existing digests for files that do not exist in ${DISTDIR} will be automatically assumed even when  <i>assume-digests</i> is not enabled. If a file exists in ${DISTDIR} but its size does not match the existing digest, the digest will be regenerated regardless of whether or not  <i>assume-digests</i> is enabled. The <b>ebuild</b>(1) <b>digest</b> command has a  <b>--force</b> option that can be used to force regeneration of digests.</dd>
+</dl>
+<dl>
+<dt>
+<b>binpkg-logs</b></dt>
+<dd>
+Keep logs from successful binary package merges. This is relevant only when  <b>PORT_LOGDIR</b> is set.</dd>
+</dl>
+<dl>
+<dt>
+<b>binpkg-multi-instance</b></dt>
+<dd>
+Enable support for multiple binary package instances per ebuild. Having multiple instances is useful for a number of purposes, such as retaining builds that were built with different USE flags or linked against different versions of libraries. The location of any particular package within PKGDIR can be expressed as follows:<div style="height: 1.00em;">
+&#160;</div>
+	${PKGDIR}/${CATEGORY}/${PN}/${PF}-${BUILD_ID}.xpak<div style="height: 1.00em;">
+&#160;</div>
+The build-id starts at 1 for the first build of a particular ebuild, and is incremented by 1 for each new build. It is possible to share a writable PKGDIR over NFS, and locking ensures that each package added to PKGDIR will have a unique build-id. It is not necessary to migrate an existing PKGDIR to the new layout, since portage is capable of working with a mixed PKGDIR layout, where packages using the old layout are allowed to remain in place.<div style="height: 1.00em;">
+&#160;</div>
+The new PKGDIR layout is backward-compatible with binhost clients running older portage, since the file format is identical, the per-package PATH attribute in the 'Packages' index directs them to download the file from the correct URI, and they automatically use BUILD_TIME metadata to select the latest builds.<div style="height: 1.00em;">
+&#160;</div>
+There is currently no automated way to prune old builds from PKGDIR, although it is possible to remove packages manually, and then run 'emaint --fix binhost' to update the ${PKGDIR}/Packages index.</dd>
+</dl>
+<dl>
+<dt>
+<b>buildpkg</b></dt>
+<dd>
+Binary packages will be created for all packages that are merged. Also see  <b>quickpkg</b>(1) and <b>emerge</b>(1) <b>--buildpkg</b> and  <b>--buildpkgonly</b> options.</dd>
+</dl>
+<dl>
+<dt>
+<b>buildsyspkg</b></dt>
+<dd>
+Build binary packages for just packages in the system set.</dd>
+</dl>
+<dl>
+<dt>
+<b>candy</b></dt>
+<dd>
+Enable a special progress indicator when <b>emerge</b>(1) is calculating dependencies.</dd>
+</dl>
+<dl>
+<dt>
+<b>case-insensitive-fs</b></dt>
+<dd>
+Use case-insensitive file name comparisions when merging and unmerging files. Most users should not enable this feature, since most filesystems are case-sensitive. You should only enable this feature if you are using portage to install files to a case-insensitive filesystem.</dd>
+</dl>
+<dl>
+<dt>
+<b>ccache</b></dt>
+<dd>
+Enable portage support for the ccache package.  If the ccache dir is not present in the user's environment, then portage will default to ${PORTAGE_TMPDIR}/ccache.<div style="height: 1.00em;">
+&#160;</div>
+<b>Warning</b>: This feature is known to cause numerous compilation failures. Sometimes ccache will retain stale code objects or corrupted files, which can lead to packages that cannot be emerged. If this happens (if you receive errors like &quot;File not recognized: File truncated&quot;), try recompiling the application with ccache disabled before reporting a bug. Unless you are doing development work, do not enable ccache.</dd>
+</dl>
+<dl>
+<dt>
+<b>cgroup</b></dt>
+<dd>
+Use Linux control group to control processes spawned by ebuilds. This allows emerge to safely kill all subprocesses when ebuild phase exits.</dd>
+</dl>
+<dl>
+<dt>
+<b>clean-logs</b></dt>
+<dd>
+Enable automatic execution of the command specified by the PORT_LOGDIR_CLEAN variable. The default PORT_LOGDIR_CLEAN setting will remove all files from PORT_LOGDIR that were last modified at least 7 days ago.</dd>
+</dl>
+<dl>
+<dt>
+<b>collision-protect</b></dt>
+<dd>
+A QA-feature to ensure that a package doesn't overwrite files it doesn't own. The  <i>COLLISION_IGNORE</i> variable can be used to selectively disable this feature. Also see the related  <i>protect-owned</i> feature.</dd>
+</dl>
+<dl>
+<dt>
+<b>compress-build-logs</b></dt>
+<dd>
+The causes all build logs to be compressed while they are being written. Log file names have an extension that is appropriate for the compression type. Currently, only  <b>gzip</b>(1) compression is supported, so build logs will have a '.gz' extension when this feature is enabled.</dd>
+</dl>
+<dl>
+<dt>
+<b>compress-index</b></dt>
+<dd>
+If set then a compressed copy of 'Packages' index file will be written. This feature is intended for Gentoo binhosts using certain webservers (such as, but not limited to, Nginx with gzip_static module) to avoid redundant on-the-fly compression.  The resulting file will be called 'Packages.gz' and its modification time will match that of 'Packages'.</dd>
+</dl>
+<dl>
+<dt>
+<b>compressdebug</b></dt>
+<dd>
+Compress the debug sections in the split debug files with zlib to save space.  Make sure you have built both binutils and gdb with USE=zlib support for this to work.  See  <b>splitdebug</b> for general split debug information (upon which this feature depends).</dd>
+</dl>
+<dl>
+<dt>
+<b>config-protect-if-modified</b></dt>
+<dd>
+This causes the <b>CONFIG_PROTECT</b> behavior to be skipped for files that have not been modified since they were installed. This feature is enabled by default.</dd>
+</dl>
+<dl>
+<dt>
+<b>digest</b></dt>
+<dd>
+Autogenerate digests for packages when running the  <b>emerge</b>(1), <b>ebuild</b>(1), or <b>repoman</b>(1) commands. If the  <i>assume-digests</i> feature is also enabled then existing SRC_URI digests will be reused whenever they are available.</dd>
+</dl>
+<dl>
+<dt>
+<b>distcc</b></dt>
+<dd>
+Enable portage support for the distcc package.</dd>
+</dl>
+<dl>
+<dt>
+<b>distcc-pump</b></dt>
+<dd>
+Enable portage support for the distcc package with pump mode.</dd>
+</dl>
+<dl>
+<dt>
+<b>distlocks</b></dt>
+<dd>
+Portage uses lockfiles to ensure competing instances don't clobber each other's files. This feature is enabled by default but may cause heartache on less intelligent remote filesystems like NFSv2 and some strangely configured Samba server (oplocks off, NFS re-export). A tool /usr/lib/portage/bin/clean_locks exists to help handle lock issues when a problem arises (normally due to a crash or disconnect).</dd>
+</dl>
+<dl>
+<dt>
+<b>downgrade-backup</b></dt>
+<dd>
+When a package is downgraded to a lower version, call <b>quickpkg</b>(1) in order to create a backup of the installed version before it is unmerged (if a binary package of the same version does not already exist). Also see the related  <i>unmerge-backup</i> feature.</dd>
+</dl>
+<dl>
+<dt>
+<b>ebuild-locks</b></dt>
+<dd>
+Use locks to ensure that unsandboxed ebuild phases never execute concurrently. Also see  <i>parallel-install</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>fail-clean</b></dt>
+<dd>
+Clean up temporary files after a build failure. This is particularly useful if you have  <b>PORTAGE_TMPDIR</b> on tmpfs. If this feature is enabled, you probably also want to enable  <b>PORT_LOGDIR</b> in order to save the build log. Both the  <b>ebuild</b>(1) command and the <i>noclean</i> feature cause the  <i>fail-clean</i> feature to be automatically disabled.</dd>
+</dl>
+<dl>
+<dt>
+<b>fakeroot</b></dt>
+<dd>
+Enable fakeroot for the install and package phases when a non-root user runs the  <b>ebuild</b>(1) command.</dd>
+</dl>
+<dl>
+<dt>
+<b>fixlafiles</b></dt>
+<dd>
+Modifies .la files to not include other .la files and some other fixes (order of flags, duplicated entries, ...)</dd>
+</dl>
+<dl>
+<dt>
+<b>force-mirror</b></dt>
+<dd>
+Only fetch files from configured mirrors, ignoring <b>SRC_URI</b>, except when  <i>mirror</i> is in the <b>ebuild</b>(5) <b>RESTRICT</b> variable.</dd>
+</dl>
+<dl>
+<dt>
+<b>force-prefix</b></dt>
+<dd>
+Enable prefix support for all ebuilds, regardless of EAPI, since older EAPIs would otherwise be useless with prefix configurations. This brings compatibility with the prefix branch of portage, which also supports EPREFIX for all EAPIs (for obvious reasons).</dd>
+</dl>
+<dl>
+<dt>
+<b>getbinpkg</b></dt>
+<dd>
+Force emerges to always try to fetch files from the <i>PORTAGE_BINHOST</i>.  See  <b>make.conf</b>(5) for more information.</dd>
+</dl>
+<dl>
+<dt>
+<b>installsources</b></dt>
+<dd>
+Install source code into /usr/src/debug/${CATEGORY}/${PF} (also see  <b>splitdebug</b>). This feature works only if debugedit is installed and CFLAGS is set to include debug information (such as with the -ggdb flag).</dd>
+</dl>
+<dl>
+<dt>
+<b>ipc-sandbox</b></dt>
+<dd>
+Isolate the ebuild phase functions from host IPC namespace. Supported only on Linux. Requires IPC namespace support in kernel.</dd>
+</dl>
+<dl>
+<dt>
+<b>keeptemp</b></dt>
+<dd>
+Do not delete the ${T} directory after the merge process.</dd>
+</dl>
+<dl>
+<dt>
+<b>keepwork</b></dt>
+<dd>
+Do not delete the ${WORKDIR} directory after the merge process. ${WORKDIR} can then be reused since this feature disables most of the clean phase that runs prior to each build. Due to lack of proper cleanup, this feature can interfere with normal emerge operation and therefore it should not be left enabled for more than a short period of time.</dd>
+</dl>
+<dl>
+<dt>
+<b>lmirror</b></dt>
+<dd>
+When <i>mirror</i> is enabled in <b>FEATURES</b>, fetch files even when  <i>mirror</i> is also in the <b>ebuild</b>(5) <b>RESTRICT</b> variable. Do  <b>NOT</b> use <i>lmirror</i> for clients that need to override <b>RESTRICT</b> when fetching from a local mirror, but instead use a &quot;local&quot; mirror setting in  <i>/etc/portage/mirrors</i>, as described in <b>portage</b>(5).</dd>
+</dl>
+<dl>
+<dt>
+<b>merge-sync</b></dt>
+<dd>
+After a package is merged or unmerged, sync relevant files to disk in order to avoid data-loss in the event of a power failure. This feature is enabled by default.</dd>
+</dl>
+<dl>
+<dt>
+<b>metadata-transfer</b></dt>
+<dd>
+Automatically perform a metadata transfer when `emerge --sync` is run. In versions of portage &gt;=2.1.5, this feature is disabled by default. When metadata-transfer is disabled, metadata cache from the ${repository_location}/metadata/md5-cache/ directory will be used directly (if available).</dd>
+</dl>
+<dl>
+<dt>
+<b>mirror</b></dt>
+<dd>
+Fetch everything in <b>SRC_URI</b> regardless of <b>USE</b> settings, except do not fetch anything when  <i>mirror</i> is in <b>RESTRICT</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>multilib-strict</b></dt>
+<dd>
+Many Makefiles assume that their libraries should go to /usr/lib, or $(prefix)/lib. This assumption can cause a serious mess if /usr/lib isn't a symlink to /usr/lib64. To find the bad packages, we have a portage feature called  <i>multilib-strict</i>. It will prevent emerge from putting 64bit libraries into anything other than (/usr)/lib64.</dd>
+</dl>
+<dl>
+<dt>
+<b>network-sandbox</b></dt>
+<dd>
+Isolate the ebuild phase functions from host network interfaces. Supported only on Linux. Requires network namespace support in kernel.</dd>
+</dl>
+<dl>
+<dt>
+<b>network-sandbox-proxy</b></dt>
+<dd>
+Enable escaping network-sandbox through SOCKSv5 proxy. Enabling distcc feature also enables the proxy.<div style="height: 1.00em;">
+&#160;</div>
+If asyncio Python module is available (requires Python 3.3, built-in since Python 3.4) Portage will additionally spawn an isolated SOCKSv5 proxy on UNIX socket. The socket address will be exported as PORTAGE_SOCKS5_PROXY and the processes running inside the sandbox can use it to access host's network when desired. Portage automatically configures new enough distcc to use the proxy.</dd>
+</dl>
+<dl>
+<dt>
+<b>news</b></dt>
+<dd>
+Enable GLEP 42 news support. See  <i>http://www.gentoo.org/proj/en/glep/glep-0042.html</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>noauto</b></dt>
+<dd>
+When utilizing <b>ebuild</b>(1), only run the function requested. Also, forces the corresponding ebuild and eclasses to be sourced again for each phase, in order to account for modifications.</dd>
+</dl>
+<dl>
+<dt>
+<b>noclean</b></dt>
+<dd>
+Do not delete the the source and temporary files after the merge process.</dd>
+</dl>
+<dl>
+<dt>
+<b>nodoc</b></dt>
+<dd>
+Do not install doc files (/usr/share/doc).</dd>
+</dl>
+<dl>
+<dt>
+<b>noinfo</b></dt>
+<dd>
+Do not install info pages.</dd>
+</dl>
+<dl>
+<dt>
+<b>noman</b></dt>
+<dd>
+Do not install manpages.</dd>
+</dl>
+<dl>
+<dt>
+<b>nostrip</b></dt>
+<dd>
+Prevents the stripping of binaries that are merged to the live filesystem.</dd>
+</dl>
+<dl>
+<dt>
+<b>notitles</b></dt>
+<dd>
+Disables xterm titlebar updates (which contains status info).</dd>
+</dl>
+<dl>
+<dt>
+<b>parallel-fetch</b></dt>
+<dd>
+Fetch in the background while compiling. Run `tail -f /var/log/emerge-fetch.log` in a terminal to view parallel-fetch progress.</dd>
+</dl>
+<dl>
+<dt>
+<b>parallel-install</b></dt>
+<dd>
+Use finer-grained locks when installing packages, allowing for greater parallelization. For additional parallelization, disable  <i>ebuild-locks</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>prelink-checksums</b></dt>
+<dd>
+If <b>prelink</b>(8) is installed then use it to undo any prelinks on files before computing checksums for merge and unmerge. This feature is useful only if  <b>prelink</b>(8) is installed and accurate checksums (despite prelinking) are needed for some reason such as for checking the integrity of installed files or because the  <i>unmerge-orphans</i> feature is disabled.<div style="height: 1.00em;">
+&#160;</div>
+Note that normal emerging of packages from source computes the checksums before things will be prelinked, so in such cases, this feature isn't required either. Undoing prelinking while merging is only required when using tools like  <b>quickpkg</b>(1) which can cause already prelinked files to be merged.</dd>
+</dl>
+<dl>
+<dt>
+<b>preserve-libs</b></dt>
+<dd>
+Preserve libraries when the sonames change during upgrade or downgrade. Libraries are preserved only if consumers of those libraries are detected. Preserved libraries are automatically removed when there are no remaining consumers. Run `emerge @preserved-rebuild` in order to rebuild all consumers of preserved libraries.</dd>
+</dl>
+<dl>
+<dt>
+<b>protect-owned</b></dt>
+<dd>
+This is identical to the <i>collision-protect</i> feature except that files may be overwritten if they are not explicitly listed in the contents of a currently installed package. This is particularly useful on systems that have lots of orphan files that have been left behind by older versions of portage that did not support the  <i>unmerge-orphans</i> feature. Like  <i>collision-protect</i>, the <i>COLLISION_IGNORE</i> variable can be used to selectively disable this feature. It is recommended to leave either  <i>protect-owned</i> or <i>collision-protect</i> enabled at all times, since otherwise file collisions between packages may result in files being overwritten or uninstalled at inappropriate times. If  <i>collision-protect</i> is enabled then it takes precedence over  <i>protect-owned</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>python-trace</b></dt>
+<dd>
+Output a verbose trace of python execution to stderr when a command's --debug option is enabled.</dd>
+</dl>
+<dl>
+<dt>
+<b>sandbox</b></dt>
+<dd>
+Enable sandbox-ing when running <b>emerge</b>(1) and <b>ebuild</b>(1).</dd>
+</dl>
+<dl>
+<dt>
+<b>sesandbox</b></dt>
+<dd>
+Enable SELinux sandbox-ing.  Do not toggle this <b>FEATURE</b> yourself.</dd>
+</dl>
+<dl>
+<dt>
+<b>sfperms</b></dt>
+<dd>
+Stands for Smart Filesystem Permissions.  Before merging packages to the live filesystem, automatically search for and set permissions on setuid and setgid files.  Files that are setuid have the group and other read bits removed while files that are setgid have the other read bit removed. See also  <i>suidctl</i> below.</dd>
+</dl>
+<dl>
+<dt>
+<b>sign</b></dt>
+<dd>
+When commiting work to cvs with <b>repoman</b>(1), sign the Manifest with a GPG key.  Read about the  <i>PORTAGE_GPG_KEY</i> variable in  <b>make.conf</b>(5).</dd>
+</dl>
+<dl>
+<dt>
+<b>skiprocheck</b></dt>
+<dd>
+Skip write access checks on <b>DISTDIR</b> when fetching files. This is useful when  <b>FETCHCOMMAND</b> and <b>RESUMECOMMAND</b> are used to forward fetch requests to a server that exposes  <b>DISTDIR</b> as a read-only NFS share. A read-only  <b>DISTDIR</b> is not compatible with the  <i>distlocks</i>, so it is recommended to also add &quot;-distlocks&quot; to  <b>FEATURES</b> in order to avoid warning messages that are triggered by this incompatibility.</dd>
+</dl>
+<dl>
+<dt>
+<b>split-elog</b></dt>
+<dd>
+Store logs created by <b>PORTAGE_ELOG_SYSTEM=&quot;save&quot;</b> in category subdirectories of  <b>PORT_LOGDIR/elog</b>, instead of using  <b>PORT_LOGDIR/elog</b> directly.</dd>
+</dl>
+<dl>
+<dt>
+<b>split-log</b></dt>
+<dd>
+Store build logs in category subdirectories of <b>PORT_LOGDIR/build</b>, instead of using  <b>PORT_LOGDIR</b> directly.</dd>
+</dl>
+<dl>
+<dt>
+<b>splitdebug</b></dt>
+<dd>
+Prior to stripping ELF etdyn and etexec files, the debugging info is stored for later use by various debuggers.  This feature is disabled by  <b>nostrip</b>.  You should also consider setting <b>compressdebug</b> so the files don't suck up a lot of space.  For installation of source code, see  <b>installsources</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>strict</b></dt>
+<dd>
+Have portage react strongly to conditions that have the potential to be dangerous (like missing or incorrect digests for ebuilds).</dd>
+</dl>
+<dl>
+<dt>
+<b>stricter</b></dt>
+<dd>
+Have portage react strongly to conditions that may conflict with system security provisions (for example textrels, executable stack).  Read about the  <i>QA_STRICT_*</i> variables in <b>make.conf</b>(5).</dd>
+</dl>
+<dl>
+<dt>
+<b>suidctl</b></dt>
+<dd>
+Before merging packages to the live filesystem, automatically strip setuid bits from any file that is not listed in  <i>/etc/portage/suidctl.conf</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>test</b></dt>
+<dd>
+Run package-specific tests during each merge to help make sure the package compiled properly.  See  <i>test</i> in <b>ebuild</b>(1) and  <i>src_test()</i> in <b>ebuild</b>(5). This feature implies the &quot;test&quot;  <b>USE</b> flag if it is a member of <b>IUSE</b>, either explicitly or implicitly (see  <b>ebuild</b>(5) for more information about <b>IUSE</b>). The &quot;test&quot;  <b>USE</b> flag is also automatically disabled when the &quot;test&quot; feature is disabled.</dd>
+</dl>
+<dl>
+<dt>
+<b>test-fail-continue</b></dt>
+<dd>
+If &quot;test&quot; is enabled <b>FEATURES</b> and the test phase of an ebuild fails, continue to execute the remaining phases as if the failure had not occurred. Note that the test phase for a specific package may be disabled by masking the &quot;test&quot;  <b>USE</b> flag in <b>package.use.mask</b> (see <b>portage</b>(5)).</dd>
+</dl>
+<dl>
+<dt>
+<b>unknown-features-filter</b></dt>
+<dd>
+Filter out any unknown values that the FEATURES variable contains.</dd>
+</dl>
+<dl>
+<dt>
+<b>unknown-features-warn</b></dt>
+<dd>
+Warn if FEATURES contains one or more unknown values.</dd>
+</dl>
+<dl>
+<dt>
+<b>unmerge-backup</b></dt>
+<dd>
+Call <b>quickpkg</b>(1) to create a backup of each package before it is unmerged (if a binary package of the same version does not already exist). Also see the related  <i>downgrade-backup</i> feature.</dd>
+</dl>
+<dl>
+<dt>
+<b>unmerge-logs</b></dt>
+<dd>
+Keep logs from successful unmerge phases. This is relevant only when  <b>PORT_LOGDIR</b> is set.</dd>
+</dl>
+<dl>
+<dt>
+<b>unmerge-orphans</b></dt>
+<dd>
+If a file is not claimed by another package in the same slot and it is not protected by  <i>CONFIG_PROTECT</i>, unmerge it even if the modification time or checksum differs from the file that was originally installed.</dd>
+</dl>
+<dl>
+<dt>
+<b>userfetch</b></dt>
+<dd>
+When portage is run as root, drop privileges to portage:portage during the fetching of package sources.</dd>
+</dl>
+<dl>
+<dt>
+<b>userpriv</b></dt>
+<dd>
+Allow portage to drop root privileges and compile packages as portage:portage without a sandbox (unless  <i>usersandbox</i> is also used).</dd>
+</dl>
+<dl>
+<dt>
+<b>usersandbox</b></dt>
+<dd>
+Enable the sandbox in the compile phase, when running without root privs ( <i>userpriv</i>).</dd>
+</dl>
+<dl>
+<dt>
+<b>usersync</b></dt>
+<dd>
+Drop privileges to the owner of ${repository_location} for <b>emerge</b>(1) --sync operations. Note that this feature assumes that all subdirectories of ${repository_location} have the same ownership as ${repository_location} itself. It is the user's responsibility to ensure correct ownership, since otherwise Portage would have to waste time validating ownership for each and every sync operation.</dd>
+</dl>
+<dl>
+<dt>
+<b>webrsync-gpg</b></dt>
+<dd>
+Enable GPG verification when using <i>emerge-webrsync</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>xattr</b></dt>
+<dd>
+Preserve extended attributes (filesystem-stored metadata) when installing files (see  <b>attr</b>(1)). The <b>PORTAGE_XATTR_EXCLUDE</b> variable may be used to exclude specific attributes from being preserved.</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>FETCHCOMMAND</b></dt>
+<dd>
+This variable contains the command used for fetching package sources from the internet.  It must contain the full path to the executable as well as the place-holders \${DISTDIR}, \${FILE} and \${URI}.  The command should be written to place the fetched file at \${DISTDIR}/\${FILE}. Also see  <b>RESUMECOMMAND</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>FFLAGS FCFLAGS</b></dt>
+<dd>
+Use these variables to set the desired optimization/CPU instruction settings for applications that you compile with a FORTRAN compiler. FFLAGS is usually passed to the FORTRAN 77 compiler, and FCFLAGS to any FORTRAN compiler in more modern build systems.<div style="height: 1.00em;">
+&#160;</div>
+For more information, see the <i>Invoking GCC</i> section of the gcc manual:<div style="height: 0.00em;">
+&#160;</div>
+http://gcc.gnu.org/onlinedocs/</dd>
+</dl>
+<dl>
+<dt>
+<b>GENTOO_MIRRORS</b> = <i>[URIs]</i></dt>
+<dd>
+Insert your space-separated list of local mirrors here.  These locations are used to download files before the ones listed in the  <i>ebuild scripts</i>. Merging 'mirrorselect' can help.  Entries in this variable that have no protocol and simply start with a '/' path separator may be used to specify mounted filesystem mirrors.</dd>
+</dl>
+<dl>
+<dt>
+<b>http_proxy ftp_proxy RSYNC_PROXY</b> = <i>[protocol://host:port]</i></dt>
+<dd>
+These variables are used by network clients such as <b>wget</b>(1) and  <b>rsync</b>(1). They are only required if you use a proxy server for internet access.</dd>
+</dl>
+<dl>
+<dt>
+<b>INSTALL_MASK</b> = <i>[space delimited list of file names]</i></dt>
+<dd>
+Use this variable if you want to selectively prevent certain files from being copied into your file system tree.  This does not work on symlinks, but only on actual files.  Useful if you wish to filter out files like HACKING.gz and TODO.gz. The  <b>INSTALL_MASK</b> is processed just before a package is merged. Also supported is a  <b>PKG_INSTALL_MASK</b> variable that behaves exactly like  <b>INSTALL_MASK</b> except that it is processed just before creation of a binary package.</dd>
+</dl>
+<dl>
+<dt>
+<b>LDFLAGS</b></dt>
+<dd>
+A list of flags to pass to the compiler when the linker will be called. See  <b>ld</b>(1) for linker flags, but don't forget that these flags will be passed directly to the compiler. Thus, you must use '-Wl' to escape the flags which only the linker understands (see  <b>gcc</b>(1)).<div style="height: 1.00em;">
+&#160;</div>
+<b>***warning***</b><div style="height: 0.00em;">
+&#160;</div>
+Setting this and other *FLAGS variables arbitrarily may cause compile or runtime failures. Bug reports submitted when nonstandard values are enabled for these flags may be closed as INVALID.</dd>
+</dl>
+<dl>
+<dt>
+<b>MAKEOPTS</b></dt>
+<dd>
+Use this variable if you want to use parallel make.  For example, if you have a dual-processor system, set this variable to &quot;-j2&quot; or &quot;-j3&quot; for enhanced build performance with many packages. Suggested settings are between  <i>CPUs+1</i> and <i>2*CPUs+1</i>. In order to avoid excess load, the  <b>--load-average</b> option is recommended. For more information, see  <b>make</b>(1). Also see <b>emerge</b>(1) for information about analogous  <b>--jobs</b> and <b>--load-average</b> options.</dd>
+</dl>
+<dl>
+<dt>
+<b>NOCOLOR</b> = <i>[&quot;true&quot; | &quot;false&quot;]</i></dt>
+<dd>
+Defines if color should be disabled by default.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to false.</dd>
+</dl>
+<dl>
+<dt>
+<b>PKGDIR</b> = <i>[path]</i></dt>
+<dd>
+Defines the location where created .tbz2 binary packages will be stored when the  <b>emerge</b>(1) <b>--buildpkg</b> option is enabled. By default, a given package is stored in a subdirectory corresponding to it's category. However, for backward compatibility with the layout used by older versions of portage, if the  <i>${PKGDIR}/All</i> directory exists then all packages will be stored inside of it and symlinks to the packages will be created in the category subdirectories. Note that locations under /usr/portage are not necessarily safe for data storage. See the  <b>PORTDIR</b> documentation for more information.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to /usr/portage/packages.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORT_LOGDIR</b></dt>
+<dd>
+This variable defines the directory in which per-ebuild logs are kept. Logs are created only when this is set. They are stored as ${CATEGORY}:${PF}:YYYYMMDD-HHMMSS.log in the directory specified. If the directory does not exist, it will be created automatically and group permissions will be applied to it.  If the directory already exists, portage will not modify it's permissions.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORT_LOGDIR_CLEAN</b></dt>
+<dd>
+This variable should contain a command for portage to call in order to clean PORT_LOGDIR. The command string should contain a \${PORT_LOGDIR} place-holder that will be substituted with the value of that variable. This variable will have no effect unless  <b>clean-logs</b> is enabled in <b>FEATURES</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_BINHOST</b> = <i>[space delimited URI list]</i></dt>
+<dd>
+This is a list of hosts from which portage will grab prebuilt-binary packages. Each entry in the list must specify the full address of a directory serving tbz2's for your system (this directory must contain a 'Packages' index file). This is only used when running with the get binary pkg options are given to  <b>emerge</b>.  Review <b>emerge</b>(1) for more information.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_BINHOST_HEADER_URI</b> = <i>&quot;ftp://login:pass@grp.mirror.site/pub/grp/i686/athlon-xp/&quot;</i></dt>
+<dd>
+This variable only makes sense on a system that will serve as a binhost and build packages for clients.  It defines the URI header field for the package index file which is located at ${PKGDIR}/Packages. Clients that have  <b>PORTAGE_BINHOST</b> properly configured will be able to fetch the index and use the URI header field as a base URI for fetching binary packages. If the URI header field is not defined then the client will use it's ${PORTAGE_BINHOST} setting as the base URI.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_BINPKG_FORMAT</b></dt>
+<dd>
+This variable sets default format used for binary packages. Possible values are tar and rpm or both.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_BINPKG_TAR_OPTS</b></dt>
+<dd>
+This variable contains options to be passed to the tar command for creation of binary packages.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_BUNZIP2_COMMAND</b> = <i>[bunzip2 command string]</i></dt>
+<dd>
+This variable should contain a command that is suitable for portage to call for bunzip2 extraction operations.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_BZIP2_COMMAND</b> = <i>[bzip2 command string]</i></dt>
+<dd>
+This variable should contain a command that is suitable for portage to call for bzip2 compression operations.  <b>PORTAGE_BZIP2_COMMAND</b> will also be called for extraction operation, with -d appended, unless the  <b>PORTAGE_BUNZIP2_COMMAND</b> variable is set.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_CHECKSUM_FILTER</b> = <i>[space delimited list of hash names]</i></dt>
+<dd>
+This variable may be used to filter the hash functions that are used to verify integrity of files. Hash function names are case-insensitive, and the  <i>*</i> and <i>-*</i> wildcard tokens are supported.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to the value of *.<div style="height: 0.00em;">
+&#160;</div>
+<i>Examples:</i><br/>
+# Use all available hash functions<br/>
+PORTAGE_CHECKSUM_FILTER=&quot;*&quot;<br/>
+# Use any function except whirlpool<br/>
+PORTAGE_CHECKSUM_FILTER=&quot;* -whirlpool&quot;<br/>
+# Only use sha256<br/>
+PORTAGE_CHECKSUM_FILTER=&quot;-* sha256&quot;<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_COMPRESS</b> = <i>&quot;bzip2&quot;</i></dt>
+<dd>
+This variable contains the command used to compress documentation during the install phase.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_COMPRESS_EXCLUDE_SUFFIXES</b> = <i>&quot;gif htm[l]? jp[e]?g pdf png&quot;</i></dt>
+<dd>
+This variable contains a space delimited list of file suffixes for which matching files are excluded when the  <b>PORTAGE_COMPRESS</b> command is called. Regular expressions are supported and the match is performed only against the portion of the file name which follows the last period character.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_COMPRESS_FLAGS</b> = <i>&quot;-9&quot;</i></dt>
+<dd>
+This variable contains flags for the <b>PORTAGE_COMPRESS</b> command.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_ELOG_CLASSES</b></dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_ELOG_COMMAND</b></dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_ELOG_MAILFROM</b></dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_ELOG_MAILSUBJECT</b></dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_ELOG_MAILURI</b></dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_ELOG_SYSTEM</b></dt>
+<dd>
+Please see /usr/share/portage/config/make.conf.example for elog documentation.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_FETCH_CHECKSUM_TRY_MIRRORS</b> = <i>5</i></dt>
+<dd>
+Number of mirrors to try when a downloaded file has an incorrect checksum.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_FETCH_RESUME_MIN_SIZE</b> = <i>350K</i></dt>
+<dd>
+Minimum size of existing file for <b>RESUMECOMMAND</b> to be called. Files smaller than this size will be removed and  <b>FETCHCOMMAND</b> will be called to download the file from the beginning. This is useful for helping to ensure that small garbage files such as html 404 pages are properly discarded. The variable should contain an integer number of bytes and may have a suffix such as K, M, or G.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_GPG_DIR</b></dt>
+<dd>
+The <b>gpg</b>(1) home directory that is used by <b>repoman</b>(1) when  <b>sign</b> is in <b>FEATURES</b>.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to $HOME/.gnupg.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_GPG_KEY</b></dt>
+<dd>
+The <b>gpg</b>(1) key used by <b>repoman</b>(1) to sign manifests when  <b>sign</b> is in <b>FEATURES</b>. In order to sign commits with  <b>git</b>(1), you will need Git &gt;=1.7.9 and your commit key will have to be configured by  <i>`git config user.signingkey key_id`</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_GPG_SIGNING_COMMAND</b></dt>
+<dd>
+The command used by <b>repoman</b>(1) to sign manifests when <b>sign</b> is in  <b>FEATURES</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_GRPNAME</b> = <i>[group]</i></dt>
+<dd>
+Defines the groupname to use when executing in userpriv/etc... modes (i.e. non-root).<div style="height: 0.00em;">
+&#160;</div>
+Defaults to portage.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_INST_GID</b> = <i>[gid]</i></dt>
+<dd>
+Defines the group id when installing files via dobin/dosbin.  Useful when running ebuild as yourself.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to 0.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_INST_UID</b> = <i>[uid]</i></dt>
+<dd>
+Defines the user id when installing files via dobin/dosbin.  Useful when running ebuild as yourself.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to 0.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_IONICE_COMMAND</b> = <i>[ionice command string]</i></dt>
+<dd>
+This variable should contain a command for portage to call in order to adjust the io priority of portage and it's subprocesses. The command string should contain a \${PID} place-holder that will be substituted with an integer pid. For example, a value of &quot;ionice -c 3 -p \${PID}&quot; will set idle io priority. For more information about ionice, see  <b>ionice</b>(1). This variable is unset by default.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_NICENESS</b> = <i>[number]</i></dt>
+<dd>
+The value of this variable will be added to the current nice level that emerge is running at.  In other words, this will not set the nice level, it will increment it.  For more information about nice levels and what are acceptable ranges, see  <b>nice</b>(1).</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_RO_DISTDIRS</b> = <i>[space delimited list of directories]</i></dt>
+<dd>
+When a given file does not exist in <b>DISTDIR</b>, search for the file in this list of directories. Search order is from left to right. Note that the current implementation works by creating a symlink inside  <b>DISTDIR</b>, but that may change in the future.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_RSYNC_EXTRA_OPTS</b> = <i>[rsync options string]</i></dt>
+<dd>
+Additional rsync options to be used by <b>emerge --sync</b>.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to no value.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_RSYNC_INITIAL_TIMEOUT</b> = <i>integer</i></dt>
+<dd>
+Used by <b>emerge --sync</b> as a timeout for the initial connection to an rsync server.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to 15 seconds.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_RSYNC_OPTS</b> = <i>[rsync options string]</i></dt>
+<dd>
+Default rsync options to be used by <b>emerge --sync</b>.<div style="height: 0.00em;">
+&#160;</div>
+<b>Don't change this unless you know exactly what you're doing!</b><div style="height: 0.00em;">
+&#160;</div>
+Defaults to &quot;--recursive --links --safe-links --perms --times --compress --force --whole-file --delete --stats --timeout=180 --exclude='/distfiles' --exclude='/local' --exclude='/packages'&quot;</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_RSYNC_RETRIES</b> = <i>[NUMBER]</i></dt>
+<dd>
+The number of times rsync should retry on failed connections before giving up. If set to a negative number, then retry until all possible addresses are exhausted.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to -1.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_SSH_OPTS</b> = <i>[list of ssh options]</i></dt>
+<dd>
+Additional ssh options to be used when portage executes ssh or sftp. This variable supports use of embedded quote characters to quote whitespace or special shell characters within arguments (embedded quotes must be escaped in make.conf settings).<div style="height: 0.00em;">
+&#160;</div>
+Defaults to no value.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_SYNC_STALE</b> = <i>[NUMBER]</i></dt>
+<dd>
+Defines the number of days after the last `emerge --sync` that a warning message should be produced. A value of 0 will disable warnings.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to 30.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_TMPDIR</b> = <i>[path]</i></dt>
+<dd>
+Defines the location of the temporary build directories.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to /var/tmp.<div style="height: 1.00em;">
+&#160;</div>
+This should not be set to point anywhere under location of any repository.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_USERNAME</b> = <i>[user]</i></dt>
+<dd>
+Defines the username to use when executing in userpriv/etc... modes (i.e. non-root).<div style="height: 0.00em;">
+&#160;</div>
+Defaults to portage.</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_WORKDIR_MODE</b> = <i>&quot;0700&quot;</i></dt>
+<dd>
+This variable controls permissions for <i>WORKDIR</i> (see <b>ebuild</b>(5)).</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTAGE_XATTR_EXCLUDE</b> = <i>[space delimited list of fnmatch patterns]</i></dt>
+<dd>
+This variable may be used to exclude specific attributes from being preserved when  <b>xattr</b> is in <b>FEATURES</b>.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to &quot;security.*&quot; (security labels are special, see bug #461868).</dd>
+</dl>
+<dl>
+<dt>
+<b>PORTDIR</b> = <i>[path]</i></dt>
+<dd>
+Defines the location of main repository. This variable is deprecated in favor of settings in  <b>repos.conf</b>. If you change this, you must update your /etc/portage/make.profile symlink accordingly.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to /usr/portage.<div style="height: 0.00em;">
+&#160;</div>
+<b>***Warning***</b><div style="height: 0.00em;">
+&#160;</div>
+Data stored inside <b>PORTDIR</b> is in peril of being overwritten or deleted by the emerge --sync command. The default value of  <b>PORTAGE_RSYNC_OPTS</b> will protect the default locations of  <b>DISTDIR</b> and <b>PKGDIR</b>, but users are warned that any other locations inside  <b>PORTDIR</b> are not necessarily safe for data storage.  You should not put other data (such as overlays) in your  <b>PORTDIR</b><b>.  Portage will walk</b>  <b>directory structures and may arbitrarily add invalid categories as packages.</b></dd>
+</dl>
+<dl>
+<dt>
+<b>PORTDIR_OVERLAY</b> = <i>&quot;[path] [different-path] [etc...]&quot;</i></dt>
+<dd>
+Defines the locations of other repositories. This variable is deprecated in favor of settings in  <b>repos.conf</b>. This variable is a space-delimited list of directories.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to no value.</dd>
+</dl>
+<dl>
+<dt>
+<b>QA_STRICT_EXECSTACK = </b><i>&quot;set&quot;</i></dt>
+<dd>
+Set this to cause portage to ignore any <i>QA_EXECSTACK</i> override settings from ebuilds.  See also  <b>ebuild</b>(5).</dd>
+</dl>
+<dl>
+<dt>
+<b>QA_STRICT_FLAGS_IGNORED = </b><i>&quot;set&quot;</i></dt>
+<dd>
+Set this to cause portage to ignore any <i>QA_FLAGS_IGNORED</i> override settings from ebuilds.  See also  <b>ebuild</b>(5).</dd>
+</dl>
+<dl>
+<dt>
+<b>QA_STRICT_MULTILIB_PATHS = </b><i>&quot;set&quot;</i></dt>
+<dd>
+Set this to cause portage to ignore any <i>QA_MULTILIB_PATHS</i> override settings from ebuilds.  See also  <b>ebuild</b>(5).</dd>
+</dl>
+<dl>
+<dt>
+<b>QA_STRICT_PRESTRIPPED = </b><i>&quot;set&quot;</i></dt>
+<dd>
+Set this to cause portage to ignore any <i>QA_PRESTRIPPED</i> override settings from ebuilds.  See also  <b>ebuild</b>(5).</dd>
+</dl>
+<dl>
+<dt>
+<b>QA_STRICT_TEXTRELS = </b><i>&quot;set&quot;</i></dt>
+<dd>
+Set this to cause portage to ignore any <i>QA_TEXTREL</i> override settings from ebuilds.  See also  <b>ebuild</b>(5).</dd>
+</dl>
+<dl>
+<dt>
+<b>QA_STRICT_WX_LOAD = </b><i>&quot;set&quot;</i></dt>
+<dd>
+Set this to cause portage to ignore any <i>QA_WX_LOAD</i> override settings from ebuilds.  See also  <b>ebuild</b>(5).</dd>
+</dl>
+<dl>
+<dt>
+<b>RESUMECOMMAND</b></dt>
+<dd>
+This variable contains the command used for resuming package sources that have been partially downloaded.  It should be defined using the same format as  <b>FETCHCOMMAND</b>, and must include any additional option(s) that may be necessary in order to continue a partially downloaded file located at \${DISTDIR}/\${FILE}.</dd>
+</dl>
+<dl>
+<dt>
+<b>ROOT</b> = <i>[path]</i></dt>
+<dd>
+Use <b>ROOT</b> to specify the target root filesystem to be used for merging packages or ebuilds. Typically, you should set this setting in the environment rather than in  <i>make.conf</i> itself. It's commonly used for creating new build images. Make sure you use an absolute path. Refer to the  <b>Cross-compilation</b> section of <b>ebuild</b>(5) for information about how dependencies are handled for  <b>ROOT</b>.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to /.</dd>
+</dl>
+<dl>
+<dt>
+<b>RPMDIR</b> = <i>[path]</i></dt>
+<dd>
+Defines the location where created RPM packages will be stored.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to /usr/portage/rpm.</dd>
+</dl>
+<dl>
+<dt>
+<b>SYNC</b> = <i>[RSYNC]</i></dt>
+<dd>
+Insert your preferred rsync mirror here.  This rsync server is used to sync the local portage tree when `emerge --sync` is run.<div style="height: 1.00em;">
+&#160;</div>
+Note that the <b>SYNC</b> variable is now deprecated, and instead the sync-type and sync-uri attributes in repos.conf should be used. See  <b>portage</b>(5) for more information.<div style="height: 1.00em;">
+&#160;</div>
+Defaults to rsync://rsync.gentoo.org/gentoo-portage</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+<b>Usage:</b></dt>
+<dd>
+(rsync|ssh)://[username@]hostname[:port]/(module|path)</dd>
+</dl>
+<dl>
+<dt>
+<b>Examples:</b></dt>
+<dd>
+rsync://private-mirror.com/portage-module<div style="height: 0.00em;">
+&#160;</div>
+rsync://rsync-user@private-mirror.com:873/gentoo-portage<div style="height: 0.00em;">
+&#160;</div>
+ssh://ssh-user@192.168.0.1:22/usr/portage<div style="height: 0.00em;">
+&#160;</div>
+ssh://ssh-user@192.168.0.1:22/\${HOME}/portage-storage</dd>
+</dl>
+<dl>
+<dt>
+Note: For the ssh:// scheme, key-based authentication might be of interest.</dt>
+<dd>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>UNINSTALL_IGNORE</b> = <i>[space delimited list of fnmatch patterns]</i></dt>
+<dd>
+This variable prevents uninstallation of files that match specific  <b>fnmatch</b>(3) patterns. In order to ignore file collisions with these files at install time, the same patterns can be added to the  <b>COLLISION_IGNORE</b> variable.<div style="height: 0.00em;">
+&#160;</div>
+Defaults to &quot;/lib/modules/*&quot;.</dd>
+</dl>
+<dl>
+<dt>
+<b>USE</b> = <i>[space delimited list of USE items]</i></dt>
+<dd>
+This variable contains options that control the build behavior of several packages.  More information in  <b>ebuild</b>(5).  Possible USE values can be found in  <i>/usr/portage/profiles/use.desc</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>USE_ORDER</b> = <i>&quot;env:pkg:conf:defaults:pkginternal:repo:env.d&quot;</i></dt>
+<dd>
+Determines the precedence of layers in the incremental stacking of the USE variable. Precedence decreases from left to right such that env overrides pkg, pkg overrides conf, and so forth.<div style="height: 1.00em;">
+&#160;</div>
+<b>***warning***</b><div style="height: 0.00em;">
+&#160;</div>
+Do not modify this value unless you're a developer and you know what you're doing. If you change this and something breaks, we will not help you fix it.<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+<b>env</b></dt>
+<dd>
+USE from the current environment variables (USE and those listed in USE_EXPAND)</dd>
+</dl>
+<dl>
+<dt>
+<b>pkg</b></dt>
+<dd>
+Per-package USE from <b>/etc/portage/package.use</b> (see <b>portage</b>(5))</dd>
+</dl>
+<dl>
+<dt>
+<b>conf</b></dt>
+<dd>
+USE from make.conf</dd>
+</dl>
+<dl>
+<dt>
+<b>defaults</b></dt>
+<dd>
+USE from make.defaults and package.use in the profile (e.g. /etc/portage/make.profile/package.use) (see  <b>portage</b>(5))</dd>
+</dl>
+<dl>
+<dt>
+<b>pkginternal</b></dt>
+<dd>
+USE from <b>ebuild</b>(5) IUSE defaults</dd>
+</dl>
+<dl>
+<dt>
+<b>repo</b></dt>
+<dd>
+USE from make.defaults and package.use in the repo's profiles/ top dir (e.g. /usr/portage/profiles/package.use) (see  <b>portage</b>(5))</dd>
+</dl>
+<dl>
+<dt>
+<b>env.d</b></dt>
+<dd>
+USE from the environment variables, such as LINGUAS, defined by files in  <i>/etc/env.d/</i></dd>
+</dl>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>AUTHORS</h1><br/>
+Daniel Robbins &lt;drobbins@gentoo.org&gt;<br/>
+Nicholas Jones &lt;carpaski@gentoo.org&gt;<br/>
+Mike Frysinger &lt;vapier@gentoo.org&gt;<br/>
+Saleem Abdulrasool &lt;compnerd@gentoo.org&gt;<br/>
+Arfrever Frehtes Taifersar Arahesis &lt;arfrever@apache.org&gt;<br/>
+</div>
+<div class="section">
+<h1>FILES</h1><dl>
+<dt>
+<b>/etc/make.conf</b> and <b>/etc/portage/make.conf</b></dt>
+<dd>
+Contains variables for the build-process and overwrites those in make.defaults.</dd>
+</dl>
+<dl>
+<dt>
+<b>/usr/share/portage/config/make.globals</b></dt>
+<dd>
+Contains the default variables for the build-process, you should edit  <i>/etc/portage/make.conf</i> instead.</dd>
+</dl>
+<dl>
+<dt>
+<b>/etc/portage/color.map</b></dt>
+<dd>
+Contains variables customizing colors.</dd>
+</dl>
+<dl>
+<dt>
+<b>/usr/portage/profiles/use.desc</b></dt>
+<dd>
+Contains a list of all global USE flags.</dd>
+</dl>
+<dl>
+<dt>
+<b>/usr/portage/profiles/use.local.desc</b></dt>
+<dd>
+Contains a list of all local USE variables.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>emerge</b>(1), <b>portage</b>(5), <b>ebuild</b>(1), <b>ebuild</b>(5)<dl>
+<dt>
+The <i>/usr/lib/portage/bin/ebuild.sh</i> script.</dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+The helper apps in <i>/usr/lib/portage/bin</i>.</dt>
+<dd>
+</dd>
+</dl>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Jan 2015</td>
+<td class="foot-os">
+Portage 2.2.20</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
 
-<A NAME="lbAB">&nbsp;</A>
-<H2>NAME</H2>
-
-make.conf - custom settings for Portage
-<A NAME="lbAC">&nbsp;</A>
-<H2>SYNOPSIS</H2>
-
-<B>/etc/make.conf</B> and <B>/etc/portage/make.conf</B>
-<A NAME="lbAD">&nbsp;</A>
-<H2>DESCRIPTION</H2>
-
-<P>
-This file contains various variables that are used by Portage. The file has a
-newline-delimited list of <I>&lt;key&gt;=&lt;value&gt;</I> pairs (see the default file for
-examples) which are accessible from the environment of ebuilds. It supports
-simple shell-like expansion of the form <I>var=&quot;${var}&quot;</I>, the source
-keyword and variable substitution, but not some of the more advanced BASH
-features like arrays and special parameter expansions. For more details, see
-the Simple lexical analysis documentation:
-<TT><A HREF="http://docs.python.org/3/library/shlex.html">http://docs.python.org/3/library/shlex.html</A></TT>. Note that if you source
-files, they need to be in the same shlex syntax for portage to read them.
-If make.conf is a directory, then all the files in that directory will
-be sorted in ascending alphabetical order by file name and summed
-together as if it were a single file.
-<BR>
-
-Portage will check the currently-defined environment variables
-first for any settings.  If no environment settings are found,
-Portage then checks the make.conf files. Both /etc/make.conf and
-/etc/portage/make.conf are checked (if present), and settings from
-/etc/portage/make.conf will override settings from /etc/make.conf.
-If no setting is found in the make.conf files, Portage checks
-make.globals. If no
-setting is found there, the profile's default setting is grabbed
-from /etc/portage/make.profile/make.defaults. Please note that all user
-settings should be made in the environment or in the make.conf
-files, which are intended to be customized by the user.
-<BR>
-
-Exceptions are incremental variables such as USE, CONFIG_PROTECT*,
-and ACCEPT_KEYWORDS.  Incremental variables are propagated down from
-make.defaults to make.globals to make.conf to the environment
-settings.  Clearing these variables requires a clear-all as in:
-export USE=&quot;-*&quot;
-<BR>
-
-In order to create per-package environment settings, refer to
-<B>package.env</B> in <B><A HREF="http://localhost/cgi-bin/man/man2html?5+portage">portage</A></B>(5).
-<A NAME="lbAE">&nbsp;</A>
-<H2>VARIABLES</H2>
-
-<DL COMPACT>
-<DT><B>ACCEPT_CHOSTS</B> = <I>[space delimited list of CHOST values]</I><DD>
-Specifies acceptable <B>CHOST</B> values. Regular
-expression syntax is supported, so it is necessary to escape
-<B>CHOST</B> characters if they have special meaning in regular expressions.
-<BR>
-
-Defaults to the value of $CHOST.
-<DT><B>ACCEPT_KEYWORDS</B> = <I>[space delimited list of KEYWORDS]</I><DD>
-Enable testing of ebuilds that have not yet been deemed 'stable'.  Users
-of the 'x86' architecture would set this to '~x86' while ppc users would
-set this to '~ppc'.  This is an incremental variable.  Only define a
-~arch.
-<BR>
-
-Defaults to the value of $ARCH.
-<DT><B>ACCEPT_LICENSE</B> = <I>[space delimited list of licenses or groups]</I><DD>
-This variable is used to mask packages based on licensing restrictions. It
-may contain both license and group names, where group names are prefixed
-with the '@' symbol. License groups are defined in the <I>license_groups</I>
-file (see <B><A HREF="http://localhost/cgi-bin/man/man2html?5+portage">portage</A></B>(5)). In addition to license and group names, the
-<I>*</I> and <I>-*</I> wildcard tokens are also supported. Refer to GLEP 23
-for further information:
-<I><A HREF="http://www.gentoo.org/proj/en/glep/glep-0023.html">http://www.gentoo.org/proj/en/glep/glep-0023.html</A></I>.
-<BR>
-
-Defaults to the value of * -@EULA.
-<BR>
-
-<I>Examples:</I>
-
-<PRE>
-# Only accept licenses in the FREE license group (i.e. Free Software)
-ACCEPT_LICENSE=&quot;-* @FREE&quot;
-# As before, but exclude the &quot;Artistic&quot; license
-ACCEPT_LICENSE=&quot;-* @FREE -Artistic&quot;
-# Accept any license except those in the EULA license group (default)
-ACCEPT_LICENSE=&quot;* -@EULA&quot;
-</PRE>
-
-<DT><B>ACCEPT_PROPERTIES</B> = <I>[space delimited list of properties]</I><DD>
-This variable is used to mask packages based on PROPERTIES restrictions.
-In addition to property names, the <I>*</I> and <I>-*</I> wildcard tokens are
-also supported. This variable can be temporarily overridden using the
-<B>--accept-properties</B> option of <B><A HREF="http://localhost/cgi-bin/man/man2html?1+emerge">emerge</A></B>(1).
-See <B><A HREF="http://localhost/cgi-bin/man/man2html?5+ebuild">ebuild</A></B>(5) for more information about PROPERTIES.
-<BR>
-
-Defaults to the value of *.
-<BR>
-
-<I>Examples:</I>
-
-<PRE>
-# Accept any properties
-ACCEPT_PROPERTIES=&quot;*&quot;
-# Accept any properties except the &quot;interactive&quot; property
-ACCEPT_PROPERTIES=&quot;* -interactive&quot;
-</PRE>
-
-<DT><B>ACCEPT_RESTRICT</B> = <I>[space delimited list of RESTRICT tokens]</I><DD>
-This variable is used to mask packages based on RESTRICT tokens.
-In addition to RESTRICT tokens, the <I>*</I> and <I>-*</I> wildcard tokens are
-also supported. This variable can be temporarily overridden using the
-<B>--accept-restrict</B> option of <B><A HREF="http://localhost/cgi-bin/man/man2html?1+emerge">emerge</A></B>(1).
-See <B><A HREF="http://localhost/cgi-bin/man/man2html?5+ebuild">ebuild</A></B>(5) for more information about RESTRICT.
-<BR>
-
-Defaults to the value of *.
-<BR>
-
-<I>Examples:</I>
-
-<PRE>
-# Accept any restrict tokens
-ACCEPT_RESTRICT=&quot;*&quot;
-# Accept any tokens except &quot;bindist&quot;
-ACCEPT_RESTRICT=&quot;* -bindist&quot;
-</PRE>
-
-<DT><B>CBUILD</B>
-
-<DD>
-This variable is passed by the <I>ebuild scripts</I> to the <I>configure</I>
-as <I>--build=${CBUILD}</I> only if it is defined.  Do not set this yourself
-unless you know what you are doing.
-<DT><B>CCACHE_DIR</B> = <I>[path]</I><DD>
-Defines the location of the ccache working directory.  See the <B><A HREF="http://localhost/cgi-bin/man/man2html?1+ccache">ccache</A></B>(1)
-man page for more information.
-<BR>
-
-Defaults to /var/tmp/ccache
-<DT><B>CCACHE_SIZE</B> = <I>&quot;size&quot;</I><DD>
-This controls the space use limitations for ccache.  See the <I>-M</I> flag in
-the <B><A HREF="http://localhost/cgi-bin/man/man2html?1+ccache">ccache</A></B>(1) man page for more information.
-<DT><B>CFLAGS CXXFLAGS</B>
-
-<DD>
-Use these variables to set the desired optimization/CPU instruction settings
-for applications that you compile.  These two variables are passed to the C
-and C++ compilers, respectively. (CXX is used to refer to the C++ compiler
-within many buildsystems.) Nearly all ebuild files will take advantage
-of your custom settings, resulting in a Gentoo Linux that is fully customized
-to your specifications.  Please use sane settings as some packages will fail to
-compile/run if the optimizations are too extreme.
-<P>
-For more information, see the <I>Invoking GCC</I> section of the gcc manual:
-<BR>
-
-<A HREF="http://gcc.gnu.org/onlinedocs/">http://gcc.gnu.org/onlinedocs/</A>
-<DT><B>CHOST</B>
-
-<DD>
-This variable is passed by the <I>ebuild scripts</I> to the <I>configure</I>
-step as <I>--host=${CHOST}</I>.  This way you can force the build-host.
-<P>
-For more information:
-<BR>
-
-<A HREF="http://gcc.gnu.org/onlinedocs/gcc-4.1.1/gcc/Submodel-Options.html">http://gcc.gnu.org/onlinedocs/gcc-4.1.1/gcc/Submodel-Options.html</A>
-<BR>
-
-<A HREF="http://gcc.gnu.org/onlinedocs/gcc-3.3/gcc/Submodel-Options.html">http://gcc.gnu.org/onlinedocs/gcc-3.3/gcc/Submodel-Options.html</A>
-<BR>
-
-<A HREF="http://gcc.gnu.org/onlinedocs/gcc-3.2/gcc/Submodel-Options.html">http://gcc.gnu.org/onlinedocs/gcc-3.2/gcc/Submodel-Options.html</A>
-<BR>
-
-<A HREF="http://gcc.gnu.org/onlinedocs/gcc-2.95.3/gcc_2.html">http://gcc.gnu.org/onlinedocs/gcc-2.95.3/gcc_2.html</A>
-<DT><B>CLEAN_DELAY</B> = <I>integer</I><DD>
-Determines how long the countdown delay will be after running
-`emerge --unmerge`.
-<BR>
-
-Defaults to 5 seconds.
-<DT><B>COLLISION_IGNORE</B> = <I>[space delimited list of fnmatch patterns]</I><DD>
-This variable allows the user to disable <I>collision-protect</I> and
-<I>protect-owned</I> for specific <B><A HREF="http://localhost/cgi-bin/man/man2html?3+fnmatch">fnmatch</A></B>(3) patterns. For backward
-compatibility, directories that are listed without a fnmatch pattern will
-automatically have /* appended to them.
-<BR>
-
-Defaults to &quot;/lib/modules/* *.py[co]&quot;.
-<DT><B>CONFIG_PROTECT</B> = <I>[space delimited list of files and/or directories]</I><DD>
-All files and/or directories that are defined here will have &quot;config file
-protection&quot; enabled for them. See the <B>CONFIGURATION FILES</B> section
-of <B><A HREF="http://localhost/cgi-bin/man/man2html?1+emerge">emerge</A></B>(1) for more information.
-<DT><B>CONFIG_PROTECT_MASK</B> = <I>[space delimited list of files and/or directories]</I><DD>
-All files and/or directories that are defined here will have &quot;config file
-protection&quot; disabled for them. See the <B>CONFIGURATION FILES</B> section
-of <B><A HREF="http://localhost/cgi-bin/man/man2html?1+emerge">emerge</A></B>(1) for more information.
-<DT><B>CTARGET</B>
-
-<DD>
-This variable is passed by the <I>ebuild scripts</I> to the <I>configure</I>
-as <I>--target=${CTARGET}</I> only if it is defined.
-<DT><B>DCO_SIGNED_OFF_BY</B>
-
-<DD>
-This variable may contain a name and email address which will be used by
-<B><A HREF="http://localhost/cgi-bin/man/man2html?1+repoman">repoman</A></B>(1) to add a Signed-off-by line to each commit message.
-<DT><B>DISTDIR</B> = <I>[path]</I><DD>
-Defines the location of your local source file repository. After packages
-are built, it is safe to remove any and all files from this directory since
-they will be automatically fetched on demand for a given build. If you would
-like to selectively prune obsolete files from this directory, see
-<B><A HREF="http://localhost/cgi-bin/man/man2html?1+eclean">eclean</A></B>(1) from the gentoolkit package.
-<P>
-Use the <B>PORTAGE_RO_DISTDIRS</B> variable to specify one or
-more read-only directories containing distfiles.
-<P>
-Note
-that locations under /usr/portage are not necessarily safe for data storage.
-See the <B>PORTDIR</B> documentation for more information.
-<BR>
-
-Defaults to /usr/portage/distfiles.
-<DT><B>DOC_SYMLINKS_DIR</B>
-
-<DD>
-If this variable contains a directory then symlinks to html documentation will
-be installed into it.
-<DT><B>EBEEP_IGNORE</B>
-
-<DD>
-Defines whether or not to ignore audible beeps when displaying important
-informational messages.  This variable is unset by default.
-<DT><B>EMERGE_DEFAULT_OPTS</B>
-
-<DD>
-Options to append to the end of the <B><A HREF="http://localhost/cgi-bin/man/man2html?1+emerge">emerge</A></B>(1) command line on every
-invocation. These options will not be appended to the command line if
---ignore-default-opts is specified.
-<DT><B>EMERGE_LOG_DIR</B>
-
-<DD>
-Controls the location of emerge.log and emerge-fetch.log.
-<BR>
-
-Defaults to /var/log.
-<DT><B>EMERGE_WARNING_DELAY</B> = <I>integer</I><DD>
-Determines how long the countdown delay will be after running
-`emerge --unmerge` for a system package.
-<BR>
-
-Defaults to 10 seconds.
-<DT><B>EPAUSE_IGNORE</B>
-
-<DD>
-Defines whether or not to ignore short pauses that occur when displaying
-important informational messages.  This variable is unset by default.
-If it is set to any value pauses are ignored.
-<DT><B>EXTRA_ECONF</B> = <I>[configure options string]</I><DD>
-Contains additional options that <B>econf</B> will append to configure
-script arguments (see <B><A HREF="http://localhost/cgi-bin/man/man2html?5+ebuild">ebuild</A></B>(5)).
-<DT><B>FEATURES</B> = <I>&quot;sandbox&quot;</I><DD>
-Defines actions portage takes by default. This is an incremental variable.
-Most of these settings are for developer use, but some are available to
-non-developers as well. The <B>sandbox</B> feature is very important and
-should not be disabled by default.
-<DL COMPACT><DT><DD>
-<DL COMPACT>
-<DT><B>assume-digests</B>
-
-<DD>
-When commiting work to cvs with <B><A HREF="http://localhost/cgi-bin/man/man2html?1+repoman">repoman</A></B>(1), assume that all existing
-SRC_URI digests are correct.  This feature also affects digest generation via
-<B><A HREF="http://localhost/cgi-bin/man/man2html?1+ebuild">ebuild</A></B>(1) and <B><A HREF="http://localhost/cgi-bin/man/man2html?1+emerge">emerge</A></B>(1) (emerge generates digests only when the
-<I>digest</I> feature is enabled). Existing digests for files that do not exist
-in ${DISTDIR} will be automatically assumed even when <I>assume-digests</I> is
-not enabled. If a file exists in ${DISTDIR} but its size does not match the
-existing digest, the digest will be regenerated regardless of whether or
-not <I>assume-digests</I> is enabled. The <B><A HREF="http://localhost/cgi-bin/man/man2html?1+ebuild">ebuild</A></B>(1) <B>digest</B> command
-has a <B>--force</B> option that can be used to force regeneration of digests.
-<DT><B>binpkg-logs</B>
-
-<DD>
-Keep logs from successful binary package merges. This is relevant only when
-<B>PORT_LOGDIR</B> is set.
-<DT><B>binpkg-multi-instance</B>
-
-<DD>
-Enable support for multiple binary package instances per ebuild.
-Having multiple instances is useful for a number of purposes, such as
-retaining builds that were built with different USE flags or linked
-against different versions of libraries. The location of any particular
-package within PKGDIR can be expressed as follows:
-<P>
-<TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>${PKGDIR}/${CATEGORY}/${PN}/${PF}-${BUILD_ID}.xpak<BR>
-<P>
-The build-id starts at 1 for the first build of a particular ebuild,
-and is incremented by 1 for each new build. It is possible to share a
-writable PKGDIR over NFS, and locking ensures that each package added
-to PKGDIR will have a unique build-id. It is not necessary to migrate
-an existing PKGDIR to the new layout, since portage is capable of
-working with a mixed PKGDIR layout, where packages using the old layout
-are allowed to remain in place.
-<P>
-The new PKGDIR layout is backward-compatible with binhost clients
-running older portage, since the file format is identical, the
-per-package PATH attribute in the 'Packages' index directs them to
-download the file from the correct URI, and they automatically use
-BUILD_TIME metadata to select the latest builds.
-<P>
-There is currently no automated way to prune old builds from PKGDIR,
-although it is possible to remove packages manually, and then run
-aqemaint --fix binhost' to update the ${PKGDIR}/Packages index.
-<DT><B>buildpkg</B>
-
-<DD>
-Binary packages will be created for all packages that are merged. Also see
-<B><A HREF="http://localhost/cgi-bin/man/man2html?1+quickpkg">quickpkg</A></B>(1) and <B><A HREF="http://localhost/cgi-bin/man/man2html?1+emerge">emerge</A></B>(1) <B>--buildpkg</B> and
-<B>--buildpkgonly</B> options.
-<DT><B>buildsyspkg</B>
-
-<DD>
-Build binary packages for just packages in the system set.
-<DT><B>candy</B>
-
-<DD>
-Enable a special progress indicator when <B><A HREF="http://localhost/cgi-bin/man/man2html?1+emerge">emerge</A></B>(1) is calculating
-dependencies.
-<DT><B>case-insensitive-fs</B>
-
-<DD>
-Use case-insensitive file name comparisions when merging and unmerging
-files. Most users should not enable this feature, since most filesystems
-are case-sensitive. You should only enable this feature if you are
-using portage to install files to a case-insensitive filesystem.
-<DT><B>ccache</B>
-
-<DD>
-Enable portage support for the ccache package.  If the ccache dir is not
-present in the user's environment, then portage will default to
-${PORTAGE_TMPDIR}/ccache.
-<P>
-<B>Warning</B>: This feature is known to cause numerous compilation failures.
-Sometimes ccache will retain stale code objects or corrupted files, which can
-lead to packages that cannot be emerged. If this happens (if you receive errors
-like &quot;File not recognized: File truncated&quot;), try recompiling the application
-with ccache disabled before reporting a bug. Unless you are doing development
-work, do not enable ccache.
-<DT><B>cgroup</B>
-
-<DD>
-Use Linux control group to control processes spawned by ebuilds. This allows
-emerge to safely kill all subprocesses when ebuild phase exits.
-<DT><B>clean-logs</B>
-
-<DD>
-Enable automatic execution of the command specified by the
-PORT_LOGDIR_CLEAN variable. The default PORT_LOGDIR_CLEAN setting will
-remove all files from PORT_LOGDIR that were last modified at least 7
-days ago.
-<DT><B>collision-protect</B>
-
-<DD>
-A QA-feature to ensure that a package doesn't overwrite files it doesn't own.
-The <I>COLLISION_IGNORE</I> variable can be used to selectively disable this
-feature. Also see the related <I>protect-owned</I> feature.
-<DT><B>compress-build-logs</B>
-
-<DD>
-The causes all build logs to be compressed while they are being written.
-Log file names have an extension that is appropriate for the compression
-type. Currently, only <B><A HREF="http://localhost/cgi-bin/man/man2html?1+gzip">gzip</A></B>(1) compression is supported, so build
-logs will have a '.gz' extension when this feature is enabled.
-<DT><B>compress-index</B>
-
-<DD>
-If set then a compressed copy of 'Packages' index file will be written.
-This feature is intended for Gentoo binhosts using certain webservers
-(such as, but not limited to, Nginx with gzip_static module) to avoid
-redundant on-the-fly compression.  The resulting file will be called
-[aq]Packages.gz' and its modification time will match that of 'Packages'.
-<DT><B>compressdebug</B>
-
-<DD>
-Compress the debug sections in the split debug files with zlib to save
-space.  Make sure you have built both binutils and gdb with USE=zlib
-support for this to work.  See <B>splitdebug</B> for general split debug
-information (upon which this feature depends).
-<DT><B>config-protect-if-modified</B>
-
-<DD>
-This causes the <B>CONFIG_PROTECT</B> behavior to be skipped for files
-that have not been modified since they were installed. This feature is
-enabled by default.
-<DT><B>digest</B>
-
-<DD>
-Autogenerate digests for packages when running the
-<B><A HREF="http://localhost/cgi-bin/man/man2html?1+emerge">emerge</A></B>(1), <B><A HREF="http://localhost/cgi-bin/man/man2html?1+ebuild">ebuild</A></B>(1), or <B><A HREF="http://localhost/cgi-bin/man/man2html?1+repoman">repoman</A></B>(1) commands. If
-the <I>assume-digests</I> feature is also enabled then existing SRC_URI digests
-will be reused whenever they are available.
-<DT><B>distcc</B>
-
-<DD>
-Enable portage support for the distcc package.
-<DT><B>distcc-pump</B>
-
-<DD>
-Enable portage support for the distcc package with pump mode.
-<DT><B>distlocks</B>
-
-<DD>
-Portage uses lockfiles to ensure competing instances don't clobber
-each other's files. This feature is enabled by default but may cause
-heartache on less intelligent remote filesystems like NFSv2 and some
-strangely configured Samba server (oplocks off, NFS re-export). A tool
-/usr/lib/portage/bin/clean_locks exists to help handle lock issues
-when a problem arises (normally due to a crash or disconnect).
-<DT><B>downgrade-backup</B>
-
-<DD>
-When a package is downgraded to a lower version, call <B><A HREF="http://localhost/cgi-bin/man/man2html?1+quickpkg">quickpkg</A></B>(1)
-in order to create a backup of the installed version before it is
-unmerged (if a binary package of the same version does not already
-exist). Also see the related <I>unmerge-backup</I> feature.
-<DT><B>ebuild-locks</B>
-
-<DD>
-Use locks to ensure that unsandboxed ebuild phases never execute
-concurrently. Also see <I>parallel-install</I>.
-<DT><B>fail-clean</B>
-
-<DD>
-Clean up temporary files after a build failure. This is particularly useful
-if you have <B>PORTAGE_TMPDIR</B> on tmpfs. If this feature is enabled, you
-probably also want to enable <B>PORT_LOGDIR</B> in order to save the build log.
-Both the <B><A HREF="http://localhost/cgi-bin/man/man2html?1+ebuild">ebuild</A></B>(1) command and the <I>noclean</I> feature cause the
-<I>fail-clean</I> feature to be automatically disabled.
-<DT><B>fakeroot</B>
-
-<DD>
-Enable fakeroot for the install and package phases when a non-root user runs
-the <B><A HREF="http://localhost/cgi-bin/man/man2html?1+ebuild">ebuild</A></B>(1) command.
-<DT><B>fixlafiles</B>
-
-<DD>
-Modifies .la files to not include other .la files and some other
-fixes (order of flags, duplicated entries, ...)
-<DT><B>force-mirror</B>
-
-<DD>
-Only fetch files from configured mirrors, ignoring <B>SRC_URI</B>,
-except when <I>mirror</I> is in the <B><A HREF="http://localhost/cgi-bin/man/man2html?5+ebuild">ebuild</A></B>(5) <B>RESTRICT</B> variable.
-<DT><B>force-prefix</B>
-
-<DD>
-Enable prefix support for all ebuilds, regardless of EAPI, since older EAPIs
-would otherwise be useless with prefix configurations. This brings
-compatibility with the prefix branch of portage, which also supports EPREFIX
-for all EAPIs (for obvious reasons).
-<DT><B>getbinpkg</B>
-
-<DD>
-Force emerges to always try to fetch files from the <I>PORTAGE_BINHOST</I>.  See
-<B><A HREF="http://localhost/cgi-bin/man/man2html?5+make.conf">make.conf</A></B>(5) for more information.
-<DT><B>installsources</B>
-
-<DD>
-Install source code into /usr/src/debug/${CATEGORY}/${PF} (also see
-<B>splitdebug</B>). This feature works only if debugedit is installed and CFLAGS
-is set to include debug information (such as with the -ggdb flag).
-<DT><B>ipc-sandbox</B>
-
-<DD>
-Isolate the ebuild phase functions from host IPC namespace. Supported
-only on Linux. Requires IPC namespace support in kernel.
-<DT><B>keeptemp</B>
-
-<DD>
-Do not delete the ${T} directory after the merge process.
-<DT><B>keepwork</B>
-
-<DD>
-Do not delete the ${WORKDIR} directory after the merge process. ${WORKDIR} can
-then be reused since this feature disables most of the clean phase that runs
-prior to each build. Due to lack of proper cleanup, this feature can
-interfere with normal emerge operation and therefore it should not be left
-enabled for more than a short period of time.
-<DT><B>lmirror</B>
-
-<DD>
-When <I>mirror</I> is enabled in <B>FEATURES</B>, fetch files even
-when <I>mirror</I> is also in the <B><A HREF="http://localhost/cgi-bin/man/man2html?5+ebuild">ebuild</A></B>(5) <B>RESTRICT</B> variable.
-Do <B>NOT</B> use <I>lmirror</I> for clients that need to override <B>RESTRICT</B>
-when fetching from a local mirror, but instead use a &quot;local&quot; mirror setting
-in <I>/etc/portage/mirrors</I>, as described in <B><A HREF="http://localhost/cgi-bin/man/man2html?5+portage">portage</A></B>(5).
-<DT><B>merge-sync</B>
-
-<DD>
-After a package is merged or unmerged, sync relevant files to
-disk in order to avoid data-loss in the event of a power failure.
-This feature is enabled by default.
-<DT><B>metadata-transfer</B>
-
-<DD>
-Automatically perform a metadata transfer when `emerge --sync` is run.
-In versions of portage &gt;=2.1.5, this feature is disabled by
-default. When metadata-transfer is disabled, metadata cache from the
-${repository_location}/metadata/md5-cache/ directory will be used directly
-(if available).
-<DT><B>mirror</B>
-
-<DD>
-Fetch everything in <B>SRC_URI</B> regardless of <B>USE</B> settings,
-except do not fetch anything when <I>mirror</I> is in <B>RESTRICT</B>.
-<DT><B>multilib-strict</B>
-
-<DD>
-Many Makefiles assume that their libraries should go to /usr/lib, or
-$(prefix)/lib. This assumption can cause a serious mess if /usr/lib
-isn't a symlink to /usr/lib64. To find the bad packages, we have a
-portage feature called <I>multilib-strict</I>. It will prevent emerge
-from putting 64bit libraries into anything other than (/usr)/lib64.
-<DT><B>network-sandbox</B>
-
-<DD>
-Isolate the ebuild phase functions from host network interfaces.
-Supported only on Linux. Requires network namespace support in kernel.
-<DT><B>network-sandbox-proxy</B>
-
-<DD>
-Enable escaping network-sandbox through SOCKSv5 proxy. Enabling distcc
-feature also enables the proxy.
-<P>
-If asyncio Python module is available (requires Python 3.3, built-in
-since Python 3.4) Portage will additionally spawn an isolated SOCKSv5
-proxy on UNIX socket. The socket address will be exported
-as PORTAGE_SOCKS5_PROXY and the processes running inside the sandbox
-can use it to access host's network when desired. Portage automatically
-configures new enough distcc to use the proxy.
-<DT><B>news</B>
-
-<DD>
-Enable GLEP 42 news support. See
-<I><A HREF="http://www.gentoo.org/proj/en/glep/glep-0042.html">http://www.gentoo.org/proj/en/glep/glep-0042.html</A></I>.
-<DT><B>noauto</B>
-
-<DD>
-When utilizing <B><A HREF="http://localhost/cgi-bin/man/man2html?1+ebuild">ebuild</A></B>(1), only run the function requested. Also, forces
-the corresponding ebuild and eclasses to be sourced again for each phase, in
-order to account for modifications.
-<DT><B>noclean</B>
-
-<DD>
-Do not delete the the source and temporary files after the merge process.
-<DT><B>nodoc</B>
-
-<DD>
-Do not install doc files (/usr/share/doc).
-<DT><B>noinfo</B>
-
-<DD>
-Do not install info pages.
-<DT><B>noman</B>
-
-<DD>
-Do not install manpages.
-<DT><B>nostrip</B>
-
-<DD>
-Prevents the stripping of binaries that are merged to the live filesystem.
-<DT><B>notitles</B>
-
-<DD>
-Disables xterm titlebar updates (which contains status info).
-<DT><B>parallel-fetch</B>
-
-<DD>
-Fetch in the background while compiling. Run
-`tail -f /var/log/emerge-fetch.log` in a
-terminal to view parallel-fetch progress.
-<DT><B>parallel-install</B>
-
-<DD>
-Use finer-grained locks when installing packages, allowing for greater
-parallelization. For additional parallelization, disable
-<I>ebuild-locks</I>.
-<DT><B>prelink-checksums</B>
-
-<DD>
-If <B><A HREF="http://localhost/cgi-bin/man/man2html?8+prelink">prelink</A></B>(8) is installed then use it to undo any prelinks on files
-before computing checksums for merge and unmerge. This feature is
-useful only if <B><A HREF="http://localhost/cgi-bin/man/man2html?8+prelink">prelink</A></B>(8) is installed and accurate checksums (despite
-prelinking) are needed for some reason such as for checking the integrity of
-installed files or because the <I>unmerge-orphans</I> feature is disabled.
-<P>
-Note that normal emerging of packages from source computes the
-checksums before things will be prelinked, so in such cases, this
-feature isn't required either. Undoing prelinking while merging is
-only required when using tools like <B><A HREF="http://localhost/cgi-bin/man/man2html?1+quickpkg">quickpkg</A></B>(1) which can cause
-already prelinked files to be merged.
-<DT><B>preserve-libs</B>
-
-<DD>
-Preserve libraries when the sonames change during upgrade or downgrade.
-Libraries are preserved only if consumers of those libraries are detected.
-Preserved libraries are automatically removed when there are no remaining
-consumers. Run `emerge @preserved-rebuild` in order to rebuild all
-consumers of preserved libraries.
-<DT><B>protect-owned</B>
-
-<DD>
-This is identical to the <I>collision-protect</I> feature except that files
-may be overwritten if they are not explicitly listed in the contents of a
-currently installed package. This is particularly useful on systems that
-have lots of orphan files that have been left behind by older versions
-of portage that did not support the <I>unmerge-orphans</I> feature. Like
-<I>collision-protect</I>, the <I>COLLISION_IGNORE</I> variable can be used to
-selectively disable this feature. It is recommended to leave either
-<I>protect-owned</I> or <I>collision-protect</I> enabled at all times,
-since otherwise file collisions between packages may result in files being
-overwritten or uninstalled at inappropriate times.
-If <I>collision-protect</I> is enabled then it takes precedence over
-<I>protect-owned</I>.
-<DT><B>python-trace</B>
-
-<DD>
-Output a verbose trace of python execution to stderr when a command's
---debug option is enabled.
-<DT><B>sandbox</B>
-
-<DD>
-Enable sandbox-ing when running <B><A HREF="http://localhost/cgi-bin/man/man2html?1+emerge">emerge</A></B>(1) and <B><A HREF="http://localhost/cgi-bin/man/man2html?1+ebuild">ebuild</A></B>(1).
-<DT><B>sesandbox</B>
-
-<DD>
-Enable SELinux sandbox-ing.  Do not toggle this <B>FEATURE</B> yourself.
-<DT><B>sfperms</B>
-
-<DD>
-Stands for Smart Filesystem Permissions.  Before merging packages to the
-live filesystem, automatically search for and set permissions on setuid
-and setgid files.  Files that are setuid have the group and other read
-bits removed while files that are setgid have the other read bit removed.
-See also <I>suidctl</I> below.
-<DT><B>sign</B>
-
-<DD>
-When commiting work to cvs with <B><A HREF="http://localhost/cgi-bin/man/man2html?1+repoman">repoman</A></B>(1), sign the Manifest with
-a GPG key.  Read about the <I>PORTAGE_GPG_KEY</I> variable in
-<B><A HREF="http://localhost/cgi-bin/man/man2html?5+make.conf">make.conf</A></B>(5).
-<DT><B>skiprocheck</B>
-
-<DD>
-Skip write access checks on <B>DISTDIR</B> when fetching files. This is
-useful when <B>FETCHCOMMAND</B> and <B>RESUMECOMMAND</B> are used to
-forward fetch requests to a server that exposes <B>DISTDIR</B> as
-a read-only NFS share. A read-only <B>DISTDIR</B> is not compatible with the
-<I>distlocks</I>, so it is recommended to also add &quot;-distlocks&quot; to
-<B>FEATURES</B> in order to avoid warning messages that are triggered by this
-incompatibility.
-<DT><B>split-elog</B>
-
-<DD>
-Store logs created by <B>PORTAGE_ELOG_SYSTEM=&quot;save&quot;</B> in category
-subdirectories of <B>PORT_LOGDIR/elog</B>, instead of using
-<B>PORT_LOGDIR/elog</B> directly.
-<DT><B>split-log</B>
-
-<DD>
-Store build logs in category subdirectories of <B>PORT_LOGDIR/build</B>,
-instead of using <B>PORT_LOGDIR</B> directly.
-<DT><B>splitdebug</B>
-
-<DD>
-Prior to stripping ELF etdyn and etexec files, the debugging info is
-stored for later use by various debuggers.  This feature is disabled by
-<B>nostrip</B>.  You should also consider setting <B>compressdebug</B> so
-the files don't suck up a lot of space.  For installation of source code,
-see <B>installsources</B>.
-<DT><B>strict</B>
-
-<DD>
-Have portage react strongly to conditions that have the potential to be
-dangerous (like missing or incorrect digests for ebuilds).
-<DT><B>stricter</B>
-
-<DD>
-Have portage react strongly to conditions that may conflict with system
-security provisions (for example textrels, executable stack).  Read about
-the <I>QA_STRICT_*</I> variables in <B><A HREF="http://localhost/cgi-bin/man/man2html?5+make.conf">make.conf</A></B>(5).
-<DT><B>suidctl</B>
-
-<DD>
-Before merging packages to the live filesystem, automatically strip setuid
-bits from any file that is not listed in <I>/etc/portage/suidctl.conf</I>.
-<DT><B>test</B>
-
-<DD>
-Run package-specific tests during each merge to help make sure
-the package compiled properly.  See <I>test</I> in <B><A HREF="http://localhost/cgi-bin/man/man2html?1+ebuild">ebuild</A></B>(1)
-and <I>src_test()</I> in <B><A HREF="http://localhost/cgi-bin/man/man2html?5+ebuild">ebuild</A></B>(5). This feature implies the &quot;test&quot;
-<B>USE</B> flag if it is a member of <B>IUSE</B>, either explicitly or
-implicitly (see <B><A HREF="http://localhost/cgi-bin/man/man2html?5+ebuild">ebuild</A></B>(5) for more information about <B>IUSE</B>).
-The &quot;test&quot; <B>USE</B> flag is also automatically disabled when the
-&quot;test&quot; feature is disabled.
-<DT><B>test-fail-continue</B>
-
-<DD>
-If &quot;test&quot; is enabled <B>FEATURES</B> and the test phase of an ebuild fails,
-continue to execute the remaining phases as if the failure had not occurred.
-Note that the test phase for a specific package may be disabled by masking
-the &quot;test&quot; <B>USE</B> flag in <B>package.use.mask</B> (see <B><A HREF="http://localhost/cgi-bin/man/man2html?5+portage">portage</A></B>(5)).
-<DT><B>unknown-features-filter</B>
-
-<DD>
-Filter out any unknown values that the FEATURES variable contains.
-<DT><B>unknown-features-warn</B>
-
-<DD>
-Warn if FEATURES contains one or more unknown values.
-<DT><B>unmerge-backup</B>
-
-<DD>
-Call <B><A HREF="http://localhost/cgi-bin/man/man2html?1+quickpkg">quickpkg</A></B>(1) to create a backup of each package before it is
-unmerged (if a binary package of the same version does not already exist).
-Also see the related <I>downgrade-backup</I> feature.
-<DT><B>unmerge-logs</B>
-
-<DD>
-Keep logs from successful unmerge phases. This is relevant only when
-<B>PORT_LOGDIR</B> is set.
-<DT><B>unmerge-orphans</B>
-
-<DD>
-If a file is not claimed by another package in the same slot and it is not
-protected by <I>CONFIG_PROTECT</I>, unmerge it even if the modification time or
-checksum differs from the file that was originally installed.
-<DT><B>userfetch</B>
-
-<DD>
-When portage is run as root, drop privileges to portage:portage during the
-fetching of package sources.
-<DT><B>userpriv</B>
-
-<DD>
-Allow portage to drop root privileges and compile packages as
-portage:portage without a sandbox (unless <I>usersandbox</I> is also used).
-<DT><B>usersandbox</B>
-
-<DD>
-Enable the sandbox in the compile phase, when running without root privs
-(<I>userpriv</I>).
-<DT><B>usersync</B>
-
-<DD>
-Drop privileges to the owner of ${repository_location} for <B><A HREF="http://localhost/cgi-bin/man/man2html?1+emerge">emerge</A></B>(1) --sync
-operations. Note that this feature assumes that all subdirectories of
-${repository_location} have the same ownership as ${repository_location} itself.
-It is the user's responsibility to ensure correct ownership, since otherwise
-Portage would have to waste time validating ownership for each and every sync
-operation.
-<DT><B>webrsync-gpg</B>
-
-<DD>
-Enable GPG verification when using <I>emerge-webrsync</I>.
-<DT><B>xattr</B>
-
-<DD>
-Preserve extended attributes (filesystem-stored metadata) when installing
-files (see <B><A HREF="http://localhost/cgi-bin/man/man2html?1+attr">attr</A></B>(1)). The <B>PORTAGE_XATTR_EXCLUDE</B> variable may be
-used to exclude specific attributes from being preserved.
-</DL>
-</DL>
-
-<DT><B>FETCHCOMMAND</B>
-
-<DD>
-This variable contains the command used for fetching package sources from
-the internet.  It must contain the full path to the executable as well as the
-place-holders \${DISTDIR}, \${FILE} and \${URI}.  The command should be
-written to place the fetched file at \${DISTDIR}/\${FILE}.
-Also see <B>RESUMECOMMAND</B>.
-<DT><B>FFLAGS FCFLAGS</B>
-
-<DD>
-Use these variables to set the desired optimization/CPU instruction settings
-for applications that you compile with a FORTRAN compiler. FFLAGS is usually
-passed to the FORTRAN 77 compiler, and FCFLAGS to any FORTRAN compiler in
-more modern build systems.
-<P>
-For more information, see the <I>Invoking GCC</I> section of the gcc manual:
-<BR>
-
-<A HREF="http://gcc.gnu.org/onlinedocs/">http://gcc.gnu.org/onlinedocs/</A>
-<DT><B>GENTOO_MIRRORS</B> = <I>[URIs]</I><DD>
-Insert your space-separated list of local mirrors here.  These
-locations are used to download files before the ones listed in
-the <I>ebuild scripts</I>. Merging 'mirrorselect' can help.  Entries in this
-variable that have no protocol and simply start with a '/' path separator may
-be used to specify mounted filesystem mirrors.
-<DT><B>http_proxy ftp_proxy RSYNC_PROXY</B> = <I>[protocol://host:port]</I><DD>
-These variables are used by network clients such as <B><A HREF="http://localhost/cgi-bin/man/man2html?1+wget">wget</A></B>(1) and
-<B><A HREF="http://localhost/cgi-bin/man/man2html?1+rsync">rsync</A></B>(1). They are only required if you use a
-proxy server for internet access.
-<DT><B>INSTALL_MASK</B> = <I>[space delimited list of file names]</I><DD>
-Use this variable if you want to selectively prevent certain files from being
-copied into your file system tree.  This does not work on symlinks, but only on
-actual files.  Useful if you wish to filter out files like HACKING.gz and
-TODO.gz. The <B>INSTALL_MASK</B> is processed just before a package is merged.
-Also supported is a <B>PKG_INSTALL_MASK</B> variable that behaves exactly like
-<B>INSTALL_MASK</B> except that it is processed just before creation of a binary
-package.
-<DT><B>LDFLAGS</B>
-
-<DD>
-A list of flags to pass to the compiler when the linker will be called. See
-<B><A HREF="http://localhost/cgi-bin/man/man2html?1+ld">ld</A></B>(1) for linker flags, but don't forget that these flags will be passed
-directly to the compiler. Thus, you must use '-Wl' to escape the flags
-which only the linker understands (see <B><A HREF="http://localhost/cgi-bin/man/man2html?1+gcc">gcc</A></B>(1)).
-<P>
-<B>***warning***</B>
-<BR>
-
-Setting this and other *FLAGS variables arbitrarily may cause compile or
-runtime failures. Bug reports submitted when nonstandard values are
-enabled for these flags may be closed as INVALID.
-<DT><B>MAKEOPTS</B>
-
-<DD>
-Use this variable if you want to use parallel make.  For example, if you
-have a dual-processor system, set this variable to &quot;-j2&quot; or &quot;-j3&quot; for
-enhanced build performance with many packages. Suggested settings are
-between <I>CPUs+1</I> and <I>2*CPUs+1</I>. In order to avoid
-excess load, the <B>--load-average</B> option is recommended.
-For more information, see <B><A HREF="http://localhost/cgi-bin/man/man2html?1+make">make</A></B>(1). Also see <B><A HREF="http://localhost/cgi-bin/man/man2html?1+emerge">emerge</A></B>(1) for
-information about analogous <B>--jobs</B> and <B>--load-average</B> options.
-<DT><B>NOCOLOR</B> = <I>[&quot;true&quot; | &quot;false&quot;]</I><DD>
-Defines if color should be disabled by default.
-<BR>
-
-Defaults to false.
-<DT><B>PKGDIR</B> = <I>[path]</I><DD>
-Defines the location where created .tbz2 binary packages will be
-stored when the <B><A HREF="http://localhost/cgi-bin/man/man2html?1+emerge">emerge</A></B>(1) <B>--buildpkg</B> option is enabled.
-By default, a given package is stored in a subdirectory corresponding
-to it's category. However, for backward compatibility with the layout
-used by older versions of portage, if the <I>${PKGDIR}/All</I> directory
-exists then all packages will be stored inside of it and symlinks to
-the packages will be created in the category subdirectories. Note
-that locations under /usr/portage are not necessarily safe for data storage.
-See the <B>PORTDIR</B> documentation for more information.
-<BR>
-
-Defaults to /usr/portage/packages.
-<DT><B>PORT_LOGDIR</B>
-
-<DD>
-This variable defines the directory in which per-ebuild logs are kept.
-Logs are created only when this is set. They are stored as
-${CATEGORY}:${PF}:YYYYMMDD-HHMMSS.log in the directory specified. If the
-directory does not exist, it will be created automatically and group
-permissions will be applied to it.  If the directory already exists, portage
-will not modify it's permissions.
-<DT><B>PORT_LOGDIR_CLEAN</B>
-
-<DD>
-This variable should contain a command for portage to call in order
-to clean PORT_LOGDIR. The command string should contain a
-\${PORT_LOGDIR} place-holder that will be substituted
-with the value of that variable. This variable will have no effect
-unless <B>clean-logs</B> is enabled in <B>FEATURES</B>.
-<DT><B>PORTAGE_BINHOST</B> = <I>[space delimited URI list]</I><DD>
-This is a list of hosts from which portage will grab prebuilt-binary packages.
-Each entry in the list must specify the full address of a directory
-serving tbz2's for your system (this directory must contain a 'Packages' index
-file). This is only used when running with
-the get binary pkg options are given to <B>emerge</B>.  Review <B><A HREF="http://localhost/cgi-bin/man/man2html?1+emerge">emerge</A></B>(1)
-for more information.
-<DT><B>PORTAGE_BINHOST_HEADER_URI</B> = <I>&quot;<A HREF="ftp://login:pass@grp.mirror.site/pub/grp/i686/athlon-xp/">ftp://login:pass@grp.mirror.site/pub/grp/i686/athlon-xp/</A>&quot;</I><DD>
-This variable only makes sense on a system that will serve as a binhost and
-build packages for clients.  It defines the URI header field for the package
-index file which is located at ${PKGDIR}/Packages. Clients that have
-<B>PORTAGE_BINHOST</B> properly configured will be able to fetch the index and
-use the URI header field as a base URI for fetching binary packages. If the URI
-header field is not defined then the client will use it's ${PORTAGE_BINHOST}
-setting as the base URI.
-<DT><B>PORTAGE_BINPKG_FORMAT</B>
-
-<DD>
-This variable sets default format used for binary packages. Possible values
-are tar and rpm or both.
-<DT><B>PORTAGE_BINPKG_TAR_OPTS</B>
-
-<DD>
-This variable contains options to be passed to the tar command for creation
-of binary packages.
-<DT><B>PORTAGE_BUNZIP2_COMMAND</B> = <I>[bunzip2 command string]</I><DD>
-This variable should contain a command that is suitable for portage to call
-for bunzip2 extraction operations.
-<DT><B>PORTAGE_BZIP2_COMMAND</B> = <I>[bzip2 command string]</I><DD>
-This variable should contain a command that is suitable for portage to call
-for bzip2 compression operations. <B>PORTAGE_BZIP2_COMMAND</B> will also be
-called for extraction operation, with -d appended, unless the
-<B>PORTAGE_BUNZIP2_COMMAND</B> variable is set.
-<DT><B>PORTAGE_CHECKSUM_FILTER</B> = <I>[space delimited list of hash names]</I><DD>
-This variable may be used to filter the hash functions that are used to
-verify integrity of files. Hash function names are case-insensitive, and
-the <I>*</I> and <I>-*</I> wildcard tokens are supported.
-<BR>
-
-Defaults to the value of *.
-<BR>
-
-<I>Examples:</I>
-
-<PRE>
-# Use all available hash functions
-PORTAGE_CHECKSUM_FILTER=&quot;*&quot;
-# Use any function except whirlpool
-PORTAGE_CHECKSUM_FILTER=&quot;* -whirlpool&quot;
-# Only use sha256
-PORTAGE_CHECKSUM_FILTER=&quot;-* sha256&quot;
-</PRE>
-
-<DT><B>PORTAGE_COMPRESS</B> = <I>&quot;bzip2&quot;</I><DD>
-This variable contains the command used to compress documentation during the
-install phase.
-<DT><B>PORTAGE_COMPRESS_EXCLUDE_SUFFIXES</B> = <I>&quot;gif htm[l]? jp[e]?g pdf png&quot;</I><DD>
-This variable contains a space delimited list of file suffixes for which
-matching files are excluded when the <B>PORTAGE_COMPRESS</B> command is
-called. Regular expressions are supported and the match is performed only
-against the portion of the file name which follows the last period character.
-<DT><B>PORTAGE_COMPRESS_FLAGS</B> = <I>&quot;-9&quot;</I><DD>
-This variable contains flags for the <B>PORTAGE_COMPRESS</B> command.
-<DT><B>PORTAGE_ELOG_CLASSES</B>
-
-<DD>
-<DT><B>PORTAGE_ELOG_COMMAND</B>
-
-<DD>
-<DT><B>PORTAGE_ELOG_MAILFROM</B>
-
-<DD>
-<DT><B>PORTAGE_ELOG_MAILSUBJECT</B>
-
-<DD>
-<DT><B>PORTAGE_ELOG_MAILURI</B>
-
-<DD>
-<DT><B>PORTAGE_ELOG_SYSTEM</B>
-
-<DD>
-Please see /usr/share/portage/config/make.conf.example for elog documentation.
-<DT><B>PORTAGE_FETCH_CHECKSUM_TRY_MIRRORS</B> = <I>5</I><DD>
-Number of mirrors to try when a downloaded file has an incorrect checksum.
-<DT><B>PORTAGE_FETCH_RESUME_MIN_SIZE</B> = <I>350K</I><DD>
-Minimum size of existing file for <B>RESUMECOMMAND</B> to be called. Files
-smaller than this size will be removed and <B>FETCHCOMMAND</B> will be called
-to download the file from the beginning. This is useful for helping to ensure
-that small garbage files such as html 404 pages are properly discarded. The
-variable should contain an integer number of bytes and may have a suffix such
-as K, M, or G.
-<DT><B>PORTAGE_GPG_DIR</B>
-
-<DD>
-The <B><A HREF="http://localhost/cgi-bin/man/man2html?1+gpg">gpg</A></B>(1) home directory that is used by <B><A HREF="http://localhost/cgi-bin/man/man2html?1+repoman">repoman</A></B>(1)
-when <B>sign</B> is in <B>FEATURES</B>.
-<BR>
-
-Defaults to $HOME/.gnupg.
-<DT><B>PORTAGE_GPG_KEY</B>
-
-<DD>
-The <B><A HREF="http://localhost/cgi-bin/man/man2html?1+gpg">gpg</A></B>(1) key used by <B><A HREF="http://localhost/cgi-bin/man/man2html?1+repoman">repoman</A></B>(1) to sign manifests
-when <B>sign</B> is in <B>FEATURES</B>. In order to sign commits with
-<B><A HREF="http://localhost/cgi-bin/man/man2html?1+git">git</A></B>(1), you will need Git &gt;=1.7.9 and your commit key will have
-to be configured by <I>`git config user.signingkey key_id`</I>.
-<DT><B>PORTAGE_GPG_SIGNING_COMMAND</B>
-
-<DD>
-The command used by <B><A HREF="http://localhost/cgi-bin/man/man2html?1+repoman">repoman</A></B>(1) to sign manifests when <B>sign</B> is
-in <B>FEATURES</B>.
-<DT><B>PORTAGE_GRPNAME</B> = <I>[group]</I><DD>
-Defines the groupname to use when executing in userpriv/etc... modes (i.e.
-non-root).
-<BR>
-
-Defaults to portage.
-<DT><B>PORTAGE_INST_GID</B> = <I>[gid]</I><DD>
-Defines the group id when installing files via dobin/dosbin.  Useful when
-running ebuild as yourself.
-<BR>
-
-Defaults to 0.
-<DT><B>PORTAGE_INST_UID</B> = <I>[uid]</I><DD>
-Defines the user id when installing files via dobin/dosbin.  Useful when
-running ebuild as yourself.
-<BR>
-
-Defaults to 0.
-<DT><B>PORTAGE_IONICE_COMMAND</B> = <I>[ionice command string]</I><DD>
-This variable should contain a command for portage to call in order
-to adjust the io priority of portage and it's subprocesses. The command
-string should contain a \${PID} place-holder that will be substituted
-with an integer pid. For example, a value of &quot;ionice -c 3 -p \${PID}&quot;
-will set idle io priority. For more information about ionice, see
-<B><A HREF="http://localhost/cgi-bin/man/man2html?1+ionice">ionice</A></B>(1). This variable is unset by default.
-<DT><B>PORTAGE_NICENESS</B> = <I>[number]</I><DD>
-The value of this variable will be added to the current nice level that
-emerge is running at.  In other words, this will not set the nice level,
-it will increment it.  For more information about nice levels and what
-are acceptable ranges, see <B><A HREF="http://localhost/cgi-bin/man/man2html?1+nice">nice</A></B>(1).
-<DT><B>PORTAGE_RO_DISTDIRS</B> = <I>[space delimited list of directories]</I><DD>
-When a given file does not exist in <B>DISTDIR</B>, search for the file
-in this list of directories. Search order is from left to right. Note
-that the current implementation works by creating a symlink inside
-<B>DISTDIR</B>, but that may change in the future.
-<DT><B>PORTAGE_RSYNC_EXTRA_OPTS</B> = <I>[rsync options string]</I><DD>
-Additional rsync options to be used by <B>emerge --sync</B>.
-<BR>
-
-Defaults to no value.
-<DT><B>PORTAGE_RSYNC_INITIAL_TIMEOUT</B> = <I>integer</I><DD>
-Used by <B>emerge --sync</B> as a timeout for the initial connection to an
-rsync server.
-<BR>
-
-Defaults to 15 seconds.
-<DT><B>PORTAGE_RSYNC_OPTS</B> = <I>[rsync options string]</I><DD>
-Default rsync options to be used by <B>emerge --sync</B>.
-<BR>
-
-<B>Don't change this unless you know exactly what you're doing!</B>
-<BR>
-
-Defaults to &quot;--recursive --links --safe-links --perms --times
---compress --force --whole-file --delete --stats
---timeout=180 --exclude='/distfiles' --exclude='/local'
---exclude='/packages'&quot;
-<DT><B>PORTAGE_RSYNC_RETRIES</B> = <I>[NUMBER]</I><DD>
-The number of times rsync should retry on failed connections before
-giving up. If set to a negative number, then retry until all possible
-addresses are exhausted.
-<BR>
-
-Defaults to -1.
-<DT><B>PORTAGE_SSH_OPTS</B> = <I>[list of ssh options]</I><DD>
-Additional ssh options to be used when portage executes ssh or sftp.
-This variable supports use of embedded quote characters to quote
-whitespace or special shell characters within arguments (embedded
-quotes must be escaped in make.conf settings).
-<BR>
-
-Defaults to no value.
-<DT><B>PORTAGE_SYNC_STALE</B> = <I>[NUMBER]</I><DD>
-Defines the number of days after the last `emerge --sync` that a warning
-message should be produced. A value of 0 will disable warnings.
-<BR>
-
-Defaults to 30.
-<DT><B>PORTAGE_TMPDIR</B> = <I>[path]</I><DD>
-Defines the location of the temporary build directories.
-<BR>
-
-Defaults to /var/tmp.
-<P>
-This should not be set to point anywhere under location of any repository.
-<DT><B>PORTAGE_USERNAME</B> = <I>[user]</I><DD>
-Defines the username to use when executing in userpriv/etc... modes (i.e.
-non-root).
-<BR>
-
-Defaults to portage.
-<DT><B>PORTAGE_WORKDIR_MODE</B> = <I>&quot;0700&quot;</I><DD>
-This variable controls permissions for <I>WORKDIR</I> (see <B><A HREF="http://localhost/cgi-bin/man/man2html?5+ebuild">ebuild</A></B>(5)).
-<DT><B>PORTAGE_XATTR_EXCLUDE</B> = <I>[space delimited list of fnmatch patterns]</I><DD>
-This variable may be used to exclude specific attributes from being preserved
-when <B>xattr</B> is in <B>FEATURES</B>.
-<BR>
-
-Defaults to &quot;security.*&quot; (security labels are special, see bug #461868).
-<DT><B>PORTDIR</B> = <I>[path]</I><DD>
-Defines the location of main repository. This variable is deprecated in favor of
-settings in <B>repos.conf</B>. If you change this, you must update
-your /etc/portage/make.profile symlink accordingly.
-<BR>
-
-Defaults to /usr/portage.
-<BR>
-
-<B>***Warning***</B>
-<BR>
-
-Data stored inside <B>PORTDIR</B> is in peril of being overwritten or deleted by
-the emerge --sync command. The default value of
-<B>PORTAGE_RSYNC_OPTS</B> will protect the default locations of
-<B>DISTDIR</B> and <B>PKGDIR</B>, but users are warned that any other locations
-inside <B>PORTDIR</B> are not necessarily safe for data storage.  You should not
-put other data (such as overlays) in your <B>PORTDIR.  Portage will walk
-directory structures and may arbitrarily add invalid categories as packages.
-<DT>PORTDIR_OVERLAY</B> = <I>&quot;[path] [different-path] [etc...]&quot;</I><DD>
-Defines the locations of other repositories. This variable is deprecated in
-favor of settings in <B>repos.conf</B>. This variable is a space-delimited list of
-directories.
-<BR>
-
-Defaults to no value.
-<DT><B>QA_STRICT_EXECSTACK = </B><I>&quot;set&quot;</I><DD>
-Set this to cause portage to ignore any <I>QA_EXECSTACK</I> override
-settings from ebuilds.  See also <B><A HREF="http://localhost/cgi-bin/man/man2html?5+ebuild">ebuild</A></B>(5).
-<DT><B>QA_STRICT_FLAGS_IGNORED = </B><I>&quot;set&quot;</I><DD>
-Set this to cause portage to ignore any <I>QA_FLAGS_IGNORED</I> override
-settings from ebuilds.  See also <B><A HREF="http://localhost/cgi-bin/man/man2html?5+ebuild">ebuild</A></B>(5).
-<DT><B>QA_STRICT_MULTILIB_PATHS = </B><I>&quot;set&quot;</I><DD>
-Set this to cause portage to ignore any <I>QA_MULTILIB_PATHS</I> override
-settings from ebuilds.  See also <B><A HREF="http://localhost/cgi-bin/man/man2html?5+ebuild">ebuild</A></B>(5).
-<DT><B>QA_STRICT_PRESTRIPPED = </B><I>&quot;set&quot;</I><DD>
-Set this to cause portage to ignore any <I>QA_PRESTRIPPED</I> override
-settings from ebuilds.  See also <B><A HREF="http://localhost/cgi-bin/man/man2html?5+ebuild">ebuild</A></B>(5).
-<DT><B>QA_STRICT_TEXTRELS = </B><I>&quot;set&quot;</I><DD>
-Set this to cause portage to ignore any <I>QA_TEXTREL</I> override
-settings from ebuilds.  See also <B><A HREF="http://localhost/cgi-bin/man/man2html?5+ebuild">ebuild</A></B>(5).
-<DT><B>QA_STRICT_WX_LOAD = </B><I>&quot;set&quot;</I><DD>
-Set this to cause portage to ignore any <I>QA_WX_LOAD</I> override
-settings from ebuilds.  See also <B><A HREF="http://localhost/cgi-bin/man/man2html?5+ebuild">ebuild</A></B>(5).
-<DT><B>RESUMECOMMAND</B>
-
-<DD>
-This variable contains the command used for resuming package sources that
-have been partially downloaded.  It should be defined using the same format
-as <B>FETCHCOMMAND</B>, and must include any additional option(s) that may
-be necessary in order to continue a partially downloaded file located at
-\${DISTDIR}/\${FILE}.
-<DT><B>ROOT</B> = <I>[path]</I><DD>
-Use <B>ROOT</B> to specify the target root filesystem to be used for merging
-packages or ebuilds.
-Typically, you should set this setting in the environment rather than in
-<I>make.conf</I> itself. It's commonly used for creating new build
-images. Make sure you use an absolute path. Refer to the
-<B>Cross-compilation</B> section of <B><A HREF="http://localhost/cgi-bin/man/man2html?5+ebuild">ebuild</A></B>(5) for information about
-how dependencies are handled for <B>ROOT</B>.
-<BR>
-
-Defaults to /.
-<DT><B>RPMDIR</B> = <I>[path]</I><DD>
-Defines the location where created RPM packages will be stored.
-<BR>
-
-Defaults to /usr/portage/rpm.
-<DT><B>SYNC</B> = <I>[RSYNC]</I><DD>
-Insert your preferred rsync mirror here.  This rsync server
-is used to sync the local portage tree when `emerge --sync` is run.
-<P>
-Note that the <B>SYNC</B> variable is now deprecated, and instead the
-sync-type and sync-uri attributes in repos.conf should be used. See
-<B><A HREF="http://localhost/cgi-bin/man/man2html?5+portage">portage</A></B>(5) for more information.
-<P>
-Defaults to <A HREF="rsync://rsync.gentoo.org/gentoo-portage">rsync://rsync.gentoo.org/gentoo-portage</A>
-<DL COMPACT><DT><DD>
-<DL COMPACT>
-<DT><B>Usage:</B>
-
-<DD>
-(rsync|ssh)://[username@]hostname[:port]/(module|path)
-<DT><B>Examples:</B>
-
-<DD>
-<A HREF="rsync://private-mirror.com/portage-module">rsync://private-mirror.com/portage-module</A>
-<BR>
-
-<A HREF="rsync://rsync-user@private-mirror.com:873/gentoo-portage">rsync://rsync-user@private-mirror.com:873/gentoo-portage</A>
-<BR>
-
-<A HREF="ssh://ssh-user@192.168.0.1:22/usr/portage">ssh://ssh-user@192.168.0.1:22/usr/portage</A>
-<BR>
-
-<A HREF="ssh://ssh-user@192.168.0.1:22/\${HOME}/portage-storage">ssh://ssh-user@192.168.0.1:22/\${HOME}/portage-storage</A>
-<DT>Note: For the ssh:// scheme, key-based authentication might be of interest.<DD>
-</DL>
-</DL>
-
-<DT><B>UNINSTALL_IGNORE</B> = <I>[space delimited list of fnmatch patterns]</I><DD>
-This variable prevents uninstallation of files that match
-specific <B><A HREF="http://localhost/cgi-bin/man/man2html?3+fnmatch">fnmatch</A></B>(3) patterns. In order to ignore file
-collisions with these files at install time, the same patterns
-can be added to the <B>COLLISION_IGNORE</B> variable.
-<BR>
-
-Defaults to &quot;/lib/modules/*&quot;.
-<DT><B>USE</B> = <I>[space delimited list of USE items]</I><DD>
-This variable contains options that control the build behavior of several
-packages.  More information in <B><A HREF="http://localhost/cgi-bin/man/man2html?5+ebuild">ebuild</A></B>(5).  Possible USE values
-can be found in <I>/usr/portage/profiles/use.desc</I>.
-<DT><B>USE_ORDER</B> = <I>&quot;env:pkg:conf:defaults:pkginternal:repo:env.d&quot;</I><DD>
-Determines the precedence of layers in the incremental stacking of the USE
-variable. Precedence decreases from left to right such that env overrides
-pkg, pkg overrides conf, and so forth.
-<P>
-<B>***warning***</B>
-
-<BR>
-
-Do not modify this value unless you're a developer and you know what
-you're doing. If you change this and something breaks, we will not help
-you fix it.
-<BR>
-
-<DL COMPACT><DT><DD>
-<DL COMPACT>
-<DT><B>env</B>
-
-<DD>
-USE from the current environment variables (USE and those listed in USE_EXPAND)
-<DT><B>pkg</B>
-
-<DD>
-Per-package USE from <B>/etc/portage/package.use</B> (see <B><A HREF="http://localhost/cgi-bin/man/man2html?5+portage">portage</A></B>(5))
-<DT><B>conf</B>
-
-<DD>
-USE from make.conf
-<DT><B>defaults</B>
-
-<DD>
-USE from make.defaults and package.use in the profile
-(e.g. /etc/portage/make.profile/package.use) (see <B><A HREF="http://localhost/cgi-bin/man/man2html?5+portage">portage</A></B>(5))
-<DT><B>pkginternal</B>
-
-<DD>
-USE from <B><A HREF="http://localhost/cgi-bin/man/man2html?5+ebuild">ebuild</A></B>(5) IUSE defaults
-<DT><B>repo</B>
-
-<DD>
-USE from make.defaults and package.use in the repo's profiles/ top dir
-(e.g. /usr/portage/profiles/package.use) (see <B><A HREF="http://localhost/cgi-bin/man/man2html?5+portage">portage</A></B>(5))
-<DT><B>env.d</B>
-
-<DD>
-USE from the environment variables, such as LINGUAS, defined by files in
-<I>/etc/env.d/</I>
-</DL>
-</DL>
-
-<P>
-</DL>
-<A NAME="lbAF">&nbsp;</A>
-<H2>REPORTING BUGS</H2>
-
-Please report bugs via <A HREF="http://bugs.gentoo.org/">http://bugs.gentoo.org/</A>
-<A NAME="lbAG">&nbsp;</A>
-<H2>AUTHORS</H2>
-
-<PRE>
-Daniel Robbins &lt;drobbins@gentoo.org&gt;
-Nicholas Jones &lt;carpaski@gentoo.org&gt;
-Mike Frysinger &lt;vapier@gentoo.org&gt;
-Saleem Abdulrasool &lt;compnerd@gentoo.org&gt;
-Arfrever Frehtes Taifersar Arahesis &lt;arfrever@apache.org&gt;
-</PRE>
-
-<A NAME="lbAH">&nbsp;</A>
-<H2>FILES</H2>
-
-<DL COMPACT>
-<DT><B>/etc/make.conf</B> and <B>/etc/portage/make.conf</B><DD>
-Contains variables for the build-process and overwrites those in
-make.defaults.
-<DT><B>/usr/share/portage/config/make.globals</B>
-
-<DD>
-Contains the default variables for the build-process, you should edit
-<I>/etc/portage/make.conf</I> instead.
-<DT><B>/etc/portage/color.map</B>
-
-<DD>
-Contains variables customizing colors.
-<DT><B>/usr/portage/profiles/use.desc</B>
-
-<DD>
-Contains a list of all global USE flags.
-<DT><B>/usr/portage/profiles/use.local.desc</B>
-
-<DD>
-Contains a list of all local USE variables.
-</DL>
-<A NAME="lbAI">&nbsp;</A>
-<H2>SEE ALSO</H2>
-
-<B><A HREF="http://localhost/cgi-bin/man/man2html?1+emerge">emerge</A></B>(1),
-
-<B><A HREF="http://localhost/cgi-bin/man/man2html?5+portage">portage</A></B>(5),
-
-<B><A HREF="http://localhost/cgi-bin/man/man2html?1+ebuild">ebuild</A></B>(1),
-
-<B><A HREF="http://localhost/cgi-bin/man/man2html?5+ebuild">ebuild</A></B>(5)
-
-<DL COMPACT>
-<DT>The <I>/usr/lib/portage/bin/ebuild.sh</I> script.<DD>
-<DT>The helper apps in <I>/usr/lib/portage/bin</I>.<DD>
-<P>
-</DL>
-
-<HR>
-<A NAME="index">&nbsp;</A><H2>Index</H2>
-<DL>
-<DT><A HREF="#lbAB">NAME</A><DD>
-<DT><A HREF="#lbAC">SYNOPSIS</A><DD>
-<DT><A HREF="#lbAD">DESCRIPTION</A><DD>
-<DT><A HREF="#lbAE">VARIABLES</A><DD>
-<DT><A HREF="#lbAF">REPORTING BUGS</A><DD>
-<DT><A HREF="#lbAG">AUTHORS</A><DD>
-<DT><A HREF="#lbAH">FILES</A><DD>
-<DT><A HREF="#lbAI">SEE ALSO</A><DD>
-</DL>
-<HR>
-This document was created by
-<A HREF="http://github.com/hamano/man2html/">man2html</A>,
-using the manual pages.<BR>
-Time: 17:50:55 GMT, December 02, 2015
-</BODY>
-</HTML>

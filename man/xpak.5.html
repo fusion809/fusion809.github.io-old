@@ -1,222 +1,195 @@
-<HTML><HEAD><TITLE>Manpage of XPAK</TITLE>
-<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
-</HEAD><BODY>
-<H1>XPAK</H1>
-Section: Portage (5)<BR>Updated: Oct 2011<BR><A HREF="#index">Index</A>
-<A HREF="http://localhost/cgi-bin/man/man2html">Return to Main Contents</A><HR>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+XPAK(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+XPAK(5)</td>
+<td class="head-vol">
+Portage</td>
+<td class="head-rtitle">
+XPAK(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> xpak - The XPAK Data Format used with Portage binary packages</div>
+<div class="section">
+<h1>DESCRIPTION</h1> Every Gentoo binary package has a xpak attached to it which contains build time information like the USE flags it was built with, the ebuild it was built from, the environmental variables, CFLAGS, CXXFLAGS, etc...</div>
+<div class="section">
+<h1>NOTES</h1><div class="subsection">
+<h2>Data Types</h2> The following conventions cover all occurrences in this documentation<dl>
+<dt>
+Integer</dt>
+<dd>
+All offsets/lengths are big endian unsigned 32bit integers</dd>
+</dl>
+<dl>
+<dt>
+String</dt>
+<dd>
+All strings are ASCII encoded, and not NUL terminated (quotes are for illustration only)</dd>
+</dl>
+<dl>
+<dt>
+Values</dt>
+<dd>
+The actual values of the individual xpak entries are stored as Strings</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>Vertical Bars</h2> The vertical bars '|' are not part of the file format; they are merely used to illustrate how the offset values apply to the data.</div>
+</div>
+<div class="section">
+<h1>SYNOPSIS</h1><dl>
+<dt>
+binpkg (tbz2)</dt>
+<dd>
+<br/>
+      |&lt;-xpak_offset-&gt;|<br/>
+ &lt;tar&gt;|&lt;    xpak     &gt;|&lt;xpak_offset&gt;&quot;STOP&quot;</dd>
+</dl>
+<dl>
+<dt>
+xpak</dt>
+<dd>
+<br/>
+ &quot;XPAKPACK&quot;&lt;index_len&gt;&lt;data_len&gt;&lt;index&gt;&lt;data&gt;&quot;XPAKSTOP&quot;</dd>
+</dl>
+<dl>
+<dt>
+index</dt>
+<dd>
+<br/>
+ |&lt;-------------index_len-------------&gt;|<br/>
+ |&lt;index1&gt;&lt;index2&gt;&lt;index3&gt;&lt;index4&gt;&lt;...&gt;|</dd>
+</dl>
+<dl>
+<dt>
+indexN</dt>
+<dd>
+<br/>
+           |&lt;-name_len-&gt;|<br/>
+ &lt;name_len&gt;|&lt;   name   &gt;|&lt;data_offset&gt;&lt;data_len&gt;</dd>
+</dl>
+<dl>
+<dt>
+data</dt>
+<dd>
+<br/>
+ |&lt;--------------data_len-------------&gt;|<br/>
+ |&lt;-dataN_offset-&gt;|&lt;-dataN_len-&gt;|<br/>
+ |&lt;     data     &gt;|&lt;  data_N   &gt;|&lt;data&gt;|</dd>
+</dl>
+</div>
+<div class="section">
+<h1>DETAILS</h1><div class="subsection">
+<h2>xpak</h2> If you look at a Gentoo binary package (binpkg) with a hex-editor you'll notice that after the tarball of files, you find a binary blob - the  <i>xpak</i>, an offset which holds the bytes from the start of the  <i>xpak</i> to the end of the file - <i>xpak_offset</i> and finally the String  <i>&quot;STOP&quot;</i>.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+      |&lt;xpak_offset&gt;|<br/>
+ &lt;tar&gt;|&lt;---xpak----&gt;|&lt;xpak_offset&gt;&quot;STOP&quot;<div style="height: 1.00em;">
+&#160;</div>
+Here you see the <i>tar</i> archive, the attached <i>xpak</i> blob, the  <i>xpak_offset</i> and the string <i>&quot;STOP&quot;</i> at the end.  This metadata is not considered &quot;part&quot; of the  <i>xpak</i>, but rather part of the binpkg.<div style="height: 1.00em;">
+&#160;</div>
+If we read the offset value and count <i>offset</i> bytes backwards from the start of  <i>xpak_offset</i>, we have found the start of the <i>xpak</i> block which starts with the String  <i>&quot;XPAKPACK&quot;</i>.<div style="height: 1.00em;">
+&#160;</div>
+This xpak block consists of the string <i>&quot;XPAKPACK&quot;</i>, the length of the  <i>index</i> block (<i>index_len</i>), the length of the <i>data</i> block ( <i>data_len</i>), an <i>index_len</i> bytes long binary blob with the  <i>index</i>, a <i>data_len</i> bytes long binary blob with the <i>data</i>, and the string  <i>&quot;XPAKSTOP&quot;</i> at the end:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+                                |&lt;index_len&gt;|&lt;data_len&gt;|<br/>
+ &quot;XPAKPACK&quot;&lt;index_len&gt;&lt;data_len&gt;|&lt;--index--&gt;|&lt;--data--&gt;|&quot;XPAKSTOP&quot;<div style="height: 1.00em;">
+&#160;</div>
+To actually get the <i>index</i> and the <i>data</i>, we cut out <i>index_len</i> bytes after the end of  <i>data_len</i> for the <i>index</i> block, and then cut out the next  <i>data_len</i> bytes for the <i>data</i> block.  If we have done everything right up to this point, the following bytes would be the ASCII formatted string  <i>&quot;XPAKSTOP&quot;</i>.<div style="height: 1.00em;">
+&#160;</div>
+The actual <i>data</i> is merged into one big block; so if we want to read it, we need the actual positions of each information in this big data block.  This information can be obtained using the indices which are stored in the  <i>index</i> block.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="subsection">
+<h2>Index block</h2> The  <i>index</i> block consists of several indices:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+ |&lt;-----------------------index_len----------------------&gt;|<br/>
+ |&lt;index1&gt;&lt;index2&gt;&lt;index3&gt;&lt;index4&gt;&lt;index5&gt;&lt;index6&gt;&lt;index7&gt;|<div style="height: 1.00em;">
+&#160;</div>
+The <i>index</i> block holds all the information we need to find the data we want in the  <i>data</i> block.  It consists of multiple index elements, all of which add up to the total length  <i>index_len</i>.  It is not zero delimited or anything else.<div style="height: 1.00em;">
+&#160;</div>
+Each of those elements corresponds to one chunk of data in the <i>data</i> block: the length of that block's name ( <i>name_len</i>), a <i>name_len</i> bytes long string, the offset of that block ( <i>dataN_offset</i>) and the length of that block ( <i>dataN_len</i>):<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+           |&lt;name_len&gt;|<br/>
+ &lt;name_len&gt;|&lt;--name--&gt;|&lt;dataN_offset&gt;&lt;dataN_len&gt;<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="subsection">
+<h2>Data block</h2> The  <i>data</i> block contains multiple chunks of data with a total length of  <i>data_len</i>:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+ |&lt;------------------------data_len------------------------&gt;|<br/>
+ |&lt;data1&gt;&lt;data2&gt;&lt;data3&gt;&lt;data4&gt;&lt;data5&gt;&lt;data6&gt;&lt;data7&gt;&lt;data...&gt;|<div style="height: 1.00em;">
+&#160;</div>
+To select one data element, we need the <i>data_offset</i> and the  <i>data_len</i> from the <i>index</i>.  With those, we can count  <i>data_offset</i> bytes from the start of the <i>data</i> block, and then cut out the next  <i>data_len</i> bytes.  Then we got our data block:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+ |&lt;-----dataN_offset-----&gt;|&lt;--dataN_len-&gt;|<br/>
+ |&lt;data1data2data3data...&gt;|&lt;data-we-want&gt;|</div>
+</div>
+<div class="section">
+<h1>EXAMPLES</h1> Let's say we have an xpak with two chunks of data.  The first has the name &quot;file1&quot; with the contents &quot;ddDddDdd&quot; and the second has the name &quot;file2&quot; with the contents &quot;jjJjjJjj&quot;.  There is no  <i>&quot;STOP&quot;</i> or <i>xpak_offset</i> as this xpak is not part of a binpkg.<div style="height: 1.00em;">
+&#160;</div>
+Here is the hexdump output (we will break it down line by line below):<br/>
+ 00  58 50 41 4b 50 41 43 4b  00 00 00 20 00 00 00 10  |XPAKPACK... ....|<br/>
+ 10  00 00 00 04 66 69 6c 31  00 00 00 00 00 00 00 08  |....fil1........|<br/>
+ 20  00 00 00 04 66 69 6c 32  00 00 00 08 00 00 00 08  |....fil2........|<br/>
+ 30  64 64 44 64 64 44 64 64  6a 6a 4a 6a 6a 4a 6a 6a  |ddDddDddjjJjjJjj|<br/>
+ 40  58 50 41 4b 53 54 4f 50                           |XPAKSTOP|<div style="height: 1.00em;">
+&#160;</div>
+The <i>index_len</i> is 32 and the <i>data_len</i> 16 (as there are 16 bytes: &quot;ddDddDdd&quot; and &quot;jjJjjJjj&quot;).<br/>
+    |&lt;------&quot;XPAKPACK&quot;-----&gt;||    32     |    16     |<br/>
+ 00  58 50 41 4b 50 41 43 4b  00 00 00 20 00 00 00 10<div style="height: 1.00em;">
+&#160;</div>
+Now we have the first index element with a <i>name_len</i> of 4, followed by the name string &quot;fil1&quot;, followed by the data1 offset of 0 and a data1 len of 8 (since data1 has 8 bytes: &quot;ddDddDdd&quot;).<br/>
+    |     4     |&lt;--&quot;fil1&quot;-&gt;||data1_off:0|data1_len:8|<br/>
+ 10  00 00 00 04 66 69 6c 31  00 00 00 00 00 00 00 08<div style="height: 1.00em;">
+&#160;</div>
+Now we have the second index element with a <i>name_len</i> of 4, followed by the name string &quot;fil2&quot;, followed by the data2 offset of 8 and a data2 len of 8 (since data2 has 8 bytes: &quot;jjJjjJjj&quot;).<br/>
+    |     4     |&lt;--&quot;fil2&quot;-&gt;||data2_off:8|data2_len:8|<br/>
+ 20  00 00 00 04 66 69 6c 32  00 00 00 08 00 00 00 08<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    |&lt;------&quot;XPAKSTOP&quot;-----&gt;|<br/>
+ 40  58 50 41 4b 53 54 4f 50</div>
+<div class="section">
+<h1>AUTHORS</h1><br/>
+Lars Hartmann &lt;lars@chaotika.org&gt;<br/>
+Mike Frysinger &lt;vapier@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>qtbz2</b>(1), <b>quickpkg</b>(1), <b>qxpak</b>(1)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Oct 2011</td>
+<td class="foot-os">
+Portage 2.2.20</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
 
-<A NAME="lbAB">&nbsp;</A>
-<H2>NAME</H2>
-
-xpak - The XPAK Data Format used with Portage binary packages
-<A NAME="lbAC">&nbsp;</A>
-<H2>DESCRIPTION</H2>
-
-Every Gentoo binary package has a xpak attached to it which contains build
-time information like the USE flags it was built with, the ebuild it was
-built from, the environmental variables, CFLAGS, CXXFLAGS, etc...
-<A NAME="lbAD">&nbsp;</A>
-<H2>NOTES</H2>
-
-<A NAME="lbAE">&nbsp;</A>
-<H3>Data Types</H3>
-
-The following conventions cover all occurrences in this documentation
-<DL COMPACT>
-<DT>Integer<DD>
-All offsets/lengths are big endian unsigned 32bit integers
-<DT>String<DD>
-All strings are ASCII encoded, and not NUL terminated (quotes are for
-illustration only)
-<DT>Values<DD>
-The actual values of the individual xpak entries are stored as Strings
-
-</DL>
-<A NAME="lbAF">&nbsp;</A>
-<H3>Vertical Bars</H3>
-
-The vertical bars '|' are not part of the file format; they are merely used to
-illustrate how the offset values apply to the data.
-<A NAME="lbAG">&nbsp;</A>
-<H2>SYNOPSIS</H2>
-
-<DL COMPACT>
-<DT>binpkg (tbz2)<DD>
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&lt;-xpak_offset-&gt;|
-<BR>&nbsp;&lt;tar&gt;|&lt;&nbsp;&nbsp;&nbsp;&nbsp;xpak&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;|&lt;xpak_offset&gt;&quot;STOP&quot;
-<DT>xpak<DD>
-<BR>&nbsp;&quot;XPAKPACK&quot;&lt;index_len&gt;&lt;data_len&gt;&lt;index&gt;&lt;data&gt;&quot;XPAKSTOP&quot;
-<DT>index<DD>
-<BR>&nbsp;|&lt;-------------index_len-------------&gt;|
-<BR>&nbsp;|&lt;index1&gt;&lt;index2&gt;&lt;index3&gt;&lt;index4&gt;&lt;...&gt;|
-<DT>indexN<DD>
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&lt;-name_len-&gt;|
-<BR>&nbsp;&lt;name_len&gt;|&lt;&nbsp;&nbsp;&nbsp;name&nbsp;&nbsp;&nbsp;&gt;|&lt;data_offset&gt;&lt;data_len&gt;
-<DT>data<DD>
-<BR>&nbsp;|&lt;--------------data_len-------------&gt;|
-<BR>&nbsp;|&lt;-dataN_offset-&gt;|&lt;-dataN_len-&gt;|
-<BR>&nbsp;|&lt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;|&lt;&nbsp;&nbsp;data_N&nbsp;&nbsp;&nbsp;&gt;|&lt;data&gt;|
-</DL>
-<A NAME="lbAH">&nbsp;</A>
-<H2>DETAILS</H2>
-
-<A NAME="lbAI">&nbsp;</A>
-<H3>xpak</H3>
-
-<P>
-If you look at a Gentoo binary package (binpkg) with a hex-editor you'll
-notice that after the tarball of files, you find a binary blob - the
-<I>xpak</I>, an offset which holds the bytes from the start of the
-<I>xpak</I> to the end of the file - <I>xpak_offset</I> and finally the
-String <I>&quot;STOP&quot;</I>.
-<P>
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&lt;xpak_offset&gt;|
-<BR>&nbsp;&lt;tar&gt;|&lt;---xpak----&gt;|&lt;xpak_offset&gt;&quot;STOP&quot;
-<P>
-Here you see the <I>tar</I> archive, the attached <I>xpak</I> blob, the
-<I>xpak_offset</I> and the string <I>&quot;STOP&quot;</I> at the end.  This metadata
-is not considered &quot;part&quot; of the <I>xpak</I>, but rather part of the binpkg.
-<P>
-If we read the offset value and count <I>offset</I> bytes backwards from
-the start of <I>xpak_offset</I>, we have found the start of the <I>xpak</I>
-block which starts with the String <I>&quot;XPAKPACK&quot;</I>.
-<P>
-This xpak block consists of the string <I>&quot;XPAKPACK&quot;</I>, the length of the
-<I>index</I> block (<I>index_len</I>), the length of the <I>data</I> block
-(<I>data_len</I>), an <I>index_len</I> bytes long binary blob with the
-<I>index</I>, a <I>data_len</I> bytes long binary blob with the <I>data</I>,
-and the string <I>&quot;XPAKSTOP&quot;</I> at the end:
-<P>
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&lt;index_len&gt;|&lt;data_len&gt;|
-<BR>&nbsp;&quot;XPAKPACK&quot;&lt;index_len&gt;&lt;data_len&gt;|&lt;--index--&gt;|&lt;--data--&gt;|&quot;XPAKSTOP&quot;
-<P>
-To actually get the <I>index</I> and the <I>data</I>, we cut out <I>index_len</I>
-bytes after the end of <I>data_len</I> for the <I>index</I> block, and then cut
-out the next <I>data_len</I> bytes for the <I>data</I> block.  If we have done
-everything right up to this point, the following bytes would be the ASCII
-formatted string <I>&quot;XPAKSTOP&quot;</I>.
-<P>
-The actual <I>data</I> is merged into one big block; so if we want to read it,
-we need the actual positions of each information in this big data block.  This
-information can be obtained using the indices which are stored in the
-<I>index</I> block.
-<P>
-<A NAME="lbAJ">&nbsp;</A>
-<H3>Index block</H3>
-
-The <I>index</I> block consists of several indices:
-<P>
-<BR>&nbsp;|&lt;-----------------------index_len----------------------&gt;|
-<BR>&nbsp;|&lt;index1&gt;&lt;index2&gt;&lt;index3&gt;&lt;index4&gt;&lt;index5&gt;&lt;index6&gt;&lt;index7&gt;|
-<P>
-The <I>index</I> block holds all the information we need to find the data we
-want in the <I>data</I> block.  It consists of multiple index elements, all of
-which add up to the total length <I>index_len</I>.  It is not zero delimited
-or anything else.
-<P>
-Each of those elements corresponds to one chunk of data in the <I>data</I>
-block: the length of that block's name (<I>name_len</I>), a <I>name_len</I>
-bytes long string, the offset of that block (<I>dataN_offset</I>) and the
-length of that block (<I>dataN_len</I>):
-<P>
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&lt;name_len&gt;|
-<BR>&nbsp;&lt;name_len&gt;|&lt;--name--&gt;|&lt;dataN_offset&gt;&lt;dataN_len&gt;
-<P>
-<A NAME="lbAK">&nbsp;</A>
-<H3>Data block</H3>
-
-The <I>data</I> block contains multiple chunks of data with a total length of
-<I>data_len</I>:
-<P>
-<BR>&nbsp;|&lt;------------------------data_len------------------------&gt;|
-<BR>&nbsp;|&lt;data1&gt;&lt;data2&gt;&lt;data3&gt;&lt;data4&gt;&lt;data5&gt;&lt;data6&gt;&lt;data7&gt;&lt;data...&gt;|
-<P>
-To select one data element, we need the <I>data_offset</I> and the
-<I>data_len</I> from the <I>index</I>.  With those, we can count
-<I>data_offset</I> bytes from the start of the <I>data</I> block,
-and then cut out the next <I>data_len</I> bytes.  Then we got our
-data block:
-<P>
-<BR>&nbsp;|&lt;-----dataN_offset-----&gt;|&lt;--dataN_len-&gt;|
-<BR>&nbsp;|&lt;data1data2data3data...&gt;|&lt;data-we-want&gt;|
-<A NAME="lbAL">&nbsp;</A>
-<H2>EXAMPLES</H2>
-
-Let's say we have an xpak with two chunks of data.  The first has the name
-&quot;file1&quot; with the contents &quot;ddDddDdd&quot; and the second has the name &quot;file2&quot; with
-the contents &quot;jjJjjJjj&quot;.  There is no <I>&quot;STOP&quot;</I> or <I>xpak_offset</I> as
-this xpak is not part of a binpkg.
-<P>
-Here is the hexdump output (we will break it down line by line below):
-<BR>&nbsp;00&nbsp;&nbsp;58&nbsp;50&nbsp;41&nbsp;4b&nbsp;50&nbsp;41&nbsp;43&nbsp;4b&nbsp;&nbsp;00&nbsp;00&nbsp;00&nbsp;20&nbsp;00&nbsp;00&nbsp;00&nbsp;10&nbsp;&nbsp;|XPAKPACK...&nbsp;....|
-<BR>&nbsp;10&nbsp;&nbsp;00&nbsp;00&nbsp;00&nbsp;04&nbsp;66&nbsp;69&nbsp;6c&nbsp;31&nbsp;&nbsp;00&nbsp;00&nbsp;00&nbsp;00&nbsp;00&nbsp;00&nbsp;00&nbsp;08&nbsp;&nbsp;|....fil1........|
-<BR>&nbsp;20&nbsp;&nbsp;00&nbsp;00&nbsp;00&nbsp;04&nbsp;66&nbsp;69&nbsp;6c&nbsp;32&nbsp;&nbsp;00&nbsp;00&nbsp;00&nbsp;08&nbsp;00&nbsp;00&nbsp;00&nbsp;08&nbsp;&nbsp;|....fil2........|
-<BR>&nbsp;30&nbsp;&nbsp;64&nbsp;64&nbsp;44&nbsp;64&nbsp;64&nbsp;44&nbsp;64&nbsp;64&nbsp;&nbsp;6a&nbsp;6a&nbsp;4a&nbsp;6a&nbsp;6a&nbsp;4a&nbsp;6a&nbsp;6a&nbsp;&nbsp;|ddDddDddjjJjjJjj|
-<BR>&nbsp;40&nbsp;&nbsp;58&nbsp;50&nbsp;41&nbsp;4b&nbsp;53&nbsp;54&nbsp;4f&nbsp;50&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|XPAKSTOP|
-<P>
-The <I>index_len</I> is 32 and the <I>data_len</I> 16 (as there are 16 bytes:
-&quot;ddDddDdd&quot; and &quot;jjJjjJjj&quot;).
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;|&lt;------&quot;XPAKPACK&quot;-----&gt;||&nbsp;&nbsp;&nbsp;&nbsp;32&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;16&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|
-<BR>&nbsp;00&nbsp;&nbsp;58&nbsp;50&nbsp;41&nbsp;4b&nbsp;50&nbsp;41&nbsp;43&nbsp;4b&nbsp;&nbsp;00&nbsp;00&nbsp;00&nbsp;20&nbsp;00&nbsp;00&nbsp;00&nbsp;10
-<P>
-Now we have the first index element with a <I>name_len</I> of 4, followed
-by the name string &quot;fil1&quot;, followed by the data1 offset of 0 and a data1
-len of 8 (since data1 has 8 bytes: &quot;ddDddDdd&quot;).
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&lt;--&quot;fil1&quot;-&gt;||data1_off:0|data1_len:8|
-<BR>&nbsp;10&nbsp;&nbsp;00&nbsp;00&nbsp;00&nbsp;04&nbsp;66&nbsp;69&nbsp;6c&nbsp;31&nbsp;&nbsp;00&nbsp;00&nbsp;00&nbsp;00&nbsp;00&nbsp;00&nbsp;00&nbsp;08
-<P>
-Now we have the second index element with a <I>name_len</I> of 4, followed
-by the name string &quot;fil2&quot;, followed by the data2 offset of 8 and a data2
-len of 8 (since data2 has 8 bytes: &quot;jjJjjJjj&quot;).
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&lt;--&quot;fil2&quot;-&gt;||data2_off:8|data2_len:8|
-<BR>&nbsp;20&nbsp;&nbsp;00&nbsp;00&nbsp;00&nbsp;04&nbsp;66&nbsp;69&nbsp;6c&nbsp;32&nbsp;&nbsp;00&nbsp;00&nbsp;00&nbsp;08&nbsp;00&nbsp;00&nbsp;00&nbsp;08
-<P>
-<BR>&nbsp;&nbsp;&nbsp;&nbsp;|&lt;------&quot;XPAKSTOP&quot;-----&gt;|
-<BR>&nbsp;40&nbsp;&nbsp;58&nbsp;50&nbsp;41&nbsp;4b&nbsp;53&nbsp;54&nbsp;4f&nbsp;50
-<A NAME="lbAM">&nbsp;</A>
-<H2>AUTHORS</H2>
-
-<PRE>
-Lars Hartmann &lt;lars@chaotika.org&gt;
-Mike Frysinger &lt;vapier@gentoo.org&gt;
-</PRE>
-
-<A NAME="lbAN">&nbsp;</A>
-<H2>SEE ALSO</H2>
-
-<B><A HREF="http://localhost/cgi-bin/man/man2html?1+qtbz2">qtbz2</A></B>(1),
-
-<B><A HREF="http://localhost/cgi-bin/man/man2html?1+quickpkg">quickpkg</A></B>(1),
-
-<B><A HREF="http://localhost/cgi-bin/man/man2html?1+qxpak">qxpak</A></B>(1)
-
-<P>
-
-<HR>
-<A NAME="index">&nbsp;</A><H2>Index</H2>
-<DL>
-<DT><A HREF="#lbAB">NAME</A><DD>
-<DT><A HREF="#lbAC">DESCRIPTION</A><DD>
-<DT><A HREF="#lbAD">NOTES</A><DD>
-<DL>
-<DT><A HREF="#lbAE">Data Types</A><DD>
-<DT><A HREF="#lbAF">Vertical Bars</A><DD>
-</DL>
-<DT><A HREF="#lbAG">SYNOPSIS</A><DD>
-<DT><A HREF="#lbAH">DETAILS</A><DD>
-<DL>
-<DT><A HREF="#lbAI">xpak</A><DD>
-<DT><A HREF="#lbAJ">Index block</A><DD>
-<DT><A HREF="#lbAK">Data block</A><DD>
-</DL>
-<DT><A HREF="#lbAL">EXAMPLES</A><DD>
-<DT><A HREF="#lbAM">AUTHORS</A><DD>
-<DT><A HREF="#lbAN">SEE ALSO</A><DD>
-</DL>
-<HR>
-This document was created by
-<A HREF="http://github.com/hamano/man2html/">man2html</A>,
-using the manual pages.<BR>
-Time: 17:51:02 GMT, December 02, 2015
-</BODY>
-</HTML>
