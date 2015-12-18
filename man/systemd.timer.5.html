@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SYSTEMD.TIMER(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SYSTEMD.TIMER(5)</td>
+<td class="head-vol">
+systemd.timer</td>
+<td class="head-rtitle">
+SYSTEMD.TIMER(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> systemd.timer - Timer unit configuration</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <i>timer</i>.timer</div>
+<div class="section">
+<h1>DESCRIPTION</h1> A unit configuration file whose name ends in &quot;.timer&quot; encodes information about a timer controlled and supervised by systemd, for timer-based activation.<div class="spacer">
+</div>
+This man page lists the configuration options specific to this unit type. See  <b>systemd.unit</b>(5) for the common options of all unit configuration files. The common configuration items are configured in the generic [Unit] and [Install] sections. The timer specific configuration options are configured in the [Timer] section.<div class="spacer">
+</div>
+For each timer file, a matching unit file must exist, describing the unit to activate when the timer elapses. By default, a service by the same name as the timer (except for the suffix) is activated. Example: a timer file foo.timer activates a matching service foo.service. The unit to activate may be controlled by  <i>Unit=</i> (see below).<div class="spacer">
+</div>
+Unless  <i>DefaultDependencies=</i> is set to  <b>false</b>, all timer units will implicitly have dependencies of type  <i>Conflicts=</i> and  <i>Before=</i> on shutdown.target to ensure that they are stopped cleanly prior to system shutdown. Timer units with at least one  <i>OnCalendar=</i> directive will have an additional  <i>After=</i> dependency on timer-sync.target to avoid being started before the system clock has been correctly set. Only timer units involved with early boot or late system shutdown should disable the  <i>DefaultDependencies=</i> option.</div>
+<div class="section">
+<h1>OPTIONS</h1> Timer files must include a [Timer] section, which carries information about the timer it defines. The options specific to the [Timer] section of timer units are the following:<div class="spacer">
+</div>
+<i>OnActiveSec=</i>, <i>OnBootSec=</i>, <i>OnStartupSec=</i>, <i>OnUnitActiveSec=</i>, <i>OnUnitInactiveSec=</i><div style="margin-left: 4.00ex;">
+Defines monotonic timers relative to different starting points:  <i>OnActiveSec=</i> defines a timer relative to the moment the timer itself is activated.  <i>OnBootSec=</i> defines a timer relative to when the machine was booted up.  <i>OnStartupSec=</i> defines a timer relative to when systemd was first started.  <i>OnUnitActiveSec=</i> defines a timer relative to when the unit the timer is activating was last activated.  <i>OnUnitInactiveSec=</i> defines a timer relative to when the unit the timer is activating was last deactivated.<div style="height: 1.00em;">
+&#160;</div>
+Multiple directives may be combined of the same and of different types. For example, by combining  <i>OnBootSec=</i> and  <i>OnUnitActiveSec=</i>, it is possible to define a timer that elapses in regular intervals and activates a specific service each time.<div style="height: 1.00em;">
+&#160;</div>
+The arguments to the directives are time spans configured in seconds. Example: &quot;OnBootSec=50&quot; means 50s after boot-up. The argument may also include time units. Example: &quot;OnBootSec=5h 30min&quot; means 5 hours and 30 minutes after boot-up. For details about the syntax of time spans, see  <b>systemd.unit</b>(5).<div style="height: 1.00em;">
+&#160;</div>
+If a timer configured with  <i>OnBootSec=</i> or  <i>OnStartupSec=</i> is already in the past when the timer unit is activated, it will immediately elapse and the configured unit is started. This is not the case for timers defined in the other directives.<div style="height: 1.00em;">
+&#160;</div>
+These are monotonic timers, independent of wall-clock time and timezones. If the computer is temporarily suspended, the monotonic clock stops too.<div style="height: 1.00em;">
+&#160;</div>
+If the empty string is assigned to any of these options, the list of timers is reset, and all prior assignments will have no effect.<div style="height: 1.00em;">
+&#160;</div>
+Note that timers do not necessarily expire at the precise time configured with these settings, as they are subject to the  <i>AccuracySec=</i> setting below.</div>
+<div class="spacer">
+</div>
+<i>OnCalendar=</i><div style="margin-left: 4.00ex;">
+Defines realtime (i.e. wallclock) timers with calendar event expressions. See  <b>systemd.time</b>(7) for more information on the syntax of calendar event expressions. Otherwise, the semantics are similar to  <i>OnActiveSec=</i> and related settings.<div style="height: 1.00em;">
+&#160;</div>
+Note that timers do not necessarily expire at the precise time configured with this setting, as it is subject to the  <i>AccuracySec=</i> setting below.</div>
+<div class="spacer">
+</div>
+<i>AccuracySec=</i><div style="margin-left: 4.00ex;">
+Specify the accuracy the timer shall elapse with. Defaults to 1min. The timer is scheduled to elapse within a time window starting with the time specified in  <i>OnCalendar=</i>,  <i>OnActiveSec=</i>,  <i>OnBootSec=</i>,  <i>OnStartupSec=</i>,  <i>OnUnitActiveSec=</i> or  <i>OnUnitInactiveSec=</i> and ending the time configured with  <i>AccuracySec=</i> later. Within this time window, the expiry time will be placed at a host-specific, randomized but stable position that is synchronized between all local timer units. This is done in order to distribute the wake-up time in networked installations, as well as optimizing power consumption to suppress unnecessary CPU wake-ups. To get best accuracy, set this option to 1us. Note that the timer is still subject to the timer slack configured via  <b>systemd-system.conf</b>(5)'s  <i>TimerSlackNSec=</i> setting. See  <b>prctl</b>(2) for details. To optimize power consumption, make sure to set this value as high as possible and as low as necessary.</div>
+<div class="spacer">
+</div>
+<i>Unit=</i><div style="margin-left: 4.00ex;">
+The unit to activate when this timer elapses. The argument is a unit name, whose suffix is not &quot;.timer&quot;. If not specified, this value defaults to a service that has the same name as the timer unit, except for the suffix. (See above.) It is recommended that the unit name that is activated and the unit name of the timer unit are named identically, except for the suffix.</div>
+<div class="spacer">
+</div>
+<i>Persistent=</i><div style="margin-left: 4.00ex;">
+Takes a boolean argument. If true, the time when the service unit was last triggered is stored on disk. When the timer is activated, the service unit is triggered immediately if it would have been triggered at least once during the time when the timer was inactive. This is useful to catch up on missed runs of the service when the machine was off. Note that this setting only has an effect on timers configured with  <i>OnCalendar=</i>.</div>
+<div class="spacer">
+</div>
+<i>WakeSystem=</i><div style="margin-left: 4.00ex;">
+Takes a boolean argument. If true, an elapsing timer will cause the system to resume from suspend, should it be suspended and if the system supports this. Note that this option will only make sure the system resumes on the appropriate times, it will not take care of suspending it again after any work that is to be done is finished. Defaults to  <i>false</i>.</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>systemctl</b>(1),  <b>systemd.unit</b>(5),  <b>systemd.service</b>(5),  <b>systemd.time</b>(7),  <b>systemd.directives</b>(7),  <b>systemd-system.conf</b>(5),  <b>prctl</b>(2)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

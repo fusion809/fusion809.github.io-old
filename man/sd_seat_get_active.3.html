@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SD_SEAT_GET_ACTIVE(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SD_SEAT_GET_ACTIVE(3)</td>
+<td class="head-vol">
+sd_seat_get_active</td>
+<td class="head-rtitle">
+SD_SEAT_GET_ACTIVE(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sd_seat_get_active, sd_seat_get_sessions, sd_seat_can_multi_session, sd_seat_can_tty, sd_seat_can_graphical - Determine state of a specific seat</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;systemd/sd-login.h&gt;<br/>
+<div class="spacer">
+</div>
+<div style="margin-left: 23.00ex;text-indent: -23.00ex;" class="spacer">
+<b>int sd_seat_get_active(const&#160;char&#160;*</b><i>seat</i><b>, char&#160;**</b><i>session</i><b>, uid_t&#160;*</b><i>uid</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 25.00ex;text-indent: -25.00ex;" class="spacer">
+<b>int sd_seat_get_sessions(const&#160;char&#160;*</b><i>seat</i><b>, char&#160;***</b><i>sessions</i><b>, uid_t&#160;**</b><i>uid</i><b>, unsigned&#160;int&#160;*</b><i>n_uids</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 30.00ex;text-indent: -30.00ex;" class="spacer">
+<b>int sd_seat_can_multi_session(const&#160;char&#160;*</b><i>seat</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 20.00ex;text-indent: -20.00ex;" class="spacer">
+<b>int sd_seat_can_tty(const&#160;char&#160;*</b><i>seat</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 26.00ex;text-indent: -26.00ex;" class="spacer">
+<b>int sd_seat_can_graphical(const&#160;char&#160;*</b><i>seat</i><b>);</b></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>sd_seat_get_active()</b> may be used to determine which session is currently active on a seat, if there is any. Returns the session identifier and the user identifier of the Unix user the session is belonging to. Either the session or the user identifier parameter can be passed  <b>NULL</b>, in case only one of the parameters shall be queried. The returned string needs to be freed with the libc  <b>free</b>(3) call after use.<div class="spacer">
+</div>
+<b>sd_seat_get_sessions()</b> may be used to determine all sessions on the specified seat. Returns two arrays, one ( <b>NULL</b> terminated) with the session identifiers of the sessions and one with the user identifiers of the Unix users the sessions belong to. An additional parameter may be used to return the number of entries in the latter array. The two arrays and the latter parameter may be passed as  <b>NULL</b> in case these values need not to be determined. The arrays and the strings referenced by them need to be freed with the libc  <b>free</b>(3) call after use. Note that instead of an empty array  <b>NULL</b> may be returned and should be considered equivalent to an empty array.<div class="spacer">
+</div>
+<b>sd_seat_can_multi_session()</b> may be used to determine whether a specific seat is capable of multi-session, i.e. allows multiple login sessions in parallel (with only one being active at a time).<div class="spacer">
+</div>
+<b>sd_seat_can_tty()</b> may be used to determine whether a specific seat provides TTY functionality, i.e. is useful as a text console.<div class="spacer">
+</div>
+<b>sd_seat_can_graphical()</b> may be used to determine whether a specific seat provides graphics functionality, i.e. is useful as a graphics display.<div class="spacer">
+</div>
+If the  <i>seat</i> parameter of any of these functions is passed as  <b>NULL</b>, the operation is executed for the seat of the session of the calling process, if there is any.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success,  <b>sd_seat_get_active()</b> returns 0 or a positive integer. On success,  <b>sd_seat_get_sessions()</b> returns the number of entries in the session identifier array. If the test succeeds,  <b>sd_seat_can_multi_session</b>,  <b>sd_seat_can_tty</b> and  <b>sd_seat_can_graphical</b> return a positive integer, if it fails 0. On failure, these calls return a negative errno-style error code.</div>
+<div class="section">
+<h1>ERRORS</h1> Returned errors may indicate the following problems:<div class="spacer">
+</div>
+<b>-ENODATA</b><div style="margin-left: 4.00ex;">
+Given field is not specified for the described seat.</div>
+<div class="spacer">
+</div>
+<b>-ENXIO</b><div style="margin-left: 4.00ex;">
+The specified seat is unknown.</div>
+<div class="spacer">
+</div>
+<b>-EINVAL</b><div style="margin-left: 4.00ex;">
+An input parameter was invalid (out of range, or NULL, where that's not accepted).</div>
+<div class="spacer">
+</div>
+<b>-ENOMEM</b><div style="margin-left: 4.00ex;">
+Memory allocation failed.</div>
+</div>
+<div class="section">
+<h1>NOTES</h1> The  <b>sd_seat_get_active()</b>,  <b>sd_seat_get_sessions()</b>,  <b>sd_seat_can_multi_session()</b>,  <b>sd_seat_can_tty()</b> and  <b>sd_seat_can_grapical()</b> interfaces are available as a shared library, which can be compiled and linked to with the  <b>libsystemd</b>&#160;<b>pkg-config</b>(1) file.</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>sd-login</b>(3),  <b>sd_session_get_seat</b>(3)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

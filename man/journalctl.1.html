@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+JOURNALCTL(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+JOURNALCTL(1)</td>
+<td class="head-vol">
+journalctl</td>
+<td class="head-rtitle">
+JOURNALCTL(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> journalctl - Query the systemd journal</div>
+<div class="section">
+<h1>SYNOPSIS</h1><div style="margin-left: 11.00ex;text-indent: -11.00ex;" class="spacer">
+<b>journalctl</b> [OPTIONS...] [MATCHES...]</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>journalctl</b> may be used to query the contents of the  <b>systemd</b>(1) journal as written by  <b>systemd-journald.service</b>(8).<div class="spacer">
+</div>
+If called without parameters, it will show the full contents of the journal, starting with the oldest entry collected.<div class="spacer">
+</div>
+If one or more match arguments are passed, the output is filtered accordingly. A match is in the format &quot;FIELD=VALUE&quot;, e.g. &quot;_SYSTEMD_UNIT=httpd.service&quot;, referring to the components of a structured journal entry. See  <b>systemd.journal-fields</b>(7) for a list of well-known fields. If multiple matches are specified matching different fields, the log entries are filtered by both, i.e. the resulting output will show only entries matching all the specified matches of this kind. If two matches apply to the same field, then they are automatically matched as alternatives, i.e. the resulting output will show entries matching any of the specified matches for the same field. Finally, the character &quot;+&quot; may appears as a separate word between other terms on the command line. This causes all matches before and after to be combined in a disjunction (i.e. logical OR).<div class="spacer">
+</div>
+As shortcuts for a few types of field/value matches, file paths may be specified. If a file path refers to an executable file, this is equivalent to an &quot;_EXE=&quot; match for the canonicalized binary path. Similarly, if a path refers to a device node, this is equivalent to a &quot;_KERNEL_DEVICE=&quot; match for the device.<div class="spacer">
+</div>
+Additional constraints may be added using options  <b>--boot</b>,  <b>--unit=</b>, etc, to further limit what entries will be shown (logical AND).<div class="spacer">
+</div>
+Output is interleaved from all accessible journal files, whether they are rotated or currently being written, and regardless of whether they belong to the system itself or are accessible user journals.<div class="spacer">
+</div>
+The set of journal files which will be used can be modified using the  <b>--user</b>,  <b>--system</b>,  <b>--directory</b>, and  <b>--file</b> options, see below.<div class="spacer">
+</div>
+All users are granted access to their private per-user journals. However, by default, only root and users who are members of a few special groups are granted access to the system journal and the journals of other users. Members of the groups &quot;systemd-journal&quot;, &quot;adm&quot;, and &quot;wheel&quot; can read all journal files. Note that the two latter groups traditionally have additional privileges specified by the distribution. Members of the &quot;wheel&quot; group can often perform administrative tasks.<div class="spacer">
+</div>
+The output is paged through  <b>less</b> by default, and long lines are &quot;truncated&quot; to screen width. The hidden part can be viewed by using the left-arrow and right-arrow keys. Paging can be disabled; see the  <b>--no-pager</b> option and the &quot;Environment&quot; section below.<div class="spacer">
+</div>
+When outputting to a tty, lines are colored according to priority: lines of level ERROR and higher are colored red; lines of level NOTICE and higher are highlighted; other lines are displayed normally.</div>
+<div class="section">
+<h1>OPTIONS</h1> The following options are understood:<div class="spacer">
+</div>
+<b>--no-full</b>, <b>--full</b>, <b>-l</b><div style="margin-left: 4.00ex;">
+Ellipsize fields when they do not fit in available columns. The default is to show full fields, allowing them to wrap or be truncated by the pager, if one is used.<div style="height: 1.00em;">
+&#160;</div>
+The old options  <b>-l</b>/<b>--full</b> are not useful anymore, except to undo  <b>--no-full</b>.</div>
+<div class="spacer">
+</div>
+<b>-a</b>, <b>--all</b><div style="margin-left: 4.00ex;">
+Show all fields in full, even if they include unprintable characters or are very long.</div>
+<div class="spacer">
+</div>
+<b>-f</b>, <b>--follow</b><div style="margin-left: 4.00ex;">
+Show only the most recent journal entries, and continuously print new entries as they are appended to the journal.</div>
+<div class="spacer">
+</div>
+<b>-e</b>, <b>--pager-end</b><div style="margin-left: 4.00ex;">
+Immediately jump to the end of the journal inside the implied pager tool. This implies  <b>-n1000</b> to guarantee that the pager will not buffer logs of unbounded size. This may be overridden with an explicit  <b>-n</b> with some other numeric value while  <b>-nall</b> will disable this cap. Note that this option is only supported for the  <b>less</b>(1) pager.</div>
+<div class="spacer">
+</div>
+<b>-n</b>, <b>--lines=</b><div style="margin-left: 4.00ex;">
+Show the most recent journal events and limit the number of events shown. If  <b>--follow</b> is used, this option is implied. The argument is a positive integer or &quot;all&quot; to disable line limiting. The default value is 10 if no argument is given.</div>
+<div class="spacer">
+</div>
+<b>--no-tail</b><div style="margin-left: 4.00ex;">
+Show all stored output lines, even in follow mode. Undoes the effect of  <b>--lines=</b>.</div>
+<div class="spacer">
+</div>
+<b>-r</b>, <b>--reverse</b><div style="margin-left: 4.00ex;">
+Reverse output so that the newest entries are displayed first.</div>
+<div class="spacer">
+</div>
+<b>-o</b>, <b>--output=</b><div style="margin-left: 4.00ex;">
+Controls the formatting of the journal entries that are shown. Takes one of the following options:<div class="spacer">
+</div>
+<b>short</b><div style="margin-left: 4.00ex;">
+is the default and generates an output that is mostly identical to the formatting of classic syslog files, showing one line per journal entry.</div>
+<div class="spacer">
+</div>
+<b>short-iso</b><div style="margin-left: 4.00ex;">
+is very similar, but shows ISO 8601 wallclock timestamps.</div>
+<div class="spacer">
+</div>
+<b>short-precise</b><div style="margin-left: 4.00ex;">
+is very similar, but shows timestamps with full microsecond precision.</div>
+<div class="spacer">
+</div>
+<b>short-monotonic</b><div style="margin-left: 4.00ex;">
+is very similar, but shows monotonic timestamps instead of wallclock timestamps.</div>
+<div class="spacer">
+</div>
+<b>verbose</b><div style="margin-left: 4.00ex;">
+shows the full-structured entry items with all fields.</div>
+<div class="spacer">
+</div>
+<b>export</b><div style="margin-left: 4.00ex;">
+serializes the journal into a binary (but mostly text-based) stream suitable for backups and network transfer (see  <b>Journal Export Format</b>[1] for more information).</div>
+<div class="spacer">
+</div>
+<b>json</b><div style="margin-left: 4.00ex;">
+formats entries as JSON data structures, one per line (see  <b>Journal JSON Format</b>[2] for more information).</div>
+<div class="spacer">
+</div>
+<b>json-pretty</b><div style="margin-left: 4.00ex;">
+formats entries as JSON data structures, but formats them in multiple lines in order to make them more readable by humans.</div>
+<div class="spacer">
+</div>
+<b>json-sse</b><div style="margin-left: 4.00ex;">
+formats entries as JSON data structures, but wraps them in a format suitable for  <b>Server-Sent Events</b>[3].</div>
+<div class="spacer">
+</div>
+<b>cat</b><div style="margin-left: 4.00ex;">
+generates a very terse output, only showing the actual message of each journal entry with no metadata, not even a timestamp.</div>
+</div>
+<div class="spacer">
+</div>
+<b>--utc</b><div style="margin-left: 4.00ex;">
+Express time in Coordinated Universal Time (UTC).</div>
+<div class="spacer">
+</div>
+<b>-x</b>, <b>--catalog</b><div style="margin-left: 4.00ex;">
+Augment log lines with explanation texts from the message catalog. This will add explanatory help texts to log messages in the output where this is available. These short help texts will explain the context of an error or log event, possible solutions, as well as pointers to support forums, developer documentation, and any other relevant manuals. Note that help texts are not available for all messages, but only for selected ones. For more information on the message catalog, please refer to the  <b>Message Catalog Developer Documentation</b>[4].<div style="height: 1.00em;">
+&#160;</div>
+Note: when attaching  <b>journalctl</b> output to bug reports, please do  <i>not</i> use  <b>-x</b>.</div>
+<div class="spacer">
+</div>
+<b>-q</b>, <b>--quiet</b><div style="margin-left: 4.00ex;">
+Suppresses any warning messages regarding inaccessible system journals when run as a normal user.</div>
+<div class="spacer">
+</div>
+<b>-m</b>, <b>--merge</b><div style="margin-left: 4.00ex;">
+Show entries interleaved from all available journals, including remote ones.</div>
+<div class="spacer">
+</div>
+<b>-b </b><b>[</b><i>ID</i>]<b>[</b><i>&#177;offset</i>], <b>--boot=</b><b>[</b><i>ID</i>]<b>[</b><i>&#177;offset</i>]<div style="margin-left: 4.00ex;">
+Show messages from a specific boot. This will add a match for &quot;_BOOT_ID=&quot;.<div style="height: 1.00em;">
+&#160;</div>
+The argument may be empty, in which case logs for the current boot will be shown.<div style="height: 1.00em;">
+&#160;</div>
+If the boot ID is omitted, a positive  <i>offset</i> will look up the boots starting from the beginning of the journal, and a equal-or-less-than zero  <i>offset</i> will look up boots starting from the end of the journal. Thus,  <b>1</b> means the first boot found in the journal in chronological order,  <b>2</b> the second and so on; while  <b>-0</b> is the last boot,  <b>-1</b> the boot before last, and so on. An empty  <i>offset</i> is equivalent to specifying  <b>-0</b>, except when the current boot is not the last boot (e.g. because  <b>--directory</b> was specified to look at logs from a different machine).<div style="height: 1.00em;">
+&#160;</div>
+If the 32-character  <i>ID</i> is specified, it may optionally be followed by  <i>offset</i> which identifies the boot relative to the one given by boot  <i>ID</i>. Negative values mean earlier boots and a positive values mean later boots. If  <i>offset</i> is not specified, a value of zero is assumed, and the logs for the boot given by  <i>ID</i> are shown.</div>
+<div class="spacer">
+</div>
+<b>--list-boots</b><div style="margin-left: 4.00ex;">
+Show a tabular list of boot numbers (relative to the current boot), their IDs, and the timestamps of the first and last message pertaining to the boot.</div>
+<div class="spacer">
+</div>
+<b>-k</b>, <b>--dmesg</b><div style="margin-left: 4.00ex;">
+Show only kernel messages. This implies  <b>-b</b> and adds the match &quot;_TRANSPORT=kernel&quot;.</div>
+<div class="spacer">
+</div>
+<b>-t</b>, <b>--identifier=</b><b></b><i>SYSLOG_IDENTIFIER</i><b>|</b><b></b><i>PATTERN</i><div style="margin-left: 4.00ex;">
+Show messages for the specified syslog identifier  <i>SYSLOG_IDENTIFIER</i>, or for any of the messages with a &quot;SYSLOG_IDENTIFIER&quot; matched by  <i>PATTERN</i>.<div style="height: 1.00em;">
+&#160;</div>
+This parameter can be specified multiple times.</div>
+<div class="spacer">
+</div>
+<b>-u</b>, <b>--unit=</b><b></b><i>UNIT</i><b>|</b><b></b><i>PATTERN</i><div style="margin-left: 4.00ex;">
+Show messages for the specified systemd unit  <i>UNIT</i> (such as a service unit), or for any of the units matched by  <i>PATTERN</i>. If a pattern is specified, a list of unit names found in the journal is compared with the specified pattern and all that match are used. For each unit name, a match is added for messages from the unit (&quot;_SYSTEMD_UNIT=<i>UNIT</i>&quot;), along with additional matches for messages from systemd and messages about coredumps for the specified unit.<div style="height: 1.00em;">
+&#160;</div>
+This parameter can be specified multiple times.</div>
+<div class="spacer">
+</div>
+<b>--user-unit=</b><div style="margin-left: 4.00ex;">
+Show messages for the specified user session unit. This will add a match for messages from the unit (&quot;_SYSTEMD_USER_UNIT=&quot; and &quot;_UID=&quot;) and additional matches for messages from session systemd and messages about coredumps for the specified unit.<div style="height: 1.00em;">
+&#160;</div>
+This parameter can be specified multiple times.</div>
+<div class="spacer">
+</div>
+<b>-p</b>, <b>--priority=</b><div style="margin-left: 4.00ex;">
+Filter output by message priorities or priority ranges. Takes either a single numeric or textual log level (i.e. between 0/&quot;emerg&quot; and 7/&quot;debug&quot;), or a range of numeric/text log levels in the form FROM..TO. The log levels are the usual syslog log levels as documented in  <b>syslog</b>(3), i.e. &quot;emerg&quot;&#160;(0), &quot;alert&quot;&#160;(1), &quot;crit&quot;&#160;(2), &quot;err&quot;&#160;(3), &quot;warning&quot;&#160;(4), &quot;notice&quot;&#160;(5), &quot;info&quot;&#160;(6), &quot;debug&quot;&#160;(7). If a single log level is specified, all messages with this log level or a lower (hence more important) log level are shown. If a range is specified, all messages within the range are shown, including both the start and the end value of the range. This will add &quot;PRIORITY=&quot; matches for the specified priorities.</div>
+<div class="spacer">
+</div>
+<b>-c</b>, <b>--cursor=</b><div style="margin-left: 4.00ex;">
+Start showing entries from the location in the journal specified by the passed cursor.</div>
+<div class="spacer">
+</div>
+<b>--after-cursor=</b><div style="margin-left: 4.00ex;">
+Start showing entries from the location in the journal  <i>after</i> the location specified by the this cursor. The cursor is shown when the  <b>--show-cursor</b> option is used.</div>
+<div class="spacer">
+</div>
+<b>--show-cursor</b><div style="margin-left: 4.00ex;">
+The cursor is shown after the last entry after two dashes:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+-- cursor: s=0639...<br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+The format of the cursor is private and subject to change.</div>
+<div class="spacer">
+</div>
+<b>--since=</b>, <b>--until=</b><div style="margin-left: 4.00ex;">
+Start showing entries on or newer than the specified date, or on or older than the specified date, respectively. Date specifications should be of the format &quot;2012-10-30 18:17:16&quot;. If the time part is omitted, &quot;00:00:00&quot; is assumed. If only the seconds component is omitted, &quot;:00&quot; is assumed. If the date component is omitted, the current day is assumed. Alternatively the strings &quot;yesterday&quot;, &quot;today&quot;, &quot;tomorrow&quot; are understood, which refer to 00:00:00 of the day before the current day, the current day, or the day after the current day, respectively. &quot;now&quot; refers to the current time. Finally, relative times may be specified, prefixed with &quot;-&quot; or &quot;+&quot;, referring to times before or after the current time, respectively.</div>
+<div class="spacer">
+</div>
+<b>-F</b>, <b>--field=</b><div style="margin-left: 4.00ex;">
+Print all possible data values the specified field can take in all entries of the journal.</div>
+<div class="spacer">
+</div>
+<b>--system</b>, <b>--user</b><div style="margin-left: 4.00ex;">
+Show messages from system services and the kernel (with  <b>--system</b>). Show messages from service of current user (with  <b>--user</b>). If neither is specified, show all messages that the user can see.</div>
+<div class="spacer">
+</div>
+<b>-M</b>, <b>--machine=</b><div style="margin-left: 4.00ex;">
+Show messages from a running, local container. Specify a container name to connect to.</div>
+<div class="spacer">
+</div>
+<b>-D </b><b></b><i>DIR</i>, <b>--directory=</b><b></b><i>DIR</i><div style="margin-left: 4.00ex;">
+Takes a directory path as argument. If specified, journalctl will operate on the specified journal directory  <i>DIR</i> instead of the default runtime and system journal paths.</div>
+<div class="spacer">
+</div>
+<b>--file=</b><b></b><i>GLOB</i><div style="margin-left: 4.00ex;">
+Takes a file glob as an argument. If specified, journalctl will operate on the specified journal files matching  <i>GLOB</i> instead of the default runtime and system journal paths. May be specified multiple times, in which case files will be suitably interleaved.</div>
+<div class="spacer">
+</div>
+<b>--root=</b><b></b><i>ROOT</i><div style="margin-left: 4.00ex;">
+Takes a directory path as an argument. If specified, journalctl will operate on catalog file hierarchy underneath the specified directory instead of the root directory (e.g.  <b>--update-catalog</b> will create  <i>ROOT</i>/var/lib/systemd/catalog/database).</div>
+<div class="spacer">
+</div>
+<b>--new-id128</b><div style="margin-left: 4.00ex;">
+Instead of showing journal contents, generate a new 128-bit ID suitable for identifying messages. This is intended for usage by developers who need a new identifier for a new message they introduce and want to make recognizable. This will print the new ID in three different formats which can be copied into source code or similar.</div>
+<div class="spacer">
+</div>
+<b>--header</b><div style="margin-left: 4.00ex;">
+Instead of showing journal contents, show internal header information of the journal fields accessed.</div>
+<div class="spacer">
+</div>
+<b>--disk-usage</b><div style="margin-left: 4.00ex;">
+Shows the current disk usage of all journal files. This shows the sum of the disk usage of all archived and active journal files.</div>
+<div class="spacer">
+</div>
+<b>--vacuum-size=</b>, <b>--vacuum-time=</b><div style="margin-left: 4.00ex;">
+Removes archived journal files until the disk space they use falls below the specified size (specified with the usual &quot;K&quot;, &quot;M&quot;, &quot;G&quot;, &quot;T&quot; suffixes), or all journal files contain no data older than the specified timespan (specified with the usual &quot;s&quot;, &quot;min&quot;, &quot;h&quot;, &quot;days&quot;, &quot;months&quot;, &quot;weeks&quot;, &quot;years&quot; suffixes). Note that running  <b>--vacuum-size=</b> has only indirect effect on the output shown by  <b>--disk-usage</b> as the latter includes active journal files, while the former only operates on archived journal files.  <b>--vacuum-size=</b> and  <b>--vacuum-time=</b> may be combined in a single invocation to enforce both a size and time limit on the archived journal files.</div>
+<div class="spacer">
+</div>
+<b>--list-catalog </b><b>[</b><i>128-bit-ID...</i>]<b> </b><div style="margin-left: 4.00ex;">
+List the contents of the message catalog as a table of message IDs, plus their short description strings.<div style="height: 1.00em;">
+&#160;</div>
+If any  <i>128-bit-ID</i>s are specified, only those entries are shown.</div>
+<div class="spacer">
+</div>
+<b>--dump-catalog </b><b>[</b><i>128-bit-ID...</i>]<b> </b><div style="margin-left: 4.00ex;">
+Show the contents of the message catalog, with entries separated by a line consisting of two dashes and the ID (the format is the same as .catalog files).<div style="height: 1.00em;">
+&#160;</div>
+If any  <i>128-bit-ID</i>s are specified, only those entries are shown.</div>
+<div class="spacer">
+</div>
+<b>--update-catalog</b><div style="margin-left: 4.00ex;">
+Update the message catalog index. This command needs to be executed each time new catalog files are installed, removed, or updated to rebuild the binary catalog index.</div>
+<div class="spacer">
+</div>
+<b>--setup-keys</b><div style="margin-left: 4.00ex;">
+Instead of showing journal contents, generate a new key pair for Forward Secure Sealing (FSS). This will generate a sealing key and a verification key. The sealing key is stored in the journal data directory and shall remain on the host. The verification key should be stored externally. Refer to the  <b>Seal=</b> option in  <b>journald.conf</b>(5) for information on Forward Secure Sealing and for a link to a refereed scholarly paper detailing the cryptographic theory it is based on.</div>
+<div class="spacer">
+</div>
+<b>--force</b><div style="margin-left: 4.00ex;">
+When  <b>--setup-keys</b> is passed and Forward Secure Sealing (FSS) has already been configured, recreate FSS keys.</div>
+<div class="spacer">
+</div>
+<b>--interval=</b><div style="margin-left: 4.00ex;">
+Specifies the change interval for the sealing key when generating an FSS key pair with  <b>--setup-keys</b>. Shorter intervals increase CPU consumption but shorten the time range of undetectable journal alterations. Defaults to 15min.</div>
+<div class="spacer">
+</div>
+<b>--verify</b><div style="margin-left: 4.00ex;">
+Check the journal file for internal consistency. If the file has been generated with FSS enabled and the FSS verification key has been specified with  <b>--verify-key=</b>, authenticity of the journal file is verified.</div>
+<div class="spacer">
+</div>
+<b>--verify-key=</b><div style="margin-left: 4.00ex;">
+Specifies the FSS verification key to use for the  <b>--verify</b> operation.</div>
+<div class="spacer">
+</div>
+<b>--flush</b><div style="margin-left: 4.00ex;">
+Asks the Journal daemon to flush any log data stored in /run/log/journal into /var/log/journal, if persistent storage is enabled. This call does not return until the operation is complete.</div>
+<div class="spacer">
+</div>
+<b>-h</b>, <b>--help</b><div style="margin-left: 4.00ex;">
+Print a short help text and exit.</div>
+<div class="spacer">
+</div>
+<b>--version</b><div style="margin-left: 4.00ex;">
+Print a short version string and exit.</div>
+<div class="spacer">
+</div>
+<b>--no-pager</b><div style="margin-left: 4.00ex;">
+Do not pipe output into a pager.</div>
+</div>
+<div class="section">
+<h1>EXIT STATUS</h1> On success, 0 is returned; otherwise, a non-zero failure code is returned.</div>
+<div class="section">
+<h1>ENVIRONMENT</h1>  <i>$SYSTEMD_PAGER</i><div style="margin-left: 4.00ex;">
+Pager to use when  <b>--no-pager</b> is not given; overrides  <i>$PAGER</i>. Setting this to an empty string or the value &quot;cat&quot; is equivalent to passing  <b>--no-pager</b>.</div>
+<div class="spacer">
+</div>
+<i>$SYSTEMD_LESS</i><div style="margin-left: 4.00ex;">
+Override the default options passed to  <b>less</b> (&quot;FRSXMK&quot;).</div>
+</div>
+<div class="section">
+<h1>EXAMPLES</h1> Without arguments, all collected logs are shown unfiltered:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+journalctl<br/>
+</div>
+<div class="spacer">
+</div>
+With one match specified, all entries with a field matching the expression are shown:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+journalctl _SYSTEMD_UNIT=avahi-daemon.service<br/>
+</div>
+<div class="spacer">
+</div>
+If two different fields are matched, only entries matching both expressions at the same time are shown:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+journalctl _SYSTEMD_UNIT=avahi-daemon.service _PID=28097<br/>
+</div>
+<div class="spacer">
+</div>
+If two matches refer to the same field, all entries matching either expression are shown:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+journalctl _SYSTEMD_UNIT=avahi-daemon.service _SYSTEMD_UNIT=dbus.service<br/>
+</div>
+<div class="spacer">
+</div>
+If the separator &quot;+&quot; is used, two expressions may be combined in a logical OR. The following will show all messages from the Avahi service process with the PID 28097 plus all messages from the D-Bus service (from any of its processes):<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+journalctl _SYSTEMD_UNIT=avahi-daemon.service _PID=28097 + _SYSTEMD_UNIT=dbus.service<br/>
+</div>
+<div class="spacer">
+</div>
+Show all logs generated by the D-Bus executable:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+journalctl /usr/bin/dbus-daemon<br/>
+</div>
+<div class="spacer">
+</div>
+Show all kernel logs from previous boot:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+journalctl -k -b -1<br/>
+</div>
+<div class="spacer">
+</div>
+Show a live log display from a system service apache.service:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+journalctl -f -u apache<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>systemd-journald.service</b>(8),  <b>systemctl</b>(1),  <b>coredumpctl</b>(1),  <b>systemd.journal-fields</b>(7),  <b>journald.conf</b>(5)</div>
+<div class="section">
+<h1>NOTES</h1><dl>
+<dt>
+ 1.</dt>
+<dd>
+Journal Export Format</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+http://www.freedesktop.org/wiki/Software/systemd/export</div>
+<dl>
+<dt>
+ 2.</dt>
+<dd>
+Journal JSON Format</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+http://www.freedesktop.org/wiki/Software/systemd/json</div>
+<dl>
+<dt>
+ 3.</dt>
+<dd>
+Server-Sent Events</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+https://developer.mozilla.org/en-US/docs/Server-sent_events/Using_server-sent_events</div>
+<dl>
+<dt>
+ 4.</dt>
+<dd>
+Message Catalog Developer Documentation</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+http://www.freedesktop.org/wiki/Software/systemd/catalog</div>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

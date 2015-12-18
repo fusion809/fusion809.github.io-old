@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SD_JOURNAL_GET_DATA(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SD_JOURNAL_GET_DATA(3)</td>
+<td class="head-vol">
+sd_journal_get_data</td>
+<td class="head-rtitle">
+SD_JOURNAL_GET_DATA(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sd_journal_get_data, sd_journal_enumerate_data, sd_journal_restart_data, SD_JOURNAL_FOREACH_DATA, sd_journal_set_data_threshold, sd_journal_get_data_threshold - Read data fields from the current journal entry</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;systemd/sd-journal.h&gt;<br/>
+<div class="spacer">
+</div>
+<div style="margin-left: 24.00ex;text-indent: -24.00ex;" class="spacer">
+<b>int sd_journal_get_data(sd_journal&#160;*</b><i>j</i><b>, const&#160;char&#160;*</b><i>field</i><b>, const&#160;void&#160;**</b><i>data</i><b>, size_t&#160;*</b><i>length</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 30.00ex;text-indent: -30.00ex;" class="spacer">
+<b>int sd_journal_enumerate_data(sd_journal&#160;*</b><i>j</i><b>, const&#160;void&#160;**</b><i>data</i><b>, size_t&#160;*</b><i>length</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 29.00ex;text-indent: -29.00ex;" class="spacer">
+<b>void sd_journal_restart_data(sd_journal&#160;*</b><i>j</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 24.00ex;text-indent: -24.00ex;" class="spacer">
+<b>SD_JOURNAL_FOREACH_DATA(sd_journal&#160;*</b><i>j</i><b>, const&#160;void&#160;*</b><i>data</i><b>, size_t&#160;</b><i>length</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 34.00ex;text-indent: -34.00ex;" class="spacer">
+<b>int sd_journal_set_data_threshold(sd_journal&#160;*</b><i>j</i><b>, size_t&#160;</b><i>sz</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 34.00ex;text-indent: -34.00ex;" class="spacer">
+<b>int sd_journal_get_data_threshold(sd_journal&#160;*</b><i>j</i><b>, size_t&#160;*</b><i>sz</i><b>);</b></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>sd_journal_get_data()</b> gets the data object associated with a specific field from the current journal entry. It takes four arguments: the journal context object, a string with the field name to request, plus a pair of pointers to pointer/size variables where the data object and its size shall be stored in. The field name should be an entry field name. Well-known field names are listed in  <b>systemd.journal-fields</b>(7). The returned data is in a read-only memory map and is only valid until the next invocation of  <b>sd_journal_get_data()</b> or  <b>sd_journal_enumerate_data()</b>, or the read pointer is altered. Note that the data returned will be prefixed with the field name and '='. Also note that by default data fields larger than 64K might get truncated to 64K. This threshold may be changed and turned off with  <b>sd_journal_set_data_threshold()</b> (see below).<div class="spacer">
+</div>
+<b>sd_journal_enumerate_data()</b> may be used to iterate through all fields of the current entry. On each invocation the data for the next field is returned. The order of these fields is not defined. The data returned is in the same format as with  <b>sd_journal_get_data()</b> and also follows the same life-time semantics.<div class="spacer">
+</div>
+<b>sd_journal_restart_data()</b> resets the data enumeration index to the beginning of the entry. The next invocation of  <b>sd_journal_enumerate_data()</b> will return the first field of the entry again.<div class="spacer">
+</div>
+Note that the  <b>SD_JOURNAL_FOREACH_DATA()</b> macro may be used as a handy wrapper around  <b>sd_journal_restart_data()</b> and  <b>sd_journal_enumerate_data()</b>.<div class="spacer">
+</div>
+Note that these functions will not work before  <b>sd_journal_next</b>(3) (or related call) has been called at least once, in order to position the read pointer at a valid entry.<div class="spacer">
+</div>
+<b>sd_journal_set_data_threshold()</b> may be used to change the data field size threshold for data returned by  <b>sd_journal_get_data()</b>,  <b>sd_journal_enumerate_data()</b> and  <b>sd_journal_enumerate_unique()</b>. This threshold is a hint only: it indicates that the client program is interested only in the initial parts of the data fields, up to the threshold in size -- but the library might still return larger data objects. That means applications should not rely exclusively on this setting to limit the size of the data fields returned, but need to apply a explicit size limit on the returned data as well. This threshold defaults to 64K by default. To retrieve the complete data fields this threshold should be turned off by setting it to 0, so that the library always returns the complete data objects. It is recommended to set this threshold as low as possible since this relieves the library from having to decompress large compressed data objects in full.<div class="spacer">
+</div>
+<b>sd_journal_get_data_threshold()</b> returns the currently configured data field size threshold.</div>
+<div class="section">
+<h1>RETURN VALUE</h1>  <b>sd_journal_get_data()</b> returns 0 on success or a negative errno-style error code. If the current entry does not include the specified field, -ENOENT is returned. If  <b>sd_journal_next</b>(3) has not been called at least once, -EADDRNOTAVAIL is returned.  <b>sd_journal_enumerate_data()</b> returns a positive integer if the next field has been read, 0 when no more fields are known, or a negative errno-style error code.  <b>sd_journal_restart_data()</b> returns nothing.  <b>sd_journal_set_data_threshold()</b> and  <b>sd_journal_get_threshold()</b> return 0 on success or a negative errno-style error code.</div>
+<div class="section">
+<h1>NOTES</h1> The  <b>sd_journal_get_data()</b>,  <b>sd_journal_enumerate_data()</b>,  <b>sd_journal_restart_data()</b>,  <b>sd_journal_set_data_threshold()</b> and  <b>sd_journal_get_data_threshold()</b> interfaces are available as a shared library, which can be compiled and linked to with the  <b>libsystemd</b>&#160;<b>pkg-config</b>(1) file.</div>
+<div class="section">
+<h1>EXAMPLES</h1> See  <b>sd_journal_next</b>(3) for a complete example how to use  <b>sd_journal_get_data()</b>.<div class="spacer">
+</div>
+Use the  <b>SD_JOURNAL_FOREACH_DATA</b> macro to iterate through all fields of the current journal entry:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+...<br/>
+int print_fields(sd_journal *j) {<br/>
+  const void *data;<br/>
+  size_t length;<br/>
+  SD_JOURNAL_FOREACH_DATA(j, data, length)<br/>
+    printf(&quot;%.*s\n&quot;, (int) length, data);<br/>
+}<br/>
+...<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>systemd.journal-fields</b>(7),  <b>sd-journal</b>(3),  <b>sd_journal_open</b>(3),  <b>sd_journal_next</b>(3),  <b>sd_journal_get_realtime_usec</b>(3),  <b>sd_journal_query_unique</b>(3)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

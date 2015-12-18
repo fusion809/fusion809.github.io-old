@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SYSTEMD.NETWORK(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SYSTEMD.NETWORK(5)</td>
+<td class="head-vol">
+systemd.network</td>
+<td class="head-rtitle">
+SYSTEMD.NETWORK(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> systemd.network - Network configuration</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <i>network</i>.network</div>
+<div class="section">
+<h1>DESCRIPTION</h1> Network setup is performed by  <b>systemd-networkd</b>(8).<div class="spacer">
+</div>
+Network files must have the extension .network; other extensions are ignored. Networks are applied to links whenever the links appear.<div class="spacer">
+</div>
+The .network files are read from the files located in the system network directory /usr/lib/systemd/network, the volatile runtime network directory /run/systemd/network and the local administration network directory /etc/systemd/network. All configuration files are collectively sorted and processed in lexical order, regardless of the directories in which they live. However, files with identical filenames replace each other. Files in /etc have the highest priority, files in /run take precedence over files with the same name in /usr/lib. This can be used to override a system-supplied configuration file with a local file if needed. As a special case, an empty file (file size 0) or symlink with the same name pointing to /dev/null, disable the configuration file entirely (it is &quot;masked&quot;).</div>
+<div class="section">
+<h1>[MATCH] SECTION OPTIONS</h1> The network file contains a &quot;[Match]&quot; section, which determines if a given network file may be applied to a given device; and a &quot;[Network]&quot; section specifying how the device should be configured. The first (in lexical order) of the network files that matches a given device is applied, all later files are ignored, even if they match as well.<div class="spacer">
+</div>
+A network file is said to match a device if each of the entries in the &quot;[Match]&quot; section matches, or if the section is empty. The following keys are accepted:<div class="spacer">
+</div>
+<i>MACAddress=</i><div style="margin-left: 4.00ex;">
+The hardware address.</div>
+<div class="spacer">
+</div>
+<i>Path=</i><div style="margin-left: 4.00ex;">
+A whitespace-separated list of shell-style globs matching the persistent path, as exposed by the udev property &quot;ID_PATH&quot;.</div>
+<div class="spacer">
+</div>
+<i>Driver=</i><div style="margin-left: 4.00ex;">
+A whitespace-separated list of shell-style globs matching the driver currently bound to the device, as exposed by the udev property &quot;DRIVER&quot; of its parent device, or if that is not set the driver as exposed by &quot;ethtool -i&quot; of the device itself.</div>
+<div class="spacer">
+</div>
+<i>Type=</i><div style="margin-left: 4.00ex;">
+A whitespace-separated list of shell-style globs matching the device type, as exposed by the udev property &quot;DEVTYPE&quot;.</div>
+<div class="spacer">
+</div>
+<i>Name=</i><div style="margin-left: 4.00ex;">
+A whitespace-separated list of shell-style globs matching the device name, as exposed by the udev property &quot;INTERFACE&quot;.</div>
+<div class="spacer">
+</div>
+<i>Host=</i><div style="margin-left: 4.00ex;">
+Matches against the hostname or machine ID of the host. See &quot;ConditionHost=&quot; in  <b>systemd.unit</b>(5) for details.</div>
+<div class="spacer">
+</div>
+<i>Virtualization=</i><div style="margin-left: 4.00ex;">
+Checks whether the system is executed in a virtualized environment and optionally test whether it is a specific implementation. See &quot;ConditionVirtualization=&quot; in  <b>systemd.unit</b>(5) for details.</div>
+<div class="spacer">
+</div>
+<i>KernelCommandLine=</i><div style="margin-left: 4.00ex;">
+Checks whether a specific kernel command line option is set (or if prefixed with the exclamation mark unset). See &quot;ConditionKernelCommandLine=&quot; in  <b>systemd.unit</b>(5) for details.</div>
+<div class="spacer">
+</div>
+<i>Architecture=</i><div style="margin-left: 4.00ex;">
+Checks whether the system is running on a specific architecture. See &quot;ConditionArchitecture=&quot; in  <b>systemd.unit</b>(5) for details.</div>
+</div>
+<div class="section">
+<h1>[LINK] SECTION OPTIONS</h1> The &quot;[Link]&quot; section accepts the following keys:<div class="spacer">
+</div>
+<i>MACAddress=</i><div style="margin-left: 4.00ex;">
+The hardware address.</div>
+<div class="spacer">
+</div>
+<i>MTUBytes=</i><div style="margin-left: 4.00ex;">
+The maximum transmission unit in bytes to set for the device. The usual suffixes K, M, G, are supported and are understood to the base of 1024.</div>
+</div>
+<div class="section">
+<h1>[NETWORK] SECTION OPTIONS</h1> The &quot;[Network]&quot; section accepts the following keys:<div class="spacer">
+</div>
+<i>Description=</i><div style="margin-left: 4.00ex;">
+A description of the device. This is only used for presentation purposes.</div>
+<div class="spacer">
+</div>
+<i>DHCP=</i><div style="margin-left: 4.00ex;">
+Enables DHCPv4 and/or DHCPv6 client support. Accepts &quot;yes&quot;, &quot;no&quot;, &quot;ipv4&quot;, or &quot;ipv6&quot;.<div style="height: 1.00em;">
+&#160;</div>
+Please note that by default the domain name specified through DHCP is not used for name resolution. See option  <b>UseDomains=</b> below.</div>
+<div class="spacer">
+</div>
+<i>DHCPServer=</i><div style="margin-left: 4.00ex;">
+A boolean. Enables DHCPv4 server support. Defaults to &quot;no&quot;. Further settings for the DHCP server may be set in the &quot;[DHCPServer]&quot; section described below.</div>
+<div class="spacer">
+</div>
+<i>LinkLocalAddressing=</i><div style="margin-left: 4.00ex;">
+Enables link-local address autoconfiguration. Accepts &quot;yes&quot;, &quot;no&quot;, &quot;ipv4&quot;, or &quot;ipv6&quot;. Defaults to &quot;ipv6&quot;.</div>
+<div class="spacer">
+</div>
+<i>IPv4LLRoute=</i><div style="margin-left: 4.00ex;">
+A boolean. When true, sets up the route needed for non-IPv4LL hosts to communicate with IPv4LL-only hosts. Defaults to false.</div>
+<div class="spacer">
+</div>
+<i>IPv6Token=</i><div style="margin-left: 4.00ex;">
+An IPv6 address with the top 64 bits unset. When set, indicates the 64 bits interface part of SLAAC IPv6 addresses for this link. By default it is autogenerated.</div>
+<div class="spacer">
+</div>
+<i>LLMNR=</i><div style="margin-left: 4.00ex;">
+A boolean or &quot;resolve&quot;. When true, enables Link-Local Multicast Name Resolution on the link, when set to &quot;resolve&quot; only resolution is enabled, but not announcement. Defaults to true.</div>
+<div class="spacer">
+</div>
+<i>LLDP=</i><div style="margin-left: 4.00ex;">
+A boolean. When true, enables LLDP link receive support.</div>
+<div class="spacer">
+</div>
+<i>BindCarrier=</i><div style="margin-left: 4.00ex;">
+A port or a list of ports. When set, controls the behavior of the current interface. When all ports in the list are in an operational down state, the current interface is brought down. When at least one port has carrier, the current interface is brought up.</div>
+<div class="spacer">
+</div>
+<i>Address=</i><div style="margin-left: 4.00ex;">
+A static IPv4 or IPv6 address and its prefix length, separated by a &quot;/&quot; character. Specify this key more than once to configure several addresses. The format of the address must be as described in  <b>inet_pton</b>(3). This is a short-hand for an [Address] section only containing an Address key (see below). This option may be specified more than once.<div style="height: 1.00em;">
+&#160;</div>
+If the specified address is 0.0.0.0 (for IPv4) or [::] (for IPv6), a new address range of the requested size is automatically allocated from a system-wide pool of unused ranges. The allocated range is checked against all current network interfaces and all known network configuration files to avoid address range conflicts. The default system-wide pool consists of 192.168.0.0/16, 172.16.0.0/12 and 10.0.0.0/8 for IPv4, and fc00::/7 for IPv6. This functionality is useful to manage a large number of dynamically created network interfaces with the same network configuration and automatic address range assignment.</div>
+<div class="spacer">
+</div>
+<i>Gateway=</i><div style="margin-left: 4.00ex;">
+The gateway address, which must be in the format described in  <b>inet_pton</b>(3). This is a short-hand for a [Route] section only containing a Gateway key. This option may be specified more than once.</div>
+<div class="spacer">
+</div>
+<i>DNS=</i><div style="margin-left: 4.00ex;">
+A DNS server address, which must be in the format described in  <b>inet_pton</b>(3). This option may be specified more than once.</div>
+<div class="spacer">
+</div>
+<i>Domains=</i><div style="margin-left: 4.00ex;">
+The domains used for DNS resolution over this link.</div>
+<div class="spacer">
+</div>
+<i>NTP=</i><div style="margin-left: 4.00ex;">
+An NTP server address. This option may be specified more than once.</div>
+<div class="spacer">
+</div>
+<i>IPForward=</i><div style="margin-left: 4.00ex;">
+Configures IP forwarding for the network interface. If enabled incoming packets on the network interface will be forwarded to other interfaces according to the routing table. Takes either a boolean argument, or the values &quot;ipv4&quot; or &quot;ipv6&quot;, which only enables IP forwarding for the specified address family, or &quot;kernel&quot;, which preserves existing sysctl settings. This controls the net.ipv4.conf.&lt;interface&gt;.forwarding and net.ipv6.conf.&lt;interface&gt;.forwarding sysctl options of the network interface (see  <b>ip-sysctl.txt</b>[1] for details about sysctl options). Defaults to &quot;no&quot;.<div style="height: 1.00em;">
+&#160;</div>
+Note: unless this option is turned on, or set to &quot;kernel&quot;, no IP forwarding is done on this interface, even if this is globally turned on in the kernel, with the net.ipv4.ip_forward, net.ipv4.conf.all.forwarding, and net.ipv6.conf.all.forwarding sysctl options.</div>
+<div class="spacer">
+</div>
+<i>IPMasquerade=</i><div style="margin-left: 4.00ex;">
+Configures IP masquerading for the network interface. If enabled packets forwarded from the network interface will be appear as coming from the local host. Takes a boolean argument. Implies  <i>IPForward=ipv4</i>. Defaults to &quot;no&quot;.</div>
+<div class="spacer">
+</div>
+<i>IPv6PrivacyExtensions=</i><div style="margin-left: 4.00ex;">
+Configures use of stateless temporary addresses that change over time (see  <b>RFC 4941</b>[2], Privacy Extensions for Stateless Address Autoconfiguration in IPv6). Takes a boolean or the special values &quot;prefer-public&quot; and &quot;kernel&quot;. When true enables the privacy extensions and prefers temporary addresses over public addresses. When &quot;prefer-public&quot; enables the privacy extensions, but prefers public addresses over temporary addresses. When false, the privacy extensions remain disabled. When &quot;kernel&quot; the kernel's default setting will be left in place. Defaults to &quot;no&quot;.</div>
+<div class="spacer">
+</div>
+<i>Bridge=</i><div style="margin-left: 4.00ex;">
+The name of the bridge to add the link to.</div>
+<div class="spacer">
+</div>
+<i>Bond=</i><div style="margin-left: 4.00ex;">
+The name of the bond to add the link to.</div>
+<div class="spacer">
+</div>
+<i>VLAN=</i><div style="margin-left: 4.00ex;">
+The name of a VLAN to create on the link. This option may be specified more than once.</div>
+<div class="spacer">
+</div>
+<i>MACVLAN=</i><div style="margin-left: 4.00ex;">
+The name of a MACVLAN to create on the link. This option may be specified more than once.</div>
+<div class="spacer">
+</div>
+<i>VXLAN=</i><div style="margin-left: 4.00ex;">
+The name of a VXLAN to create on the link. This option may be specified more than once.</div>
+<div class="spacer">
+</div>
+<i>Tunnel=</i><div style="margin-left: 4.00ex;">
+The name of a Tunnel to create on the link. This option may be specified more than once.</div>
+</div>
+<div class="section">
+<h1>[ADDRESS] SECTION OPTIONS</h1> An &quot;[Address]&quot; section accepts the following keys. Specify several &quot;[Address]&quot; sections to configure several addresses.<div class="spacer">
+</div>
+<i>Address=</i><div style="margin-left: 4.00ex;">
+As in the &quot;[Network]&quot; section. This key is mandatory.</div>
+<div class="spacer">
+</div>
+<i>Peer=</i><div style="margin-left: 4.00ex;">
+The peer address in a point-to-point connection. Accepts the same format as the &quot;Address&quot; key.</div>
+<div class="spacer">
+</div>
+<i>Broadcast=</i><div style="margin-left: 4.00ex;">
+The broadcast address, which must be in the format described in  <b>inet_pton</b>(3). This key only applies to IPv4 addresses. If it is not given, it is derived from the &quot;Address&quot; key.</div>
+<div class="spacer">
+</div>
+<i>Label=</i><div style="margin-left: 4.00ex;">
+An address label.</div>
+</div>
+<div class="section">
+<h1>[ROUTE] SECTION OPTIONS</h1> The &quot;[Route]&quot; section accepts the following keys. Specify several &quot;[Route]&quot; sections to configure several routes.<div class="spacer">
+</div>
+<i>Gateway=</i><div style="margin-left: 4.00ex;">
+As in the &quot;[Network]&quot; section.</div>
+<div class="spacer">
+</div>
+<i>Destination=</i><div style="margin-left: 4.00ex;">
+The destination prefix of the route. Possibly followed by a slash and the prefixlength. If omitted, a full-length host route is assumed.</div>
+<div class="spacer">
+</div>
+<i>Source=</i><div style="margin-left: 4.00ex;">
+The source prefix of the route. Possibly followed by a slash and the prefixlength. If omitted, a full-length host route is assumed.</div>
+<div class="spacer">
+</div>
+<i>Metric=</i><div style="margin-left: 4.00ex;">
+The metric of the route. An unsigned integer</div>
+<div class="spacer">
+</div>
+<i>Scope=</i><div style="margin-left: 4.00ex;">
+The scope of the route. One of the values &quot;global&quot;, &quot;link&quot; or &quot;host&quot;. Defaults to &quot;global&quot;.</div>
+</div>
+<div class="section">
+<h1>[DHCP] SECTION OPTIONS</h1> The &quot;[DHCP]&quot; section configures the DHCPv4 and DHCP6 client, if it is enabled with the  <i>DHCP=</i> setting described above:<div class="spacer">
+</div>
+<i>UseDNS=</i><div style="margin-left: 4.00ex;">
+When true (the default), the DNS servers received from the DHCP server will be used and take precedence over any statically configured ones.<div style="height: 1.00em;">
+&#160;</div>
+This corresponds to the  <b>nameserver</b> option in  <b>resolv.conf</b>(5).</div>
+<div class="spacer">
+</div>
+<i>UseNTP=</i><div style="margin-left: 4.00ex;">
+When true (the default), the NTP servers received from the DHCP server will be used by systemd-timesyncd and take precedence over any statically configured ones.</div>
+<div class="spacer">
+</div>
+<i>UseMTU=</i><div style="margin-left: 4.00ex;">
+When true, the interface maximum transmission unit from the DHCP server will be used on the current link. Defaults to false.</div>
+<div class="spacer">
+</div>
+<i>SendHostname=</i><div style="margin-left: 4.00ex;">
+When true (the default), the machine's hostname will be sent to the DHCP server.</div>
+<div class="spacer">
+</div>
+<i>UseHostname=</i><div style="margin-left: 4.00ex;">
+When true (the default), the hostname received from the DHCP server will be set as the transient hostname of the system</div>
+<div class="spacer">
+</div>
+<i>Hostname=</i><div style="margin-left: 4.00ex;">
+Use this value for the hostname which is sent to the DHCP server, instead of machine's hostname.</div>
+<div class="spacer">
+</div>
+<i>UseDomains=</i><div style="margin-left: 4.00ex;">
+When true (not the default), the domain name received from the DHCP server will be used for DNS resolution over this link. When a name cannot be resolved as specified, the domain name will be used a suffix and name resolution of that will be attempted.<div style="height: 1.00em;">
+&#160;</div>
+This corresponds to the  <b>domain</b> option in  <b>resolv.conf</b>(5) and should not be enabled on untrusted networks.</div>
+<div class="spacer">
+</div>
+<i>UseRoutes=</i><div style="margin-left: 4.00ex;">
+When true (the default), the static routes will be requested from the DHCP server and added to the routing table with metric of 1024.</div>
+<div class="spacer">
+</div>
+<i>UseTimezone=</i><div style="margin-left: 4.00ex;">
+When true, the timezone received from the DHCP server will be set as as timezone of the local system. Defaults to &quot;no&quot;.</div>
+<div class="spacer">
+</div>
+<i>CriticalConnection=</i><div style="margin-left: 4.00ex;">
+When true, the connection will never be torn down even if the DHCP lease expires. This is contrary to the DHCP specification, but may be the best choice if, say, the root filesystem relies on this connection. Defaults to false.</div>
+<div class="spacer">
+</div>
+<i>ClientIdentifier=</i><div style="margin-left: 4.00ex;">
+DHCP client identifier to use. Either &quot;mac&quot; to use the MAC address of the link or &quot;duid&quot; (the default) to use a RFC4361-compliant Client ID.</div>
+<div class="spacer">
+</div>
+<i>VendorClassIdentifier=</i><div style="margin-left: 4.00ex;">
+The vendor class identifier used to identify vendor type and configuration.</div>
+<div class="spacer">
+</div>
+<i>RequestBroadcast=</i><div style="margin-left: 4.00ex;">
+Request the server to use broadcast messages before the IP address has been configured. This is necessary for devices that cannot receive RAW packets, or that cannot receive packets at all before an IP address has been configured. On the other hand, this must not be enabled on networks where broadcasts are filtered out.</div>
+<div class="spacer">
+</div>
+<i>RouteMetric=</i><div style="margin-left: 4.00ex;">
+Set the routing metric for routes specified by the DHCP server.</div>
+</div>
+<div class="section">
+<h1>[DHCPSERVER] SECTION OPTIONS</h1> The &quot;[DHCPServer]&quot; section contains settings for the DHCP server, if enabled via the  <i>DHCPServer=</i> option described above:<div class="spacer">
+</div>
+<i>PoolOffset=</i>, <i>PoolSize=</i><div style="margin-left: 4.00ex;">
+Configures the pool of addresses to hand out. The pool is a contiguous sequence of IP addresses in the subnet configured for the server address, which does not include the subnet nor the broadcast address.  <i>PoolOffset=</i> takes the offset of the pool from the start of subnet, or zero to use the default value.  <i>PoolSize=</i> takes the number of IP addresses in the pool or zero to use the default value. By default the pool starts at the first address after the subnet address and takes up the rest of the subnet, excluding the broadcast address. If the pool includes the server address (the default), this is reserved and not handed out to clients.</div>
+<div class="spacer">
+</div>
+<i>DefaultLeaseTimeSec=</i>, <i>MaxLeaseTimeSec=</i><div style="margin-left: 4.00ex;">
+Control the default and maximum DHCP lease time to pass to clients. These settings take time values in seconds or another common time unit, depending on the suffix. The default lease time is used for clients that did not ask for a specific lease time. If a client asks for a lease time longer than the maximum lease time it is automatically shortened to the specified time. The default lease time defaults to 1h, the maximum lease time to 12h. Shorter lease times are beneficial if the configuration data in DHCP leases changes frequently and clients shall learn the new settings with shorter latencies. Longer lease times reduce the generated DHCP network traffic.</div>
+<div class="spacer">
+</div>
+<i>EmitDNS=</i>, <i>DNS=</i><div style="margin-left: 4.00ex;">
+Configures whether the DHCP leases handed out to clients shall contain DNS server information. The  <i>EmitDNS=</i> setting takes a boolean argument and defaults to &quot;yes&quot;. The DNS servers to pass to clients may be configured with the  <i>DNS=</i> option, which takes a list of IPv4 addresses. If the  <i>EmitDNS=</i> option is enabled but no servers configured the servers are automatically propagated from an &quot;uplink&quot; interface that has appropriate servers set. The &quot;uplink&quot; interface is determined by the default route of the system with the highest priority. Note that this information is acquired at the time the lease is handed out, and does not take uplink interfaces into account that acquire DNS or NTP server information at a later point. DNS server propagation does not take /etc/resolv.conf into account. Also, note that the leases are not refreshed if uplink network configuration changes. To ensure clients regularly acquire the most current uplink DNS server information it is thus advisable to shorten the DHCP lease time via  <i>MaxLeaseTimeSec=</i> described above.</div>
+<div class="spacer">
+</div>
+<i>EmitNTP=</i>, <i>NTP=</i><div style="margin-left: 4.00ex;">
+Similar to the  <i>EmitDNS=</i> and  <i>DNS=</i> settings described above these settings configure whether and what NTP server information shall be emitted as part of the DHCP lease. The same syntax, propagation semantics and defaults apply as for  <i>EmitDNS=</i> and  <i>DNS=</i>.</div>
+<div class="spacer">
+</div>
+<i>EmitTimezone=</i>, <i>Timezone=</i><div style="margin-left: 4.00ex;">
+Configures whether the DHCP leases handed out to clients shall contain timezone information. The  <i>EmitTimezone=</i> setting takes a boolean argument and defaults to &quot;yes&quot;. The  <i>Timezone=</i> setting takes a timezone string (such as &quot;Europe/Berlin&quot; or &quot;UTC&quot;) to pass to clients. If no explicit timezone is set the system timezone of the local host is propagated, as determined by the /etc/localtime symlink.</div>
+</div>
+<div class="section">
+<h1>[BRIDGE] SECTION OPTIONS</h1> The &quot;[Bridge]&quot; section accepts the following keys.<div class="spacer">
+</div>
+<i>UnicastFlood=</i><div style="margin-left: 4.00ex;">
+A boolean. Controls whether the bridge should flood traffic for which an FDB entry is missing and the destination is unknown through this port. Defaults to on.</div>
+<div class="spacer">
+</div>
+<i>HairPin=</i><div style="margin-left: 4.00ex;">
+A boolean. Configures whether traffic may be sent back out of the port on which it was received. By default, this flag is false, and the bridge will not forward traffic back out of the receiving port.</div>
+<div class="spacer">
+</div>
+<i>UseBPDU=</i><div style="margin-left: 4.00ex;">
+A boolean. Configures whether STP Bridge Protocol Data Units will be processed by the bridge port. Defaults to yes.</div>
+<div class="spacer">
+</div>
+<i>FastLeave=</i><div style="margin-left: 4.00ex;">
+A boolean. This flag allows the bridge to immediately stop multicast traffic on a port that receives IGMP Leave message. It is only used with IGMP snooping if enabled on the bridge. Defaults to off.</div>
+<div class="spacer">
+</div>
+<i>AllowPortToBeRoot=</i><div style="margin-left: 4.00ex;">
+A boolean. Configures whether a given port is allowed to become a root port. Only used when STP is enabled on the bridge. Defaults to on.</div>
+<div class="spacer">
+</div>
+<i>Cost=</i><div style="margin-left: 4.00ex;">
+Sets the &quot;cost&quot; of sending packets of this interface. Each port in a bridge may have different speed and the cost is used to decide which link to use. Faster interfaces should have lower costs.</div>
+</div>
+<div class="section">
+<h1>[BRIDGEFDB] SECTION OPTIONS</h1> The &quot;[BridgeFDB]&quot; section manages the forwarding database table of a port and accepts the following keys. Specify several &quot;[BridgeFDB]&quot; sections to configure several static MAC table entries.<div class="spacer">
+</div>
+<i>MACAddress=</i><div style="margin-left: 4.00ex;">
+As in the &quot;[Network]&quot; section. This key is mandatory.</div>
+<div class="spacer">
+</div>
+<i>VLANId=</i><div style="margin-left: 4.00ex;">
+The VLAN Id for the new static MAC table entry. If omitted, no VLAN Id info is appended to the new static MAC table entry.</div>
+</div>
+<div class="section">
+<h1>EXAMPLE</h1>  <b>Example&#160;1.&#160;/etc/systemd/network/50-static.network</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+[Match]<br/>
+Name=enp2s0<div class="spacer">
+</div>
+<br/>
+[Network]<br/>
+Address=192.168.0.15/24<br/>
+Gateway=192.168.0.1<br/>
+</div>
+<div class="spacer">
+</div>
+<b>Example&#160;2.&#160;/etc/systemd/network/80-dhcp.network</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+[Match]<br/>
+Name=en*<div class="spacer">
+</div>
+<br/>
+[Network]<br/>
+DHCP=yes<br/>
+</div>
+<div class="spacer">
+</div>
+<b>Example&#160;3.&#160;/etc/systemd/network/bridge-static.network</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+[Match]<br/>
+Name=bridge0<div class="spacer">
+</div>
+<br/>
+[Network]<br/>
+Address=192.168.0.15/24<br/>
+Gateway=192.168.0.1<br/>
+DNS=192.168.0.1<br/>
+</div>
+<div class="spacer">
+</div>
+<b>Example&#160;4.&#160;/etc/systemd/network/bridge-slave-interface.network</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+[Match]<br/>
+Name=enp2s0<div class="spacer">
+</div>
+<br/>
+[Network]<br/>
+Bridge=bridge0<br/>
+</div>
+<div class="spacer">
+</div>
+<b>Example&#160;5.&#160;/etc/systemd/network/ipip.network</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+[Match]<br/>
+Name=em1<div class="spacer">
+</div>
+<br/>
+[Network]<br/>
+Tunnel=ipip-tun<br/>
+</div>
+<div class="spacer">
+</div>
+<b>Example&#160;6.&#160;/etc/systemd/network/sit.network</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+[Match]<br/>
+Name=em1<div class="spacer">
+</div>
+<br/>
+[Network]<br/>
+Tunnel=sit-tun<br/>
+</div>
+<div class="spacer">
+</div>
+<b>Example&#160;7.&#160;/etc/systemd/network/gre.network</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+[Match]<br/>
+Name=em1<div class="spacer">
+</div>
+<br/>
+[Network]<br/>
+Tunnel=gre-tun<br/>
+</div>
+<div class="spacer">
+</div>
+<b>Example&#160;8.&#160;/etc/systemd/network/vti.network</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+[Match]<br/>
+Name=em1<div class="spacer">
+</div>
+<br/>
+[Network]<br/>
+Tunnel=vti-tun<br/>
+</div>
+<div class="spacer">
+</div>
+<b>Example&#160;9.&#160;/etc/systemd/network/bond.network</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+[Match]<br/>
+Name=bond1<div class="spacer">
+</div>
+<br/>
+[Network]<br/>
+DHCP=yes<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>systemd-networkd</b>(8),  <b>systemd.link</b>(5),  <b>systemd.netdev</b>(5)</div>
+<div class="section">
+<h1>NOTES</h1><dl>
+<dt>
+ 1.</dt>
+<dd>
+ip-sysctl.txt</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt</div>
+<dl>
+<dt>
+ 2.</dt>
+<dd>
+RFC 4941</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+https://tools.ietf.org/html/rfc4941</div>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

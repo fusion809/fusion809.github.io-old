@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SYSTEMD.LINK(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SYSTEMD.LINK(5)</td>
+<td class="head-vol">
+systemd.link</td>
+<td class="head-rtitle">
+SYSTEMD.LINK(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> systemd.link - Network device configuration</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <i>link</i>.link</div>
+<div class="section">
+<h1>DESCRIPTION</h1> Network link configuration is performed by the  <b>net_setup_link</b> udev builtin.<div class="spacer">
+</div>
+The link files are read from the files located in the system network directory /usr/lib/systemd/network, the volatile runtime network directory /run/systemd/network, and the local administration network directory /etc/systemd/network. Link files must have the extension .link; other extensions are ignored. All link files are collectively sorted and processed in lexical order, regardless of the directories in which they live. However, files with identical filenames replace each other. Files in /etc have the highest priority, files in /run take precedence over files with the same name in /usr/lib. This can be used to override a system-supplied link file with a local file if needed. As a special case, an empty file (file size 0) or symlink with the same name pointing to /dev/null, disable the configuration file entirely (it is &quot;masked&quot;).<div class="spacer">
+</div>
+The link file contains a &quot;[Match]&quot; section, which determines if a given link file may be applied to a given device, as well as a &quot;[Link]&quot; section specifying how the device should be configured. The first (in lexical order) of the link files that matches a given device is applied. Note that a default file 99-default.link is shipped by the system, any user-supplied .link should hence have a lexically earlier name to be considered at all.</div>
+<div class="section">
+<h1>[MATCH] SECTION OPTIONS</h1> A link file is said to match a device if each of the entries in the &quot;[Match]&quot; section matches, or if the section is empty. The following keys are accepted:<div class="spacer">
+</div>
+<i>MACAddress=</i><div style="margin-left: 4.00ex;">
+The hardware address.</div>
+<div class="spacer">
+</div>
+<i>OriginalName=</i><div style="margin-left: 4.00ex;">
+A whitespace-separated list of shell-style globs matching the device name, as exposed by the udev property &quot;INTERFACE&quot;. This can not be used to match on names that have already been changed from userspace. Caution is advised when matching on kernel-assigned names, as they are known to be unstable between reboots.</div>
+<div class="spacer">
+</div>
+<i>Path=</i><div style="margin-left: 4.00ex;">
+A whitespace-separated list of shell-style globs matching the persistent path, as exposed by the udev property &quot;ID_PATH&quot;.</div>
+<div class="spacer">
+</div>
+<i>Driver=</i><div style="margin-left: 4.00ex;">
+A whitespace-separated list of shell-style globs matching the driver currently bound to the device, as exposed by the udev property &quot;DRIVER&quot; of its parent device, or if that is not set, the driver as exposed by &quot;ethtool -i&quot; of the device itself.</div>
+<div class="spacer">
+</div>
+<i>Type=</i><div style="margin-left: 4.00ex;">
+A whitespace-separated list of shell-style globs matching the device type, as exposed by the udev property &quot;DEVTYPE&quot;.</div>
+<div class="spacer">
+</div>
+<i>Host=</i><div style="margin-left: 4.00ex;">
+Matches against the hostname or machine ID of the host. See &quot;ConditionHost=&quot; in  <b>systemd.unit</b>(5) for details.</div>
+<div class="spacer">
+</div>
+<i>Virtualization=</i><div style="margin-left: 4.00ex;">
+Checks whether the system is executed in a virtualized environment and optionally test whether it is a specific implementation. See &quot;ConditionVirtualization=&quot; in  <b>systemd.unit</b>(5) for details.</div>
+<div class="spacer">
+</div>
+<i>KernelCommandLine=</i><div style="margin-left: 4.00ex;">
+Checks whether a specific kernel command line option is set (or if prefixed with the exclamation mark unset). See &quot;ConditionKernelCommandLine=&quot; in  <b>systemd.unit</b>(5) for details.</div>
+<div class="spacer">
+</div>
+<i>Architecture=</i><div style="margin-left: 4.00ex;">
+Checks whether the system is running on a specific architecture. See &quot;ConditionArchitecture=&quot; in  <b>systemd.unit</b>(5) for details.</div>
+</div>
+<div class="section">
+<h1>[LINK] SECTION OPTIONS</h1> The &quot;[Link]&quot; section accepts the following keys:<div class="spacer">
+</div>
+<i>Description=</i><div style="margin-left: 4.00ex;">
+A description of the device.</div>
+<div class="spacer">
+</div>
+<i>Alias=</i><div style="margin-left: 4.00ex;">
+The &quot;ifalias&quot; is set to this value.</div>
+<div class="spacer">
+</div>
+<i>MACAddressPolicy=</i><div style="margin-left: 4.00ex;">
+The policy by which the MAC address should be set. The available policies are:<div class="spacer">
+</div>
+&quot;persistent&quot;<div style="margin-left: 4.00ex;">
+If the hardware has a persistent MAC address, as most hardware should, and if it is used by the kernel, nothing is done. Otherwise, a new MAC address is generated which is guaranteed to be the same on every boot for the given machine and the given device, but which is otherwise random. This feature depends on ID_NET_NAME_* properties existing for the link, on hardware where these properties are not set the generation of a persistent MAC address will fail.</div>
+<div class="spacer">
+</div>
+&quot;random&quot;<div style="margin-left: 4.00ex;">
+If the kernel is using a random MAC address, nothing is done. Otherwise, a new address is randomly generated each time the device appears, typically at boot. Either way the random address will have the &quot;unicast&quot; and &quot;locally administered&quot; bits set.</div>
+</div>
+<div class="spacer">
+</div>
+<i>MACAddress=</i><div style="margin-left: 4.00ex;">
+The MAC address to use, if no &quot;MACAddressPolicy=&quot; is specified.</div>
+<div class="spacer">
+</div>
+<i>NamePolicy=</i><div style="margin-left: 4.00ex;">
+An ordered, space-separated list of policies by which the interface name should be set. &quot;NamePolicy&quot; may be disabled by specifying &quot;net.ifnames=0&quot; on the kernel command line. Each of the policies may fail, and the first successful one is used. The name is not set directly, but is exported to udev as the property &quot;ID_NET_NAME&quot;, which is, by default, used by a udev rule to set &quot;NAME&quot;. If the name has already been set by userspace, no renaming is performed. The available policies are:<div class="spacer">
+</div>
+&quot;kernel&quot;<div style="margin-left: 4.00ex;">
+If the kernel claims that the name it has set for a device is predictable, then no renaming is performed.</div>
+<div class="spacer">
+</div>
+&quot;database&quot;<div style="margin-left: 4.00ex;">
+The name is set based on entries in the udev's Hardware Database with the key &quot;ID_NET_NAME_FROM_DATABASE&quot;.</div>
+<div class="spacer">
+</div>
+&quot;onboard&quot;<div style="margin-left: 4.00ex;">
+The name is set based on information given by the firmware for on-board devices, as exported by the udev property &quot;ID_NET_NAME_ONBOARD&quot;.</div>
+<div class="spacer">
+</div>
+&quot;slot&quot;<div style="margin-left: 4.00ex;">
+The name is set based on information given by the firmware for hot-plug devices, as exported by the udev property &quot;ID_NET_NAME_SLOT&quot;.</div>
+<div class="spacer">
+</div>
+&quot;path&quot;<div style="margin-left: 4.00ex;">
+The name is set based on the device's physical location, as exported by the udev property &quot;ID_NET_NAME_PATH&quot;.</div>
+<div class="spacer">
+</div>
+&quot;mac&quot;<div style="margin-left: 4.00ex;">
+The name is set based on the device's persistent MAC address, as exported by the udev property &quot;ID_NET_NAME_MAC&quot;.</div>
+</div>
+<div class="spacer">
+</div>
+<i>Name=</i><div style="margin-left: 4.00ex;">
+The interface name to use in case all the policies specified in  <i>NamePolicy=</i> fail, or in case  <i>NamePolicy=</i> is missing or disabled.</div>
+<div class="spacer">
+</div>
+<i>MTUBytes=</i><div style="margin-left: 4.00ex;">
+The maximum transmission unit in bytes to set for the device. The usual suffixes K, M, G, are supported and are understood to the base of 1024.</div>
+<div class="spacer">
+</div>
+<i>BitsPerSecond=</i><div style="margin-left: 4.00ex;">
+The speed to set for the device, the value is rounded down to the nearest Mbps. The usual suffixes K, M, G, are supported and are understood to the base of 1000.</div>
+<div class="spacer">
+</div>
+<i>Duplex=</i><div style="margin-left: 4.00ex;">
+The duplex mode to set for the device. The accepted values are &quot;half&quot; and &quot;full&quot;.</div>
+<div class="spacer">
+</div>
+<i>WakeOnLan=</i><div style="margin-left: 4.00ex;">
+The Wake-on-LAN policy to set for the device. The supported values are:<div class="spacer">
+</div>
+&quot;phy&quot;<div style="margin-left: 4.00ex;">
+Wake on PHY activity.</div>
+<div class="spacer">
+</div>
+&quot;magic&quot;<div style="margin-left: 4.00ex;">
+Wake on receipt of a magic packet.</div>
+<div class="spacer">
+</div>
+&quot;off&quot;<div style="margin-left: 4.00ex;">
+Never wake.</div>
+</div>
+</div>
+<div class="section">
+<h1>EXAMPLE</h1>  <b>Example&#160;1.&#160;/etc/systemd/network/wireless.link</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+[Match]<br/>
+MACAddress=12:34:56:78:9a:bc<br/>
+Driver=brcmsmac<br/>
+Path=pci-0000:02:00.0-*<br/>
+Type=wlan<br/>
+Virtualization=no<br/>
+Host=my-laptop<br/>
+Architecture=x86-64<div class="spacer">
+</div>
+<br/>
+[Link]<br/>
+Name=wireless0<br/>
+MTUBytes=1450<br/>
+BitsPerSecond=10M<br/>
+WakeOnLan=magic<br/>
+MACAddress=cb:a9:87:65:43:21<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd-udevd.service</b>(8),  <b>udevadm</b>(8),  <b>systemd.netdev</b>(5),  <b>systemd.network</b>(5)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

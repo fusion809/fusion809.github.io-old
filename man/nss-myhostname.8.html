@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+NSS-MYHOSTNAME(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+NSS-MYHOSTNAME(8)</td>
+<td class="head-vol">
+nss-myhostname</td>
+<td class="head-rtitle">
+NSS-MYHOSTNAME(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> nss-myhostname, libnss_myhostname.so.2 - Provide hostname resolution for the locally configured system hostname.</div>
+<div class="section">
+<h1>SYNOPSIS</h1> libnss_myhostname.so.2</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>nss-myhostname</b> is a plugin for the GNU Name Service Switch (NSS) functionality of the GNU C Library ( <b>glibc</b>) primarily providing hostname resolution for the locally configured system hostname as returned by  <b>gethostname</b>(2). The precise hostnames resolved by this module are:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;The local, configured hostname is resolved to all locally configured IP addresses ordered by their scope, or &#8212; if none are configured &#8212; the IPv4 address 127.0.0.2 (which is on the local loopback) and the IPv6 address ::1 (which is the local host).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;The hostname &quot;localhost&quot; is resolved to the IP addresses 127.0.0.1 and ::1.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;The hostname &quot;gateway&quot; is resolved to all current default routing gateway addresses, ordered by their metric. This assigns a stable hostname to the current gateway, useful for referencing it independently of the current network configuration state.</div>
+<div class="spacer">
+</div>
+Various software relies on an always-resolvable local hostname. When using dynamic hostnames, this is traditionally achieved by patching /etc/hosts at the same time as changing the hostname. This is problematic since it requires a writable /etc file system and is fragile because the file might be edited by the administrator at the same time. With  <b>nss-myhostname</b> enabled changing /etc/hosts is unnecessary, and on many systems the file becomes entirely optional.<div class="spacer">
+</div>
+To activate the NSS modules, &quot;myhostname&quot; has to be added to the line starting with &quot;hosts:&quot; in /etc/nsswitch.conf.<div class="spacer">
+</div>
+It is recommended to place &quot;myhostname&quot; last in the nsswitch.conf line to make sure that this mapping is only used as fallback, and any DNS or /etc/hosts based mapping takes precedence.</div>
+<div class="section">
+<h1>EXAMPLE</h1> Here's an example /etc/nsswitch.conf file, that enables  <b>myhostname</b> correctly:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+passwd:         compat mymachines<br/>
+group:          compat mymachines<br/>
+shadow:         compat<div class="spacer">
+</div>
+<br/>
+hosts:          files resolve mymachines <b>myhostname</b><br/>
+networks:       files<div class="spacer">
+</div>
+<br/>
+protocols:      db files<br/>
+services:       db files<br/>
+ethers:         db files<br/>
+rpc:            db files<div class="spacer">
+</div>
+<br/>
+netgroup:       nis<br/>
+</div>
+<div class="spacer">
+</div>
+To test, use  <b>glibc</b>'s  <b>getent</b> tool:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+$ getent ahosts `hostname`<br/>
+::1       STREAM omega<br/>
+::1       DGRAM<br/>
+::1       RAW<br/>
+127.0.0.2       STREAM<br/>
+127.0.0.2       DGRAM<br/>
+127.0.0.2       RAW<br/>
+</div>
+<div class="spacer">
+</div>
+In this case the local hostname is  <i>omega</i>.</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>nss-resolve</b>(8),  <b>nss-mymachines</b>(8),  <b>nsswitch.conf</b>(5),  <b>getent</b>(1)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

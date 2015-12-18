@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SYSTEMD.RESOURCE-CONTROL(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SYSTEMD.RESOURCE-CONTROL(5)</td>
+<td class="head-vol">
+systemd.resource-control</td>
+<td class="head-rtitle">
+SYSTEMD.RESOURCE-CONTROL(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> systemd.resource-control - Resource control unit settings</div>
+<div class="section">
+<h1>SYNOPSIS</h1><div style="height: 1.00em;">
+&#160;</div>
+<i>slice</i>.slice,  <i>scope</i>.scope,  <i>service</i>.service,  <i>socket</i>.socket,  <i>mount</i>.mount,  <i>swap</i>.swap</div>
+<div class="section">
+<h1>DESCRIPTION</h1> Unit configuration files for services, slices, scopes, sockets, mount points, and swap devices share a subset of configuration options for resource control of spawned processes. Internally, this relies on the Control Groups kernel concept for organizing processes in a hierarchical tree of named groups for the purpose of resource management.<div class="spacer">
+</div>
+This man page lists the configuration options shared by those six unit types. See  <b>systemd.unit</b>(5) for the common options of all unit configuration files, and  <b>systemd.slice</b>(5),  <b>systemd.scope</b>(5),  <b>systemd.service</b>(5),  <b>systemd.socket</b>(5),  <b>systemd.mount</b>(5), and  <b>systemd.swap</b>(5) for more information on the specific unit configuration files. The resource control configuration options are configured in the [Slice], [Scope], [Service], [Socket], [Mount], or [Swap] sections, depending on the unit type.<div class="spacer">
+</div>
+See the  <b>New Control Group Interfaces</b>[1] for an introduction on how to make use of resource control APIs from programs.</div>
+<div class="section">
+<h1>OPTIONS</h1> Units of the types listed above can have settings for resource control configuration:<div class="spacer">
+</div>
+<i>CPUAccounting=</i><div style="margin-left: 4.00ex;">
+Turn on CPU usage accounting for this unit. Takes a boolean argument. Note that turning on CPU accounting for one unit might also implicitly turn it on for all units contained in the same slice and for all its parent slices and the units contained therein. The system default for this setting maybe controlled with  <i>DefaultCPUAccounting=</i> in  <b>systemd-system.conf</b>(5).</div>
+<div class="spacer">
+</div>
+<i>CPUShares=</i><i></i><i>weight</i>, <i>StartupCPUShares=</i><i></i><i>weight</i><div style="margin-left: 4.00ex;">
+Assign the specified CPU time share weight to the processes executed. Those options take an integer value and control the &quot;cpu.shares&quot; control group attribute, which defaults to 1024. For details about this control group attribute, see  <b>sched-design-CFS.txt</b>[2]. The available CPU time is split up among all units within one slice relative to their CPU time share weight.<div style="height: 1.00em;">
+&#160;</div>
+While  <i>StartupCPUShares=</i> only applies to the startup phase of the system,  <i>CPUShares=</i> applies to normal runtime of the system, and if the former is not set also to the startup phase. Using  <i>StartupCPUShares=</i> allows prioritizing specific services at boot-up differently than during normal runtime.<div style="height: 1.00em;">
+&#160;</div>
+Those options imply &quot;CPUAccounting=true&quot;.</div>
+<div class="spacer">
+</div>
+<i>CPUQuota=</i><div style="margin-left: 4.00ex;">
+Assign the specified CPU time quota to the processes executed. Takes a percentage value, suffixed with &quot;%&quot;. The percentage specifies how much CPU time the unit shall get at maximum, relative to the total CPU time available on one CPU. Use values &gt; 100% for allotting CPU time on more than one CPU. This controls the &quot;cpu.cfs_quota_us&quot; control group attribute. For details about this control group attribute, see  <b>sched-design-CFS.txt</b>[2].<div style="height: 1.00em;">
+&#160;</div>
+Example:  <i>CPUQuota=20%</i> ensures that the executed processes will never get more than 20% CPU time on one CPU.<div style="height: 1.00em;">
+&#160;</div>
+Implies &quot;CPUAccounting=true&quot;.</div>
+<div class="spacer">
+</div>
+<i>MemoryAccounting=</i><div style="margin-left: 4.00ex;">
+Turn on process and kernel memory accounting for this unit. Takes a boolean argument. Note that turning on memory accounting for one unit might also implicitly turn it on for all its parent slices. The system default for this setting maybe controlled with  <i>DefaultMemoryAccounting=</i> in  <b>systemd-system.conf</b>(5).</div>
+<div class="spacer">
+</div>
+<i>MemoryLimit=</i><i></i><i>bytes</i><div style="margin-left: 4.00ex;">
+Specify the limit on maximum memory usage of the executed processes. The limit specifies how much process and kernel memory can be used by tasks in this unit. Takes a memory size in bytes. If the value is suffixed with K, M, G or T, the specified memory size is parsed as Kilobytes, Megabytes, Gigabytes, or Terabytes (with the base 1024), respectively. This controls the &quot;memory.limit_in_bytes&quot; control group attribute. For details about this control group attribute, see  <b>memory.txt</b>[3].<div style="height: 1.00em;">
+&#160;</div>
+Implies &quot;MemoryAccounting=true&quot;.</div>
+<div class="spacer">
+</div>
+<i>BlockIOAccounting=</i><div style="margin-left: 4.00ex;">
+Turn on Block IO accounting for this unit. Takes a boolean argument. Note that turning on block IO accounting for one unit might also implicitly turn it on for all units contained in the same slice and all for its parent slices and the units contained therein. The system default for this setting maybe controlled with  <i>DefaultBlockIOAccounting=</i> in  <b>systemd-system.conf</b>(5).</div>
+<div class="spacer">
+</div>
+<i>BlockIOWeight=</i><i></i><i>weight</i>, <i>StartupBlockIOWeight=</i><i></i><i>weight</i><div style="margin-left: 4.00ex;">
+Set the default overall block IO weight for the executed processes. Takes a single weight value (between 10 and 1000) to set the default block IO weight. This controls the &quot;blkio.weight&quot; control group attribute, which defaults to 1000. For details about this control group attribute, see  <b>blkio-controller.txt</b>[4]. The available IO bandwidth is split up among all units within one slice relative to their block IO weight.<div style="height: 1.00em;">
+&#160;</div>
+While  <i>StartupBlockIOWeight=</i> only applies to the startup phase of the system,  <i>BlockIOWeight=</i> applies to the later runtime of the system, and if the former is not set also to the startup phase. This allows prioritizing specific services at boot-up differently than during runtime.<div style="height: 1.00em;">
+&#160;</div>
+Implies &quot;BlockIOAccounting=true&quot;.</div>
+<div class="spacer">
+</div>
+<i>BlockIODeviceWeight=</i><i></i><i>device</i><i> </i><i></i><i>weight</i><div style="margin-left: 4.00ex;">
+Set the per-device overall block IO weight for the executed processes. Takes a space-separated pair of a file path and a weight value to specify the device specific weight value, between 10 and 1000. (Example: &quot;/dev/sda 500&quot;). The file path may be specified as path to a block device node or as any other file, in which case the backing block device of the file system of the file is determined. This controls the &quot;blkio.weight_device&quot; control group attribute, which defaults to 1000. Use this option multiple times to set weights for multiple devices. For details about this control group attribute, see  <b>blkio-controller.txt</b>[4].<div style="height: 1.00em;">
+&#160;</div>
+Implies &quot;BlockIOAccounting=true&quot;.</div>
+<div class="spacer">
+</div>
+<i>BlockIOReadBandwidth=</i><i></i><i>device</i><i> </i><i></i><i>bytes</i>, <i>BlockIOWriteBandwidth=</i><i></i><i>device</i><i> </i><i></i><i>bytes</i><div style="margin-left: 4.00ex;">
+Set the per-device overall block IO bandwidth limit for the executed processes. Takes a space-separated pair of a file path and a bandwidth value (in bytes per second) to specify the device specific bandwidth. The file path may be a path to a block device node, or as any other file in which case the backing block device of the file system of the file is used. If the bandwidth is suffixed with K, M, G, or T, the specified bandwidth is parsed as Kilobytes, Megabytes, Gigabytes, or Terabytes, respectively, to the base of 1000. (Example: &quot;/dev/disk/by-path/pci-0000:00:1f.2-scsi-0:0:0:0 5M&quot;). This controls the &quot;blkio.read_bps_device&quot; and &quot;blkio.write_bps_device&quot; control group attributes. Use this option multiple times to set bandwidth limits for multiple devices. For details about these control group attributes, see  <b>blkio-controller.txt</b>[4].<div style="height: 1.00em;">
+&#160;</div>
+Implies &quot;BlockIOAccounting=true&quot;.</div>
+<div class="spacer">
+</div>
+<i>DeviceAllow=</i><div style="margin-left: 4.00ex;">
+Control access to specific device nodes by the executed processes. Takes two space-separated strings: a device node specifier followed by a combination of  <b>r</b>,  <b>w</b>,  <b>m</b> to control  <i>r</i>eading,  <i>w</i>riting, or creation of the specific device node(s) by the unit (<i>m</i>knod), respectively. This controls the &quot;devices.allow&quot; and &quot;devices.deny&quot; control group attributes. For details about these control group attributes, see  <b>devices.txt</b>[5].<div style="height: 1.00em;">
+&#160;</div>
+The device node specifier is either a path to a device node in the file system, starting with /dev/, or a string starting with either &quot;char-&quot; or &quot;block-&quot; followed by a device group name, as listed in /proc/devices. The latter is useful to whitelist all current and future devices belonging to a specific device group at once. The device group is matched according to file name globbing rules, you may hence use the &quot;*&quot; and &quot;?&quot; wildcards. Examples: /dev/sda5 is a path to a device node, referring to an ATA or SCSI block device. &quot;char-pts&quot; and &quot;char-alsa&quot; are specifiers for all pseudo TTYs and all ALSA sound devices, respectively. &quot;char-cpu/*&quot; is a specifier matching all CPU related device groups.</div>
+<div class="spacer">
+</div>
+<i>DevicePolicy=auto|closed|strict</i><div style="margin-left: 4.00ex;">
+Control the policy for allowing device access:<div class="spacer">
+</div>
+<b>strict</b><div style="margin-left: 4.00ex;">
+means to only allow types of access that are explicitly specified.</div>
+<div class="spacer">
+</div>
+<b>closed</b><div style="margin-left: 4.00ex;">
+in addition, allows access to standard pseudo devices including /dev/null, /dev/zero, /dev/full, /dev/random, and /dev/urandom.</div>
+<div class="spacer">
+</div>
+<b>auto</b><div style="margin-left: 4.00ex;">
+in addition, allows access to all devices if no explicit  <i>DeviceAllow=</i> is present. This is the default.</div>
+</div>
+<div class="spacer">
+</div>
+<i>Slice=</i><div style="margin-left: 4.00ex;">
+The name of the slice unit to place the unit in. Defaults to system.slice for all non-instantiated units of all unit types (except for slice units themselves see below). Instance units are by default placed in a subslice of system.slice that is named after the template name.<div style="height: 1.00em;">
+&#160;</div>
+This option may be used to arrange systemd units in a hierarchy of slices each of which might have resource settings applied.<div style="height: 1.00em;">
+&#160;</div>
+For units of type slice, the only accepted value for this setting is the parent slice. Since the name of a slice unit implies the parent slice, it is hence redundant to ever set this parameter directly for slice units.</div>
+<div class="spacer">
+</div>
+<i>Delegate=</i><div style="margin-left: 4.00ex;">
+Turns on delegation of further resource control partitioning to processes of the unit. For unprivileged services (i.e. those using the  <i>User=</i> setting) this allows processes to create a subhierarchy beneath its control group path. For privileged services and scopes this ensures the processes will have all control group controllers enabled.</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>systemd.unit</b>(5),  <b>systemd.service</b>(5),  <b>systemd.slice</b>(5),  <b>systemd.scope</b>(5),  <b>systemd.socket</b>(5),  <b>systemd.mount</b>(5),  <b>systemd.swap</b>(5),  <b>systemd.directives</b>(7),  <b>systemd.special</b>(7), The documentation for control groups and specific controllers in the Linux kernel:  <b>cgroups.txt</b>[6],  <b>cpuacct.txt</b>[7],  <b>memory.txt</b>[3],  <b>blkio-controller.txt</b>[4].</div>
+<div class="section">
+<h1>NOTES</h1><dl>
+<dt>
+ 1.</dt>
+<dd>
+New Control Group Interfaces</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+http://www.freedesktop.org/wiki/Software/systemd/ControlGroupInterface/</div>
+<dl>
+<dt>
+ 2.</dt>
+<dd>
+sched-design-CFS.txt</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+https://www.kernel.org/doc/Documentation/scheduler/sched-design-CFS.txt</div>
+<dl>
+<dt>
+ 3.</dt>
+<dd>
+memory.txt</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+https://www.kernel.org/doc/Documentation/cgroups/memory.txt</div>
+<dl>
+<dt>
+ 4.</dt>
+<dd>
+blkio-controller.txt</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+https://www.kernel.org/doc/Documentation/cgroups/blkio-controller.txt</div>
+<dl>
+<dt>
+ 5.</dt>
+<dd>
+devices.txt</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+https://www.kernel.org/doc/Documentation/cgroups/devices.txt</div>
+<dl>
+<dt>
+ 6.</dt>
+<dd>
+cgroups.txt</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+https://www.kernel.org/doc/Documentation/cgroups/cgroups.txt</div>
+<dl>
+<dt>
+ 7.</dt>
+<dd>
+cpuacct.txt</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+https://www.kernel.org/doc/Documentation/cgroups/cpuacct.txt</div>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

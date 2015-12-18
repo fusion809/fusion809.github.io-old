@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SYSTEMCTL(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SYSTEMCTL(1)</td>
+<td class="head-vol">
+systemctl</td>
+<td class="head-rtitle">
+SYSTEMCTL(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> systemctl - Control the systemd system and service manager</div>
+<div class="section">
+<h1>SYNOPSIS</h1><div style="margin-left: 10.00ex;text-indent: -10.00ex;" class="spacer">
+<b>systemctl</b> [OPTIONS...] COMMAND [NAME...]</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>systemctl</b> may be used to introspect and control the state of the &quot;systemd&quot; system and service manager. Please refer to  <b>systemd</b>(1) for an introduction into the basic concepts and functionality this tool manages.</div>
+<div class="section">
+<h1>OPTIONS</h1> The following options are understood:<div class="spacer">
+</div>
+<b>-t</b>, <b>--type=</b><div style="margin-left: 4.00ex;">
+The argument should be a comma-separated list of unit types such as  <b>service</b> and  <b>socket</b>.<div style="height: 1.00em;">
+&#160;</div>
+If one of the arguments is a unit type, when listing units, limit display to certain unit types. Otherwise, units of all types will be shown.<div style="height: 1.00em;">
+&#160;</div>
+As a special case, if one of the arguments is  <b>help</b>, a list of allowed values will be printed and the program will exit.</div>
+<div class="spacer">
+</div>
+<b>--state=</b><div style="margin-left: 4.00ex;">
+The argument should be a comma-separated list of unit LOAD, SUB, or ACTIVE states. When listing units, show only those in specified states. Use  <b>--state=failed</b> to show only failed units.</div>
+<div class="spacer">
+</div>
+<b>-p</b>, <b>--property=</b><div style="margin-left: 4.00ex;">
+When showing unit/job/manager properties with the  <b>show</b> command, limit display to properties specified in the argument. The argument should be a comma-separated list of property names, such as &quot;MainPID&quot;. Unless specified, all known properties are shown. If specified more than once, all properties with the specified names are shown. Shell completion is implemented for property names.<div style="height: 1.00em;">
+&#160;</div>
+For the manager itself,  <b>systemctl&#160;show</b> will show all available properties. Those properties are documented in  <b>systemd-system.conf</b>(5).<div style="height: 1.00em;">
+&#160;</div>
+Properties for units vary by unit type, so showing any unit (even a non-existent one) is a way to list properties pertaining to this type. Similarly showing any job will list properties pertaining to all jobs. Properties for units are documented in  <b>systemd.unit</b>(5), and the pages for individual unit types  <b>systemd.service</b>(5),  <b>systemd.socket</b>(5), etc.</div>
+<div class="spacer">
+</div>
+<b>-a</b>, <b>--all</b><div style="margin-left: 4.00ex;">
+When listing units, show all loaded units, regardless of their state, including inactive units. When showing unit/job/manager properties, show all properties regardless whether they are set or not.<div style="height: 1.00em;">
+&#160;</div>
+To list all units installed on the system, use the  <b>list-unit-files</b> command instead.</div>
+<div class="spacer">
+</div>
+<b>-r</b>, <b>--recursive</b><div style="margin-left: 4.00ex;">
+When listing units, also show units of local containers. Units of local containers will be prefixed with the container name, separated by a single colon character (&quot;:&quot;).</div>
+<div class="spacer">
+</div>
+<b>--reverse</b><div style="margin-left: 4.00ex;">
+Show reverse dependencies between units with  <b>list-dependencies</b>, i.e. follow dependencies of type  <i>WantedBy=</i>,  <i>RequiredBy=</i>,  <i>RequiredByOverridable=</i>,  <i>PartOf=</i>,  <i>BoundBy=</i>, instead of  <i>Wants=</i> and similar.</div>
+<div class="spacer">
+</div>
+<b>--after</b><div style="margin-left: 4.00ex;">
+With  <b>list-dependencies</b>, show the units that are ordered before the specified unit. In other words, recursively list units following the  <i>After=</i> dependency.<div style="height: 1.00em;">
+&#160;</div>
+Note that any  <i>After=</i> dependency is automatically mirrored to create a  <i>Before=</i> dependency. Temporal dependencies may be specified explicitly, but are also created implicitly for units which are  <i>WantedBy=</i> targets (see  <b>systemd.target</b>(5)), and as a result of other directives (for example  <i>RequiresMountsFor=</i>). Both explicitly and implicitly introduced dependencies are shown with  <b>list-dependencies</b>.</div>
+<div class="spacer">
+</div>
+<b>--before</b><div style="margin-left: 4.00ex;">
+With  <b>list-dependencies</b>, show the units that are ordered after the specified unit. In other words, recursively list units following the  <i>Before=</i> dependency.</div>
+<div class="spacer">
+</div>
+<b>-l</b>, <b>--full</b><div style="margin-left: 4.00ex;">
+Do not ellipsize unit names, process tree entries, journal output, or truncate unit descriptions in the output of  <b>status</b>,  <b>list-units</b>,  <b>list-jobs</b>, and  <b>list-timers</b>.</div>
+<div class="spacer">
+</div>
+<b>--show-types</b><div style="margin-left: 4.00ex;">
+When showing sockets, show the type of the socket.</div>
+<div class="spacer">
+</div>
+<b>--job-mode=</b><div style="margin-left: 4.00ex;">
+When queuing a new job, this option controls how to deal with already queued jobs. It takes one of &quot;fail&quot;, &quot;replace&quot;, &quot;replace-irreversibly&quot;, &quot;isolate&quot;, &quot;ignore-dependencies&quot;, &quot;ignore-requirements&quot; or &quot;flush&quot;. Defaults to &quot;replace&quot;, except when the  <b>isolate</b> command is used which implies the &quot;isolate&quot; job mode.<div style="height: 1.00em;">
+&#160;</div>
+If &quot;fail&quot; is specified and a requested operation conflicts with a pending job (more specifically: causes an already pending start job to be reversed into a stop job or vice versa), cause the operation to fail.<div style="height: 1.00em;">
+&#160;</div>
+If &quot;replace&quot; (the default) is specified, any conflicting pending job will be replaced, as necessary.<div style="height: 1.00em;">
+&#160;</div>
+If &quot;replace-irreversibly&quot; is specified, operate like &quot;replace&quot;, but also mark the new jobs as irreversible. This prevents future conflicting transactions from replacing these jobs (or even being enqueued while the irreversible jobs are still pending). Irreversible jobs can still be cancelled using the  <b>cancel</b> command.<div style="height: 1.00em;">
+&#160;</div>
+&quot;isolate&quot; is only valid for start operations and causes all other units to be stopped when the specified unit is started. This mode is always used when the  <b>isolate</b> command is used.<div style="height: 1.00em;">
+&#160;</div>
+&quot;flush&quot; will cause all queued jobs to be canceled when the new job is enqueued.<div style="height: 1.00em;">
+&#160;</div>
+If &quot;ignore-dependencies&quot; is specified, then all unit dependencies are ignored for this new job and the operation is executed immediately. If passed, no required units of the unit passed will be pulled in, and no ordering dependencies will be honored. This is mostly a debugging and rescue tool for the administrator and should not be used by applications.<div style="height: 1.00em;">
+&#160;</div>
+&quot;ignore-requirements&quot; is similar to &quot;ignore-dependencies&quot;, but only causes the requirement dependencies to be ignored, the ordering dependencies will still be honoured.</div>
+<div class="spacer">
+</div>
+<b>-i</b>, <b>--ignore-inhibitors</b><div style="margin-left: 4.00ex;">
+When system shutdown or a sleep state is requested, ignore inhibitor locks. Applications can establish inhibitor locks to avoid that certain important operations (such as CD burning or suchlike) are interrupted by system shutdown or a sleep state. Any user may take these locks and privileged users may override these locks. If any locks are taken, shutdown and sleep state requests will normally fail (regardless of whether privileged or not) and a list of active locks is printed. However, if  <b>--ignore-inhibitors</b> is specified, the locks are ignored and not printed, and the operation attempted anyway, possibly requiring additional privileges.</div>
+<div class="spacer">
+</div>
+<b>-q</b>, <b>--quiet</b><div style="margin-left: 4.00ex;">
+Suppress printing of the results of various commands and also the hints about truncated log lines. This does not suppress output of commands for which the printed output is the only result (like  <b>show</b>). Errors are always printed.</div>
+<div class="spacer">
+</div>
+<b>--no-block</b><div style="margin-left: 4.00ex;">
+Do not synchronously wait for the requested operation to finish. If this is not specified, the job will be verified, enqueued and  <b>systemctl</b> will wait until the unit's start-up is completed. By passing this argument, it is only verified and enqueued.</div>
+<div class="spacer">
+</div>
+<b>--user</b><div style="margin-left: 4.00ex;">
+Talk to the service manager of the calling user, rather than the service manager of the system.</div>
+<div class="spacer">
+</div>
+<b>--system</b><div style="margin-left: 4.00ex;">
+Talk to the service manager of the system. This is the implied default.</div>
+<div class="spacer">
+</div>
+<b>--no-wall</b><div style="margin-left: 4.00ex;">
+Do not send wall message before halt, power-off, reboot.</div>
+<div class="spacer">
+</div>
+<b>--global</b><div style="margin-left: 4.00ex;">
+When used with  <b>enable</b> and  <b>disable</b>, operate on the global user configuration directory, thus enabling or disabling a unit file globally for all future logins of all users.</div>
+<div class="spacer">
+</div>
+<b>--no-reload</b><div style="margin-left: 4.00ex;">
+When used with  <b>enable</b> and  <b>disable</b>, do not implicitly reload daemon configuration after executing the changes.</div>
+<div class="spacer">
+</div>
+<b>--no-ask-password</b><div style="margin-left: 4.00ex;">
+When used with  <b>start</b> and related commands, disables asking for passwords. Background services may require input of a password or passphrase string, for example to unlock system hard disks or cryptographic certificates. Unless this option is specified and the command is invoked from a terminal,  <b>systemctl</b> will query the user on the terminal for the necessary secrets. Use this option to switch this behavior off. In this case, the password must be supplied by some other means (for example graphical password agents) or the service might fail. This also disables querying the user for authentication for privileged operations.</div>
+<div class="spacer">
+</div>
+<b>--kill-who=</b><div style="margin-left: 4.00ex;">
+When used with  <b>kill</b>, choose which processes to send a signal to. Must be one of  <b>main</b>,  <b>control</b> or  <b>all</b> to select whether to kill only the main process, the control process or all processes of the unit. The main process of the unit is the one that defines the life-time of it. A control process of a unit is one that is invoked by the manager to induce state changes of it. For example, all processes started due to the  <i>ExecStartPre=</i>,  <i>ExecStop=</i> or  <i>ExecReload=</i> settings of service units are control processes. Note that there is only one control process per unit at a time, as only one state change is executed at a time. For services of type  <i>Type=forking</i>, the initial process started by the manager for  <i>ExecStart=</i> is a control process, while the process ultimately forked off by that one is then considered the main process of the unit (if it can be determined). This is different for service units of other types, where the process forked off by the manager for  <i>ExecStart=</i> is always the main process itself. A service unit consists of zero or one main process, zero or one control process plus any number of additional processes. Not all unit types manage processes of these types however. For example, for mount units, control processes are defined (which are the invocations of /bin/mount and /bin/umount), but no main process is defined. If omitted, defaults to  <b>all</b>.</div>
+<div class="spacer">
+</div>
+<b>-s</b>, <b>--signal=</b><div style="margin-left: 4.00ex;">
+When used with  <b>kill</b>, choose which signal to send to selected processes. Must be one of the well known signal specifiers such as  <b>SIGTERM</b>,  <b>SIGINT</b> or  <b>SIGSTOP</b>. If omitted, defaults to  <b>SIGTERM</b>.</div>
+<div class="spacer">
+</div>
+<b>-f</b>, <b>--force</b><div style="margin-left: 4.00ex;">
+When used with  <b>enable</b>, overwrite any existing conflicting symlinks.<div style="height: 1.00em;">
+&#160;</div>
+When used with  <b>halt</b>,  <b>poweroff</b>,  <b>reboot</b> or  <b>kexec</b>, execute the selected operation without shutting down all units. However, all processes will be killed forcibly and all file systems are unmounted or remounted read-only. This is hence a drastic but relatively safe option to request an immediate reboot. If  <b>--force</b> is specified twice for these operations, they will be executed immediately without terminating any processes or unmounting any file systems. Warning: specifying  <b>--force</b> twice with any of these operations might result in data loss.</div>
+<div class="spacer">
+</div>
+<b>--message=</b><div style="margin-left: 4.00ex;">
+When used with  <b>halt</b>,  <b>poweroff</b>,  <b>reboot</b> or  <b>kexec</b>, set a short message explaining the reason for the operation. The message will be logged together with the default shutdown message.</div>
+<div class="spacer">
+</div>
+<b>--now</b><div style="margin-left: 4.00ex;">
+When used with  <b>enable</b>, the units will also be started. When used with  <b>disable</b> or  <b>mask</b>, the units will also be stopped. The start or stop operation is only carried out when the respective enable or disable operation has been successful.</div>
+<div class="spacer">
+</div>
+<b>--root=</b><div style="margin-left: 4.00ex;">
+When used with  <b>enable</b>/<b>disable</b>/<b>is-enabled</b> (and related commands), use alternative root path when looking for unit files.</div>
+<div class="spacer">
+</div>
+<b>--runtime</b><div style="margin-left: 4.00ex;">
+When used with  <b>enable</b>,  <b>disable</b>,  <b>edit</b>, (and related commands), make changes only temporarily, so that they are lost on the next reboot. This will have the effect that changes are not made in subdirectories of /etc but in /run, with identical immediate effects, however, since the latter is lost on reboot, the changes are lost too.<div style="height: 1.00em;">
+&#160;</div>
+Similarly, when used with  <b>set-property</b>, make changes only temporarily, so that they are lost on the next reboot.</div>
+<div class="spacer">
+</div>
+<b>--preset-mode=</b><div style="margin-left: 4.00ex;">
+Takes one of &quot;full&quot; (the default), &quot;enable-only&quot;, &quot;disable-only&quot;. When used with the  <b>preset</b> or  <b>preset-all</b> commands, controls whether units shall be disabled and enabled according to the preset rules, or only enabled, or only disabled.</div>
+<div class="spacer">
+</div>
+<b>-n</b>, <b>--lines=</b><div style="margin-left: 4.00ex;">
+When used with  <b>status</b>, controls the number of journal lines to show, counting from the most recent ones. Takes a positive integer argument. Defaults to 10.</div>
+<div class="spacer">
+</div>
+<b>-o</b>, <b>--output=</b><div style="margin-left: 4.00ex;">
+When used with  <b>status</b>, controls the formatting of the journal entries that are shown. For the available choices, see  <b>journalctl</b>(1). Defaults to &quot;short&quot;.</div>
+<div class="spacer">
+</div>
+<b>--firmware-setup</b><div style="margin-left: 4.00ex;">
+When used with the  <b>reboot</b> command, indicate to the system's firmware to boot into setup mode. Note that this is currently only supported on some EFI systems and only if the system was booted in EFI mode.</div>
+<div class="spacer">
+</div>
+<b>--plain</b><div style="margin-left: 4.00ex;">
+When used with  <b>list-dependencies</b>, the output is printed as a list instead of a tree.</div>
+<div class="spacer">
+</div>
+<b>-H</b>, <b>--host=</b><div style="margin-left: 4.00ex;">
+Execute the operation remotely. Specify a hostname, or a username and hostname separated by &quot;@&quot;, to connect to. The hostname may optionally be suffixed by a container name, separated by &quot;:&quot;, which connects directly to a specific container on the specified host. This will use SSH to talk to the remote machine manager instance. Container names may be enumerated with  <b>machinectl -H </b><b></b><i>HOST</i>.</div>
+<div class="spacer">
+</div>
+<b>-M</b>, <b>--machine=</b><div style="margin-left: 4.00ex;">
+Execute operation on a local container. Specify a container name to connect to.</div>
+<div class="spacer">
+</div>
+<b>--no-pager</b><div style="margin-left: 4.00ex;">
+Do not pipe output into a pager.</div>
+<div class="spacer">
+</div>
+<b>--no-legend</b><div style="margin-left: 4.00ex;">
+Do not print the legend, i.e. column headers and the footer with hints.</div>
+<div class="spacer">
+</div>
+<b>-h</b>, <b>--help</b><div style="margin-left: 4.00ex;">
+Print a short help text and exit.</div>
+<div class="spacer">
+</div>
+<b>--version</b><div style="margin-left: 4.00ex;">
+Print a short version string and exit.</div>
+</div>
+<div class="section">
+<h1>COMMANDS</h1> The following commands are understood:<div class="subsection">
+<h2>Unit Commands</h2>  <b>list-units </b><b>[</b><i>PATTERN</i>...]<div style="margin-left: 4.00ex;">
+List known units (subject to limitations specified with  <b>-t</b>). If one or more  <i>PATTERN</i>s are specified, only units matching one of them are shown.<div style="height: 1.00em;">
+&#160;</div>
+This is the default command.</div>
+<div class="spacer">
+</div>
+<b>list-sockets </b><b>[</b><i>PATTERN</i>...]<div style="margin-left: 4.00ex;">
+List socket units ordered by listening address. If one or more  <i>PATTERN</i>s are specified, only socket units matching one of them are shown. Produces output similar to<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+LISTEN           UNIT                        ACTIVATES<br/>
+/dev/initctl     systemd-initctl.socket      systemd-initctl.service<br/>
+...<br/>
+[::]:22          sshd.socket                 sshd.service<br/>
+kobject-uevent 1 systemd-udevd-kernel.socket systemd-udevd.service<div class="spacer">
+</div>
+<br/>
+5 sockets listed.<br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+Note: because the addresses might contains spaces, this output is not suitable for programmatic consumption.<div style="height: 1.00em;">
+&#160;</div>
+See also the options  <b>--show-types</b>,  <b>--all</b>, and  <b>--state=</b>.</div>
+<div class="spacer">
+</div>
+<b>list-timers </b><b>[</b><i>PATTERN</i>...]<div style="margin-left: 4.00ex;">
+List timer units ordered by the time they elapse next. If one or more  <i>PATTERN</i>s are specified, only units matching one of them are shown.<div style="height: 1.00em;">
+&#160;</div>
+See also the options  <b>--all</b> and  <b>--state=</b>.</div>
+<div class="spacer">
+</div>
+<b>start </b><b></b><i>PATTERN</i><b>...</b><div style="margin-left: 4.00ex;">
+Start (activate) one or more units specified on the command line.<div style="height: 1.00em;">
+&#160;</div>
+Note that glob patterns operate on a list of currently loaded units. Units which are not active and are not in a failed state usually are not loaded, and would not be matched by any pattern. In addition, in case of instantiated units, systemd is often unaware of the instance name until the instance has been started. Therefore, using glob patterns with  <b>start</b> has limited usefulness.</div>
+<div class="spacer">
+</div>
+<b>stop </b><b></b><i>PATTERN</i><b>...</b><div style="margin-left: 4.00ex;">
+Stop (deactivate) one or more units specified on the command line.</div>
+<div class="spacer">
+</div>
+<b>reload </b><b></b><i>PATTERN</i><b>...</b><div style="margin-left: 4.00ex;">
+Asks all units listed on the command line to reload their configuration. Note that this will reload the service-specific configuration, not the unit configuration file of systemd. If you want systemd to reload the configuration file of a unit, use the  <b>daemon-reload</b> command. In other words: for the example case of Apache, this will reload Apache's httpd.conf in the web server, not the apache.service systemd unit file.<div style="height: 1.00em;">
+&#160;</div>
+This command should not be confused with the  <b>daemon-reload</b> command.</div>
+<div class="spacer">
+</div>
+<b>restart </b><b></b><i>PATTERN</i><b>...</b><div style="margin-left: 4.00ex;">
+Restart one or more units specified on the command line. If the units are not running yet, they will be started.</div>
+<div class="spacer">
+</div>
+<b>try-restart </b><b></b><i>PATTERN</i><b>...</b><div style="margin-left: 4.00ex;">
+Restart one or more units specified on the command line if the units are running. This does nothing if units are not running. Note that, for compatibility with Red Hat init scripts,  <b>condrestart</b> is equivalent to this command.</div>
+<div class="spacer">
+</div>
+<b>reload-or-restart </b><b></b><i>PATTERN</i><b>...</b><div style="margin-left: 4.00ex;">
+Reload one or more units if they support it. If not, restart them instead. If the units are not running yet, they will be started.</div>
+<div class="spacer">
+</div>
+<b>reload-or-try-restart </b><b></b><i>PATTERN</i><b>...</b><div style="margin-left: 4.00ex;">
+Reload one or more units if they support it. If not, restart them instead. This does nothing if the units are not running. Note that, for compatibility with SysV init scripts,  <b>force-reload</b> is equivalent to this command.</div>
+<div class="spacer">
+</div>
+<b>isolate </b><b></b><i>NAME</i><div style="margin-left: 4.00ex;">
+Start the unit specified on the command line and its dependencies and stop all others. If a unit name with no extension is given, an extension of &quot;.target&quot; will be assumed.<div style="height: 1.00em;">
+&#160;</div>
+This is similar to changing the runlevel in a traditional init system. The  <b>isolate</b> command will immediately stop processes that are not enabled in the new unit, possibly including the graphical environment or terminal you are currently using.<div style="height: 1.00em;">
+&#160;</div>
+Note that this is allowed only on units where  <b>AllowIsolate=</b> is enabled. See  <b>systemd.unit</b>(5) for details.</div>
+<div class="spacer">
+</div>
+<b>kill </b><b></b><i>PATTERN</i><b>...</b><div style="margin-left: 4.00ex;">
+Send a signal to one or more processes of the unit. Use  <b>--kill-who=</b> to select which process to kill. Use  <b>--signal=</b> to select the signal to send.</div>
+<div class="spacer">
+</div>
+<b>is-active </b><b></b><i>PATTERN</i><b>...</b><div style="margin-left: 4.00ex;">
+Check whether any of the specified units are active (i.e. running). Returns an exit code  <b>0</b> if at least one is active, or non-zero otherwise. Unless  <b>--quiet</b> is specified, this will also print the current unit state to standard output.</div>
+<div class="spacer">
+</div>
+<b>is-failed </b><b></b><i>PATTERN</i><b>...</b><div style="margin-left: 4.00ex;">
+Check whether any of the specified units are in a &quot;failed&quot; state. Returns an exit code  <b>0</b> if at least one has failed, non-zero otherwise. Unless  <b>--quiet</b> is specified, this will also print the current unit state to standard output.</div>
+<div class="spacer">
+</div>
+<b>status</b> [<i>PATTERN</i>...|<i>PID</i>...]]<div style="margin-left: 4.00ex;">
+Show terse runtime status information about one or more units, followed by most recent log data from the journal. If no units are specified, show system status. If combined with  <b>--all</b>, also show the status of all units (subject to limitations specified with  <b>-t</b>). If a PID is passed, show information about the unit the process belongs to.<div style="height: 1.00em;">
+&#160;</div>
+This function is intended to generate human-readable output. If you are looking for computer-parsable output, use  <b>show</b> instead. By default this function only shows 10 lines of output and ellipsizes lines to fit in the terminal window. This can be changes with  <b>--lines</b> and  <b>--full</b>, see above. In addition,  <b>journalctl --unit=</b><b></b><i>NAME</i> or  <b>journalctl --user-unit=</b><b></b><i>NAME</i> use a similar filter for messages and might be more convenient.</div>
+<div class="spacer">
+</div>
+<b>show</b> [<i>PATTERN</i>...|<i>JOB</i>...]<div style="margin-left: 4.00ex;">
+Show properties of one or more units, jobs, or the manager itself. If no argument is specified, properties of the manager will be shown. If a unit name is specified, properties of the unit is shown, and if a job id is specified, properties of the job is shown. By default, empty properties are suppressed. Use  <b>--all</b> to show those too. To select specific properties to show, use  <b>--property=</b>. This command is intended to be used whenever computer-parsable output is required. Use  <b>status</b> if you are looking for formatted human-readable output.</div>
+<div class="spacer">
+</div>
+<b>cat </b><b></b><i>PATTERN</i><b>...</b><div style="margin-left: 4.00ex;">
+Show backing files of one or more units. Prints the &quot;fragment&quot; and &quot;drop-ins&quot; (source files) of units. Each file is preceded by a comment which includes the file name.</div>
+<div class="spacer">
+</div>
+<b>set-property </b><b></b><i>NAME</i><b> </b><b></b><i>ASSIGNMENT</i><b>...</b><div style="margin-left: 4.00ex;">
+Set the specified unit properties at runtime where this is supported. This allows changing configuration parameter properties such as resource control settings at runtime. Not all properties may be changed at runtime, but many resource control settings (primarily those in  <b>systemd.resource-control</b>(5)) may. The changes are applied instantly, and stored on disk for future boots, unless  <b>--runtime</b> is passed, in which case the settings only apply until the next reboot. The syntax of the property assignment follows closely the syntax of assignments in unit files.<div style="height: 1.00em;">
+&#160;</div>
+Example:  <b>systemctl set-property foobar.service CPUShares=777</b><div style="height: 1.00em;">
+&#160;</div>
+Note that this command allows changing multiple properties at the same time, which is preferable over setting them individually. Like unit file configuration settings, assigning the empty list to list parameters will reset the list.</div>
+<div class="spacer">
+</div>
+<b>help </b><b></b><i>PATTERN</i><b>...|</b><b></b><i>PID</i><b>...</b><div style="margin-left: 4.00ex;">
+Show manual pages for one or more units, if available. If a PID is given, the manual pages for the unit the process belongs to are shown.</div>
+<div class="spacer">
+</div>
+<b>reset-failed [</b><b></b><i>PATTERN</i><b>...]</b><div style="margin-left: 4.00ex;">
+Reset the &quot;failed&quot; state of the specified units, or if no unit name is passed, reset the state of all units. When a unit fails in some way (i.e. process exiting with non-zero error code, terminating abnormally or timing out), it will automatically enter the &quot;failed&quot; state and its exit code and status is recorded for introspection by the administrator until the service is restarted or reset with this command.</div>
+<div class="spacer">
+</div>
+<b>list-dependencies</b> [<i>NAME</i>]<div style="margin-left: 4.00ex;">
+Shows units required and wanted by the specified unit. This recursively lists units following the  <i>Requires=</i>,  <i>RequiresOverridable=</i>,  <i>Requisite=</i>,  <i>RequisiteOverridable=</i>,  <i>ConsistsOf=</i>,  <i>Wants=</i>,  <i>BindsTo=</i> dependencies. If no unit is specified, default.target is implied.<div style="height: 1.00em;">
+&#160;</div>
+By default, only target units are recursively expanded. When  <b>--all</b> is passed, all other units are recursively expanded as well.<div style="height: 1.00em;">
+&#160;</div>
+Options  <b>--reverse</b>,  <b>--after</b>,  <b>--before</b> may be used to change what types of dependencies are shown.</div>
+</div>
+<div class="subsection">
+<h2>Unit File Commands</h2>  <b>list-unit-files </b><b>[</b><i>PATTERN...</i>]<div style="margin-left: 4.00ex;">
+List installed unit files. If one or more  <i>PATTERN</i>s are specified, only units whose filename (just the last component of the path) matches one of them are shown.</div>
+<div class="spacer">
+</div>
+<b>enable </b><b></b><i>NAME</i><b>...</b><div style="margin-left: 4.00ex;">
+Enable one or more unit files or unit file instances, as specified on the command line. This will create a number of symlinks as encoded in the &quot;[Install]&quot; sections of the unit files. After the symlinks have been created, the systemd configuration is reloaded (in a way that is equivalent to  <b>daemon-reload</b>) to ensure the changes are taken into account immediately. Note that this does  <i>not</i> have the effect of also starting any of the units being enabled. If this is desired, either  <b>--now</b> should be used together with this command, or an additional  <b>start</b> command must be invoked for the unit. Also note that in case of instance enablement, symlinks named the same as instances are created in the install location, however they all point to the same template unit file.<div style="height: 1.00em;">
+&#160;</div>
+This command will print the actions executed. This output may be suppressed by passing  <b>--quiet</b>.<div style="height: 1.00em;">
+&#160;</div>
+Note that this operation creates only the suggested symlinks for the units. While this command is the recommended way to manipulate the unit configuration directory, the administrator is free to make additional changes manually by placing or removing symlinks in the directory. This is particularly useful to create configurations that deviate from the suggested default installation. In this case, the administrator must make sure to invoke  <b>daemon-reload</b> manually as necessary to ensure the changes are taken into account.<div style="height: 1.00em;">
+&#160;</div>
+Enabling units should not be confused with starting (activating) units, as done by the  <b>start</b> command. Enabling and starting units is orthogonal: units may be enabled without being started and started without being enabled. Enabling simply hooks the unit into various suggested places (for example, so that the unit is automatically started on boot or when a particular kind of hardware is plugged in). Starting actually spawns the daemon process (in case of service units), or binds the socket (in case of socket units), and so on.<div style="height: 1.00em;">
+&#160;</div>
+Depending on whether  <b>--system</b>,  <b>--user</b>,  <b>--runtime</b>, or  <b>--global</b> is specified, this enables the unit for the system, for the calling user only, for only this boot of the system, or for all future logins of all users, or only this boot. Note that in the last case, no systemd daemon configuration is reloaded.<div style="height: 1.00em;">
+&#160;</div>
+Using  <b>enable</b> on masked units results in an error.</div>
+<div class="spacer">
+</div>
+<b>disable </b><b></b><i>NAME</i><b>...</b><div style="margin-left: 4.00ex;">
+Disables one or more units. This removes all symlinks to the specified unit files from the unit configuration directory, and hence undoes the changes made by  <b>enable</b>. Note however that this removes all symlinks to the unit files (i.e. including manual additions), not just those actually created by  <b>enable</b>. This call implicitly reloads the systemd daemon configuration after completing the disabling of the units. Note that this command does not implicitly stop the units that are being disabled. If this is desired, either  <b>--now</b> should be used together with this command, or an additional  <b>stop</b> command should be executed afterwards.<div style="height: 1.00em;">
+&#160;</div>
+This command will print the actions executed. This output may be suppressed by passing  <b>--quiet</b>.<div style="height: 1.00em;">
+&#160;</div>
+This command honors  <b>--system</b>,  <b>--user</b>,  <b>--runtime</b> and  <b>--global</b> in a similar way as  <b>enable</b>.</div>
+<div class="spacer">
+</div>
+<b>reenable </b><b></b><i>NAME</i><b>...</b><div style="margin-left: 4.00ex;">
+Reenable one or more unit files, as specified on the command line. This is a combination of  <b>disable</b> and  <b>enable</b> and is useful to reset the symlinks a unit is enabled with to the defaults configured in the &quot;[Install]&quot; section of the unit file.</div>
+<div class="spacer">
+</div>
+<b>preset </b><b></b><i>NAME</i><b>...</b><div style="margin-left: 4.00ex;">
+Reset one or more unit files, as specified on the command line, to the defaults configured in the preset policy files. This has the same effect as  <b>disable</b> or  <b>enable</b>, depending how the unit is listed in the preset files.<div style="height: 1.00em;">
+&#160;</div>
+Use  <b>--preset-mode=</b> to control whether units shall be enabled and disabled, or only enabled, or only disabled.<div style="height: 1.00em;">
+&#160;</div>
+For more information on the preset policy format, see  <b>systemd.preset</b>(5). For more information on the concept of presets, please consult the  <b>Preset</b>[1] document.</div>
+<div class="spacer">
+</div>
+<b>preset-all</b><div style="margin-left: 4.00ex;">
+Resets all installed unit files to the defaults configured in the preset policy file (see above).<div style="height: 1.00em;">
+&#160;</div>
+Use  <b>--preset-mode=</b> to control whether units shall be enabled and disabled, or only enabled, or only disabled.</div>
+<div class="spacer">
+</div>
+<b>is-enabled </b><b></b><i>NAME</i><b>...</b><div style="margin-left: 4.00ex;">
+Checks whether any of the specified unit files are enabled (as with  <b>enable</b>). Returns an exit code of 0 if at least one is enabled, non-zero otherwise. Prints the current enable status (see table). To suppress this output, use  <b>--quiet</b>.<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+<b>Table&#160;1.&#160; is-enabled output</b><table class="tbl">
+<col style="width: 18.00ex;"/>
+<col style="width: 154.00ex;"/>
+<col style="width: 12.00ex;"/>
+<tbody>
+<tr>
+<td>
+Printed string</td>
+<td>
+Meaning</td>
+<td>
+Return value</td>
+</tr>
+<tr>
+<td>
+&quot;enabled&quot;</td>
+<td>
+Enabled through a symlink in .wants directory (permanently or just in /run).</td>
+<td>
+0</td>
+</tr>
+<tr>
+<td>
+&quot;enabled-runtime&quot;</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+&quot;linked&quot;</td>
+<td>
+Made available through a symlink to the unit file (permanently or just in /run).</td>
+<td>
+1</td>
+</tr>
+<tr>
+<td>
+&quot;linked-runtime&quot;</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+&quot;masked&quot;</td>
+<td>
+Disabled entirely (permanently or just in /run).</td>
+<td>
+1</td>
+</tr>
+<tr>
+<td>
+&quot;masked-runtime&quot;</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+&quot;static&quot;</td>
+<td>
+Unit file is not enabled, and has no provisions for enabling in the &quot;[Install]&quot; section.</td>
+<td>
+0</td>
+</tr>
+<tr>
+<td>
+&quot;indirect&quot;</td>
+<td>
+Unit file itself is not enabled, but it has a non-empty <i>Also=</i> setting in the &quot;[Install]&quot; section, listing other unit files that might be enabled.</td>
+<td>
+0</td>
+</tr>
+<tr>
+<td>
+&quot;disabled&quot;</td>
+<td>
+Unit file is not enabled.</td>
+<td>
+1</td>
+</tr>
+</tbody>
+</table>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="spacer">
+</div>
+<b>mask </b><b></b><i>NAME</i><b>...</b><div style="height: 0.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+Mask one or more unit files, as specified on the command line. This will link these units to /dev/null, making it impossible to start them. This is a stronger version of  <b>disable</b>, since it prohibits all kinds of activation of the unit, including enablement and manual activation. Use this option with care. This honors the  <b>--runtime</b> option to only mask temporarily until the next reboot of the system. The  <b>--now</b> option can be used to ensure that the units are also stopped.</div>
+<div class="spacer">
+</div>
+<b>unmask </b><b></b><i>NAME</i><b>...</b><div style="margin-left: 4.00ex;">
+Unmask one or more unit files, as specified on the command line. This will undo the effect of  <b>mask</b>.</div>
+<div class="spacer">
+</div>
+<b>link </b><b></b><i>FILENAME</i><b>...</b><div style="margin-left: 4.00ex;">
+Link a unit file that is not in the unit file search paths into the unit file search path. This requires an absolute path to a unit file. The effect of this can be undone with  <b>disable</b>. The effect of this command is that a unit file is available for  <b>start</b> and other commands although it is not installed directly in the unit search path.</div>
+<div class="spacer">
+</div>
+<b>add-wants </b><b></b><i>TARGET</i><b> </b><b></b><i>NAME</i><b>...</b>, <b>add-requires </b><b></b><i>TARGET</i><b> </b><b></b><i>NAME</i><b>...</b><div style="margin-left: 4.00ex;">
+Adds &quot;Wants=&quot; or &quot;Requires=&quot; dependency, respectively, to the specified  <i>TARGET</i> for one or more units.<div style="height: 1.00em;">
+&#160;</div>
+This command honors  <b>--system</b>,  <b>--user</b>,  <b>--runtime</b> and  <b>--global</b> in a similar way as  <b>enable</b>.</div>
+<div class="spacer">
+</div>
+<b>edit </b><b></b><i>NAME</i><b>...</b><div style="margin-left: 4.00ex;">
+Edit a drop-in snippet or a whole replacement file if  <b>--full</b> is specified, to extend or override the specified unit.<div style="height: 1.00em;">
+&#160;</div>
+Depending on whether  <b>--system</b> (the default),  <b>--user</b>, or  <b>--global</b> is specified, this creates a drop-in file for each unit either for the system, for the calling user or for all futures logins of all users. Then, the editor (see the &quot;Environment&quot; section below) is invoked on temporary files which will be written to the real location if the editor exits successfully.<div style="height: 1.00em;">
+&#160;</div>
+If  <b>--full</b> is specified, this will copy the original units instead of creating drop-in files.<div style="height: 1.00em;">
+&#160;</div>
+If  <b>--runtime</b> is specified, the changes will be made temporarily in /run and they will be lost on the next reboot.<div style="height: 1.00em;">
+&#160;</div>
+If the temporary file is empty upon exit the modification of the related unit is canceled<div style="height: 1.00em;">
+&#160;</div>
+After the units have been edited, systemd configuration is reloaded (in a way that is equivalent to  <b>daemon-reload</b>).<div style="height: 1.00em;">
+&#160;</div>
+Note that this command cannot be used to remotely edit units and that you cannot temporarily edit units which are in /etc since they take precedence over /run.</div>
+<div class="spacer">
+</div>
+<b>get-default</b><div style="margin-left: 4.00ex;">
+Return the default target to boot into. This returns the target unit name default.target is aliased (symlinked) to.</div>
+<div class="spacer">
+</div>
+<b>set-default </b><b></b><i>NAME</i><div style="margin-left: 4.00ex;">
+Set the default target to boot into. This sets (symlinks) the default.target alias to the given target unit.</div>
+</div>
+<div class="subsection">
+<h2>Machine Commands</h2>  <b>list-machines </b><b>[</b><i>PATTERN</i>...]<div style="margin-left: 4.00ex;">
+List the host and all running local containers with their state. If one or more  <i>PATTERN</i>s are specified, only containers matching one of them are shown.</div>
+</div>
+<div class="subsection">
+<h2>Job Commands</h2>  <b>list-jobs </b><b>[</b><i>PATTERN...</i>]<div style="margin-left: 4.00ex;">
+List jobs that are in progress. If one or more  <i>PATTERN</i>s are specified, only jobs for units matching one of them are shown.</div>
+<div class="spacer">
+</div>
+<b>cancel </b><b></b><i>JOB</i><b>...</b><div style="margin-left: 4.00ex;">
+Cancel one or more jobs specified on the command line by their numeric job IDs. If no job ID is specified, cancel all pending jobs.</div>
+</div>
+<div class="subsection">
+<h2>Snapshot Commands</h2>  <b>snapshot </b><b>[</b><i>NAME</i>]<div style="margin-left: 4.00ex;">
+Create a snapshot. If a snapshot name is specified, the new snapshot will be named after it. If none is specified, an automatic snapshot name is generated. In either case, the snapshot name used is printed to standard output, unless  <b>--quiet</b> is specified.<div style="height: 1.00em;">
+&#160;</div>
+A snapshot refers to a saved state of the systemd manager. It is implemented itself as a unit that is generated dynamically with this command and has dependencies on all units active at the time. At a later time, the user may return to this state by using the  <b>isolate</b> command on the snapshot unit.<div style="height: 1.00em;">
+&#160;</div>
+Snapshots are only useful for saving and restoring which units are running or are stopped, they do not save/restore any other state. Snapshots are dynamic and lost on reboot.</div>
+<div class="spacer">
+</div>
+<b>delete </b><b></b><i>PATTERN</i><b>...</b><div style="margin-left: 4.00ex;">
+Remove a snapshot previously created with  <b>snapshot</b>.</div>
+</div>
+<div class="subsection">
+<h2>Environment Commands</h2>  <b>show-environment</b><div style="margin-left: 4.00ex;">
+Dump the systemd manager environment block. The environment block will be dumped in straight-forward form suitable for sourcing into a shell script. This environment block will be passed to all processes the manager spawns.</div>
+<div class="spacer">
+</div>
+<b>set-environment </b><b></b><i>VARIABLE=VALUE</i><b>...</b><div style="margin-left: 4.00ex;">
+Set one or more systemd manager environment variables, as specified on the command line.</div>
+<div class="spacer">
+</div>
+<b>unset-environment </b><b></b><i>VARIABLE</i><b>...</b><div style="margin-left: 4.00ex;">
+Unset one or more systemd manager environment variables. If only a variable name is specified, it will be removed regardless of its value. If a variable and a value are specified, the variable is only removed if it has the specified value.</div>
+<div class="spacer">
+</div>
+<b>import-environment</b> [<i>VARIABLE...</i>]<div style="margin-left: 4.00ex;">
+Import all, one or more environment variables set on the client into the systemd manager environment block. If no arguments are passed, the entire environment block is imported. Otherwise, a list of one or more environment variable names should be passed, whose client-side values are then imported into the manager's environment block.</div>
+</div>
+<div class="subsection">
+<h2>Manager Lifecycle Commands</h2>  <b>daemon-reload</b><div style="margin-left: 4.00ex;">
+Reload systemd manager configuration. This will rerun all generators (see  <b>systemd.generator</b>(7)), reload all unit files, and recreate the entire dependency tree. While the daemon is being reloaded, all sockets systemd listens on behalf of user configuration will stay accessible.<div style="height: 1.00em;">
+&#160;</div>
+This command should not be confused with the  <b>reload</b> command.</div>
+<div class="spacer">
+</div>
+<b>daemon-reexec</b><div style="margin-left: 4.00ex;">
+Reexecute the systemd manager. This will serialize the manager state, reexecute the process and deserialize the state again. This command is of little use except for debugging and package upgrades. Sometimes, it might be helpful as a heavy-weight  <b>daemon-reload</b>. While the daemon is being reexecuted, all sockets systemd listening on behalf of user configuration will stay accessible.</div>
+</div>
+<div class="subsection">
+<h2>System Commands</h2>  <b>is-system-running</b><div style="margin-left: 4.00ex;">
+Checks whether the system is operational. This returns success when the system is fully up and running, meaning not in startup, shutdown or maintenance mode. Failure is returned otherwise. In addition, the current state is printed in a short string to standard output, see table below. Use  <b>--quiet</b> to suppress this output.<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+<b>Table&#160;2.&#160;Manager Operational States</b><table class="tbl">
+<col style="width: 18.00ex;"/>
+<col style="width: 110.00ex;"/>
+<tbody>
+<tr>
+<td>
+Name</td>
+<td>
+Description</td>
+</tr>
+<tr>
+<td>
+<i>initializing</i></td>
+<td>
+Early bootup, before basic.target is reached or the <i>maintenance</i> state entered.</td>
+</tr>
+<tr>
+<td>
+<i>starting</i></td>
+<td>
+Late bootup, before the job queue becomes idle for the first time, or one of the rescue targets are reached.</td>
+</tr>
+<tr>
+<td>
+<i>running</i></td>
+<td>
+The system is fully operational.</td>
+</tr>
+<tr>
+<td>
+<i>degraded</i></td>
+<td>
+The system is operational but one or more units failed.</td>
+</tr>
+<tr>
+<td>
+<i>maintenance</i></td>
+<td>
+The rescue or emergency target is active.</td>
+</tr>
+<tr>
+<td>
+<i>stopping</i></td>
+<td>
+The manager is shutting down.</td>
+</tr>
+</tbody>
+</table>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="spacer">
+</div>
+<b>default</b><div style="height: 0.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+Enter default mode. This is mostly equivalent to  <b>isolate default.target</b>.</div>
+<div class="spacer">
+</div>
+<b>rescue</b><div style="margin-left: 4.00ex;">
+Enter rescue mode. This is mostly equivalent to  <b>isolate rescue.target</b>, but also prints a wall message to all users.</div>
+<div class="spacer">
+</div>
+<b>emergency</b><div style="margin-left: 4.00ex;">
+Enter emergency mode. This is mostly equivalent to  <b>isolate emergency.target</b>, but also prints a wall message to all users.</div>
+<div class="spacer">
+</div>
+<b>halt</b><div style="margin-left: 4.00ex;">
+Shut down and halt the system. This is mostly equivalent to  <b>start halt.target --job-mode=replace-irreversibly</b>, but also prints a wall message to all users. If combined with  <b>--force</b>, shutdown of all running services is skipped, however all processes are killed and all file systems are unmounted or mounted read-only, immediately followed by the system halt. If  <b>--force</b> is specified twice, the operation is immediately executed without terminating any processes or unmounting any file systems. This may result in data loss.</div>
+<div class="spacer">
+</div>
+<b>poweroff</b><div style="margin-left: 4.00ex;">
+Shut down and power-off the system. This is mostly equivalent to  <b>start poweroff.target --job-mode=replace-irreversibly</b>, but also prints a wall message to all users. If combined with  <b>--force</b>, shutdown of all running services is skipped, however all processes are killed and all file systems are unmounted or mounted read-only, immediately followed by the powering off. If  <b>--force</b> is specified twice, the operation is immediately executed without terminating any processes or unmounting any file systems. This may result in data loss.</div>
+<div class="spacer">
+</div>
+<b>reboot </b><b>[</b><i>arg</i>]<div style="margin-left: 4.00ex;">
+Shut down and reboot the system. This is mostly equivalent to  <b>start reboot.target --job-mode=replace-irreversibly</b>, but also prints a wall message to all users. If combined with  <b>--force</b>, shutdown of all running services is skipped, however all processes are killed and all file systems are unmounted or mounted read-only, immediately followed by the reboot. If  <b>--force</b> is specified twice, the operation is immediately executed without terminating any processes or unmounting any file systems. This may result in data loss.<div style="height: 1.00em;">
+&#160;</div>
+If the optional argument  <i>arg</i> is given, it will be passed as the optional argument to the  <b>reboot</b>(2) system call. The value is architecture and firmware specific. As an example, &quot;recovery&quot; might be used to trigger system recovery, and &quot;fota&quot; might be used to trigger a &#8220;firmware over the air&#8221; update.</div>
+<div class="spacer">
+</div>
+<b>kexec</b><div style="margin-left: 4.00ex;">
+Shut down and reboot the system via kexec. This is mostly equivalent to  <b>start kexec.target --job-mode=replace-irreversibly</b>, but also prints a wall message to all users. If combined with  <b>--force</b>, shutdown of all running services is skipped, however all processes are killed and all file systems are unmounted or mounted read-only, immediately followed by the reboot.</div>
+<div class="spacer">
+</div>
+<b>exit</b><div style="margin-left: 4.00ex;">
+Ask the systemd manager to quit. This is only supported for user service managers (i.e. in conjunction with the  <b>--user</b> option) and will fail otherwise.</div>
+<div class="spacer">
+</div>
+<b>switch-root </b><b></b><i>ROOT</i><b> </b><b>[</b><i>INIT</i>]<div style="margin-left: 4.00ex;">
+Switches to a different root directory and executes a new system manager process below it. This is intended for usage in initial RAM disks (&quot;initrd&quot;), and will transition from the initrd's system manager process (a.k.a &quot;init&quot; process) to the main system manager process. This call takes two arguments: the directory that is to become the new root directory, and the path to the new system manager binary below it to execute as PID 1. If the latter is omitted or the empty string, a systemd binary will automatically be searched for and used as init. If the system manager path is omitted or equal to the empty string, the state of the initrd's system manager process is passed to the main system manager, which allows later introspection of the state of the services involved in the initrd boot.</div>
+<div class="spacer">
+</div>
+<b>suspend</b><div style="margin-left: 4.00ex;">
+Suspend the system. This will trigger activation of the special suspend.target target.</div>
+<div class="spacer">
+</div>
+<b>hibernate</b><div style="margin-left: 4.00ex;">
+Hibernate the system. This will trigger activation of the special hibernate.target target.</div>
+<div class="spacer">
+</div>
+<b>hybrid-sleep</b><div style="margin-left: 4.00ex;">
+Hibernate and suspend the system. This will trigger activation of the special hybrid-sleep.target target.</div>
+</div>
+<div class="subsection">
+<h2>Parameter Syntax</h2> Unit commands listed above take either a single unit name (designated as  <i>NAME</i>), or multiple unit specifications (designated as  <i>PATTERN</i>...). In the first case, the unit name with or without a suffix must be given. If the suffix is not specified, systemctl will append a suitable suffix, &quot;.service&quot; by default, and a type-specific suffix in case of commands which operate only on specific unit types. For example,<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+# systemctl start sshd<br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+and<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+# systemctl start sshd.service<br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+are equivalent, as are<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+# systemctl isolate default<br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+and<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+# systemctl isolate default.target<br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+Note that (absolute) paths to device nodes are automatically converted to device unit names, and other (absolute) paths to mount unit names.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+# systemctl status /dev/sda<br/>
+# systemctl status /home<br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+are equivalent to:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+# systemctl status dev-sda.device<br/>
+# systemctl status home.mount<br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+In the second case, shell-style globs will be matched against currently loaded units; literal unit names, with or without a suffix, will be treated as in the first case. This means that literal unit names always refer to exactly one unit, but globs may match zero units and this is not considered an error.<div class="spacer">
+</div>
+Glob patterns use  <b>fnmatch</b>(3), so normal shell-style globbing rules are used, and &quot;*&quot;, &quot;?&quot;, &quot;[]&quot; may be used. See  <b>glob</b>(7) for more details. The patterns are matched against the names of currently loaded units, and patterns which do not match anything are silently skipped. For example:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+# systemctl stop sshd@*.service<br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+will stop all sshd@.service instances.<div class="spacer">
+</div>
+For unit file commands, the specified  <i>NAME</i> should be the full name of the unit file, or the absolute path to the unit file:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+# systemctl enable foo.service<br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+or<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+# systemctl link /path/to/foo.service<br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+</div>
+<div class="section">
+<h1>EXIT STATUS</h1> On success, 0 is returned, a non-zero failure code otherwise.</div>
+<div class="section">
+<h1>ENVIRONMENT</h1>  <i>$SYSTEMD_EDITOR</i><div style="margin-left: 4.00ex;">
+Editor to use when editing units; overrides  <i>$EDITOR</i> and  <i>$VISUAL</i>. If neither  <i>$SYSTEMD_EDITOR</i> nor  <i>$EDITOR</i> nor  <i>$VISUAL</i> are present or if it is set to an empty string or if their execution failed, systemctl will try to execute well known editors in this order:  <b>editor</b>(1),  <b>nano</b>(1),  <b>vim</b>(1),  <b>vi</b>(1).</div>
+<div class="spacer">
+</div>
+<i>$SYSTEMD_PAGER</i><div style="margin-left: 4.00ex;">
+Pager to use when  <b>--no-pager</b> is not given; overrides  <i>$PAGER</i>. Setting this to an empty string or the value &quot;cat&quot; is equivalent to passing  <b>--no-pager</b>.</div>
+<div class="spacer">
+</div>
+<i>$SYSTEMD_LESS</i><div style="margin-left: 4.00ex;">
+Override the default options passed to  <b>less</b> (&quot;FRSXMK&quot;).</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>journalctl</b>(1),  <b>loginctl</b>(1),  <b>machinectl</b>(1),  <b>systemd.unit</b>(5),  <b>systemd.resource-control</b>(5),  <b>systemd.special</b>(7),  <b>wall</b>(1),  <b>systemd.preset</b>(5),  <b>systemd.generator</b>(7),  <b>glob</b>(7)</div>
+<div class="section">
+<h1>NOTES</h1><dl>
+<dt>
+ 1.</dt>
+<dd>
+Preset</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+http://freedesktop.org/wiki/Software/systemd/Preset</div>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SD_EVENT_GET_FD(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SD_EVENT_GET_FD(3)</td>
+<td class="head-vol">
+sd_event_get_fd</td>
+<td class="head-rtitle">
+SD_EVENT_GET_FD(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sd_event_get_fd - Obtain a file descriptor to poll for event loop events</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;systemd/sd-bus.h&gt;<br/>
+<div class="spacer">
+</div>
+<div style="margin-left: 20.00ex;text-indent: -20.00ex;" class="spacer">
+<b>int sd_event_get_fd(sd_bus&#160;*</b><i>event</i><b>);</b></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>sd_event_get_fd()</b> returns the file descriptor that the event loop object returned by the  <b>sd_event_new</b>(3) function uses to wait for events. This file descriptor can be polled for events. This makes it possible to embed the  <b>sd-event</b>(3) event loop inside of another event loop.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success,  <b>sd_event_get_fd()</b> returns a non-negative integer. On failure, it returns a negative errno-style error code.</div>
+<div class="section">
+<h1>ERRORS</h1> Returned errors may indicate the following problems:<div class="spacer">
+</div>
+<b>-EINVAL</b><div style="margin-left: 4.00ex;">
+<i>event</i> is not a valid pointer to an sd_event structure.</div>
+<div class="spacer">
+</div>
+<b>-ECHILD</b><div style="margin-left: 4.00ex;">
+The event loop has been created in a different process.</div>
+</div>
+<div class="section">
+<h1>EXAMPLES</h1>  <b>Example&#160;1.&#160;Integration in glib event loop</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+/***<br/>
+  Copyright 2014 Tom Gundersen<div class="spacer">
+</div>
+<br/>
+  Permission is hereby granted, free of charge, to any person<br/>
+  obtaining a copy of this software and associated documentation files<br/>
+  (the &quot;Software&quot;), to deal in the Software without restriction,<br/>
+  including without limitation the rights to use, copy, modify, merge,<br/>
+  publish, distribute, sublicense, and/or sell copies of the Software,<br/>
+  and to permit persons to whom the Software is furnished to do so,<br/>
+  subject to the following conditions:<div class="spacer">
+</div>
+<br/>
+  The above copyright notice and this permission notice shall be<br/>
+  included in all copies or substantial portions of the Software.<div class="spacer">
+</div>
+<br/>
+  THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,<br/>
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF<br/>
+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND<br/>
+  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS<br/>
+  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN<br/>
+  ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN<br/>
+  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE<br/>
+  SOFTWARE.<br/>
+***/<div class="spacer">
+</div>
+<br/>
+#include &lt;stdlib.h&gt;<div class="spacer">
+</div>
+<br/>
+typedef struct SDEventSource {<br/>
+        GSource source;<br/>
+        GPollFD pollfd;<br/>
+        sd_event *event;<br/>
+} SDEventSource;<div class="spacer">
+</div>
+<br/>
+static gboolean event_prepare(GSource *source, gint *timeout_) {<br/>
+        return sd_event_prepare(((SDEventSource *)source)-&gt;event) &gt; 0;<br/>
+}<div class="spacer">
+</div>
+<br/>
+static gboolean event_check(GSource *source) {<br/>
+        return sd_event_wait(((SDEventSource *)source)-&gt;event, 0) &gt; 0;<br/>
+}<div class="spacer">
+</div>
+<br/>
+static gboolean event_dispatch(GSource *source, GSourceFunc callback, gpointer user_data) {<br/>
+        return sd_event_dispatch(((SDEventSource *)source)-&gt;event) &gt; 0;<br/>
+}<div class="spacer">
+</div>
+<br/>
+static void event_finalize(GSource *source) {<br/>
+        sd_event_unref(((SDEventSource *)source)-&gt;event);<br/>
+}<div class="spacer">
+</div>
+<br/>
+static GSourceFuncs event_funcs = {<br/>
+        .prepare = event_prepare,<br/>
+        .check = event_check,<br/>
+        .dispatch = event_dispatch,<br/>
+        .finalize = event_finalize,<br/>
+};<div class="spacer">
+</div>
+<br/>
+GSource *g_sd_event_create_source(sd_event *event) {<br/>
+        SDEventSource *source;<div class="spacer">
+</div>
+<br/>
+        source = (SDEventSource *)g_source_new(&amp;event_funcs, sizeof(SDEventSource));<div class="spacer">
+</div>
+<br/>
+        source-&gt;event = sd_event_ref(event);<br/>
+        source-&gt;pollfd.fd = sd_event_get_fd(event);<br/>
+        source-&gt;pollfd.events = G_IO_IN | G_IO_HUP | G_IO_ERR;<div class="spacer">
+</div>
+<br/>
+        g_source_add_poll((GSource *)source, &amp;source-&gt;pollfd);<div class="spacer">
+</div>
+<br/>
+        return (GSource *)source;<br/>
+}<br/>
+</div>
+</div>
+<div class="section">
+<h1>NOTES</h1>  <b>sd_event_get_fd()</b> is available as a shared library, which can be compiled and linked to with the  <b>libsystemd</b>&#160;<b>pkg-config</b>(1) file.</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>sd-event</b>(3),  <b>sd_event_new</b>(3),  <b>sd_event_ref</b>(3)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

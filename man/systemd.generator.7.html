@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SYSTEMD.GENERATOR(7)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SYSTEMD.GENERATOR(7)</td>
+<td class="head-vol">
+systemd.generator</td>
+<td class="head-rtitle">
+SYSTEMD.GENERATOR(7)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> systemd.generator - Systemd unit generators</div>
+<div class="section">
+<h1>SYNOPSIS</h1><div style="margin-left: 19.00ex;text-indent: -19.00ex;" class="spacer">
+<b>/path/to/generator</b> <i>normal-dir</i> <i>early-dir</i> <i>late-dir</i></div>
+<div class="spacer">
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+/run/systemd/system-generators/*<br/>
+/etc/systemd/system-generators/*<br/>
+/usr/local/lib/systemd/system-generators/*<br/>
+/usr/lib/systemd/system-generators/*<br/>
+<div class="spacer">
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+/run/systemd/user-generators/*<br/>
+/etc/systemd/user-generators/*<br/>
+/usr/local/lib/systemd/user-generators/*<br/>
+/usr/lib/systemd/user-generators/*<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> Generators are small binaries that live in /usr/lib/systemd/user-generators/ and other directories listed above.  <b>systemd</b>(1) will execute those binaries very early at bootup and at configuration reload time &#8212; before unit files are loaded. Generators can dynamically generate unit files or create symbolic links to unit files to add additional dependencies, thus extending or overriding existing definitions. Their main purpose is to convert configuration files that are not native unit files dynamically into native unit files.<div class="spacer">
+</div>
+Generators are loaded from a set of paths determined during compilation, listed above. System and user generators are loaded from directories with names ending in system-generators/ and user-generators/, respectively. Generators found in directories listed earlier override the ones with the same name in directories lower in the list. A symlink to /dev/null or an empty file can be used to mask a generator, thereby preventing it from running. Please note that the order of the two directories with the highest priority is reversed with respect to the unit load path and generators in /run overwrite those in /etc.<div class="spacer">
+</div>
+After installing new generators or updating the configuration,  <b>systemctl daemon-reload</b> may be executed. This will delete the previous configuration created by generators, re-run all generators, and cause  <b>systemd</b> to reload units from disk. See  <b>systemctl</b>(1) for more information.</div>
+<div class="section">
+<h1>WRITING GENERATORS</h1> Generators are invoked with three arguments: paths to runtime directories where generators can place their generated unit files or symlinks.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+ 1.<i>normal-dir</i><div style="height: 1.00em;">
+&#160;</div>
+argv[1] may be used to override unit files in /usr, but not those in /etc. This means that unit files placed in this directory take precedence over vendor unit configuration but not over native user/administrator unit configuration.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+ 2.<i>early-dir</i><div style="height: 1.00em;">
+&#160;</div>
+argv[2] may be used to override unit files in /usr and in /etc. This means that unit files placed in this directory take precedence over all configuration, both vendor and user/administrator.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+ 3.<i>late-dir</i><div style="height: 1.00em;">
+&#160;</div>
+argv[3] may be used to extend the unit file tree without overriding any other unit files. Any native configuration files supplied by the vendor or user/administrator take precedence over the generated ones placed in this directory.</div>
+<div class="subsection">
+<h2>Notes</h2><div style="margin-left: 4.00ex;">
+&#8226;All generators are executed in parallel. That means all executables are started at the very same time and need to be able to cope with this parallelism.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Generators are run very early at boot and cannot rely on any external services. They may not talk to any other process. That includes simple things such as logging to  <b>syslog</b>(3), or  <b>systemd</b> itself (this means: no  <b>systemctl</b>(1)!). They can however rely on the most basic kernel functionality to be available, including mounted /sys, /proc, /dev.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Units written by generators are removed when configuration is reloaded. That means the lifetime of the generated units is closely bound to the reload cycles of  <b>systemd</b> itself.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Generators should only be used to generate unit files, not any other kind of configuration. Due to the lifecycle logic mentioned above generators are not a good fit to generate dynamic configuration for other services. If you need to generate dynamic configuration for other services do so in normal services you order before the service in question.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Since  <b>syslog</b>(3) is not available (see above) log messages have to be written to /dev/kmsg instead.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;It is a good idea to use the  <i>SourcePath=</i> directive in generated unit files to specify the source configuration file you are generating the unit from. This makes things more easily understood by the user and also has the benefit that systemd can warn the user about configuration files that changed on disk but have not been read yet by systemd.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Generators may write out dynamic unit files or just hook unit files into other units with the usual .wants/ or .requires/ symlinks. Often it is nicer to simply instantiate a template unit file from /usr with a generator instead of writing out entirely dynamic unit files. Of course this works only if a single parameter is to be used.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;If you are careful you can implement generators in shell scripts. We do recommend C code however, since generators delay are executed synchronously and hence delay the entire boot if they are slow.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Regarding overriding semantics: there are two rules we try to follow when thinking about the overriding semantics:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+ 1.User configuration should override vendor configuration. This (mostly) means that stuff from /etc should override stuff from /usr.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+ 2.Native configuration should override non-native configuration. This (mostly) means that stuff you generate should never override native unit files for the same purpose.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+Of these two rules the first rule is probably the more important one and breaks the second one sometimes. Hence, when deciding whether to user argv[1], argv[2], or argv[3], your default choice should probably be argv[1].</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Instead of heading off now and writing all kind of generators for legacy configuration file formats, please think twice! It's often a better idea to just deprecate old stuff instead of keeping it artificially alive.</div>
+</div>
+</div>
+<div class="section">
+<h1>EXAMPLES</h1>  <b>Example&#160;1.&#160;systemd-fstab-generator</b><div class="spacer">
+</div>
+<b>systemd-fstab-generator</b>(8) converts /etc/fstab into native mount units. It uses argv[1] as location to place the generated unit files in order to allow the user to override /etc/fstab with her own native unit files, but also to ensure that /etc/fstab overrides any vendor default from /usr.<div class="spacer">
+</div>
+After editing /etc/fstab, the user should invoke  <b>systemctl daemon-reload</b>. This will re-run all generators and cause  <b>systemd</b> to reload units from disk. To actually mount new directories added to fstab,  <b>systemctl start </b><b></b><i>/path/to/mountpoint</i> or  <b>systemctl start local-fs.target</b> may be used.<div class="spacer">
+</div>
+<b>Example&#160;2.&#160;systemd-system-update-generator</b><div class="spacer">
+</div>
+<b>systemd-system-update-generator</b>(8) temporarily redirects default.target to system-update.target if a system update is scheduled. Since this needs to override the default user configuration for default.target it uses argv[2]. For details about this logic, see  <b>Implementing Offline System Updates</b>[1].<div class="spacer">
+</div>
+<b>Example&#160;3.&#160;Debuging a generator</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+dir=$(mktemp -d)<br/>
+SYSTEMD_LOG_LEVEL=debug /usr/lib/systemd/system-generators/systemd-fstab-generator \<br/>
+        &quot;$dir&quot; &quot;$dir&quot; &quot;$dir&quot;<br/>
+find $dir<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>systemd-cryptsetup-generator</b>(8),  <b>systemd-debug-generator</b>(8),  <b>systemd-fstab-generator</b>(8),  <b>fstab</b>(5),  <b>systemd-getty-generator</b>(8),  <b>systemd-gpt-auto-generator</b>(8),  <b>systemd-hibernate-resume-generator</b>(8),  <b>systemd-system-update-generator</b>(8),  <b>systemd-sysv-generator</b>(8),  <b>systemd.unit</b>(5),  <b>systemctl</b>(1)</div>
+<div class="section">
+<h1>NOTES</h1><dl>
+<dt>
+ 1.</dt>
+<dd>
+Implementing Offline System Updates</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+http://www.freedesktop.org/wiki/Software/systemd/SystemUpdates</div>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

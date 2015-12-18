@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SD_EVENT_ADD_SIGNAL(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SD_EVENT_ADD_SIGNAL(3)</td>
+<td class="head-vol">
+sd_event_add_signal</td>
+<td class="head-rtitle">
+SD_EVENT_ADD_SIGNAL(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sd_event_add_signal, sd_event_source_get_signal - Add a signal event source to an event loop</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;systemd/sd-bus.h&gt;<br/>
+<div class="spacer">
+</div>
+<div style="margin-left: 24.00ex;text-indent: -24.00ex;" class="spacer">
+<b>int sd_event_add_signal(sd_event&#160;*</b><i>event</i><b>, sd_event_source&#160;**</b><i>source</i><b>, int&#160;</b><i>signal</i><b>, sd_event_signal_handler_t&#160;</b><i>handler</i><b>, void&#160;*</b><i>userdata</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 41.00ex;text-indent: -41.00ex;" class="spacer">
+<b>typedef int (*sd_event_signal_handler_t)(sd_event_source&#160;*</b><i>s</i><b>, const&#160;struct&#160;signalfd_siginfo&#160;*</b><i>si</i><b>, void&#160;*</b><i>userdata</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 31.00ex;text-indent: -31.00ex;" class="spacer">
+<b>int sd_event_source_get_signal(sd_event_source&#160;*</b><i>source</i><b>);</b></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>sd_event_add_signal()</b> adds a new signal event source to an event loop object. The event loop is specified in  <i>event</i>, the event source is returned in the  <i>source</i> parameter. The  <i>signal</i> parameter specifies the signal to be handled (see  <b>signal</b>(7)). The  <i>handler</i> must reference a function to call when the signal is delivered or be  <b>NULL</b>. The handler function will be passed the  <i>userdata</i> pointer, which may be chosen freely by the caller. The handler also receives a pointer to a const struct signalfd_siginfo containing the information about the received signal. See  <b>signalfd</b>(2) for further information.<div class="spacer">
+</div>
+Only a single handler may be installed for a specific signal. The signal will be unblocked, and must be blocked when the function is called. If the handler is not specified (<i>handler</i> is  <b>NULL</b>), a default handler which causes the program to exit will be used. By default, the handler is enabled permanently (<b>SD_EVENT_ON</b>), but this may be changed with  <b>sd_event_source_set_enabled</b>(3). If the handler function returns a negative error code, it will be disabled after the invocation, even if  <b>SD_EVENT_ON</b> mode is set.<div class="spacer">
+</div>
+<b>sd_event_source_get_signal()</b> retrieves the configured signal number of a signal event source created previously with  <b>sd_event_add_signal()</b>. It takes the event source object as the  <i>source</i> parameter.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, these functions return 0 or a positive integer. On failure, they return a negative errno-style error code.</div>
+<div class="section">
+<h1>ERRORS</h1> Returned errors may indicate the following problems:<div class="spacer">
+</div>
+<b>-ENOMEM</b><div style="margin-left: 4.00ex;">
+Not enough memory to allocate an object.</div>
+<div class="spacer">
+</div>
+<b>-EINVAL</b><div style="margin-left: 4.00ex;">
+An invalid argument has been passed.</div>
+<div class="spacer">
+</div>
+<b>-EBUSY</b><div style="margin-left: 4.00ex;">
+An handler is already installed for this signal or the signal was not blocked previously.</div>
+<div class="spacer">
+</div>
+<b>-ESTALE</b><div style="margin-left: 4.00ex;">
+The event loop is already terminated.</div>
+<div class="spacer">
+</div>
+<b>-ECHILD</b><div style="margin-left: 4.00ex;">
+The event loop has been created in a different process.</div>
+</div>
+<div class="section">
+<h1>NOTES</h1>  <b>sd_event_add_signal()</b> and the other functions described here are available as a shared library, which can be compiled and linked to with the  <b>libsystemd</b>&#160;<b>pkg-config</b>(1) file.</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>sd-event</b>(3),  <b>sd_event_new</b>(3),  <b>sd_event_add_time</b>(3),  <b>sd_event_add_child</b>(3),  <b>sd_event_add_defer</b>(3),  <b>sd_event_source_set_enabled</b>(3)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

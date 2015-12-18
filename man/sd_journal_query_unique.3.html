@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SD_JOURNAL_QUERY_UNIQUE(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SD_JOURNAL_QUERY_UNIQUE(3)</td>
+<td class="head-vol">
+sd_journal_query_unique</td>
+<td class="head-rtitle">
+SD_JOURNAL_QUERY_UNIQUE(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sd_journal_query_unique, sd_journal_enumerate_unique, sd_journal_restart_unique, SD_JOURNAL_FOREACH_UNIQUE - Read unique data fields from the journal</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;systemd/sd-journal.h&gt;<br/>
+<div class="spacer">
+</div>
+<div style="margin-left: 28.00ex;text-indent: -28.00ex;" class="spacer">
+<b>int sd_journal_query_unique(sd_journal&#160;*</b><i>j</i><b>, const&#160;char&#160;*</b><i>field</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 32.00ex;text-indent: -32.00ex;" class="spacer">
+<b>int sd_journal_enumerate_unique(sd_journal&#160;*</b><i>j</i><b>, const&#160;void&#160;**</b><i>data</i><b>, size_t&#160;*</b><i>length</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 31.00ex;text-indent: -31.00ex;" class="spacer">
+<b>void sd_journal_restart_unique(sd_journal&#160;*</b><i>j</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 26.00ex;text-indent: -26.00ex;" class="spacer">
+<b>SD_JOURNAL_FOREACH_UNIQUE(sd_journal&#160;*</b><i>j</i><b>, const&#160;void&#160;*</b><i>data</i><b>, size_t&#160;</b><i>length</i><b>);</b></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>sd_journal_query_unique()</b> queries the journal for all unique values the specified field can take. It takes two arguments: the journal to query and the field name to look for. Well-known field names are listed on  <b>systemd.journal-fields</b>(7). Field names must be specified without a trailing '='. After this function has been executed successfully the field values may be queried using  <b>sd_journal_enumerate_unique()</b>. Invoking this call a second time will change the field name being queried and reset the enumeration index to the first field value that matches.<div class="spacer">
+</div>
+<b>sd_journal_enumerate_unique()</b> may be used to iterate through all data fields which match the previously selected field name as set with  <b>sd_journal_query_unique()</b>. On each invocation the next field data matching the field name is returned. The order of the returned data fields is not defined. It takes three arguments: the journal context object, plus a pair of pointers to pointer/size variables where the data object and its size shall be stored in. The returned data is in a read-only memory map and is only valid until the next invocation of  <b>sd_journal_enumerate_unique()</b>. Note that the data returned will be prefixed with the field name and '='. Note that this call is subject to the data field size threshold as controlled by  <b>sd_journal_set_data_threshold()</b>.<div class="spacer">
+</div>
+<b>sd_journal_restart_unique()</b> resets the data enumeration index to the beginning of the list. The next invocation of  <b>sd_journal_enumerate_unique()</b> will return the first field data matching the field name again.<div class="spacer">
+</div>
+Note that the  <b>SD_JOURNAL_FOREACH_UNIQUE()</b> macro may be used as a handy wrapper around  <b>sd_journal_restart_unique()</b> and  <b>sd_journal_enumerate_unique()</b>.<div class="spacer">
+</div>
+Note that these functions currently are not influenced by matches set with  <b>sd_journal_add_match()</b> but this might change in a later version of this software.</div>
+<div class="section">
+<h1>RETURN VALUE</h1>  <b>sd_journal_query_unique()</b> returns 0 on success or a negative errno-style error code.  <b>sd_journal_enumerate_unique()</b> returns a positive integer if the next field data has been read, 0 when no more fields are known, or a negative errno-style error code.  <b>sd_journal_restart_unique()</b> returns nothing.</div>
+<div class="section">
+<h1>NOTES</h1> The  <b>sd_journal_query_unique()</b>,  <b>sd_journal_enumerate_unique()</b> and  <b>sd_journal_restart_unique()</b> interfaces are available as a shared library, which can be compiled and linked to with the  <b>libsystemd</b>&#160;<b>pkg-config</b>(1) file.</div>
+<div class="section">
+<h1>EXAMPLES</h1> Use the  <b>SD_JOURNAL_FOREACH_UNIQUE</b> macro to iterate through all values a field of the journal can take. The following example lists all unit names referenced in the journal:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+#include &lt;stdio.h&gt;<br/>
+#include &lt;string.h&gt;<br/>
+#include &lt;systemd/sd-journal.h&gt;<div class="spacer">
+</div>
+<br/>
+int main(int argc, char *argv[]) {<br/>
+  sd_journal *j;<br/>
+  const void *d;<br/>
+  size_t l;<br/>
+  int r;<div class="spacer">
+</div>
+<br/>
+  r = sd_journal_open(&amp;j, SD_JOURNAL_LOCAL_ONLY);<br/>
+  if (r &lt; 0) {<br/>
+    fprintf(stderr, &quot;Failed to open journal: %s\n&quot;, strerror(-r));<br/>
+    return 1;<br/>
+  }<br/>
+  r = sd_journal_query_unique(j, &quot;_SYSTEMD_UNIT&quot;);<br/>
+  if (r &lt; 0) {<br/>
+    fprintf(stderr, &quot;Failed to query journal: %s\n&quot;, strerror(-r));<br/>
+    return 1;<br/>
+  }<br/>
+  SD_JOURNAL_FOREACH_UNIQUE(j, d, l)<br/>
+    printf(&quot;%.*s\n&quot;, (int) l, (const char*) d);<br/>
+  sd_journal_close(j);<br/>
+  return 0;<br/>
+}<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>systemd.journal-fields</b>(7),  <b>sd-journal</b>(3),  <b>sd_journal_open</b>(3),  <b>sd_journal_get_data</b>(3),  <b>sd_journal_add_match</b>(3)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+KERNEL-INSTALL(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+KERNEL-INSTALL(8)</td>
+<td class="head-vol">
+kernel-install</td>
+<td class="head-rtitle">
+KERNEL-INSTALL(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> kernel-install - Add and remove kernel and initramfs images to and from /boot</div>
+<div class="section">
+<h1>SYNOPSIS</h1><div style="margin-left: 15.00ex;text-indent: -15.00ex;" class="spacer">
+<b>kernel-install</b> COMMAND <i>KERNEL-VERSION</i> [<i>KERNEL-IMAGE</i>]</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>kernel-install</b> is used to install and remove kernel and initramfs images to and from /boot.<div class="spacer">
+</div>
+<b>kernel-install</b> will execute the files located in the directory /usr/lib/kernel/install.d/ and the local administration directory /etc/kernel/install.d/. All files are collectively sorted and executed in lexical order, regardless of the directory in which they live. However, files with identical filenames replace each other. Files in /etc/kernel/install.d/ take precedence over files with the same name in /usr/lib/kernel/install.d/. This can be used to override a system-supplied executables with a local file if needed; a symbolic link in /etc/kernel/install.d/ with the same name as an executable in /usr/lib/kernel/install.d/, pointing to /dev/null, disables the executable entirely. Executables must have the extension &quot;.install&quot;; other extensions are ignored.</div>
+<div class="section">
+<h1>COMMANDS</h1> The following commands are understood:<div class="spacer">
+</div>
+<b>add </b><b></b><i>KERNEL-VERSION</i><b> </b><b></b><i>KERNEL-IMAGE</i><div style="margin-left: 4.00ex;">
+<b>kernel-install</b> creates the directory /boot/ <i>MACHINE-ID</i>/<i>KERNEL-VERSION</i>/ and calls every executable /usr/lib/kernel/install.d/*.install and /etc/kernel/install.d/*.install with the arguments<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+add <i>KERNEL-VERSION</i> /boot/<i>MACHINE-ID</i>/<i>KERNEL-VERSION</i>/<br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+The kernel-install plugin 50-depmod.install runs depmod for the  <i>KERNEL-VERSION</i>.<div style="height: 1.00em;">
+&#160;</div>
+The kernel-install plugin 90-loaderentry.install copies  <i>KERNEL-IMAGE</i> to /boot/ <i>MACHINE-ID</i>/<i>KERNEL-VERSION</i>/linux. It also creates a boot loader entry according to the boot loader specification in /boot/loader/entries/ <i>MACHINE-ID</i>-<i>KERNEL-VERSION</i>.conf. The title of the entry is the  <i>PRETTY_NAME</i> parameter specified in /etc/os-release or /usr/lib/os-release (if the former is missing), or &quot;Linux  <i>KERNEL-VERSION</i>&quot;, if unset. If the file initrd is found next to the linux file, the initrd will be added to the configuration.</div>
+<div class="spacer">
+</div>
+<b>remove </b><b></b><i>KERNEL-VERSION</i><div style="margin-left: 4.00ex;">
+Calls every executable /usr/lib/kernel/install.d/*.install and /etc/kernel/install.d/*.install with the arguments<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+remove <i>KERNEL-VERSION</i> /boot/<i>MACHINE-ID</i>/<i>KERNEL-VERSION</i>/<br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>kernel-install</b> removes the entire directory /boot/ <i>MACHINE-ID</i>/<i>KERNEL-VERSION</i>/ afterwards.<div style="height: 1.00em;">
+&#160;</div>
+The kernel-install plugin 90-loaderentry.install removes the file /boot/loader/entries/ <i>MACHINE-ID</i>-<i>KERNEL-VERSION</i>.conf.</div>
+</div>
+<div class="section">
+<h1>EXIT STATUS</h1> If every executable returns with 0, 0 is returned, a non-zero failure code otherwise.</div>
+<div class="section">
+<h1>FILES</h1> /usr/lib/kernel/install.d/*.install /etc/kernel/install.d/*.install<div style="margin-left: 4.00ex;">
+Drop-in files which are executed by kernel-install.</div>
+<div class="spacer">
+</div>
+/etc/kernel/cmdline /proc/cmdline<div style="margin-left: 4.00ex;">
+The content of the file /etc/kernel/cmdline specifies the kernel command line to use. If that file does not exist, /proc/cmdline is used.</div>
+<div class="spacer">
+</div>
+/etc/machine-id<div style="margin-left: 4.00ex;">
+The content of the file specifies the machine identification  <i>MACHINE-ID</i>.</div>
+<div class="spacer">
+</div>
+/etc/os-release /usr/lib/os-release<div style="margin-left: 4.00ex;">
+The content of the file specifies the operating system title  <i>PRETTY_NAME</i>.</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>machine-id</b>(5),  <b>os-release</b>(5),  <b>Boot loader specification</b>[1]</div>
+<div class="section">
+<h1>NOTES</h1><dl>
+<dt>
+ 1.</dt>
+<dd>
+Boot loader specification</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+http://www.freedesktop.org/wiki/Specifications/BootLoaderSpec</div>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

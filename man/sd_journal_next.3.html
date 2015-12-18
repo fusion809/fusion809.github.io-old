@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SD_JOURNAL_NEXT(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SD_JOURNAL_NEXT(3)</td>
+<td class="head-vol">
+sd_journal_next</td>
+<td class="head-rtitle">
+SD_JOURNAL_NEXT(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sd_journal_next, sd_journal_previous, sd_journal_next_skip, sd_journal_previous_skip, SD_JOURNAL_FOREACH, SD_JOURNAL_FOREACH_BACKWARDS - Advance or set back the read pointer in the journal</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;systemd/sd-journal.h&gt;<br/>
+<div class="spacer">
+</div>
+<div style="margin-left: 20.00ex;text-indent: -20.00ex;" class="spacer">
+<b>int sd_journal_next(sd_journal&#160;*</b><i>j</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 24.00ex;text-indent: -24.00ex;" class="spacer">
+<b>int sd_journal_previous(sd_journal&#160;*</b><i>j</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 25.00ex;text-indent: -25.00ex;" class="spacer">
+<b>int sd_journal_next_skip(sd_journal&#160;*</b><i>j</i><b>, uint64_t&#160;</b><i>skip</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 29.00ex;text-indent: -29.00ex;" class="spacer">
+<b>int sd_journal_previous_skip(sd_journal&#160;*</b><i>j</i><b>, uint64_t&#160;</b><i>skip</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 19.00ex;text-indent: -19.00ex;" class="spacer">
+<b>SD_JOURNAL_FOREACH(sd_journal&#160;*</b><i>j</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 29.00ex;text-indent: -29.00ex;" class="spacer">
+<b>SD_JOURNAL_FOREACH_BACKWARDS(sd_journal&#160;*</b><i>j</i><b>);</b></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>sd_journal_next()</b> advances the read pointer into the journal by one entry. The only argument taken is a journal context object as allocated via  <b>sd_journal_open</b>(3). After successful invocation the entry may be read with functions such as  <b>sd_journal_get_data</b>(3).<div class="spacer">
+</div>
+Similarly,  <b>sd_journal_previous()</b> sets the read pointer back one entry.<div class="spacer">
+</div>
+<b>sd_journal_next_skip()</b> and  <b>sd_journal_previous_skip()</b> advance/set back the read pointer by multiple entries at once, as specified in the  <i>skip</i> parameter.<div class="spacer">
+</div>
+The journal is strictly ordered by reception time, and hence advancing to the next entry guarantees that the entry then pointing to is later in time than then previous one, or has the same timestamp.<div class="spacer">
+</div>
+Note that  <b>sd_journal_get_data</b>(3) and related calls will fail unless  <b>sd_journal_next()</b> has been invoked at least once in order to position the read pointer on a journal entry.<div class="spacer">
+</div>
+Note that the  <b>SD_JOURNAL_FOREACH()</b> macro may be used as a wrapper around  <b>sd_journal_seek_head</b>(3) and  <b>sd_journal_next()</b> in order to make iterating through the journal easier. See below for an example. Similarly,  <b>SD_JOURNAL_FOREACH_BACKWARDS()</b> may be used for iterating the journal in reverse order.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> The four calls return the number of entries advanced/set back on success or a negative errno-style error code. When the end or beginning of the journal is reached, a number smaller than requested is returned. More specifically, if  <b>sd_journal_next()</b> or  <b>sd_journal_previous()</b> reach the end/beginning of the journal they will return 0, instead of 1 when they are successful. This should be considered an EOF marker.</div>
+<div class="section">
+<h1>NOTES</h1> The  <b>sd_journal_next()</b>,  <b>sd_journal_previous()</b>,  <b>sd_journal_next_skip()</b> and  <b>sd_journal_previous_skip()</b> interfaces are available as a shared library, which can be compiled and linked to with the  <b>libsystemd</b>&#160;<b>pkg-config</b>(1) file.</div>
+<div class="section">
+<h1>EXAMPLES</h1> Iterating through the journal:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+#include &lt;stdio.h&gt;<br/>
+#include &lt;string.h&gt;<br/>
+#include &lt;systemd/sd-journal.h&gt;<div class="spacer">
+</div>
+<br/>
+int main(int argc, char *argv[]) {<br/>
+  int r;<br/>
+  sd_journal *j;<br/>
+  r = sd_journal_open(&amp;j, SD_JOURNAL_LOCAL_ONLY);<br/>
+  if (r &lt; 0) {<br/>
+    fprintf(stderr, &quot;Failed to open journal: %s\n&quot;, strerror(-r));<br/>
+    return 1;<br/>
+  }<br/>
+  SD_JOURNAL_FOREACH(j) {<br/>
+    const char *d;<br/>
+    size_t l;<div class="spacer">
+</div>
+<br/>
+    r = sd_journal_get_data(j, &quot;MESSAGE&quot;, (const void **)&amp;d, &amp;l);<br/>
+    if (r &lt; 0) {<br/>
+      fprintf(stderr, &quot;Failed to read message field: %s\n&quot;, strerror(-r));<br/>
+      continue;<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    printf(&quot;%.*s\n&quot;, (int) l, d);<br/>
+  }<br/>
+  sd_journal_close(j);<br/>
+  return 0;<br/>
+}<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>sd-journal</b>(3),  <b>sd_journal_open</b>(3),  <b>sd_journal_get_data</b>(3),  <b>sd_journal_get_realtime_usec</b>(3),  <b>sd_journal_get_cursor</b>(3)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

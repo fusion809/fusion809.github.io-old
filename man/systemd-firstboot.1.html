@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SYSTEMD-FIRSTBOOT(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SYSTEMD-FIRSTBOOT(1)</td>
+<td class="head-vol">
+systemd-firstboot</td>
+<td class="head-rtitle">
+SYSTEMD-FIRSTBOOT(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> systemd-firstboot, systemd-firstboot.service - Initialize basic system settings on or before the first boot-up of a system</div>
+<div class="section">
+<h1>SYNOPSIS</h1><div style="margin-left: 18.00ex;text-indent: -18.00ex;" class="spacer">
+<b>systemd-firstboot</b> [OPTIONS...]</div>
+<div class="spacer">
+</div>
+systemd-firstboot.service</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>systemd-firstboot</b> initializes the most basic system settings interactively on the first boot, or optionally non-interactively when a system image is created. The following settings may be set up:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;The system locale, more specifically the two locale variables  <i>LANG=</i> and  <i>LC_MESSAGES</i></div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;The system time zone</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;The system host name</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;The machine ID of the system</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;The root user's password</div>
+<div class="spacer">
+</div>
+Each of the fields may either be queried interactively from the users, set non-interactively on the tool's command line, or be copied from a host system that is used to set up the system image.<div class="spacer">
+</div>
+If a setting is already initialized it will not be overwritten and the user will not be prompted for the setting.<div class="spacer">
+</div>
+Note that this tool operates directly on the file system and does not involve any running system services, unlike  <b>localectl</b>(1),  <b>timedatectl</b>(1) or  <b>hostnamectl</b>(1). This allows  <b>systemd-firstboot</b> to operate on mounted but not booted disk images and in early boot. It is not recommended to use  <b>systemd-firstboot</b> on the running system while it is up.</div>
+<div class="section">
+<h1>OPTIONS</h1> The following options are understood:<div class="spacer">
+</div>
+<b>--root=</b><b></b><i>root</i><div style="margin-left: 4.00ex;">
+Takes a directory path as an argument. All paths will be prefixed with the given alternate  <i>root</i> path, including config search paths. This is useful to operate on a system image mounted to the specified directory instead of the host system itself.</div>
+<div class="spacer">
+</div>
+<b>--locale=</b><b></b><i>LOCALE</i>, <b>--locale-messages=</b><b></b><i>LOCALE</i><div style="margin-left: 4.00ex;">
+Sets the system locale, more specifically the  <i>LANG=</i> and  <i>LC_MESSAGES</i> settings. The argument should be a valid locale identifier, such as &quot;de_DE.UTF-8&quot;. This controls the  <b>locale.conf</b>(5) configuration file.</div>
+<div class="spacer">
+</div>
+<b>--timezone=</b><b></b><i>TIMEZONE</i><div style="margin-left: 4.00ex;">
+Sets the system time zone. The argument should be a valid time zone identifier, such as &quot;Europe/Berlin&quot;. This controls the  <b>localtime</b>(5) symlink.</div>
+<div class="spacer">
+</div>
+<b>--hostname=</b><b></b><i>HOSTNAME</i><div style="margin-left: 4.00ex;">
+Sets the system hostname. The argument should be a host name, compatible with DNS. This controls the  <b>hostname</b>(5) configuration file.</div>
+<div class="spacer">
+</div>
+<b>--machine-id=</b><b></b><i>ID</i><div style="margin-left: 4.00ex;">
+Sets the system's machine ID. This controls the  <b>machine-id</b>(5) file.</div>
+<div class="spacer">
+</div>
+<b>--root-password=</b><b></b><i>PASSWORD</i>, <b>--root-password-file=</b><b></b><i>PATH</i><div style="margin-left: 4.00ex;">
+Sets the password of the system's root user. This creates a  <b>shadow</b>(5) file. This setting exists in two forms:  <b>--root-password=</b> accepts the password to set directly on the command line,  <b>--root-password-file=</b> reads it from a file. Note that it is not recommended specifying passwords on the command line as other users might be able to see them simply by invoking  <b>ps</b>(1).</div>
+<div class="spacer">
+</div>
+<b>--prompt-locale</b>, <b>--prompt-timezone</b>, <b>--prompt-hostname</b>, <b>--prompt-root-password</b><div style="margin-left: 4.00ex;">
+Prompt the user interactively for a specific basic setting. Note that any explicit configuration settings specified on the command line take precedence, and the user is not prompted for it.</div>
+<div class="spacer">
+</div>
+<b>--prompt</b><div style="margin-left: 4.00ex;">
+Query the user for locale, timezone, hostname and root password. This is equivalent to specifying  <b>--prompt-locale</b>,  <b>--prompt-timezone</b>,  <b>--prompt-hostname</b>,  <b>--prompt-root-password</b> in combination.</div>
+<div class="spacer">
+</div>
+<b>--copy-locale</b>, <b>--copy-timezone</b>, <b>--copy-root-password</b><div style="margin-left: 4.00ex;">
+Copy a specific basic setting from the host. This only works in combination with  <b>--root=</b> (see above).</div>
+<div class="spacer">
+</div>
+<b>--copy</b><div style="margin-left: 4.00ex;">
+Copy locale, time zone and root password from the host. This is equivalent to specifying  <b>--copy-locale</b>,  <b>--copy-timezone</b>,  <b>--copy-root-password</b> in combination.</div>
+<div class="spacer">
+</div>
+<b>--setup-machine-id</b><div style="margin-left: 4.00ex;">
+Initialize the system's machine ID to a random ID. This only works in combination with  <b>--root=</b>.</div>
+<div class="spacer">
+</div>
+<b>-h</b>, <b>--help</b><div style="margin-left: 4.00ex;">
+Print a short help text and exit.</div>
+<div class="spacer">
+</div>
+<b>--version</b><div style="margin-left: 4.00ex;">
+Print a short version string and exit.</div>
+</div>
+<div class="section">
+<h1>EXIT STATUS</h1> On success, 0 is returned, a non-zero failure code otherwise.</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>locale.conf</b>(5),  <b>localtime</b>(5),  <b>hostname</b>(5),  <b>machine-id</b>(5),  <b>shadow</b>(5),  <b>systemd-machine-id-setup</b>(1),  <b>localectl</b>(1),  <b>timedatectl</b>(1),  <b>hostnamectl</b>(1)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

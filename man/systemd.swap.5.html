@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SYSTEMD.SWAP(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SYSTEMD.SWAP(5)</td>
+<td class="head-vol">
+systemd.swap</td>
+<td class="head-rtitle">
+SYSTEMD.SWAP(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> systemd.swap - Swap unit configuration</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <i>swap</i>.swap</div>
+<div class="section">
+<h1>DESCRIPTION</h1> A unit configuration file whose name ends in &quot;.swap&quot; encodes information about a swap device or file for memory paging controlled and supervised by systemd.<div class="spacer">
+</div>
+This man page lists the configuration options specific to this unit type. See  <b>systemd.unit</b>(5) for the common options of all unit configuration files. The common configuration items are configured in the generic [Unit] and [Install] sections. The swap specific configuration options are configured in the [Swap] section.<div class="spacer">
+</div>
+Additional options are listed in  <b>systemd.exec</b>(5), which define the execution environment the  <b>swapon</b>(8) binary is executed in, and in  <b>systemd.kill</b>(5), which define the way the processes are terminated, and in  <b>systemd.resource-control</b>(5), which configure resource control settings for the processes of the service.<div class="spacer">
+</div>
+Swap units must be named after the devices or files they control. Example: the swap device /dev/sda5 must be configured in a unit file dev-sda5.swap. For details about the escaping logic used to convert a file system path to a unit name, see  <b>systemd.unit</b>(5).<div class="spacer">
+</div>
+All swap units automatically get the appropriate dependencies on the devices or on the mount points of the files they are activated from.<div class="spacer">
+</div>
+Swap units with  <i>DefaultDependencies=</i> enabled implicitly acquire a conflicting dependency to umount.target so that they are deactivated at shutdown.</div>
+<div class="section">
+<h1>FSTAB</h1> Swap units may either be configured via unit files, or via /etc/fstab (see  <b>fstab</b>(5) for details). Swaps listed in /etc/fstab will be converted into native units dynamically at boot and when the configuration of the system manager is reloaded. See  <b>systemd-fstab-generator</b>(8) for details about the conversion.<div class="spacer">
+</div>
+If a swap device or file is configured in both /etc/fstab and a unit file, the configuration in the latter takes precedence.<div class="spacer">
+</div>
+When reading /etc/fstab a few special options are understood by systemd which influence how dependencies are created for swap units.<div class="spacer">
+</div>
+<b>noauto</b>, <b>auto</b><div style="margin-left: 4.00ex;">
+With  <b>noauto</b> the swap unit will not be added as a dependency for swap.target. This means that it will not be activated automatically during boot, unless it is pulled in by some other unit. Option  <b>auto</b> has the opposite meaning and is the default.</div>
+<div class="spacer">
+</div>
+<b>nofail</b><div style="margin-left: 4.00ex;">
+With  <b>nofail</b> the swap unit will be only wanted, not required by swap.target. This means that the boot will continue even if this swap device is not activated successfully.</div>
+</div>
+<div class="section">
+<h1>OPTIONS</h1> Swap files must include a [Swap] section, which carries information about the swap device it supervises. A number of options that may be used in this section are shared with other unit types. These options are documented in  <b>systemd.exec</b>(5) and  <b>systemd.kill</b>(5). The options specific to the [Swap] section of swap units are the following:<div class="spacer">
+</div>
+<i>What=</i><div style="margin-left: 4.00ex;">
+Takes an absolute path of a device node or file to use for paging. See  <b>swapon</b>(8) for details. If this refers to a device node, a dependency on the respective device unit is automatically created. (See  <b>systemd.device</b>(5) for more information.) If this refers to a file, a dependency on the respective mount unit is automatically created. (See  <b>systemd.mount</b>(5) for more information.) This option is mandatory.</div>
+<div class="spacer">
+</div>
+<i>Priority=</i><div style="margin-left: 4.00ex;">
+Swap priority to use when activating the swap device or file. This takes an integer. This setting is optional and ignored when priority is set by  <b>pri=</b> in the  <i>Options=</i> option.</div>
+<div class="spacer">
+</div>
+<i>Options=</i><div style="margin-left: 4.00ex;">
+May contain an option string for the swap device. This may be used for controlling discard options among other functionality, if the swap backing device supports the discard or trim operation. (See  <b>swapon</b>(8) for more information.)</div>
+<div class="spacer">
+</div>
+<i>TimeoutSec=</i><div style="margin-left: 4.00ex;">
+Configures the time to wait for the swapon command to finish. If a command does not exit within the configured time, the swap will be considered failed and be shut down again. All commands still running will be terminated forcibly via  <b>SIGTERM</b>, and after another delay of this time with  <b>SIGKILL</b>. (See  <b>KillMode=</b> in  <b>systemd.kill</b>(5).) Takes a unit-less value in seconds, or a time span value such as &quot;5min 20s&quot;. Pass &quot;0&quot; to disable the timeout logic. Defaults to  <i>DefaultTimeoutStartSec=</i> from the manager configuration file (see  <b>systemd-system.conf</b>(5)).</div>
+<div class="spacer">
+</div>
+Check  <b>systemd.exec</b>(5) and  <b>systemd.kill</b>(5) for more settings.</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>systemctl</b>(1),  <b>systemd.unit</b>(5),  <b>systemd.exec</b>(5),  <b>systemd.kill</b>(5),  <b>systemd.resource-control</b>(5),  <b>systemd.device</b>(5),  <b>systemd.mount</b>(5),  <b>swapon</b>(8),  <b>systemd-fstab-generator</b>(8),  <b>systemd.directives</b>(7)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

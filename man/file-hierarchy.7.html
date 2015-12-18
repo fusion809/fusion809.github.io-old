@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+FILE-HIERARCHY(7)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+FILE-HIERARCHY(7)</td>
+<td class="head-vol">
+file-hierarchy</td>
+<td class="head-rtitle">
+FILE-HIERARCHY(7)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> file-hierarchy - File system hierarchy overview</div>
+<div class="section">
+<h1>DESCRIPTION</h1> Operating systems using the  <b>systemd</b>(1) system and service manager are organized based on a file system hierarchy inspired by UNIX, more specifically the hierarchy described in the  <b>File System Hierarchy</b>[1] specification and  <b>hier</b>(7). This manual page describes a more minimal, modernized subset of these specifications that defines more strictly the suggestions and restrictions systemd makes on the file system hierarchy.<div class="spacer">
+</div>
+Many of the paths described here are queriable with the  <b>systemd-path</b>(1) tool.</div>
+<div class="section">
+<h1>GENERAL STRUCTURE</h1> /<div style="margin-left: 4.00ex;">
+The file system root. Usually writable, but this is not required. Possibly a temporary file system (&quot;tmpfs&quot;). Not shared with other hosts (unless read-only).</div>
+<div class="spacer">
+</div>
+/boot<div style="margin-left: 4.00ex;">
+The boot partition used for bringing up the system. On EFI systems this is possibly the EFI System Partition, also see  <b>systemd-gpt-auto-generator</b>(8). This directory is usually strictly local to the host, and should be considered read-only, except when a new kernel or boot loader is installed. This directory only exists on systems that run on physical or emulated hardware that requires boot loaders.</div>
+<div class="spacer">
+</div>
+/etc<div style="margin-left: 4.00ex;">
+System-specific configuration. This directory may or may not be read-only. Frequently, this directory is pre-populated with vendor-supplied configuration files, but applications should not make assumptions about this directory being fully populated or populated at all, and should fall back to defaults if configuration is missing.</div>
+<div class="spacer">
+</div>
+/home<div style="margin-left: 4.00ex;">
+The location for normal user's home directories. Possibly shared with other systems, and never read-only. This directory should only be used for normal users, never for system users. This directory and possibly the directories contained within it might only become available or writable in late boot or even only after user authentication. This directory might be placed on limited-functionality network file systems, hence applications should not assume the full set of file API is available on this directory. Applications should generally not reference this directory directly, but via the per-user  <i>$HOME</i> environment variable, or via the home directory field of the user database.</div>
+<div class="spacer">
+</div>
+/root<div style="margin-left: 4.00ex;">
+The home directory of the root user. The root user's home directory is located outside of /home in order to make sure the root user may log in even without /home being available and mounted.</div>
+<div class="spacer">
+</div>
+/srv<div style="margin-left: 4.00ex;">
+The place to store general server payload, managed by the administrator. No restrictions are made how this directory is organized internally. Generally writable, and possibly shared among systems. This directory might become available or writable only very late during boot.</div>
+<div class="spacer">
+</div>
+/tmp<div style="margin-left: 4.00ex;">
+The place for small temporary files. This directory is usually mounted as a &quot;tmpfs&quot; instance, and should hence not be used for larger files. (Use /var/tmp for larger files.) Since the directory is accessible to other users of the system it is essential that this directory is only written to with the  <b>mkstemp</b>(3),  <b>mkdtemp</b>(3) and related calls. This directory is usually flushed at boot-up. Also, files that are not accessed within a certain time are usually automatically deleted. If applications find the environment variable  <i>$TMPDIR</i> set they should prefer using the directory specified in it over directly referencing /tmp (see  <b>environ</b>(7) and  <b>IEEE Std 1003.1</b>[2] for details).</div>
+</div>
+<div class="section">
+<h1>RUNTIME DATA</h1> /run<div style="margin-left: 4.00ex;">
+A &quot;tmpfs&quot; file system for system packages to place runtime data in. This directory is flushed on boot, and generally writable for privileged programs only. Always writable.</div>
+<div class="spacer">
+</div>
+/run/log<div style="margin-left: 4.00ex;">
+Runtime system logs. System components may place private logs in this directory. Always writable, even when /var/log might not be accessible yet.</div>
+<div class="spacer">
+</div>
+/run/user<div style="margin-left: 4.00ex;">
+Contains per-user runtime directories, each usually individually mounted &quot;tmpfs&quot; instances. Always writable, flushed at each reboot and when the user logs out. User code should not reference this directory directly, but via the  <i>$XDG_RUNTIME_DIR</i> environment variable, as documented in the  <b>XDG Base Directory Specification</b>[3].</div>
+</div>
+<div class="section">
+<h1>VENDOR-SUPPLIED OPERATING SYSTEM RESOURCES</h1> /usr<div style="margin-left: 4.00ex;">
+Vendor-supplied operating system resources. Usually read-only, but this is not required. Possibly shared between multiple hosts. This directory should not be modified by the administrator, except when installing or removing vendor-supplied packages.</div>
+<div class="spacer">
+</div>
+/usr/bin<div style="margin-left: 4.00ex;">
+Binaries and executables for user commands, that shall appear in the  <i>$PATH</i> search path. It is recommended not to place binaries in this directory that are not useful for invocation from a shell (such as daemon binaries); these should be placed in a subdirectory of /usr/lib instead.</div>
+<div class="spacer">
+</div>
+/usr/include<div style="margin-left: 4.00ex;">
+C and C++ API header files of system libraries.</div>
+<div class="spacer">
+</div>
+/usr/lib<div style="margin-left: 4.00ex;">
+Static, private vendor data that is compatible with all architectures (though not necessarily architecture-independent). Note that this includes internal executables or other binaries that are not regularly invoked from a shell. Such binaries may be for any architecture supported by the system. Do not place public libraries in this directory, use  <i>$libdir</i> (see below), instead.</div>
+<div class="spacer">
+</div>
+/usr/lib/<i>arch-id</i><div style="margin-left: 4.00ex;">
+Location for placing dynamic libraries, also called  <i>$libdir</i>. The architecture identifier to use is defined on  <b>Multiarch Architecture Specifiers (Tuples)</b>[4] list. Legacy locations of  <i>$libdir</i> are /usr/lib, /usr/lib64. This directory should not be used for package-specific data, unless this data is architecture-dependent, too. To query  <i>$libdir</i> for the primary architecture of the system, invoke:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+# systemd-path system-library-arch<br/>
+</div>
+</div>
+<div class="spacer">
+</div>
+/usr/share<div style="margin-left: 4.00ex;">
+Resources shared between multiple packages, such as documentation, man pages, time zone information, fonts and other resources. Usually, the precise location and format of files stored below this directory is subject to specifications that ensure interoperability.</div>
+<div class="spacer">
+</div>
+/usr/share/doc<div style="margin-left: 4.00ex;">
+Documentation for the operating system or system packages.</div>
+<div class="spacer">
+</div>
+/usr/share/factory/etc<div style="margin-left: 4.00ex;">
+Repository for vendor-supplied default configuration files. This directory should be populated with pristine vendor versions of all configuration files that may be placed in /etc. This is useful to compare the local configuration of a system with vendor defaults and to populate the local configuration with defaults.</div>
+<div class="spacer">
+</div>
+/usr/share/factory/var<div style="margin-left: 4.00ex;">
+Similar to /usr/share/factory/etc but for vendor versions of files in the variable, persistent data directory /var.</div>
+</div>
+<div class="section">
+<h1>PERSISTENT VARIABLE SYSTEM DATA</h1> /var<div style="margin-left: 4.00ex;">
+Persistent, variable system data. Must be writable. This directory might be pre-populated with vendor-supplied data, but applications should be able to reconstruct necessary files and directories in this subhierarchy should they be missing, as the system might start up without this directory being populated. Persistency is recommended, but optional, to support ephemeral systems. This directory might become available or writable only very late during boot. Components that are required to operate during early boot hence shall not unconditionally rely on this directory.</div>
+<div class="spacer">
+</div>
+/var/cache<div style="margin-left: 4.00ex;">
+Persistent system cache data. System components may place non-essential data in this directory. Flushing this directory should have no effect on operation of programs, except for increased runtimes necessary to rebuild these caches.</div>
+<div class="spacer">
+</div>
+/var/lib<div style="margin-left: 4.00ex;">
+Persistent system data. System components may place private data in this directory.</div>
+<div class="spacer">
+</div>
+/var/log<div style="margin-left: 4.00ex;">
+Persistent system logs. System components may place private logs in this directory, though it is recommended to do most logging via the  <b>syslog</b>(3) and  <b>sd_journal_print</b>(3) calls.</div>
+<div class="spacer">
+</div>
+/var/spool<div style="margin-left: 4.00ex;">
+Persistent system spool data, such as printer or mail queues.</div>
+<div class="spacer">
+</div>
+/var/tmp<div style="margin-left: 4.00ex;">
+The place for larger and persistent temporary files. In contrast to /tmp this directory is usually mounted from a persistent physical file system and can thus accept larger files. (Use /tmp for smaller files.) This directory is generally not flushed at boot-up, but time-based cleanup of files that have not been accessed for a certain time is applied. The same security restrictions as with /tmp apply, and hence only  <b>mkstemp</b>(3),  <b>mkdtemp</b>(3) or similar calls should be used to make use of this directory. If applications find the environment variable  <i>$TMPDIR</i> set they should prefer using the directory specified in it over directly referencing /var/tmp (see  <b>environ</b>(7) for details).</div>
+</div>
+<div class="section">
+<h1>VIRTUAL KERNEL AND API FILE SYSTEMS</h1> /dev<div style="margin-left: 4.00ex;">
+The root directory for device nodes. Usually this directory is mounted as a &quot;devtmpfs&quot; instance, but might be of a different type in sandboxed/containerized setups. This directory is managed jointly by the kernel and  <b>systemd-udevd</b>(8), and should not be written to by other components. A number of special purpose virtual file systems might be mounted below this directory.</div>
+<div class="spacer">
+</div>
+/dev/shm<div style="margin-left: 4.00ex;">
+Place for POSIX shared memory segments, as created via  <b>shm_open</b>(3). This directory is flushed on boot, and is a &quot;tmpfs&quot; file system. Since all users have write access to this directory, special care should be taken to avoid name clashes and vulnerabilities. For normal users, shared memory segments in this directory are usually deleted when the user logs out. Usually it is a better idea to use memory mapped files in /run (for system programs) or  <i>$XDG_RUNTIME_DIR</i> (for user programs) instead of POSIX shared memory segments, since those directories are not world-writable and hence not vulnerable to security-sensitive name clashes.</div>
+<div class="spacer">
+</div>
+/proc<div style="margin-left: 4.00ex;">
+A virtual kernel file system exposing the process list and other functionality. This file system is mostly an API to interface with the kernel and not a place where normal files may be stored. For details, see  <b>proc</b>(5). A number of special purpose virtual file systems might be mounted below this directory.</div>
+<div class="spacer">
+</div>
+/proc/sys<div style="margin-left: 4.00ex;">
+A hierarchy below /proc that exposes a number of kernel tunables. The primary way to configure the settings in this API file tree is via  <b>sysctl.d</b>(5) files. In sandboxed/containerized setups this directory is generally mounted read-only.</div>
+<div class="spacer">
+</div>
+/sys<div style="margin-left: 4.00ex;">
+A virtual kernel file system exposing discovered devices and other functionality. This file system is mostly an API to interface with the kernel and not a place where normal files may be stored. In sandboxed/containerized setups this directory is generally mounted read-only. A number of special purpose virtual file systems might be mounted below this directory.</div>
+</div>
+<div class="section">
+<h1>COMPATIBILITY SYMLINKS</h1> /bin, /sbin, /usr/sbin<div style="margin-left: 4.00ex;">
+These compatibility symlinks point to /usr/bin, ensuring that scripts and binaries referencing these legacy paths correctly find their binaries.</div>
+<div class="spacer">
+</div>
+/lib<div style="margin-left: 4.00ex;">
+This compatibility symlink points to /usr/lib, ensuring that programs referencing this legacy path correctly find their resources.</div>
+<div class="spacer">
+</div>
+/lib64<div style="margin-left: 4.00ex;">
+On some architecture ABIs this compatibility symlink points to  <i>$libdir</i>, ensuring that binaries referencing this legacy path correctly find their dynamic loader. This symlink only exists on architectures whose ABI places the dynamic loader in this path.</div>
+<div class="spacer">
+</div>
+/var/run<div style="margin-left: 4.00ex;">
+This compatibility symlink points to /run, ensuring that programs referencing this legacy path correctly find their runtime data.</div>
+</div>
+<div class="section">
+<h1>HOME DIRECTORY</h1> User applications may want to place files and directories in the user's home directory. They should follow the following basic structure. Note that some of these directories are also standardized (though more weakly) by the  <b>XDG Base Directory Specification</b>[3]. Additional locations for high-level user resources are defined by  <b>xdg-user-dirs</b>[5].<div class="spacer">
+</div>
+~/.cache<div style="margin-left: 4.00ex;">
+Persistent user cache data. User programs may place non-essential data in this directory. Flushing this directory should have no effect on operation of programs, except for increased runtimes necessary to rebuild these caches. If an application finds  <i>$XDG_CACHE_HOME</i> set is should use the directory specified in it instead of this directory.</div>
+<div class="spacer">
+</div>
+~/.config<div style="margin-left: 4.00ex;">
+Application configuration and state. When a new user is created this directory will be empty or not exist at all. Applications should fall back to defaults should their configuration or state in this directory be missing. If an application finds  <i>$XDG_CONFIG_HOME</i> set is should use the directory specified in it instead of this directory.</div>
+<div class="spacer">
+</div>
+~/.local/bin<div style="margin-left: 4.00ex;">
+Executables that shall appear in the user's  <i>$PATH</i> search path. It is recommended not to place executables in this directory that are not useful for invocation from a shell; these should be placed in a subdirectory of ~/.local/lib instead. Care should be taken when placing architecture-dependent binaries in this place which might be problematic if the home directory is shared between multiple hosts with different architectures.</div>
+<div class="spacer">
+</div>
+~/.local/lib<div style="margin-left: 4.00ex;">
+Static, private vendor data that is compatible with all architectures.</div>
+<div class="spacer">
+</div>
+~/.local/lib/<i>arch-id</i><div style="margin-left: 4.00ex;">
+Location for placing public dynamic libraries. The architecture identifier to use, is defined on  <b>Multiarch Architecture Specifiers (Tuples)</b>[4] list.</div>
+<div class="spacer">
+</div>
+~/.local/share<div style="margin-left: 4.00ex;">
+Resources shared between multiple packages, such as fonts or artwork. Usually, the precise location and format of files stored below this directory is subject to specifications that ensure interoperability. If an application finds  <i>$XDG_DATA_HOME</i> set is should use the directory specified in it instead of this directory.</div>
+</div>
+<div class="section">
+<h1>UNPRIVILEGED WRITE ACCESS</h1> Unprivileged processes generally lack write access to most of the hierarchy.<div class="spacer">
+</div>
+The exceptions for normal users are /tmp, /var/tmp, /dev/shm, as well as the home directory  <i>$HOME</i> (usually found below /home) and the runtime directory  <i>$XDG_RUNTIME_DIR</i> (found below /run/user) of the user, which are all writable.<div class="spacer">
+</div>
+For unprivileged system processes only /tmp, /var/tmp and /dev/shm are writable. If an unprivileged system process needs a private, writable directory in /var or /run, it is recommended to either create it before dropping privileges in the daemon code, to create it via  <b>tmpfiles.d</b>(5) fragments during boot, or via the  <i>RuntimeDirectory=</i> directive of service units (see  <b>systemd.unit</b>(5) for details).</div>
+<div class="section">
+<h1>NODE TYPES</h1> Unix file systems support different types of file nodes, including regular files, directories, symlinks, character and block device nodes, sockets and FIFOs.<div class="spacer">
+</div>
+It is strongly recommended that /dev is the only location below which device nodes shall be placed. Similar, /run shall be the only location to place sockets and FIFOs. Regular files, directories and symlinks may be used in all directories.</div>
+<div class="section">
+<h1>SYSTEM PACKAGES</h1> Developers of system packages should follow strict rules when placing their own files in the file system. The following table lists recommended locations for specific types of files supplied by the vendor.<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+<b>Table&#160;1.&#160;System Package Vendor Files Locations</b><table class="tbl">
+<col style="width: 37.00ex;"/>
+<col style="width: 520.00ex;"/>
+<tbody>
+<tr>
+<td>
+Directory</td>
+<td>
+Purpose</td>
+</tr>
+<tr>
+<td>
+/usr/bin</td>
+<td>
+Package executables that shall appear in the <i>$PATH</i> executable search path, compiled for any of the supported architectures compatible with the operating system. It is not recommended to place internal binaries or binaries that are not commonly invoked from the shell in this directory, such as daemon binaries. As this directory is shared with most other packages of the system special care should be taken to pick unique names for files placed here, that are unlikely to clash with other package's files.</td>
+</tr>
+<tr>
+<td>
+/usr/lib/<i>arch-id</i></td>
+<td>
+Public shared libraries of the package. As above, be careful with using too generic names, and pick unique names for your libraries to place here to avoid name clashes.</td>
+</tr>
+<tr>
+<td>
+/usr/lib/<i>package</i></td>
+<td>
+Private, static vendor resources of the package, including private binaries and libraries, or any other kind of read-only vendor data.</td>
+</tr>
+<tr>
+<td>
+/usr/lib/<i>arch-id</i>/<i>package</i></td>
+<td>
+Private other vendor resources of the package that are architecture-specific and cannot be shared between architectures. Note that this generally does not include private executables since binaries of a specific architecture may be freely invoked from any other supported system architecture.</td>
+</tr>
+<tr>
+<td>
+/usr/include/<i>package</i></td>
+<td>
+Public C/C++ APIs of public shared libraries of the package.</td>
+</tr>
+</tbody>
+</table>
+<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+Additional static vendor files may be installed in the<div style="height: 0.00em;">
+&#160;</div>
+/usr/share hierarchy, to the locations defined by the various relevant specifications.<div class="spacer">
+</div>
+During runtime and for local configuration and state additional directories are defined:<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+<b>Table&#160;2.&#160;System Package Variable Files Locations</b><table class="tbl">
+<col style="width: 24.00ex;"/>
+<col style="width: 409.00ex;"/>
+<tbody>
+<tr>
+<td>
+Directory</td>
+<td>
+Purpose</td>
+</tr>
+<tr>
+<td>
+/etc/<i>package</i></td>
+<td>
+System-specific configuration for the package. It is recommended to default to safe fallbacks if this configuration is missing, if this is possible. Alternatively, a <b>tmpfiles.d</b>(5) fragment may be used to copy or symlink the necessary files and directories from /usr/share/factory during boot, via the &quot;L&quot; or &quot;C&quot; directives.</td>
+</tr>
+<tr>
+<td>
+/run/<i>package</i></td>
+<td>
+Runtime data for the package. Packages must be able to create the necessary subdirectories in this tree on their own, since the directory is flushed automatically on boot. Alternatively, a <b>tmpfiles.d</b>(5) fragment may be used to create the necessary directories during boot. Alternatively, the <i>RuntimeDirectory=</i> directive of service units may be used (see <b>systemd.unit</b>(5) for details.)</td>
+</tr>
+<tr>
+<td>
+/run/log/<i>package</i></td>
+<td>
+Runtime log data for the package. As above, the package needs to make sure to create this directory if necessary, as it will be flushed on every boot.</td>
+</tr>
+<tr>
+<td>
+/var/cache/<i>package</i></td>
+<td>
+Persistent cache data of the package. If this directory is flushed the application should work correctly on next invocation, though possibly slowed down due to the need to rebuild any local cache files. The application must be capable of recreating this directory should it be missing and necessary.</td>
+</tr>
+<tr>
+<td>
+/var/lib/<i>package</i></td>
+<td>
+Persistent private data of the package. This is the primary place to put persistent data that does not fall into the other categories listed. Packages should be able to create the necessary subdirectories in this tree on their own, since the directory might be missing on boot. Alternatively, a <b>tmpfiles.d</b>(5) fragment may be used to create the necessary directories during boot.</td>
+</tr>
+<tr>
+<td>
+/var/log/<i>package</i></td>
+<td>
+Persistent log data of the package. As above, the package should make sure to create this directory if necessary, as it might be missing.</td>
+</tr>
+<tr>
+<td>
+/var/spool/<i>package</i></td>
+<td>
+Persistent spool/queue data of the package. As above, the package should make sure to create this directory if necessary, as it might be missing.</td>
+</tr>
+</tbody>
+</table>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>USER PACKAGES</h1> Programs running in user context should follow strict rules when placing their own files in the user's home directory. The following table lists recommended locations in the home directory for specific types of files supplied by the vendor if the application is installed in the home directory. (Note however, that user applications installed system-wide should follow the rules outlined above regarding placing vendor files.)<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+<b>Table&#160;3.&#160;User Package Vendor File Locations</b><table class="tbl">
+<col style="width: 43.00ex;"/>
+<col style="width: 441.00ex;"/>
+<tbody>
+<tr>
+<td>
+Directory</td>
+<td>
+Purpose</td>
+</tr>
+<tr>
+<td>
+~/.local/bin</td>
+<td>
+Package executables that shall appear in the <i>$PATH</i> executable search path. It is not recommended to place internal executables or executables that are not commonly invoked from the shell in this directory, such as daemon executables. As this directory is shared with most other packages of the user special care should be taken to pick unique names for files placed here, that are unlikely to clash with other package's files.</td>
+</tr>
+<tr>
+<td>
+~/.local/lib/<i>arch-id</i></td>
+<td>
+Public shared libraries of the package. As above, be careful with using too generic names, and pick unique names for your libraries to place here to avoid name clashes.</td>
+</tr>
+<tr>
+<td>
+~/.local/lib/<i>package</i></td>
+<td>
+Private, static vendor resources of the package, compatible with any architecture, or any other kind of read-only vendor data.</td>
+</tr>
+<tr>
+<td>
+~/.local/lib/<i>arch-id</i>/<i>package</i></td>
+<td>
+Private other vendor resources of the package that are architecture-specific and cannot be shared between architectures.</td>
+</tr>
+</tbody>
+</table>
+<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+Additional static vendor files may be installed in the<div style="height: 0.00em;">
+&#160;</div>
+~/.local/share hierarchy, to the locations defined by the various relevant specifications.<div class="spacer">
+</div>
+During runtime and for local configuration and state additional directories are defined:<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+<b>Table&#160;4.&#160;User Package Variable File Locations</b><table class="tbl">
+<col style="width: 36.00ex;"/>
+<col style="width: 305.00ex;"/>
+<tbody>
+<tr>
+<td>
+Directory</td>
+<td>
+Purpose</td>
+</tr>
+<tr>
+<td>
+~/.config/<i>package</i></td>
+<td>
+User-specific configuration and state for the package. It is required to default to safe fallbacks if this configuration is missing.</td>
+</tr>
+<tr>
+<td>
+<i>$XDG_RUNTIME_DIR</i>/<i>package</i></td>
+<td>
+User runtime data for the package.</td>
+</tr>
+<tr>
+<td>
+~/.cache/<i>package</i></td>
+<td>
+Persistent cache data of the package. If this directory is flushed the application should work correctly on next invocation, though possibly slowed down due to the need to rebuild any local cache files. The application must be capable of recreating this directory should it be missing and necessary.</td>
+</tr>
+</tbody>
+</table>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>hier</b>(7),  <b>systemd-path</b>(1),  <b>systemd-gpt-auto-generator</b>(8),  <b>sysctl.d</b>(5),  <b>tmpfiles.d</b>(5),  <b>pkg-config</b>(1),  <b>systemd.unit</b>(5)</div>
+<div class="section">
+<h1>NOTES</h1><dl>
+<dt>
+ 1.</dt>
+<dd>
+File System Hierarchy</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+http://refspecs.linuxfoundation.org/FHS_2.3/fhs-2.3.html</div>
+<dl>
+<dt>
+ 2.</dt>
+<dd>
+IEEE Std 1003.1</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap08.html#tag_08_03</div>
+<dl>
+<dt>
+ 3.</dt>
+<dd>
+XDG Base Directory Specification</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html</div>
+<dl>
+<dt>
+ 4.</dt>
+<dd>
+Multiarch Architecture Specifiers (Tuples)</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+https://wiki.debian.org/Multiarch/Tuples</div>
+<dl>
+<dt>
+ 5.</dt>
+<dd>
+xdg-user-dirs</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+http://www.freedesktop.org/wiki/Software/xdg-user-dirs/</div>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

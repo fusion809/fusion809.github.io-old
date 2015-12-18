@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SYSTEMD-RESOLVED.SERVICE(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SYSTEMD-RESOLVED.SERVICE(8)</td>
+<td class="head-vol">
+systemd-resolved.service</td>
+<td class="head-rtitle">
+SYSTEMD-RESOLVED.SERVICE(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> systemd-resolved.service, systemd-resolved - Network Name Resolution manager</div>
+<div class="section">
+<h1>SYNOPSIS</h1> systemd-resolved.service<div class="spacer">
+</div>
+/usr/lib/systemd/systemd-resolved</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>systemd-resolved</b> is a system service that manages network name resolution. It implements a caching DNS stub resolver and an LLMNR resolver and responder. It also generates /run/systemd/resolve/resolv.conf for compatibility which may be symlinked from /etc/resolv.conf. The glibc NSS module  <b>nss-resolve</b>(8) is necessary to allow libc's NSS resolver functions to resolve host names via  <b>systemd-resolved</b>.<div class="spacer">
+</div>
+The DNS servers contacted are determined from the global settings in /etc/systemd/resolved.conf, the per-link static settings in /etc/systemd/network/*.network files, and the per-link dynamic settings received over DHCP. See  <b>resolved.conf</b>(5) and  <b>systemd.network</b>(5) for details. To improve compatibility /etc/resolv.conf is read in order to discover configured system DNS servers, however only if it is not a symlink to /run/systemd/resolve/resolv.conf (see above).<div class="spacer">
+</div>
+<b>systemd-resolved</b> synthesizes DNS RRs for the following cases:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;The local, configured hostname is resolved to all locally configured IP addresses ordered by their scope, or &#8212; if none are configured &#8212; the IPv4 address 127.0.0.2 (which is on the local loopback) and the IPv6 address ::1 (which is the local host).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;The hostname &quot;localhost&quot; is resolved to the IP addresses 127.0.0.1 and ::1.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;The hostname &quot;gateway&quot; is resolved to all current default routing gateway addresses, ordered by their metric. This assigns a stable hostname to the current gateway, useful for referencing it independently of the current network configuration state.</div>
+<div class="spacer">
+</div>
+Lookup requests are routed to the available DNS servers and LLMNR interfaces according to the following rules:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Lookups for the special hostname &quot;localhost&quot; are never routed to the network.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Single-label names are routed to all local interfaces capable of IP multicasting, using the LLMNR protocol. Lookups for IPv4 addresses are only sent via LLMNR on IPv4, and lookups for IPv6 addresses are only sent via LLMNR on IPv6. Lookups for the locally configured host name and the &quot;gateway&quot; host name are never routed to LLMNR.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Multi-label names are routed to all local interfaces that have a DNS sever configured, plus the globally configured DNS server if there is one. Address lookups from the link-local addres range are never routed to DNS.</div>
+<div class="spacer">
+</div>
+If lookups are routed to multiple interfaces, the first successful response is returned (thus effectively merging the lookup zones on all matching interfaces). If the lookup failed on all interfaces the last failing response is returned.<div class="spacer">
+</div>
+Routing of lookups may be influenced by configuring per-interface domain names, see  <b>systemd.network</b>(5) for details. Lookups for a hostname ending in one of the per-interface domains are exclusively routed to the matching interfaces.<div class="spacer">
+</div>
+Note that /run/systemd/resolve/resolv.conf should not be used directly, but only through a symlink from /etc/resolv.conf.</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>resolved.conf</b>(5),  <b>nss-resolve</b>(8),  <b>systemd.network</b>(5),  <b>systemd-networkd.service</b>(8)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

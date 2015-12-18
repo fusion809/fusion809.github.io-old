@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SD_EVENT_WAIT(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SD_EVENT_WAIT(3)</td>
+<td class="head-vol">
+sd_event_wait</td>
+<td class="head-rtitle">
+SD_EVENT_WAIT(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sd_event_wait, sd_event_prepare, sd_event_dispatch - Run parts of libsystemd event loop</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;systemd/sd-event.h&gt;<br/>
+<div class="spacer">
+</div>
+<div style="margin-left: 21.00ex;text-indent: -21.00ex;" class="spacer">
+<b>int sd_event_prepare(sd_event&#160;*</b><i>event</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 18.00ex;text-indent: -18.00ex;" class="spacer">
+<b>int sd_event_wait(sd_event&#160;*</b><i>event</i><b>, uint64_t&#160;</b><i>timeout</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 22.00ex;text-indent: -22.00ex;" class="spacer">
+<b>int sd_event_dispatch(sd_event&#160;*</b><i>event</i><b>);</b></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> Functions described here form parts of an event loop.<div class="spacer">
+</div>
+<b>sd_event_prepare</b> checks for pending events and arms necessary timers. If any events are ready to be processed, it returns a positive value, and the events should be processed with  <b>sd_event_dispatch</b>.  <b>sd_event_dispatch</b> runs a handler for one of the events from the sources with the highest priority. On success,  <b>sd_event_dispatch</b> returns either 0, which means that the loop is finished, or a positive value, which means that the loop is again in the initial state and  <b>sd_event_prepare</b> should be called again.<div class="spacer">
+</div>
+In case  <b>sd_event_prepare</b> returned 0,  <b>sd_event_wait</b> should be called to wait for events or a timeout. If any events are ready to be processed, it returns a positive value, and the events should be processed with  <b>sd_event_dispatch</b>. Otherwise, the loop is back in the initial state and  <b>sd_event_prepare</b> should be called again.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+             &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;<br/>
+             &#9474; initial  &#9500;&#9472;&#9472;&#8592;&#8592;&#8592;&#8592;&#8592;&#8592;&#8592;&#8592;&#8592;&#8592;&#8592;&#8592;&#8592;&#8592;&#8592;&#8592;&#8592;&#8592;&#8592;&#9472;&#9488;<br/>
+             &#9492;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;                      &#8593;<br/>
+                 &#9474;                             &#8593;<br/>
+           sd_event_prepare   &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;      &#8593;<br/>
+                 &#9500; 0 &#8594;&#8594;&#8594;&#8594;&#8594;&#8594;&#8594;&#9472;&#9472;&#9508;  armed  &#9474;      &#8593;<br/>
+                 1            &#9492;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;      &#8593;<br/>
+                 &#8595;                &#9474;            &#8593;<br/>
+                 &#8595;           sd_event_wait     &#8593;<br/>
+                 &#9500;&#9472;&#9472;&#9472;&#8592;&#8592;&#8592;&#8592;&#8592;&#8592;&#8592;&#9472;&#9472;&#9472; 1 &#9524;&#9472; 0 &#8594;&#8594;&#8594;&#8594;&#8594;&#8594;&#8594;&#9472;&#9496;<br/>
+             &#9484;&#9472;&#9472;&#9472;&#9524;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;                      &#8593;<br/>
+             &#9474; pending  &#9474;                      &#8593;<br/>
+             &#9492;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;                      &#8593;<br/>
+                 &#9474;                             &#8593;<br/>
+           sd_event_dispatch                   &#8593;<br/>
+                 &#8595;                             &#8593;<br/>
+                 &#9500; 1 &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#8594;&#8594;&#8594;&#8594;&#8594;&#8594;&#8594;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;<br/>
+                 0<br/>
+                 &#8595;<br/>
+             &#9484;&#9472;&#9472;&#9472;&#9524;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;<br/>
+             &#9474; finished &#9474;<br/>
+             &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;<br/>
+    <br/>
+</div>
+<div class="spacer">
+</div>
+All three functions as the first argument take the event loop object  <i>event</i> that is created with with  <b>sd_event_new</b>. The timeout for  <b>sd_event_wait</b> is specified with  <i>timeout</i> in milliseconds.  <b>(uint64_t) -1</b> may be used to specify an infinite timeout.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, these functions return 0 or a positive integer. On failure, they return a negative errno-style error code. In case of  <b>sd_event_prepare</b> and  <b>sd_event_wait</b> a positive value means that events are ready to be processed and 0 means that no events are ready. In case of  <b>sd_event_dispatch</b> a positive value means that the loop is again in the initial state and 0 means the loop is finished. For any of those functions, a negative return value means the loop must be aborted.</div>
+<div class="section">
+<h1>ERRORS</h1> Returned errors may indicate the following problems:<div class="spacer">
+</div>
+<b>-EINVAL</b><div style="margin-left: 4.00ex;">
+Parameter  <i>event</i> is  <b>NULL</b>.</div>
+<div class="spacer">
+</div>
+<b>-EBUSY</b><div style="margin-left: 4.00ex;">
+The event loop object is not in the right state.</div>
+<div class="spacer">
+</div>
+<b>-ESTALE</b><div style="margin-left: 4.00ex;">
+The event loop is already terminated.</div>
+<div class="spacer">
+</div>
+<b>-ECHILD</b><div style="margin-left: 4.00ex;">
+The event loop has been created in a different process.</div>
+<div class="spacer">
+</div>
+Other errors are possible too.</div>
+<div class="section">
+<h1>NOTES</h1> Functions described here are available as a shared library, which can be compiled and linked to with the  <b>libsystemd</b>&#160;<b>pkg-config</b>(1) file.</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>sd_event_new</b>(3),  <b>sd_event_run</b>(3),  <b>sd_event_add_io</b>(3),  <b>sd_event_add_time</b>(3),  <b>sd_event_add_signal</b>(3),  <b>sd_event_add_defer</b>(3),  <b>sd_event_add_exit</b>(3),  <b>sd_event_add_post</b>(3).</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

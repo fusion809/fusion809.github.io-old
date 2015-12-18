@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SYSCTL.D(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SYSCTL.D(5)</td>
+<td class="head-vol">
+sysctl.d</td>
+<td class="head-rtitle">
+SYSCTL.D(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sysctl.d - Configure kernel parameters at boot</div>
+<div class="section">
+<h1>SYNOPSIS</h1> /etc/sysctl.d/*.conf<div class="spacer">
+</div>
+/run/sysctl.d/*.conf<div class="spacer">
+</div>
+/usr/lib/sysctl.d/*.conf</div>
+<div class="section">
+<h1>DESCRIPTION</h1> At boot,  <b>systemd-sysctl.service</b>(8) reads configuration files from the above directories to configure  <b>sysctl</b>(8) kernel parameters.</div>
+<div class="section">
+<h1>CONFIGURATION FORMAT</h1> The configuration files contain a list of variable assignments, separated by newlines. Empty lines and lines whose first non-whitespace character is &quot;#&quot; or &quot;;&quot; are ignored.<div class="spacer">
+</div>
+Note that either &quot;/&quot; or &quot;.&quot; may be used as separators within sysctl variable names. If the first separator is a slash, remaining slashes and dots are left intact. If the first separator is a dot, dots and slashes are interchanged. &quot;kernel.domainname=foo&quot; and &quot;kernel/domainname=foo&quot; are equivalent and will cause &quot;foo&quot; to be written to /proc/sys/kernel/domainname. Either &quot;net.ipv4.conf.enp3s0/200.forwarding&quot; or &quot;net/ipv4/conf/enp3s0.200/forwarding&quot; may be used to refer to /proc/sys/net/ipv4/conf/enp3s0.200/forwarding.<div class="spacer">
+</div>
+The settings configured with sysctl.d files will be applied early on boot. The network interface-specific options will also be applied individually for each network interface as it shows up in the system. (More specifically, net.ipv4.conf.*, net.ipv6.conf.*, net.ipv4.neigh.* and net.ipv6.neigh.*).<div class="spacer">
+</div>
+Many sysctl parameters only become available when certain kernel modules are loaded. Modules are usually loaded on demand, e.g. when certain hardware is plugged in or network brought up. This means that  <b>systemd-sysctl.service</b>(8) which runs during early boot will not configure such parameters if they become available after it has run. To set such parameters, it is recommended to add an  <b>udev</b>(7) rule to set those parameters when they become available. Alternatively, a slightly simpler and less efficient option is to add the module to  <b>modules-load.d</b>(5), causing it to be loaded statically before sysctl settings are applied (see example below).</div>
+<div class="section">
+<h1>CONFIGURATION DIRECTORIES AND PRECEDENCE</h1> Configuration files are read from directories in /etc/, /run/, and /usr/lib/, in order of precedence. Each configuration file in these configuration directories shall be named in the style of  <i>filename</i>.conf. Files in /etc/ override files with the same name in /run/ and /usr/lib/. Files in /run/ override files with the same name in /usr/lib/.<div class="spacer">
+</div>
+Packages should install their configuration files in /usr/lib/. Files in /etc/ are reserved for the local administrator, who may use this logic to override the configuration files installed by vendor packages. All configuration files are sorted by their filename in lexicographic order, regardless of which of the directories they reside in. If multiple files specify the same option, the entry in the file with the lexicographically latest name will take precedence. It is recommended to prefix all filenames with a two-digit number and a dash, to simplify the ordering of the files.<div class="spacer">
+</div>
+If the administrator wants to disable a configuration file supplied by the vendor, the recommended way is to place a symlink to /dev/null in the configuration directory in /etc/, with the same filename as the vendor configuration file. If the vendor configuration file is included in the initrd image, the image has to be regenerated.</div>
+<div class="section">
+<h1>EXAMPLES</h1>  <b>Example&#160;1.&#160;Set kernel YP domain name</b><div class="spacer">
+</div>
+/etc/sysctl.d/domain-name.conf:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+kernel.domainname=example.com<br/>
+</div>
+<div class="spacer">
+</div>
+<b>Example&#160;2.&#160;Apply settings available only when a certain module is loaded (method one)</b><div class="spacer">
+</div>
+/etc/udev/rules.d/99-bridge.rules:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+ACTION==&quot;add&quot;, SUBSYSTEM==&quot;module&quot;, KERNEL==&quot;br_netfilter&quot;, \<br/>
+      RUN+=&quot;/usr/lib/systemd/systemd-sysctl --prefix=/net/bridge&quot;<br/>
+</div>
+<div class="spacer">
+</div>
+/etc/sysctl.d/bridge.conf:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+net.bridge.bridge-nf-call-ip6tables = 0<br/>
+net.bridge.bridge-nf-call-iptables = 0<br/>
+net.bridge.bridge-nf-call-arptables = 0<br/>
+</div>
+<div class="spacer">
+</div>
+This method applies settings when the module is loaded. Please note that unless the br_netfilter module is loaded, bridged packets will not be filtered by netfilter (starting with kernel 3.18), so simply not loading the module is suffient to avoid filtering.<div class="spacer">
+</div>
+<b>Example&#160;3.&#160;Apply settings available only when a certain module is loaded (method two)</b><div class="spacer">
+</div>
+/etc/modules-load.d/bridge.conf:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+br_netfilter<br/>
+</div>
+<div class="spacer">
+</div>
+/etc/sysctl.d/bridge.conf:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+net.bridge.bridge-nf-call-ip6tables = 0<br/>
+net.bridge.bridge-nf-call-iptables = 0<br/>
+net.bridge.bridge-nf-call-arptables = 0<br/>
+</div>
+<div class="spacer">
+</div>
+This method forces the module to be always loaded. Please note that unless the br_netfilter module is loaded, bridged packets will not be filtered with netfilter (starting with kernel 3.18), so simply not loading the module is suffient to avoid filtering.</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>systemd-sysctl.service</b>(8),  <b>systemd-delta</b>(1),  <b>sysctl</b>(8),  <b>sysctl.conf</b>(5),  <b>modprobe</b>(8)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

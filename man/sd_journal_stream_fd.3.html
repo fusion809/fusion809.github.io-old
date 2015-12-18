@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SD_JOURNAL_STREAM_FD(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SD_JOURNAL_STREAM_FD(3)</td>
+<td class="head-vol">
+sd_journal_stream_fd</td>
+<td class="head-rtitle">
+SD_JOURNAL_STREAM_FD(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sd_journal_stream_fd - Create log stream file descriptor to the journal</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;systemd/sd-journal.h&gt;<br/>
+<div class="spacer">
+</div>
+<div style="margin-left: 25.00ex;text-indent: -25.00ex;" class="spacer">
+<b>int sd_journal_stream_fd(const&#160;char&#160;*</b><i>identifier</i><b>, int&#160;</b><i>priority</i><b>, int&#160;</b><i>level_prefix</i><b>);</b></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>sd_journal_stream_fd()</b> may be used to create a log stream file descriptor. Log messages written to this file descriptor as simple newline-separated text strings are written to the journal. This file descriptor can be used internally by applications or be made standard output or standard error of other processes executed.<div class="spacer">
+</div>
+<b>sd_journal_stream_fd()</b> takes a short program identifier string as first argument, which will be written to the journal as _SYSLOG_IDENTIFIER= field for each log entry (see  <b>systemd.journal-fields</b>(7) for more information). The second argument shall be the default priority level for all messages. The priority level is one of  <b>LOG_EMERG</b>,  <b>LOG_ALERT</b>,  <b>LOG_CRIT</b>,  <b>LOG_ERR</b>,  <b>LOG_WARNING</b>,  <b>LOG_NOTICE</b>,  <b>LOG_INFO</b>,  <b>LOG_DEBUG</b>, as defined in syslog.h, see  <b>syslog</b>(3) for details. The third argument is a boolean: if true kernel-style log level prefixes (such as  <b>SD_WARNING</b>) are interpreted, see  <b>sd-daemon</b>(3) for more information.<div class="spacer">
+</div>
+It is recommended that applications log UTF-8 messages only with this API, but this is not enforced.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> The call returns a valid write-only file descriptor on success or a negative errno-style error code.</div>
+<div class="section">
+<h1>NOTES</h1> The  <b>sd_journal_stream_fd()</b> interface is available as a shared library, which can be compiled and linked to with the  <b>libsystemd</b>&#160;<b>pkg-config</b>(1) file.</div>
+<div class="section">
+<h1>EXAMPLES</h1> Creating a log stream suitable for  <b>fprintf</b>(3):<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+#include &lt;syslog.h&gt;<br/>
+#include &lt;stdio.h&gt;<br/>
+#include &lt;string.h&gt;<br/>
+#include &lt;unistd.h&gt;<br/>
+#include &lt;systemd/sd-journal.h&gt;<br/>
+#include &lt;systemd/sd-daemon.h&gt;<div class="spacer">
+</div>
+<br/>
+int main(int argc, char *argv[]) {<br/>
+  int fd;<br/>
+  FILE *log;<br/>
+  fd = sd_journal_stream_fd(&quot;test&quot;, LOG_INFO, 1);<br/>
+  if (fd &lt; 0) {<br/>
+    fprintf(stderr, &quot;Failed to create stream fd: %s\n&quot;, strerror(-fd));<br/>
+    return 1;<br/>
+  }<br/>
+  log = fdopen(fd, &quot;w&quot;);<br/>
+  if (!log) {<br/>
+    fprintf(stderr, &quot;Failed to create file object: %m\n&quot;);<br/>
+    close(fd);<br/>
+    return 1;<br/>
+  }<br/>
+  fprintf(log, &quot;Hello World!\n&quot;);<br/>
+  fprintf(log, SD_WARNING &quot;This is a warning!\n&quot;);<br/>
+  fclose(log);<br/>
+  return 0;<br/>
+}<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>sd-journal</b>(3),  <b>sd-daemon</b>(3),  <b>sd_journal_print</b>(3),  <b>syslog</b>(3),  <b>fprintf</b>(3),  <b>systemd.journal-fields</b>(7)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SYSTEMD-NOTIFY(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SYSTEMD-NOTIFY(1)</td>
+<td class="head-vol">
+systemd-notify</td>
+<td class="head-rtitle">
+SYSTEMD-NOTIFY(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> systemd-notify - Notify service manager about start-up completion and other daemon status changes</div>
+<div class="section">
+<h1>SYNOPSIS</h1><div style="margin-left: 48.00ex;text-indent: -48.00ex;" class="spacer">
+<b>systemd-notify </b><b>[OPTIONS...]</b><b> </b><b>[VARIABLE=VALUE...]</b></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>systemd-notify</b> may be called by daemon scripts to notify the init system about status changes. It can be used to send arbitrary information, encoded in an environment-block-like list of strings. Most importantly it can be used for start-up completion notification.<div class="spacer">
+</div>
+This is mostly just a wrapper around  <b>sd_notify()</b> and makes this functionality available to shell scripts. For details see  <b>sd_notify</b>(3).<div class="spacer">
+</div>
+The command line may carry a list of environment variables to send as part of the status update.<div class="spacer">
+</div>
+Note that systemd will refuse reception of status updates from this command unless  <i>NotifyAccess=all</i> is set for the service unit this command is called from.</div>
+<div class="section">
+<h1>OPTIONS</h1> The following options are understood:<div class="spacer">
+</div>
+<b>--ready</b><div style="margin-left: 4.00ex;">
+Inform the init system about service start-up completion. This is equivalent to  <b>systemd-notify READY=1</b>. For details about the semantics of this option see  <b>sd_notify</b>(3).</div>
+<div class="spacer">
+</div>
+<b>--pid=</b><div style="margin-left: 4.00ex;">
+Inform the init system about the main PID of the daemon. Takes a PID as argument. If the argument is omitted, the PID of the process that invoked  <b>systemd-notify</b> is used. This is equivalent to  <b>systemd-notify MAINPID=$PID</b>. For details about the semantics of this option see  <b>sd_notify</b>(3).</div>
+<div class="spacer">
+</div>
+<b>--status=</b><div style="margin-left: 4.00ex;">
+Send a free-form status string for the daemon to the init systemd. This option takes the status string as argument. This is equivalent to  <b>systemd-notify STATUS=...</b>. For details about the semantics of this option see  <b>sd_notify</b>(3).</div>
+<div class="spacer">
+</div>
+<b>--booted</b><div style="margin-left: 4.00ex;">
+Returns 0 if the system was booted up with systemd, non-zero otherwise. If this option is passed, no message is sent. This option is hence unrelated to the other options. For details about the semantics of this option, see  <b>sd_booted</b>(3).</div>
+<div class="spacer">
+</div>
+<b>-h</b>, <b>--help</b><div style="margin-left: 4.00ex;">
+Print a short help text and exit.</div>
+<div class="spacer">
+</div>
+<b>--version</b><div style="margin-left: 4.00ex;">
+Print a short version string and exit.</div>
+</div>
+<div class="section">
+<h1>EXIT STATUS</h1> On success, 0 is returned, a non-zero failure code otherwise.</div>
+<div class="section">
+<h1>EXAMPLE</h1>  <b>Example&#160;1.&#160;Start-up Notification and Status Updates</b><div class="spacer">
+</div>
+A simple shell daemon that sends start-up notifications after having set up its communication channel. During runtime it sends further status updates to the init system:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+#!/bin/bash<div class="spacer">
+</div>
+<br/>
+mkfifo /tmp/waldo<br/>
+systemd-notify --ready --status=&quot;Waiting for data...&quot;<div class="spacer">
+</div>
+<br/>
+while : ; do<br/>
+  read a &lt; /tmp/waldo<br/>
+  systemd-notify --status=&quot;Processing $a&quot;<div class="spacer">
+</div>
+<br/>
+  # Do something with $a ...<div class="spacer">
+</div>
+<br/>
+  systemd-notify --status=&quot;Waiting for data...&quot;<br/>
+done<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>systemctl</b>(1),  <b>systemd.unit</b>(5),  <b>sd_notify</b>(3),  <b>sd_booted</b>(3)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

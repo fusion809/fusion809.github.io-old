@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SYSUSERS.D(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SYSUSERS.D(5)</td>
+<td class="head-vol">
+sysusers.d</td>
+<td class="head-rtitle">
+SYSUSERS.D(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sysusers.d - Declarative allocation of system users and groups</div>
+<div class="section">
+<h1>SYNOPSIS</h1> /usr/lib/sysusers.d/*.conf</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>systemd-sysusers</b> uses the files from sysusers.d directory to create system users and groups at package installation or boot time. This tool may be used to allocate system users and groups only, it is not useful for creating non-system users and groups, as it accesses /etc/passwd and /etc/group directly, bypassing any more complex user databases, for example any database involving NIS or LDAP.</div>
+<div class="section">
+<h1>CONFIGURATION FORMAT</h1> Each configuration file shall be named in the style of  <i>package</i>.conf or  <i>package</i>-<i>part</i>.conf. The second variant should be used when it is desirable to make it easy to override just this part of configuration.<div class="spacer">
+</div>
+The file format is one line per user or group containing name, ID, GECOS field description and home directory:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+# Type Name ID GECOS<br/>
+u httpd 440 &quot;HTTP User&quot;<br/>
+u authd /usr/bin/authd &quot;Authorization user&quot;<br/>
+g input - -<br/>
+m authd input<br/>
+u root 0 &quot;Superuser&quot; /root<br/>
+</div>
+<div class="subsection">
+<h2>Type</h2> The type consists of a single letter. The following line types are understood:<div class="spacer">
+</div>
+<i>u</i><div style="margin-left: 4.00ex;">
+Create a system user and group of the specified name should they not exist yet. The user's primary group will be set to the group bearing the same name. The user's shell will be set to /sbin/nologin, the home directory to the specified home directory, or / if none is given. The account will be created disabled, so that logins are not allowed.</div>
+<div class="spacer">
+</div>
+<i>g</i><div style="margin-left: 4.00ex;">
+Create a system group of the specified name should it not exist yet. Note that  <i>u</i> implicitly create a matching group. The group will be created with no password set.</div>
+<div class="spacer">
+</div>
+<i>m</i><div style="margin-left: 4.00ex;">
+Add a user to a group. If the user or group are not existing yet, they will be implicitly created.</div>
+<div class="spacer">
+</div>
+<i>r</i><div style="margin-left: 4.00ex;">
+Add a range of numeric UIDs/GIDs to the pool to allocate new UIDs and GIDs from. If no line of this type is specified the range of UIDs/GIDs is set to some compiled-in default. Note that both UIDs and GIDs are allocated from the same pool, in order to ensure that users and groups of the same name are likely to carry the same numeric UID and GID.</div>
+</div>
+<div class="subsection">
+<h2>Name</h2> The name field specifies the user or group name. It should be shorter than 31 characters and avoid any non-ASCII characters, and not begin with a numeric character. It is strongly recommended to pick user and group names that are unlikely to clash with normal users created by the administrator. A good scheme to guarantee this is by prefixing all system and group names with the underscore, and avoiding too generic names.<div class="spacer">
+</div>
+For  <i>m</i> lines this field should contain the user name to add to a group.<div class="spacer">
+</div>
+For lines of type  <i>r</i> this field should be set to &quot;-&quot;.</div>
+<div class="subsection">
+<h2>ID</h2> For  <i>u</i> and  <i>g</i> the numeric 32bit UID or GID of the user/group. Do not use IDs 65535 or 4294967295, as they have special placeholder meanings. Specify &quot;-&quot; for automatic UID/GID allocation for the user or group. Alternatively, specify an absolute path in the file system. In this case the UID/GID is read from the path's owner/group. This is useful to create users whose UID/GID match the owners of pre-existing files (such as SUID or SGID binaries).<div class="spacer">
+</div>
+For  <i>m</i> lines this field should contain the group name to add to a user to.<div class="spacer">
+</div>
+For lines of type  <i>r</i> this field should be set to a UID/GID range in the format &quot;FROM-TO&quot; where both values are formatted as decimal ASCII numbers. Alternatively, a single UID/GID may be specified formatted as decimal ASCII numbers.</div>
+<div class="subsection">
+<h2>GECOS</h2> A short, descriptive string for users to be created, enclosed in quotation marks. Note that this field may not contain colons.<div class="spacer">
+</div>
+Only applies to lines of type  <i>u</i> and should otherwise be left unset, or be set to &quot;-&quot;.</div>
+<div class="subsection">
+<h2>Home Directory</h2> The home directory for a new system user. If omitted defaults to the root directory. It is recommended to not unnecessarily specify home directories for system users, unless software strictly requires one to be set.<div class="spacer">
+</div>
+Only applies to lines of type  <i>u</i> and should otherwise be left unset, or be set to &quot;-&quot;.</div>
+</div>
+<div class="section">
+<h1>CONFIGURATION DIRECTORIES AND PRECEDENCE</h1> Configuration files are read from directories in /etc/, /run/, and /usr/lib/, in order of precedence. Each configuration file in these configuration directories shall be named in the style of  <i>filename</i>.conf. Files in /etc/ override files with the same name in /run/ and /usr/lib/. Files in /run/ override files with the same name in /usr/lib/.<div class="spacer">
+</div>
+Packages should install their configuration files in /usr/lib/. Files in /etc/ are reserved for the local administrator, who may use this logic to override the configuration files installed by vendor packages. All configuration files are sorted by their filename in lexicographic order, regardless of which of the directories they reside in. If multiple files specify the same option, the entry in the file with the lexicographically latest name will take precedence. It is recommended to prefix all filenames with a two-digit number and a dash, to simplify the ordering of the files.<div class="spacer">
+</div>
+If the administrator wants to disable a configuration file supplied by the vendor, the recommended way is to place a symlink to /dev/null in the configuration directory in /etc/, with the same filename as the vendor configuration file. If the vendor configuration file is included in the initrd image, the image has to be regenerated.</div>
+<div class="section">
+<h1>IDEMPOTENCE</h1> Note that  <b>systemd-sysusers</b> will do nothing if the specified users or groups already exist, so normally there no reason to override sysusers.d vendor configuration, except to block certain users or groups from being created.</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>systemd-sysusers</b>(8)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

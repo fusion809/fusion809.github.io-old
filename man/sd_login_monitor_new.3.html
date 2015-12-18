@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SD_LOGIN_MONITOR_NEW(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SD_LOGIN_MONITOR_NEW(3)</td>
+<td class="head-vol">
+sd_login_monitor_new</td>
+<td class="head-rtitle">
+SD_LOGIN_MONITOR_NEW(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sd_login_monitor_new, sd_login_monitor_unref, sd_login_monitor_flush, sd_login_monitor_get_fd, sd_login_monitor_get_events, sd_login_monitor_get_timeout, sd_login_monitor - Monitor login sessions, seats, users and virtual machines/containers</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;systemd/sd-login.h&gt;<br/>
+<div class="spacer">
+</div>
+<div style="margin-left: 25.00ex;text-indent: -25.00ex;" class="spacer">
+<b>int sd_login_monitor_new(const&#160;char&#160;*</b><i>category</i><b>, sd_login_monitor&#160;**</b><i>ret</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 41.00ex;text-indent: -41.00ex;" class="spacer">
+<b>sd_login_monitor *sd_login_monitor_unref(sd_login_monitor&#160;*</b><i>m</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 27.00ex;text-indent: -27.00ex;" class="spacer">
+<b>int sd_login_monitor_flush(sd_login_monitor&#160;*</b><i>m</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 28.00ex;text-indent: -28.00ex;" class="spacer">
+<b>int sd_login_monitor_get_fd(sd_login_monitor&#160;*</b><i>m</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 32.00ex;text-indent: -32.00ex;" class="spacer">
+<b>int sd_login_monitor_get_events(sd_login_monitor&#160;*</b><i>m</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 33.00ex;text-indent: -33.00ex;" class="spacer">
+<b>int sd_login_monitor_get_timeout(sd_login_monitor&#160;*</b><i>m</i><b>, uint64_t&#160;*</b><i>timeout_usec</i><b>);</b></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>sd_login_monitor_new()</b> may be used to monitor login sessions, users, seats, and virtual machines/containers. Via a monitor object a file descriptor can be integrated into an application defined event loop which is woken up each time a user logs in, logs out or a seat is added or removed, or a session, user, seat or virtual machine/container changes state otherwise. The first parameter takes a string which can be &quot;seat&quot; (to get only notifications about seats being added, removed or changed), &quot;session&quot; (to get only notifications about sessions being created or removed or changed), &quot;uid&quot; (to get only notifications when a user changes state in respect to logins) or &quot;machine&quot; (to get only notifications when a virtual machine or container is started or stopped). If notifications shall be generated in all these conditions,  <b>NULL</b> may be passed. Note that in the future additional categories may be defined. The second parameter returns a monitor object and needs to be freed with the  <b>sd_login_monitor_unref()</b> call after use.<div class="spacer">
+</div>
+<b>sd_login_monitor_unref()</b> may be used to destroy a monitor object. Note that this will invalidate any file descriptor returned by  <b>sd_login_monitor_get_fd()</b>.<div class="spacer">
+</div>
+<b>sd_login_monitor_flush()</b> may be used to reset the wakeup state of the monitor object. Whenever an event causes the monitor to wake up the event loop via the file descriptor this function needs to be called to reset the wake-up state. If this call is not invoked, the file descriptor will immediately wake up the event loop again.<div class="spacer">
+</div>
+<b>sd_login_monitor_get_fd()</b> may be used to retrieve the file descriptor of the monitor object that may be integrated in an application defined event loop, based around  <b>poll</b>(2) or a similar interface. The application should include the returned file descriptor as wake-up source for the events mask returned by  <b>sd_login_monitor_get_events()</b>. It should pass a timeout value as returned by  <b>sd_login_monitor_get_timeout()</b>. Whenever a wake-up is triggered the file descriptor needs to be reset via  <b>sd_login_monitor_flush()</b>. An application needs to reread the login state with a function like  <b>sd_get_seats</b>(3) or similar to determine what changed.<div class="spacer">
+</div>
+<b>sd_login_monitor_get_events()</b> will return the  <b>poll()</b> mask to wait for. This function will return a combination of  <b>POLLIN</b>,  <b>POLLOUT</b> and similar to fill into the &quot;.events&quot; field of  <i>struct pollfd</i>.<div class="spacer">
+</div>
+<b>sd_login_monitor_get_timeout()</b> will return a timeout value for usage in  <b>poll()</b>. This returns a value in microseconds since the epoch of  <b>CLOCK_MONOTONIC</b> for timing out  <b>poll()</b> in  <i>timeout_usec</i>. See  <b>clock_gettime</b>(2) for details about  <b>CLOCK_MONOTONIC</b>. If there is no timeout to wait for this will fill in  <b>(uint64_t) -1</b> instead. Note that  <b>poll()</b> takes a relative timeout in milliseconds rather than an absolute timeout in microseconds. To convert the absolute '&#181;s' timeout into relative 'ms', use code like the following:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+uint64_t t;<br/>
+int msec;<br/>
+sd_login_monitor_get_timeout(m, &amp;t);<br/>
+if (t == (uint64_t) -1)<br/>
+         msec = -1;<br/>
+else {<br/>
+         struct timespec ts;<br/>
+         uint64_t n;<br/>
+         clock_getttime(CLOCK_MONOTONIC, &amp;ts);<br/>
+         n = (uint64_t) ts.tv_sec * 1000000 + ts.tv_nsec / 1000;<br/>
+         msec = t &gt; n ? (int) ((t - n + 999) / 1000) : 0;<br/>
+}<br/>
+</div>
+<div class="spacer">
+</div>
+The code above does not do any error checking for brevity's sake. The calculated  <i>msec</i> integer can be passed directly as  <b>poll()</b>'s timeout parameter.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success,  <b>sd_login_monitor_new()</b>,  <b>sd_login_monitor_flush()</b> and  <b>sd_login_monitor_get_timeout()</b> return 0 or a positive integer. On success,  <b>sd_login_monitor_get_fd()</b> returns a Unix file descriptor. On success,  <b>sd_login_monitor_get_events()</b> returns a combination of  <b>POLLIN</b>,  <b>POLLOUT</b> and suchlike. On failure, these calls return a negative errno-style error code.<div class="spacer">
+</div>
+<b>sd_login_monitor_unref()</b> always returns  <b>NULL</b>.</div>
+<div class="section">
+<h1>ERRORS</h1> Returned errors may indicate the following problems:<div class="spacer">
+</div>
+<b>-EINVAL</b><div style="margin-left: 4.00ex;">
+An input parameter was invalid (out of range, or NULL, where that's not accepted). The specified category to watch is not known.</div>
+<div class="spacer">
+</div>
+<b>-ENOMEM</b><div style="margin-left: 4.00ex;">
+Memory allocation failed.</div>
+</div>
+<div class="section">
+<h1>NOTES</h1> The  <b>sd_login_monitor_new()</b>,  <b>sd_login_monitor_unref()</b>,  <b>sd_login_monitor_flush()</b>,  <b>sd_login_monitor_get_fd()</b>,  <b>sd_login_monitor_get_events()</b> and  <b>sd_login_monitor_get_timeout()</b> interfaces are available as a shared library, which can be compiled and linked to with the  <b>libsystemd</b>&#160;<b>pkg-config</b>(1) file.</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>sd-login</b>(3),  <b>sd_get_seats</b>(3),  <b>poll</b>(2),  <b>clock_gettime</b>(2)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SD_UID_GET_STATE(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SD_UID_GET_STATE(3)</td>
+<td class="head-vol">
+sd_uid_get_state</td>
+<td class="head-rtitle">
+SD_UID_GET_STATE(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sd_uid_get_state, sd_uid_is_on_seat, sd_uid_get_sessions, sd_uid_get_seats, sd_uid_get_display - Determine login state of a specific Unix user ID</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;systemd/sd-login.h&gt;<br/>
+<div class="spacer">
+</div>
+<div style="margin-left: 21.00ex;text-indent: -21.00ex;" class="spacer">
+<b>int sd_uid_get_state(uid_t&#160;</b><i>uid</i><b>, char&#160;**</b><i>state</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 22.00ex;text-indent: -22.00ex;" class="spacer">
+<b>int sd_uid_is_on_seat(uid_t&#160;</b><i>uid</i><b>, int&#160;</b><i>require_active</i><b>, const&#160;char&#160;*</b><i>seat</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 24.00ex;text-indent: -24.00ex;" class="spacer">
+<b>int sd_uid_get_sessions(uid_t&#160;</b><i>uid</i><b>, int&#160;</b><i>require_active</i><b>, char&#160;***</b><i>sessions</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 21.00ex;text-indent: -21.00ex;" class="spacer">
+<b>int sd_uid_get_seats(uid_t&#160;</b><i>uid</i><b>, int&#160;</b><i>require_active</i><b>, char&#160;***</b><i>seats</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 23.00ex;text-indent: -23.00ex;" class="spacer">
+<b>int sd_uid_get_display(uid_t&#160;</b><i>uid</i><b>, char&#160;**</b><i>session</i><b>);</b></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>sd_uid_get_state()</b> may be used to determine the login state of a specific Unix user identifier. The following states are currently known: &quot;offline&quot; (user not logged in at all), &quot;lingering&quot; (user not logged in, but some user services running), &quot;online&quot; (user logged in, but not active, i.e. has no session in the foreground), &quot;active&quot; (user logged in, and has at least one active session, i.e. one session in the foreground), &quot;closing&quot; (user not logged in, and not lingering, but some processes are still around). In the future additional states might be defined, client code should be written to be robust in regards to additional state strings being returned. The returned string needs to be freed with the libc  <b>free</b>(3) call after use.<div class="spacer">
+</div>
+<b>sd_uid_is_on_seat()</b> may be used to determine whether a specific user is logged in or active on a specific seat. Accepts a Unix user identifier and a seat identifier string as parameters. The  <i>require_active</i> parameter is a boolean value. If non-zero (true), this function will test if the user is active (i.e. has a session that is in the foreground and accepting user input) on the specified seat, otherwise (false) only if the user is logged in (and possibly inactive) on the specified seat.<div class="spacer">
+</div>
+<b>sd_uid_get_sessions()</b> may be used to determine the current sessions of the specified user. Accepts a Unix user identifier as parameter. The  <i>require_active</i> parameter controls whether the returned list shall consist of only those sessions where the user is currently active (&gt; 0), where the user is currently online but possibly inactive (= 0), or logged in at all but possibly closing the session (&lt; 0). The call returns a  <b>NULL</b> terminated string array of session identifiers in  <i>sessions</i> which needs to be freed by the caller with the libc  <b>free</b>(3) call after use, including all the strings referenced. If the string array parameter is passed as  <b>NULL</b>, the array will not be filled in, but the return code still indicates the number of current sessions. Note that instead of an empty array  <b>NULL</b> may be returned and should be considered equivalent to an empty array.<div class="spacer">
+</div>
+Similarly,  <b>sd_uid_get_seats()</b> may be used to determine the list of seats on which the user currently has sessions. Similar semantics apply, however note that the user may have multiple sessions on the same seat as well as sessions with no attached seat and hence the number of entries in the returned array may differ from the one returned by  <b>sd_uid_get_sessions()</b>.<div class="spacer">
+</div>
+<b>sd_uid_get_display()</b> returns the name of the &quot;primary&quot; session of a user. If the user has graphical sessions, it will be the oldest graphical session. Otherwise, it will be the oldest open session.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success,  <b>sd_uid_get_state()</b> returns 0 or a positive integer. If the test succeeds,  <b>sd_uid_is_on_seat()</b> returns a positive integer; if it fails, 0.  <b>sd_uid_get_sessions()</b> and  <b>sd_uid_get_seats()</b> return the number of entries in the returned arrays.  <b>sd_uid_get_display()</b> returns a non-negative code on success. On failure, these calls return a negative errno-style error code.</div>
+<div class="section">
+<h1>ERRORS</h1> Returned errors may indicate the following problems:<div class="spacer">
+</div>
+<b>-ENODATA</b><div style="margin-left: 4.00ex;">
+Given field is not specified for the described user.</div>
+<div class="spacer">
+</div>
+<b>-ENXIO</b><div style="margin-left: 4.00ex;">
+The specified seat is unknown.</div>
+<div class="spacer">
+</div>
+<b>-EINVAL</b><div style="margin-left: 4.00ex;">
+An input parameter was invalid (out of range, or NULL, where that's not accepted). This is also returned if the passed user ID is 0xFFFF or 0xFFFFFFFF, which are undefined on Linux.</div>
+<div class="spacer">
+</div>
+<b>-ENOMEM</b><div style="margin-left: 4.00ex;">
+Memory allocation failed.</div>
+</div>
+<div class="section">
+<h1>NOTES</h1> Functions described here are available as a shared library, and can be compiled and linked to using the  <b>libsystemd</b>&#160;<b>pkg-config</b>(1) entry.</div>
+<div class="section">
+<h1>HISTORY</h1>  <b>sd_uid_get_state()</b>,  <b>sd_uid_is_on_seat()</b>,  <b>sd_uid_get_sessions()</b>, and  <b>sd_uid_get_seats()</b> functions were added in systemd-31.<div class="spacer">
+</div>
+<b>sd_uid_get_display()</b> was added in systemd-213.</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>sd-login</b>(3),  <b>sd_pid_get_owner_uid</b>(3)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

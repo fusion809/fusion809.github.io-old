@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+UDEV(7)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+UDEV(7)</td>
+<td class="head-vol">
+udev</td>
+<td class="head-rtitle">
+UDEV(7)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> udev - Dynamic device management</div>
+<div class="section">
+<h1>DESCRIPTION</h1> udev supplies the system software with device events, manages permissions of device nodes and may create additional symlinks in the /dev directory, or renames network interfaces. The kernel usually just assigns unpredictable device names based on the order of discovery. Meaningful symlinks or network device names provide a way to reliably identify devices based on their properties or current configuration.<div class="spacer">
+</div>
+The udev daemon,  <b>systemd-udevd.service</b>(8), receives device uevents directly from the kernel whenever a device is added or removed from the system, or it changes its state. When udev receives a device event, it matches its configured set of rules against various device attributes to identify the device. Rules that match may provide additional device information to be stored in the udev database or to be used to create meaningful symlink names.<div class="spacer">
+</div>
+All device information udev processes is stored in the udev database and sent out to possible event subscribers. Access to all stored data and the event sources is provided by the library libudev.</div>
+<div class="section">
+<h1>RULES FILES</h1> The udev rules are read from the files located in the system rules directory /usr/lib/udev/rules.d, the volatile runtime directory /run/udev/rules.d and the local administration directory /etc/udev/rules.d. All rules files are collectively sorted and processed in lexical order, regardless of the directories in which they live. However, files with identical filenames replace each other. Files in /etc have the highest priority, files in /run take precedence over files with the same name in /usr/lib. This can be used to override a system-supplied rules file with a local file if needed; a symlink in /etc with the same name as a rules file in /usr/lib, pointing to /dev/null, disables the rules file entirely. Rule files must have the extension .rules; other extensions are ignored.<div class="spacer">
+</div>
+Every line in the rules file contains at least one key-value pair. Except for empty lines or lines beginning with &quot;#&quot;, which are ignored. There are two kinds of keys: match and assignment. If all match keys match against their values, the rule gets applied and the assignment keys get the specified values assigned.<div class="spacer">
+</div>
+A matching rule may rename a network interface, add symlinks pointing to the device node, or run a specified program as part of the event handling.<div class="spacer">
+</div>
+A rule consists of a comma-separated list of one or more key-value pairs. Each key has a distinct operation, depending on the used operator. Valid operators are:<div class="spacer">
+</div>
+&quot;==&quot;<div style="margin-left: 4.00ex;">
+Compare for equality.</div>
+<div class="spacer">
+</div>
+&quot;!=&quot;<div style="margin-left: 4.00ex;">
+Compare for inequality.</div>
+<div class="spacer">
+</div>
+&quot;=&quot;<div style="margin-left: 4.00ex;">
+Assign a value to a key. Keys that represent a list are reset and only this single value is assigned.</div>
+<div class="spacer">
+</div>
+&quot;+=&quot;<div style="margin-left: 4.00ex;">
+Add the value to a key that holds a list of entries.</div>
+<div class="spacer">
+</div>
+&quot;-=&quot;<div style="margin-left: 4.00ex;">
+Remove the value from a key that holds a list of entries.</div>
+<div class="spacer">
+</div>
+&quot;:=&quot;<div style="margin-left: 4.00ex;">
+Assign a value to a key finally; disallow any later changes.</div>
+<div class="spacer">
+</div>
+The following key names can be used to match against device properties. Some of the keys also match against properties of the parent devices in sysfs, not only the device that has generated the event. If multiple keys that match a parent device are specified in a single rule, all these keys must match at one and the same parent device.<div class="spacer">
+</div>
+<i>ACTION</i><div style="margin-left: 4.00ex;">
+Match the name of the event action.</div>
+<div class="spacer">
+</div>
+<i>DEVPATH</i><div style="margin-left: 4.00ex;">
+Match the devpath of the event device.</div>
+<div class="spacer">
+</div>
+<i>KERNEL</i><div style="margin-left: 4.00ex;">
+Match the name of the event device.</div>
+<div class="spacer">
+</div>
+<i>NAME</i><div style="margin-left: 4.00ex;">
+Match the name of a network interface. It can be used once the NAME key has been set in one of the preceding rules.</div>
+<div class="spacer">
+</div>
+<i>SYMLINK</i><div style="margin-left: 4.00ex;">
+Match the name of a symlink targeting the node. It can be used once a SYMLINK key has been set in one of the preceding rules. There may be multiple symlinks; only one needs to match.</div>
+<div class="spacer">
+</div>
+<i>SUBSYSTEM</i><div style="margin-left: 4.00ex;">
+Match the subsystem of the event device.</div>
+<div class="spacer">
+</div>
+<i>DRIVER</i><div style="margin-left: 4.00ex;">
+Match the driver name of the event device. Only set this key for devices which are bound to a driver at the time the event is generated.</div>
+<div class="spacer">
+</div>
+<i>ATTR{</i><i></i><i>filename</i><i>}</i>, <i>SYSCTL{</i><i></i><i>kernel parameter</i><i>}</i><div style="margin-left: 4.00ex;">
+Match sysfs attribute values of the event device. Trailing whitespace in the attribute values is ignored unless the specified match value itself contains trailing whitespace. Match a kernel parameter value.</div>
+<div class="spacer">
+</div>
+<i>KERNELS</i><div style="margin-left: 4.00ex;">
+Search the devpath upwards for a matching device name.</div>
+<div class="spacer">
+</div>
+<i>SUBSYSTEMS</i><div style="margin-left: 4.00ex;">
+Search the devpath upwards for a matching device subsystem name.</div>
+<div class="spacer">
+</div>
+<i>DRIVERS</i><div style="margin-left: 4.00ex;">
+Search the devpath upwards for a matching device driver name.</div>
+<div class="spacer">
+</div>
+<i>ATTRS{</i><i></i><i>filename</i><i>}</i><div style="margin-left: 4.00ex;">
+Search the devpath upwards for a device with matching sysfs attribute values. If multiple  <i>ATTRS</i> matches are specified, all of them must match on the same device. Trailing whitespace in the attribute values is ignored unless the specified match value itself contains trailing whitespace.</div>
+<div class="spacer">
+</div>
+<i>TAGS</i><div style="margin-left: 4.00ex;">
+Search the devpath upwards for a device with matching tag.</div>
+<div class="spacer">
+</div>
+<i>ENV{</i><i></i><i>key</i><i>}</i><div style="margin-left: 4.00ex;">
+Match against a device property value.</div>
+<div class="spacer">
+</div>
+<i>TAG</i><div style="margin-left: 4.00ex;">
+Match against a device tag.</div>
+<div class="spacer">
+</div>
+<i>TEST{</i><i></i><i>octal mode mask</i><i>}</i><div style="margin-left: 4.00ex;">
+Test the existence of a file. An octal mode mask can be specified if needed.</div>
+<div class="spacer">
+</div>
+<i>PROGRAM</i><div style="margin-left: 4.00ex;">
+Execute a program to determine whether there is a match; the key is true if the program returns successfully. The device properties are made available to the executed program in the environment. The program's standard output is available in the  <i>RESULT</i> key.<div style="height: 1.00em;">
+&#160;</div>
+This can only be used for very short-running foreground tasks. For details, see  <i>RUN</i>.</div>
+<div class="spacer">
+</div>
+<i>RESULT</i><div style="margin-left: 4.00ex;">
+Match the returned string of the last  <i>PROGRAM</i> call. This key can be used in the same or in any later rule after a  <i>PROGRAM</i> call.</div>
+<div class="spacer">
+</div>
+Most of the fields support shell glob pattern matching and alternate patterns. The following special characters are supported:<div class="spacer">
+</div>
+&quot;*&quot;<div style="margin-left: 4.00ex;">
+Matches zero or more characters.</div>
+<div class="spacer">
+</div>
+&quot;?&quot;<div style="margin-left: 4.00ex;">
+Matches any single character.</div>
+<div class="spacer">
+</div>
+&quot;[]&quot;<div style="margin-left: 4.00ex;">
+Matches any single character specified within the brackets. For example, the pattern string &quot;tty[SR]&quot; would match either &quot;ttyS&quot; or &quot;ttyR&quot;. Ranges are also supported via the &quot;-&quot; character. For example, to match on the range of all digits, the pattern &quot;[0-9]&quot; could be used. If the first character following the &quot;[&quot; is a &quot;!&quot;, any characters not enclosed are matched.</div>
+<div class="spacer">
+</div>
+&quot;|&quot;<div style="margin-left: 4.00ex;">
+Separates alternative patterns. For example, the pattern string &quot;abc|x*&quot; would match either &quot;abc&quot; or &quot;x*&quot;.</div>
+<div class="spacer">
+</div>
+The following keys can get values assigned:<div class="spacer">
+</div>
+<i>NAME</i><div style="margin-left: 4.00ex;">
+The name to use for a network interface. See  <b>systemd.link</b>(5) for a higher-level mechanism for setting the interface name. The name of a device node cannot be changed by udev, only additional symlinks can be created.</div>
+<div class="spacer">
+</div>
+<i>SYMLINK</i><div style="margin-left: 4.00ex;">
+The name of a symlink targeting the node. Every matching rule adds this value to the list of symlinks to be created.<div style="height: 1.00em;">
+&#160;</div>
+The set of characters to name a symlink is limited. Allowed characters are &quot;0-9A-Za-z#+-.:=@_/&quot;, valid UTF-8 character sequences, and &quot;\x00&quot; hex encoding. All other characters are replaced by a &quot;_&quot; character.<div style="height: 1.00em;">
+&#160;</div>
+Multiple symlinks may be specified by separating the names by the space character. In case multiple devices claim the same name, the link always points to the device with the highest link_priority. If the current device goes away, the links are re-evaluated and the device with the next highest link_priority becomes the owner of the link. If no link_priority is specified, the order of the devices (and which one of them owns the link) is undefined.<div style="height: 1.00em;">
+&#160;</div>
+Symlink names must never conflict with the kernel's default device node names, as that would result in unpredictable behavior.</div>
+<div class="spacer">
+</div>
+<i>OWNER</i>, <i>GROUP</i>, <i>MODE</i><div style="margin-left: 4.00ex;">
+The permissions for the device node. Every specified value overrides the compiled-in default value.</div>
+<div class="spacer">
+</div>
+<i>SECLABEL{</i><i></i><i>module</i><i>}</i><div style="margin-left: 4.00ex;">
+Applies the specified Linux Security Module label to the device node.</div>
+<div class="spacer">
+</div>
+<i>ATTR{</i><i></i><i>key</i><i>}</i><div style="margin-left: 4.00ex;">
+The value that should be written to a sysfs attribute of the event device.</div>
+<div class="spacer">
+</div>
+<i>SYSCTL{</i><i></i><i>kernel parameter</i><i>}</i><div style="margin-left: 4.00ex;">
+The value that should be written to kernel parameter.</div>
+<div class="spacer">
+</div>
+<i>ENV{</i><i></i><i>key</i><i>}</i><div style="margin-left: 4.00ex;">
+Set a device property value. Property names with a leading &quot;.&quot; are neither stored in the database nor exported to events or external tools (run by, for example, the  <i>PROGRAM</i> match key).</div>
+<div class="spacer">
+</div>
+<i>TAG</i><div style="margin-left: 4.00ex;">
+Attach a tag to a device. This is used to filter events for users of libudev's monitor functionality, or to enumerate a group of tagged devices. The implementation can only work efficiently if only a few tags are attached to a device. It is only meant to be used in contexts with specific device filter requirements, and not as a general-purpose flag. Excessive use might result in inefficient event handling.</div>
+<div class="spacer">
+</div>
+<i>RUN{</i><i></i><i>type</i><i>}</i><div style="margin-left: 4.00ex;">
+Add a program to the list of programs to be executed after processing all the rules for a specific event, depending on &quot;type&quot;:<div class="spacer">
+</div>
+&quot;program&quot;<div style="margin-left: 4.00ex;">
+Execute an external program specified as the assigned value. If no absolute path is given, the program is expected to live in /usr/lib/udev; otherwise, the absolute path must be specified.<div style="height: 1.00em;">
+&#160;</div>
+This is the default if no  <i>type</i> is specified.</div>
+<div class="spacer">
+</div>
+&quot;builtin&quot;<div style="margin-left: 4.00ex;">
+As  <i>program</i>, but use one of the built-in programs rather than an external one.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+The program name and following arguments are separated by spaces. Single quotes can be used to specify arguments with spaces.<div style="height: 1.00em;">
+&#160;</div>
+This can only be used for very short-running foreground tasks. Running an event process for a long period of time may block all further events for this or a dependent device.<div style="height: 1.00em;">
+&#160;</div>
+Starting daemons or other long-running processes is not appropriate for udev; the forked processes, detached or not, will be unconditionally killed after the event handling has finished.</div>
+<div class="spacer">
+</div>
+<i>LABEL</i><div style="margin-left: 4.00ex;">
+A named label to which a  <i>GOTO</i> may jump.</div>
+<div class="spacer">
+</div>
+<i>GOTO</i><div style="margin-left: 4.00ex;">
+Jumps to the next  <i>LABEL</i> with a matching name.</div>
+<div class="spacer">
+</div>
+<i>IMPORT{</i><i></i><i>type</i><i>}</i><div style="margin-left: 4.00ex;">
+Import a set of variables as device properties, depending on &quot;type&quot;:<div class="spacer">
+</div>
+&quot;program&quot;<div style="margin-left: 4.00ex;">
+Execute an external program specified as the assigned value and if it returns successfully import its output, which must be in environment key format. Path specification, command/argument separation, and quoting work like in  <i>RUN</i>.</div>
+<div class="spacer">
+</div>
+&quot;builtin&quot;<div style="margin-left: 4.00ex;">
+Similar to &quot;program&quot;, but use one of the built-in programs rather than an external one.</div>
+<div class="spacer">
+</div>
+&quot;file&quot;<div style="margin-left: 4.00ex;">
+Import a text file specified as the assigned value, the content of which must be in environment key format.</div>
+<div class="spacer">
+</div>
+&quot;db&quot;<div style="margin-left: 4.00ex;">
+Import a single property specified as the assigned value from the current device database. This works only if the database is already populated by an earlier event.</div>
+<div class="spacer">
+</div>
+&quot;cmdline&quot;<div style="margin-left: 4.00ex;">
+Import a single property from the kernel command line. For simple flags the value of the property is set to &quot;1&quot;.</div>
+<div class="spacer">
+</div>
+&quot;parent&quot;<div style="margin-left: 4.00ex;">
+Import the stored keys from the parent device by reading the database entry of the parent device. The value assigned to  <b>IMPORT{parent}</b> is used as a filter of key names to import (with the same shell glob pattern matching used for comparisons).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+This can only be used for very short-running foreground tasks. For details see  <b>RUN</b>.</div>
+<div class="spacer">
+</div>
+<i>OPTIONS</i><div style="margin-left: 4.00ex;">
+Rule and device options:<div class="spacer">
+</div>
+<b>link_priority=</b><b></b><i>value</i><div style="margin-left: 4.00ex;">
+Specify the priority of the created symlinks. Devices with higher priorities overwrite existing symlinks of other devices. The default is 0.</div>
+<div class="spacer">
+</div>
+<b>string_escape=</b><b></b><i>none|replace</i><div style="margin-left: 4.00ex;">
+Usually control and other possibly unsafe characters are replaced in strings used for device naming. The mode of replacement can be specified with this option.</div>
+<div class="spacer">
+</div>
+<b>static_node=</b><div style="margin-left: 4.00ex;">
+Apply the permissions specified in this rule to the static device node with the specified name. Also, for every tag specified in this rule, create a symlink in the directory /run/udev/static_node-tags/ <i>tag</i> pointing at the static device node with the specified name. Static device node creation is performed by systemd-tmpfiles before systemd-udevd is started. The static nodes might not have a corresponding kernel device; they are used to trigger automatic kernel module loading when they are accessed.</div>
+<div class="spacer">
+</div>
+<b>watch</b><div style="margin-left: 4.00ex;">
+Watch the device node with inotify; when the node is closed after being opened for writing, a change uevent is synthesized.</div>
+<div class="spacer">
+</div>
+<b>nowatch</b><div style="margin-left: 4.00ex;">
+Disable the watching of a device node with inotify.</div>
+</div>
+<div class="spacer">
+</div>
+The  <i>NAME</i>,  <i>SYMLINK</i>,  <i>PROGRAM</i>,  <i>OWNER</i>,  <i>GROUP</i>,  <i>MODE</i>, and  <i>RUN</i> fields support simple string substitutions. The  <i>RUN</i> substitutions are performed after all rules have been processed, right before the program is executed, allowing for the use of device properties set by earlier matching rules. For all other fields, substitutions are performed while the individual rule is being processed. The available substitutions are:<div class="spacer">
+</div>
+<b>$kernel</b>, <b>%k</b><div style="margin-left: 4.00ex;">
+The kernel name for this device.</div>
+<div class="spacer">
+</div>
+<b>$number</b>, <b>%n</b><div style="margin-left: 4.00ex;">
+The kernel number for this device. For example, &quot;sda3&quot; has kernel number &quot;3&quot;.</div>
+<div class="spacer">
+</div>
+<b>$devpath</b>, <b>%p</b><div style="margin-left: 4.00ex;">
+The devpath of the device.</div>
+<div class="spacer">
+</div>
+<b>$id</b>, <b>%b</b><div style="margin-left: 4.00ex;">
+The name of the device matched while searching the devpath upwards for  <b>SUBSYSTEMS</b>,  <b>KERNELS</b>,  <b>DRIVERS</b>, and  <b>ATTRS</b>.</div>
+<div class="spacer">
+</div>
+<b>$driver</b><div style="margin-left: 4.00ex;">
+The driver name of the device matched while searching the devpath upwards for  <b>SUBSYSTEMS</b>,  <b>KERNELS</b>,  <b>DRIVERS</b>, and  <b>ATTRS</b>.</div>
+<div class="spacer">
+</div>
+<b>$attr{</b><b></b><i>file</i><b>}</b>, <b>%s{</b><b></b><i>file</i><b>}</b><div style="margin-left: 4.00ex;">
+The value of a sysfs attribute found at the device where all keys of the rule have matched. If the matching device does not have such an attribute, and a previous  <b>KERNELS</b>,  <b>SUBSYSTEMS</b>,  <b>DRIVERS</b>, or  <b>ATTRS</b> test selected a parent device, then the attribute from that parent device is used.<div style="height: 1.00em;">
+&#160;</div>
+If the attribute is a symlink, the last element of the symlink target is returned as the value.</div>
+<div class="spacer">
+</div>
+<b>$env{</b><b></b><i>key</i><b>}</b>, <b>%E{</b><b></b><i>key</i><b>}</b><div style="margin-left: 4.00ex;">
+A device property value.</div>
+<div class="spacer">
+</div>
+<b>$major</b>, <b>%M</b><div style="margin-left: 4.00ex;">
+The kernel major number for the device.</div>
+<div class="spacer">
+</div>
+<b>$minor</b>, <b>%m</b><div style="margin-left: 4.00ex;">
+The kernel minor number for the device.</div>
+<div class="spacer">
+</div>
+<b>$result</b>, <b>%c</b><div style="margin-left: 4.00ex;">
+The string returned by the external program requested with  <i>PROGRAM</i>. A single part of the string, separated by a space character, may be selected by specifying the part number as an attribute: &quot;%c{N}&quot;. If the number is followed by the &quot;+&quot; character, this part plus all remaining parts of the result string are substituted: &quot;%c{N+}&quot;.</div>
+<div class="spacer">
+</div>
+<b>$parent</b>, <b>%P</b><div style="margin-left: 4.00ex;">
+The node name of the parent device.</div>
+<div class="spacer">
+</div>
+<b>$name</b><div style="margin-left: 4.00ex;">
+The current name of the device. If not changed by a rule, it is the name of the kernel device.</div>
+<div class="spacer">
+</div>
+<b>$links</b><div style="margin-left: 4.00ex;">
+A space-separated list of the current symlinks. The value is only set during a remove event or if an earlier rule assigned a value.</div>
+<div class="spacer">
+</div>
+<b>$root</b>, <b>%r</b><div style="margin-left: 4.00ex;">
+The udev_root value.</div>
+<div class="spacer">
+</div>
+<b>$sys</b>, <b>%S</b><div style="margin-left: 4.00ex;">
+The sysfs mount point.</div>
+<div class="spacer">
+</div>
+<b>$devnode</b>, <b>%N</b><div style="margin-left: 4.00ex;">
+The name of the device node.</div>
+<div class="spacer">
+</div>
+<b>%%</b><div style="margin-left: 4.00ex;">
+The &quot;%&quot; character itself.</div>
+<div class="spacer">
+</div>
+<b>$$</b><div style="margin-left: 4.00ex;">
+The &quot;$&quot; character itself.</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd-udevd.service</b>(8),  <b>udevadm</b>(8),  <b>systemd.link</b>(5)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

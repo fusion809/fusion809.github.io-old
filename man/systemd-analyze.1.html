@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SYSTEMD-ANALYZE(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SYSTEMD-ANALYZE(1)</td>
+<td class="head-vol">
+systemd-analyze</td>
+<td class="head-rtitle">
+SYSTEMD-ANALYZE(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> systemd-analyze - Analyze system boot-up performance</div>
+<div class="section">
+<h1>SYNOPSIS</h1><div style="margin-left: 16.00ex;text-indent: -16.00ex;" class="spacer">
+<b>systemd-analyze</b> [OPTIONS...] [time]</div>
+<div class="spacer">
+</div>
+<div style="margin-left: 16.00ex;text-indent: -16.00ex;" class="spacer">
+<b>systemd-analyze</b> [OPTIONS...] blame</div>
+<div class="spacer">
+</div>
+<div style="margin-left: 16.00ex;text-indent: -16.00ex;" class="spacer">
+<b>systemd-analyze</b> [OPTIONS...] critical-chain [<i>UNIT</i>...]</div>
+<div class="spacer">
+</div>
+<div style="margin-left: 16.00ex;text-indent: -16.00ex;" class="spacer">
+<b>systemd-analyze</b> [OPTIONS...] plot [&gt;&#160;file.svg]</div>
+<div class="spacer">
+</div>
+<div style="margin-left: 16.00ex;text-indent: -16.00ex;" class="spacer">
+<b>systemd-analyze</b> [OPTIONS...] dot [<i>PATTERN</i>...] [&gt;&#160;file.dot]</div>
+<div class="spacer">
+</div>
+<div style="margin-left: 16.00ex;text-indent: -16.00ex;" class="spacer">
+<b>systemd-analyze</b> [OPTIONS...] dump</div>
+<div class="spacer">
+</div>
+<div style="margin-left: 16.00ex;text-indent: -16.00ex;" class="spacer">
+<b>systemd-analyze</b> [OPTIONS...] set-log-level [<i>LEVEL</i>]</div>
+<div class="spacer">
+</div>
+<div style="margin-left: 16.00ex;text-indent: -16.00ex;" class="spacer">
+<b>systemd-analyze</b> [OPTIONS...] verify [<i>FILES</i>...]</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>systemd-analyze</b> may be used to determine system boot-up performance statistics and retrieve other state and tracing information from the system and service manager, and to verify the correctness of unit files.<div class="spacer">
+</div>
+<b>systemd-analyze time</b> prints the time spent in the kernel before userspace has been reached, the time spent in the initial RAM disk (initrd) before normal system userspace has been reached, and the time normal system userspace took to initialize. Note that these measurements simply measure the time passed up to the point where all system services have been spawned, but not necessarily until they fully finished initialization or the disk is idle.<div class="spacer">
+</div>
+<b>systemd-analyze blame</b> prints a list of all running units, ordered by the time they took to initialize. This information may be used to optimize boot-up times. Note that the output might be misleading as the initialization of one service might be slow simply because it waits for the initialization of another service to complete.<div class="spacer">
+</div>
+<b>systemd-analyze critical-chain [</b><b></b><i>UNIT...</i><b>]</b> prints a tree of the time-critical chain of units (for each of the specified  <i>UNIT</i>s or for the default target otherwise). The time after the unit is active or started is printed after the &quot;@&quot; character. The time the unit takes to start is printed after the &quot;+&quot; character. Note that the output might be misleading as the initialization of one service might depend on socket activation and because of the parallel execution of units.<div class="spacer">
+</div>
+<b>systemd-analyze plot</b> prints an SVG graphic detailing which system services have been started at what time, highlighting the time they spent on initialization.<div class="spacer">
+</div>
+<b>systemd-analyze dot</b> generates textual dependency graph description in dot format for further processing with the GraphViz  <b>dot</b>(1) tool. Use a command line like  <b>systemd-analyze dot | dot -Tsvg &gt; systemd.svg</b> to generate a graphical dependency tree. Unless  <b>--order</b> or  <b>--require</b> is passed, the generated graph will show both ordering and requirement dependencies. Optional pattern globbing style specifications (e.g. *.target) may be given at the end. A unit dependency is included in the graph if any of these patterns match either the origin or destination node.<div class="spacer">
+</div>
+<b>systemd-analyze dump</b> outputs a (usually very long) human-readable serialization of the complete server state. Its format is subject to change without notice and should not be parsed by applications.<div class="spacer">
+</div>
+<b>systemd-analyze set-log-level </b><b></b><i>LEVEL</i> changes the current log level of the  <b>systemd</b> daemon to  <i>LEVEL</i> (accepts the same values as  <b>--log-level=</b> described in  <b>systemd</b>(1)).<div class="spacer">
+</div>
+<b>systemd-analyze verify</b> will load unit files and print warnings if any errors are detected. Files specified on the command line will be loaded, but also any other units referenced by them. This command works by prepending the directories for all command line arguments at the beginning of the unit load path, which means that all units files found in those directories will be used in preference to the unit files found in the standard locations, even if not listed explicitly.<div class="spacer">
+</div>
+If no command is passed,  <b>systemd-analyze time</b> is implied.</div>
+<div class="section">
+<h1>OPTIONS</h1> The following options are understood:<div class="spacer">
+</div>
+<b>--user</b><div style="margin-left: 4.00ex;">
+Operates on the user systemd instance.</div>
+<div class="spacer">
+</div>
+<b>--system</b><div style="margin-left: 4.00ex;">
+Operates on the system systemd instance. This is the implied default.</div>
+<div class="spacer">
+</div>
+<b>--order</b>, <b>--require</b><div style="margin-left: 4.00ex;">
+When used in conjunction with the  <b>dot</b> command (see above), selects which dependencies are shown in the dependency graph. If  <b>--order</b> is passed, only dependencies of type  <i>After=</i> or  <i>Before=</i> are shown. If  <b>--require</b> is passed, only dependencies of type  <i>Requires=</i>,  <i>RequiresOverridable=</i>,  <i>Requisite=</i>,  <i>RequisiteOverridable=</i>,  <i>Wants=</i> and  <i>Conflicts=</i> are shown. If neither is passed, this shows dependencies of all these types.</div>
+<div class="spacer">
+</div>
+<b>--from-pattern=</b>, <b>--to-pattern=</b><div style="margin-left: 4.00ex;">
+When used in conjunction with the  <b>dot</b> command (see above), this selects which relationships are shown in the dependency graph. Both options require a  <b>glob</b>(7) pattern as an argument, which will be matched against the left-hand and the right-hand, respectively, nodes of a relationship.<div style="height: 1.00em;">
+&#160;</div>
+Each of these can be used more than once, in which case the unit name must match one of the values. When tests for both sides of the relation are present, a relation must pass both tests to be shown. When patterns are also specified as positional arguments, they must match at least one side of the relation. In other words, patterns specified with those two options will trim the list of edges matched by the positional arguments, if any are given, and fully determine the list of edges shown otherwise.</div>
+<div class="spacer">
+</div>
+<b>--fuzz=</b><i>timespan</i><div style="margin-left: 4.00ex;">
+When used in conjunction with the  <b>critical-chain</b> command (see above), also show units, which finished  <i>timespan</i> earlier, than the latest unit in the same level. The unit of  <i>timespan</i> is seconds unless specified with a different unit, e.g. &quot;50ms&quot;.</div>
+<div class="spacer">
+</div>
+<b>--no-man</b><div style="margin-left: 4.00ex;">
+Do not invoke man to verify the existence of man pages listed in  <i>Documentation=</i>.</div>
+<div class="spacer">
+</div>
+<b>-H</b>, <b>--host=</b><div style="margin-left: 4.00ex;">
+Execute the operation remotely. Specify a hostname, or a username and hostname separated by &quot;@&quot;, to connect to. The hostname may optionally be suffixed by a container name, separated by &quot;:&quot;, which connects directly to a specific container on the specified host. This will use SSH to talk to the remote machine manager instance. Container names may be enumerated with  <b>machinectl -H </b><b></b><i>HOST</i>.</div>
+<div class="spacer">
+</div>
+<b>-M</b>, <b>--machine=</b><div style="margin-left: 4.00ex;">
+Execute operation on a local container. Specify a container name to connect to.</div>
+<div class="spacer">
+</div>
+<b>-h</b>, <b>--help</b><div style="margin-left: 4.00ex;">
+Print a short help text and exit.</div>
+<div class="spacer">
+</div>
+<b>--version</b><div style="margin-left: 4.00ex;">
+Print a short version string and exit.</div>
+<div class="spacer">
+</div>
+<b>--no-pager</b><div style="margin-left: 4.00ex;">
+Do not pipe output into a pager.</div>
+</div>
+<div class="section">
+<h1>EXIT STATUS</h1> On success, 0 is returned, a non-zero failure code otherwise.</div>
+<div class="section">
+<h1>EXAMPLES FOR DOT</h1>  <b>Example&#160;1.&#160;Plots all dependencies of any unit whose name starts with &quot;avahi-daemon&quot;</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+$ systemd-analyze dot 'avahi-daemon.*' | dot -Tsvg &gt; avahi.svg<br/>
+      $ eog avahi.svg<br/>
+</div>
+<div class="spacer">
+</div>
+<b>Example&#160;2.&#160;Plots the dependencies between all known target units</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+systemd-analyze dot --to-pattern='*.target' --from-pattern='*.target' | dot -Tsvg &gt; targets.svg<br/>
+$ eog targets.svg<br/>
+</div>
+</div>
+<div class="section">
+<h1>EXAMPLES FOR VERIFY</h1> The following errors are currently detected:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;unknown sections and directives,</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;missing dependencies which are required to start the given unit,</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;man pages listed in  <i>Documentation=</i> which are not found in the system,</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;commands listed in  <i>ExecStart=</i> and similar which are not found in the system or not executable.</div>
+<div class="spacer">
+</div>
+<b>Example&#160;3.&#160;Misspelt directives</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+$ cat ./user.slice<br/>
+[Unit]<br/>
+WhatIsThis=11<br/>
+Documentation=man:nosuchfile(1)<br/>
+Requires=different.service<div class="spacer">
+</div>
+<br/>
+[Service]<br/>
+Desription=x<div class="spacer">
+</div>
+<br/>
+$ systemd-analyze verify ./user.slice<br/>
+[./user.slice:9] Unknown lvalue 'WhatIsThis' in section 'Unit'<br/>
+[./user.slice:13] Unknown section 'Service'. Ignoring.<br/>
+Error: org.freedesktop.systemd1.LoadFailed:<br/>
+   Unit different.service failed to load:<br/>
+   No such file or directory.<br/>
+Failed to create user.slice/start: Invalid argument<br/>
+user.slice: man nosuchfile(1) command failed with code 16<br/>
+      <br/>
+</div>
+<div class="spacer">
+</div>
+<b>Example&#160;4.&#160;Missing service units</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+$ tail ./a.socket ./b.socket<br/>
+==&gt; ./a.socket &lt;==<br/>
+[Socket]<br/>
+ListenStream=100<div class="spacer">
+</div>
+<br/>
+==&gt; ./b.socket &lt;==<br/>
+[Socket]<br/>
+ListenStream=100<br/>
+Accept=yes<div class="spacer">
+</div>
+<br/>
+$ systemd-analyze verify ./a.socket ./b.socket<br/>
+Service a.service not loaded, a.socket cannot be started.<br/>
+Service b@0.service not loaded, b.socket cannot be started.<br/>
+      <br/>
+</div>
+</div>
+<div class="section">
+<h1>ENVIRONMENT</h1>  <i>$SYSTEMD_PAGER</i><div style="margin-left: 4.00ex;">
+Pager to use when  <b>--no-pager</b> is not given; overrides  <i>$PAGER</i>. Setting this to an empty string or the value &quot;cat&quot; is equivalent to passing  <b>--no-pager</b>.</div>
+<div class="spacer">
+</div>
+<i>$SYSTEMD_LESS</i><div style="margin-left: 4.00ex;">
+Override the default options passed to  <b>less</b> (&quot;FRSXMK&quot;).</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>systemctl</b>(1)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

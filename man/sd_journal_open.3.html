@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SD_JOURNAL_OPEN(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SD_JOURNAL_OPEN(3)</td>
+<td class="head-vol">
+sd_journal_open</td>
+<td class="head-rtitle">
+SD_JOURNAL_OPEN(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sd_journal_open, sd_journal_open_directory, sd_journal_open_files, sd_journal_open_container, sd_journal_close, sd_journal, SD_JOURNAL_LOCAL_ONLY, SD_JOURNAL_RUNTIME_ONLY, SD_JOURNAL_SYSTEM, SD_JOURNAL_CURRENT_USER - Open the system journal for reading</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;systemd/sd-journal.h&gt;<br/>
+<div class="spacer">
+</div>
+<div style="margin-left: 20.00ex;text-indent: -20.00ex;" class="spacer">
+<b>int sd_journal_open(sd_journal&#160;**</b><i>ret</i><b>, int&#160;</b><i>flags</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 30.00ex;text-indent: -30.00ex;" class="spacer">
+<b>int sd_journal_open_directory(sd_journal&#160;**</b><i>ret</i><b>, const&#160;char&#160;*</b><i>path</i><b>, int&#160;</b><i>flags</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 26.00ex;text-indent: -26.00ex;" class="spacer">
+<b>int sd_journal_open_files(sd_journal&#160;**</b><i>ret</i><b>, const&#160;char&#160;**</b><i>paths</i><b>, int&#160;</b><i>flags</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 30.00ex;text-indent: -30.00ex;" class="spacer">
+<b>int sd_journal_open_container(sd_journal&#160;**</b><i>ret</i><b>, const&#160;char&#160;*</b><i>machine</i><b>, int&#160;</b><i>flags</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 22.00ex;text-indent: -22.00ex;" class="spacer">
+<b>void sd_journal_close(sd_journal&#160;*</b><i>j</i><b>);</b></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>sd_journal_open()</b> opens the log journal for reading. It will find all journal files automatically and interleave them automatically when reading. As first argument it takes a pointer to a  <i>sd_journal</i> pointer, which on success will contain a journal context object. The second argument is a flags field, which may consist of the following flags ORed together:  <b>SD_JOURNAL_LOCAL_ONLY</b> makes sure only journal files generated on the local machine will be opened.  <b>SD_JOURNAL_RUNTIME_ONLY</b> makes sure only volatile journal files will be opened, excluding those which are stored on persistent storage.  <b>SD_JOURNAL_SYSTEM</b> will cause journal files of system services and the kernel (in opposition to user session processes) to be opened.  <b>SD_JOURNAL_CURRENT_USER</b> will cause journal files of the current user to be opened. If neither  <b>SD_JOURNAL_SYSTEM</b> nor  <b>SD_JOURNAL_CURRENT_USER</b> are specified, all journal file types will be opened.<div class="spacer">
+</div>
+<b>sd_journal_open_directory()</b> is similar to  <b>sd_journal_open()</b> but takes an absolute directory path as argument. All journal files in this directory will be opened and interleaved automatically. This call also takes a flags argument, but it must be passed as 0 as no flags are currently understood for this call.<div class="spacer">
+</div>
+<b>sd_journal_open_files()</b> is similar to  <b>sd_journal_open()</b> but takes a  <b>NULL</b>-terminated list of file paths to open. All files will be opened and interleaved automatically. This call also takes a flags argument, but it must be passed as 0 as no flags are currently understood for this call. Please note that in the case of a live journal, this function is only useful for debugging, because individual journal files can be rotated at any moment, and the opening of specific files is inherently racy.<div class="spacer">
+</div>
+<b>sd_journal_open_container()</b> is similar to  <b>sd_journal_open()</b> but opens the journal files of a running OS container. The specified machine name refers to a container that is registered with  <b>systemd-machined</b>(8).<div class="spacer">
+</div>
+<i>sd_journal</i> objects cannot be used in the child after a fork. Functions which take a journal object as an argument ( <b>sd_journal_next()</b> and others) will return  <b>-ECHILD</b> after a fork.<div class="spacer">
+</div>
+<b>sd_journal_close()</b> will close the journal context allocated with  <b>sd_journal_open()</b> or  <b>sd_journal_open_directory()</b> and free its resources.<div class="spacer">
+</div>
+When opening the journal only journal files accessible to the calling user will be opened. If journal files are not accessible to the caller, this will be silently ignored.<div class="spacer">
+</div>
+See  <b>sd_journal_next</b>(3) for an example of how to iterate through the journal after opening it with  <b>sd_journal_open()</b>.<div class="spacer">
+</div>
+A journal context object returned by  <b>sd_journal_open()</b> references a specific journal entry as  <i>current</i> entry, similar to a file seek index in a classic file system file, but without absolute positions. It may be altered with  <b>sd_journal_next</b>(3) and  <b>sd_journal_seek_head</b>(3) and related calls. The current entry position may be exported in  <i>cursor</i> strings, as accessible via  <b>sd_journal_get_cursor</b>(3). Cursor strings may be used to globally identify a specific journal entry in a stable way and then later to seek to it (or if the specific entry is not available locally, to its closest entry in time)  <b>sd_journal_seek_cursor</b>(3).<div class="spacer">
+</div>
+Notification of journal changes is available via  <b>sd_journal_get_fd()</b> and related calls.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> The  <b>sd_journal_open()</b>,  <b>sd_journal_open_directory()</b>, and  <b>sd_journal_open_files()</b> calls return 0 on success or a negative errno-style error code.  <b>sd_journal_close()</b> returns nothing.</div>
+<div class="section">
+<h1>NOTES</h1> The  <b>sd_journal_open()</b>,  <b>sd_journal_open_directory()</b> and  <b>sd_journal_close()</b> interfaces are available as a shared library, which can be compiled and linked to with the  <b>libsystemd</b>&#160;<b>pkg-config</b>(1) file.</div>
+<div class="section">
+<h1>HISTORY</h1>  <b>sd_journal_open()</b>,  <b>sd_journal_close()</b>,  <b>SD_JOURNAL_LOCAL_ONLY</b>,  <b>SD_JOURNAL_RUNTIME_ONLY</b>,  <b>SD_JOURNAL_SYSTEM_ONLY</b> were added in systemd-38.<div class="spacer">
+</div>
+<b>sd_journal_open_directory()</b> was added in systemd-187.<div class="spacer">
+</div>
+<b>SD_JOURNAL_SYSTEM</b>,  <b>SD_JOURNAL_CURRENT_USER</b>, and  <b>sd_journal_open_files()</b> were added in systemd-205.  <b>SD_JOURNAL_SYSTEM_ONLY</b> was deprecated.</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>sd-journal</b>(3),  <b>sd_journal_next</b>(3),  <b>sd_journal_get_data</b>(3),  <b>systemd-machined</b>(8)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

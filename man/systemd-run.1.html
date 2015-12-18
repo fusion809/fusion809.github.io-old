@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SYSTEMD-RUN(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SYSTEMD-RUN(1)</td>
+<td class="head-vol">
+systemd-run</td>
+<td class="head-rtitle">
+SYSTEMD-RUN(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> systemd-run - Run programs in transient scope or service or timer units</div>
+<div class="section">
+<h1>SYNOPSIS</h1><div style="margin-left: 12.00ex;text-indent: -12.00ex;" class="spacer">
+<b>systemd-run</b> [OPTIONS...] <i>COMMAND</i>&#160;[ARGS...]</div>
+<div class="spacer">
+</div>
+<div style="margin-left: 12.00ex;text-indent: -12.00ex;" class="spacer">
+<b>systemd-run</b> [OPTIONS...] [TIMER&#160;OPTIONS...] {<i>COMMAND</i>} [ARGS...]</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>systemd-run</b> may be used to create and start a transient .service or .scope unit and run the specified  <i>COMMAND</i> in it. It may also be used to create and start transient .timer units.<div class="spacer">
+</div>
+If a command is run as transient service unit, it will be started and managed by the service manager like any other service, and thus shows up in the output of  <b>systemctl list-units</b> like any other unit. It will run in a clean and detached execution environment, with the service manager as its parent process. In this mode  <b>systemd-run</b> will start the service asynchronously in the background and return after the command has begun execution.<div class="spacer">
+</div>
+If a command is run as transient scope unit, it will be started by  <b>systemd-run</b> itself as parent process and will thus inherit the execution environment of the caller. However, the processes of the command are managed by the service manager similar to normal services, and will show up in the output of  <b>systemctl list-units</b>. Execution in this case is synchronous, and will return only when the command finishes. This mode is enabled via the  <b>--scope</b> switch (see below).<div class="spacer">
+</div>
+If a command is run with timer options such as  <b>--on-calendar=</b> (see below), a transient timer unit is created alongside the service unit for the specified command. Only the transient timer unit is started immediately, the transient service unit will be started when the transient timer elapses. If the  <b>--unit=</b> is specified, the  <i>COMMAND</i> may be omitted. In this case,  <b>systemd-run</b> only creates a .timer unit that invokes the specified unit when elapsing.</div>
+<div class="section">
+<h1>OPTIONS</h1> The following options are understood:<div class="spacer">
+</div>
+<b>--no-ask-password</b><div style="margin-left: 4.00ex;">
+Do not query the user for authentication for privileged operations.</div>
+<div class="spacer">
+</div>
+<b>--scope</b><div style="margin-left: 4.00ex;">
+Create a transient .scope unit instead of the default transient .service unit.</div>
+<div class="spacer">
+</div>
+<b>--unit=</b><div style="margin-left: 4.00ex;">
+Use this unit name instead of an automatically generated one.</div>
+<div class="spacer">
+</div>
+<b>--property=</b>, <b>-p</b><div style="margin-left: 4.00ex;">
+Sets a unit property for the scope or service unit that is created. This takes an assignment in the same format as  <b>systemctl</b>(1)'s  <b>set-property</b> command.</div>
+<div class="spacer">
+</div>
+<b>--description=</b><div style="margin-left: 4.00ex;">
+Provide a description for the service or scope unit. If not specified, the command itself will be used as a description. See  <i>Description=</i> in  <b>systemd.unit</b>(5).</div>
+<div class="spacer">
+</div>
+<b>--slice=</b><div style="margin-left: 4.00ex;">
+Make the new .service or .scope unit part of the specified slice, instead of the system.slice.</div>
+<div class="spacer">
+</div>
+<b>--remain-after-exit</b><div style="margin-left: 4.00ex;">
+After the service or scope process has terminated, keep the service around until it is explicitly stopped. This is useful to collect runtime information about the service after it finished running. Also see  <i>RemainAfterExit=</i> in  <b>systemd.service</b>(5).</div>
+<div class="spacer">
+</div>
+<b>--send-sighup</b><div style="margin-left: 4.00ex;">
+When terminating the scope or service unit, send a SIGHUP immediately after SIGTERM. This is useful to indicate to shells and shell-like processes that the connection has been severed. Also see  <i>SendSIGHUP=</i> in  <b>systemd.kill</b>(5).</div>
+<div class="spacer">
+</div>
+<b>--service-type=</b><div style="margin-left: 4.00ex;">
+Sets the service type. Also see  <i>Type=</i> in  <b>systemd.service</b>(5). This option has no effect in conjunction with  <b>--scope</b>. Defaults to  <b>simple</b>.</div>
+<div class="spacer">
+</div>
+<b>--uid=</b>, <b>--gid=</b><div style="margin-left: 4.00ex;">
+Runs the service process under the UNIX user and group. Also see  <i>User=</i> and  <i>Group=</i> in  <b>systemd.exec</b>(5).</div>
+<div class="spacer">
+</div>
+<b>--nice=</b><div style="margin-left: 4.00ex;">
+Runs the service process with the specified nice level. Also see  <i>Nice=</i> in  <b>systemd.exec</b>(5).</div>
+<div class="spacer">
+</div>
+<b>--setenv=</b><div style="margin-left: 4.00ex;">
+Runs the service process with the specified environment variables set. Also see  <i>Environment=</i> in  <b>systemd.exec</b>(5).</div>
+<div class="spacer">
+</div>
+<b>--pty</b>, <b>-t</b><div style="margin-left: 4.00ex;">
+When invoking a command as service connects its standard input and output to the invoking tty via a pseudo TTY device. This allows invoking binaries as services that expect interactive user input, such as interactive command shells.</div>
+<div class="spacer">
+</div>
+<b>--quiet</b>, <b>-q</b><div style="margin-left: 4.00ex;">
+Suppresses additional informational output while running. This is particularly useful in combination with  <b>--pty</b> when it will suppress the initial message explaining how to terminate the TTY connection.</div>
+<div class="spacer">
+</div>
+<b>--on-active=</b>, <b>--on-boot=</b>, <b>--on-startup=</b>, <b>--on-unit-active=</b>, <b>--on-unit-inactive=</b><div style="margin-left: 4.00ex;">
+Defines monotonic timers relative to different starting points. Also see  <i>OnActiveSec=</i>,  <i>OnBootSec=</i>,  <i>OnStartupSec=</i>,  <i>OnUnitActiveSec=</i> and  <i>OnUnitInactiveSec=</i> in  <b>systemd.timer</b>(5). This options have no effect in conjunction with  <b>--scope</b>.</div>
+<div class="spacer">
+</div>
+<b>--on-calendar=</b><div style="margin-left: 4.00ex;">
+Defines realtime (i.e. wallclock) timers with calendar event expressions. Also see  <i>OnCalendar=</i> in  <b>systemd.timer</b>(5). This option has no effect in conjunction with  <b>--scope</b>.</div>
+<div class="spacer">
+</div>
+<b>--timer-property=</b><div style="margin-left: 4.00ex;">
+Sets a timer unit property for the timer unit that is created. It is similar with  <b>--property</b> but only for created timer unit. This option only has effect in conjunction with  <b>--on-active=</b>,  <b>--on-boot=</b>,  <b>--on-startup=</b>,  <b>--on-unit-active=</b>,  <b>--on-unit-inactive=</b>,  <b>--on-calendar=</b>. This takes an assignment in the same format as  <b>systemctl</b>(1)'s  <b>set-property</b> command.</div>
+<div class="spacer">
+</div>
+<b>--no-block</b><div style="margin-left: 4.00ex;">
+Do not synchronously wait for the requested operation to finish. If this is not specified, the job will be verified, enqueued and  <b>systemd-run</b> will wait until the unit's start-up is completed. By passing this argument, it is only verified and enqueued.</div>
+<div class="spacer">
+</div>
+<b>--user</b><div style="margin-left: 4.00ex;">
+Talk to the service manager of the calling user, rather than the service manager of the system.</div>
+<div class="spacer">
+</div>
+<b>--system</b><div style="margin-left: 4.00ex;">
+Talk to the service manager of the system. This is the implied default.</div>
+<div class="spacer">
+</div>
+<b>-H</b>, <b>--host=</b><div style="margin-left: 4.00ex;">
+Execute the operation remotely. Specify a hostname, or a username and hostname separated by &quot;@&quot;, to connect to. The hostname may optionally be suffixed by a container name, separated by &quot;:&quot;, which connects directly to a specific container on the specified host. This will use SSH to talk to the remote machine manager instance. Container names may be enumerated with  <b>machinectl -H </b><b></b><i>HOST</i>.</div>
+<div class="spacer">
+</div>
+<b>-M</b>, <b>--machine=</b><div style="margin-left: 4.00ex;">
+Execute operation on a local container. Specify a container name to connect to.</div>
+<div class="spacer">
+</div>
+<b>-h</b>, <b>--help</b><div style="margin-left: 4.00ex;">
+Print a short help text and exit.</div>
+<div class="spacer">
+</div>
+<b>--version</b><div style="margin-left: 4.00ex;">
+Print a short version string and exit.</div>
+<div class="spacer">
+</div>
+All command line arguments after the first non-option argument become part of the command line of the launched process. If a command is run as service unit, its first argument needs to be an absolute binary path.</div>
+<div class="section">
+<h1>EXIT STATUS</h1> On success, 0 is returned, a non-zero failure code otherwise.</div>
+<div class="section">
+<h1>EXAMPLES</h1> The following command will log the environment variables provided by systemd to services:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+# systemd-run env<br/>
+Running as unit run-19945.service.<br/>
+# journalctl -u run-19945.service<br/>
+Sep 08 07:37:21 bupkis systemd[1]: Starting /usr/bin/env...<br/>
+Sep 08 07:37:21 bupkis systemd[1]: Started /usr/bin/env.<br/>
+Sep 08 07:37:21 bupkis env[19948]: PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin<br/>
+Sep 08 07:37:21 bupkis env[19948]: LANG=en_US.UTF-8<br/>
+Sep 08 07:37:21 bupkis env[19948]: BOOT_IMAGE=/vmlinuz-3.11.0-0.rc5.git6.2.fc20.x86_64<br/>
+</div>
+<div class="spacer">
+</div>
+The following command invokes the  <b>updatedb</b>(8) tool, but lowers the block IO weight for it to 10. See  <b>systemd.resource-control</b>(5) for more information on the  <i>BlockIOWeight=</i> property.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+# systemd-run -p BlockIOWeight=10 updatedb<br/>
+</div>
+<div class="spacer">
+</div>
+The following command will touch a file after 30 seconds.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+# date; systemd-run --on-active=30 --timer-property=AccuracySec=100ms /bin/touch /tmp/foo<br/>
+Mon Dec  8 20:44:24 KST 2014<br/>
+Running as unit run-71.timer.<br/>
+Will run as unit run-71.service.<br/>
+# journalctl -b -u run-71.timer<br/>
+-- Logs begin at Fri 2014-12-05 19:09:21 KST, end at Mon 2014-12-08 20:44:54 KST. --<br/>
+Dec 08 20:44:38 container systemd[1]: Starting /bin/touch /tmp/foo.<br/>
+Dec 08 20:44:38 container systemd[1]: Started /bin/touch /tmp/foo.<br/>
+# journalctl -b -u run-71.service<br/>
+-- Logs begin at Fri 2014-12-05 19:09:21 KST, end at Mon 2014-12-08 20:44:54 KST. --<br/>
+Dec 08 20:44:48 container systemd[1]: Starting /bin/touch /tmp/foo...<br/>
+Dec 08 20:44:48 container systemd[1]: Started /bin/touch /tmp/foo.<br/>
+</div>
+<div class="spacer">
+</div>
+The following command invokes /bin/bash as a service passing its standard input, output and error to the calling TTY.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+# systemd-run -t /bin/bash<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>systemctl</b>(1),  <b>systemd.unit</b>(5),  <b>systemd.service</b>(5),  <b>systemd.scope</b>(5),  <b>systemd.slice</b>(5),  <b>systemd.exec</b>(5),  <b>systemd.resource-control</b>(5),  <b>systemd.timer</b>(5),  <b>machinectl</b>(1)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

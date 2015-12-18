@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SD_NOTIFY(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SD_NOTIFY(3)</td>
+<td class="head-vol">
+sd_notify</td>
+<td class="head-rtitle">
+SD_NOTIFY(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sd_notify, sd_notifyf, sd_pid_notify, sd_pid_notifyf, sd_pid_notify_with_fds - Notify service manager about start-up completion and other service status changes</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;systemd/sd-daemon.h&gt;<br/>
+<div class="spacer">
+</div>
+<div style="margin-left: 14.00ex;text-indent: -14.00ex;" class="spacer">
+<b>int sd_notify(int&#160;</b><i>unset_environment</i><b>, const&#160;char&#160;*</b><i>state</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 15.00ex;text-indent: -15.00ex;" class="spacer">
+<b>int sd_notifyf(int&#160;</b><i>unset_environment</i><b>, const&#160;char&#160;*</b><i>format</i><b>, ...);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 18.00ex;text-indent: -18.00ex;" class="spacer">
+<b>int sd_pid_notify(pid_t&#160;</b><i>pid</i><b>, int&#160;</b><i>unset_environment</i><b>, const&#160;char&#160;*</b><i>state</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 19.00ex;text-indent: -19.00ex;" class="spacer">
+<b>int sd_pid_notifyf(pid_t&#160;</b><i>pid</i><b>, int&#160;</b><i>unset_environment</i><b>, const&#160;char&#160;*</b><i>format</i><b>, ...);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 27.00ex;text-indent: -27.00ex;" class="spacer">
+<b>int sd_pid_notify_with_fds(pid_t&#160;</b><i>pid</i><b>, int&#160;</b><i>unset_environment</i><b>, const&#160;char&#160;*</b><i>state</i><b>, const&#160;int&#160;*</b><i>fds</i><b>, unsigned&#160;</b><i>n_fds</i><b>);</b></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>sd_notify()</b> may be called by a service to notify the service manager about state changes. It can be used to send arbitrary information, encoded in an environment-block-like string. Most importantly it can be used for start-up completion notification.<div class="spacer">
+</div>
+If the  <i>unset_environment</i> parameter is non-zero,  <b>sd_notify()</b> will unset the  <i>$NOTIFY_SOCKET</i> environment variable before returning (regardless of whether the function call itself succeeded or not). Further calls to  <b>sd_notify()</b> will then fail, but the variable is no longer inherited by child processes.<div class="spacer">
+</div>
+The  <i>state</i> parameter should contain a newline-separated list of variable assignments, similar in style to an environment block. A trailing newline is implied if none is specified. The string may contain any kind of variable assignments, but the following shall be considered well-known:<div class="spacer">
+</div>
+READY=1<div style="margin-left: 4.00ex;">
+Tells the service manager that service startup is finished. This is only used by systemd if the service definition file has Type=notify set. Since there is little value in signaling non-readiness, the only value services should send is &quot;READY=1&quot; (i.e. &quot;READY=0&quot; is not defined).</div>
+<div class="spacer">
+</div>
+RELOADING=1<div style="margin-left: 4.00ex;">
+Tells the service manager that the service is reloading its configuration. This is useful to allow the service manager to track the service's internal state, and present it to the user. Note that a service that sends this notification must also send a &quot;READY=1&quot; notification when it completed reloading its configuration.</div>
+<div class="spacer">
+</div>
+STOPPING=1<div style="margin-left: 4.00ex;">
+Tells the service manager that the service is beginning its shutdown. This is useful to allow the service manager to track the service's internal state, and present it to the user.</div>
+<div class="spacer">
+</div>
+STATUS=...<div style="margin-left: 4.00ex;">
+Passes a single-line UTF-8 status string back to the service manager that describes the service state. This is free-form and can be used for various purposes: general state feedback, fsck-like programs could pass completion percentages and failing programs could pass a human readable error message. Example: &quot;STATUS=Completed 66% of file system check...&quot;</div>
+<div class="spacer">
+</div>
+ERRNO=...<div style="margin-left: 4.00ex;">
+If a service fails, the errno-style error code, formatted as string. Example: &quot;ERRNO=2&quot; for ENOENT.</div>
+<div class="spacer">
+</div>
+BUSERROR=...<div style="margin-left: 4.00ex;">
+If a service fails, the D-Bus error-style error code. Example: &quot;BUSERROR=org.freedesktop.DBus.Error.TimedOut&quot;</div>
+<div class="spacer">
+</div>
+MAINPID=...<div style="margin-left: 4.00ex;">
+The main process ID (PID) of the service, in case the service manager did not fork off the process itself. Example: &quot;MAINPID=4711&quot;</div>
+<div class="spacer">
+</div>
+WATCHDOG=1<div style="margin-left: 4.00ex;">
+Tells the service manager to update the watchdog timestamp. This is the keep-alive ping that services need to issue in regular intervals if  <i>WatchdogSec=</i> is enabled for it. See  <b>systemd.service</b>(5) for information how to enable this functionality and  <b>sd_watchdog_enabled</b>(3) for the details of how the service can check whether the watchdog is enabled.</div>
+<div class="spacer">
+</div>
+FDSTORE=1<div style="margin-left: 4.00ex;">
+Stores additional file descriptors in the service manager. File descriptors sent this way will be maintained per-service by the service manager and be passed again using the usual file descriptor passing logic on the next invocation of the service (see  <b>sd_listen_fds</b>(3)). This is useful for implementing service restart schemes where services serialize their state to /run, push their file descriptors to the system manager, and are then restarted, retrieving their state again via socket passing and /run. Note that the service manager will accept messages for a service only if  <i>FileDescriptorStoreMax=</i> is set to non-zero for it (defaults to zero). See  <b>systemd.service</b>(5) for details. Multiple arrays of file descriptors may be sent in separate messages, in which case the arrays are combined. Note that the service manager removes duplicate file descriptors before passing them to the service. Use  <b>sd_pid_notify_with_fds()</b> to send messages with &quot;FDSTORE=1&quot;, see below.</div>
+<div class="spacer">
+</div>
+It is recommended to prefix variable names that are not listed above with  <i>X_</i> to avoid namespace clashes.<div class="spacer">
+</div>
+Note that systemd will accept status data sent from a service only if the  <i>NotifyAccess=</i> option is correctly set in the service definition file. See  <b>systemd.service</b>(5) for details.<div class="spacer">
+</div>
+<b>sd_notifyf()</b> is similar to  <b>sd_notify()</b> but takes a  <b>printf()</b>-like format string plus arguments.<div class="spacer">
+</div>
+<b>sd_pid_notify()</b> and  <b>sd_pid_notifyf()</b> are similar to  <b>sd_notify()</b> and  <b>sd_notifyf()</b> but take a process ID (PID) to use as originating PID for the message as first argument. This is useful to send notification messages on behalf of other processes, provided the appropriate privileges are available. If the PID argument is specified as 0 the process ID of the calling process is used, in which case the calls are fully equivalent to  <b>sd_notify()</b> and  <b>sd_notifyf()</b>.<div class="spacer">
+</div>
+<b>sd_pid_notify_with_fds()</b> is similar to  <b>sd_pid_notify()</b> but takes an additional array of file descriptors. These file descriptors are sent along the notification message to the service manager. This is particularly useful for sending &quot;FDSTORE=1&quot; messages, as described above. The additional arguments are a pointer to the file descriptor array plus the number of file descriptors in the array. If the number of file descriptors is passed as 0, the call is fully equivalent to  <b>sd_pid_notify()</b>, i.e. no file descriptors are passed. Note that sending file descriptors to the service manager on messages that do not expect them (i.e. without &quot;FDSTORE=1&quot;) they are immediately closed on reception.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On failure, these calls return a negative errno-style error code. If  <i>$NOTIFY_SOCKET</i> was not set and hence no status data could be sent, 0 is returned. If the status was sent, these functions return with a positive return value. In order to support both, init systems that implement this scheme and those which do not, it is generally recommended to ignore the return value of this call.</div>
+<div class="section">
+<h1>NOTES</h1> These APIs are implemented as a shared library, which can be compiled and linked to with the  <b>libsystemd</b>&#160;<b>pkg-config</b>(1) file.<div class="spacer">
+</div>
+Internally, these functions send a single datagram with the state string as payload to the  <b>AF_UNIX</b> socket referenced in the  <i>$NOTIFY_SOCKET</i> environment variable. If the first character of  <i>$NOTIFY_SOCKET</i> is &quot;@&quot;, the string is understood as Linux abstract namespace socket. The datagram is accompanied by the process credentials of the sending service, using SCM_CREDENTIALS.</div>
+<div class="section">
+<h1>ENVIRONMENT</h1>  <i>$NOTIFY_SOCKET</i><div style="margin-left: 4.00ex;">
+Set by the service manager for supervised processes for status and start-up completion notification. This environment variable specifies the socket  <b>sd_notify()</b> talks to. See above for details.</div>
+</div>
+<div class="section">
+<h1>EXAMPLES</h1>  <b>Example&#160;1.&#160;Start-up Notification</b><div class="spacer">
+</div>
+When a service finished starting up, it might issue the following call to notify the service manager:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+sd_notify(0, &quot;READY=1&quot;);<br/>
+</div>
+<div class="spacer">
+</div>
+<b>Example&#160;2.&#160;Extended Start-up Notification</b><div class="spacer">
+</div>
+A service could send the following after completing initialization:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+sd_notifyf(0, &quot;READY=1\n&quot;<br/>
+        &quot;STATUS=Processing requests...\n&quot;<br/>
+        &quot;MAINPID=%lu&quot;,<br/>
+        (unsigned long) getpid());<br/>
+</div>
+<div class="spacer">
+</div>
+<b>Example&#160;3.&#160;Error Cause Notification</b><div class="spacer">
+</div>
+A service could send the following shortly before exiting, on failure:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+sd_notifyf(0, &quot;STATUS=Failed to start up: %s\n&quot;<br/>
+        &quot;ERRNO=%i&quot;,<br/>
+        strerror(errno),<br/>
+        errno);<br/>
+</div>
+<div class="spacer">
+</div>
+<b>Example&#160;4.&#160;Store a File Descriptor in the Service Manager</b><div class="spacer">
+</div>
+To store an open file descriptor in the service manager, in order to continue operation after a service restart without losing state use &quot;FDSTORE=1&quot;:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+sd_pid_notify_with_fds(0, 0, &quot;FDSTORE=1&quot;, &amp;fd, 1);<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>sd-daemon</b>(3),  <b>daemon</b>(7),  <b>systemd.service</b>(5),  <b>sd_watchdog_enabled</b>(3)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SYSTEMD.MOUNT(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SYSTEMD.MOUNT(5)</td>
+<td class="head-vol">
+systemd.mount</td>
+<td class="head-rtitle">
+SYSTEMD.MOUNT(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> systemd.mount - Mount unit configuration</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <i>mount</i>.mount</div>
+<div class="section">
+<h1>DESCRIPTION</h1> A unit configuration file whose name ends in &quot;.mount&quot; encodes information about a file system mount point controlled and supervised by systemd.<div class="spacer">
+</div>
+This man page lists the configuration options specific to this unit type. See  <b>systemd.unit</b>(5) for the common options of all unit configuration files. The common configuration items are configured in the generic [Unit] and [Install] sections. The mount specific configuration options are configured in the [Mount] section.<div class="spacer">
+</div>
+Additional options are listed in  <b>systemd.exec</b>(5), which define the execution environment the  <b>mount</b>(8) binary is executed in, and in  <b>systemd.kill</b>(5), which define the way the processes are terminated, and in  <b>systemd.resource-control</b>(5), which configure resource control settings for the processes of the service. Note that the User= and Group= options are not particularly useful for mount units specifying a &quot;Type=&quot; option or using configuration not specified in /etc/fstab;  <b>mount</b>(8) will refuse options that are not listed in /etc/fstab if it is not run as UID 0.<div class="spacer">
+</div>
+Mount units must be named after the mount point directories they control. Example: the mount point /home/lennart must be configured in a unit file home-lennart.mount. For details about the escaping logic used to convert a file system path to a unit name, see  <b>systemd.unit</b>(5).<div class="spacer">
+</div>
+Optionally, a mount unit may be accompanied by an automount unit, to allow on-demand or parallelized mounting. See  <b>systemd.automount</b>(5).<div class="spacer">
+</div>
+If a mount point is beneath another mount point in the file system hierarchy, a dependency between both units is created automatically.<div class="spacer">
+</div>
+Mount points created at runtime (independently of unit files or /etc/fstab) will be monitored by systemd and appear like any other mount unit in systemd. See /proc/self/mountinfo description in  <b>proc</b>(5).<div class="spacer">
+</div>
+Some file systems have special semantics as API file systems for kernel-to-userspace and userspace-to-userspace interfaces. Some of them may not be changed via mount units, and cannot be disabled. For a longer discussion see  <b>API File Systems</b>[1].</div>
+<div class="section">
+<h1>FSTAB</h1> Mount units may either be configured via unit files, or via /etc/fstab (see  <b>fstab</b>(5) for details). Mounts listed in /etc/fstab will be converted into native units dynamically at boot and when the configuration of the system manager is reloaded. In general, configuring mount points through /etc/fstab is the preferred approach. See  <b>systemd-fstab-generator</b>(8) for details about the conversion.<div class="spacer">
+</div>
+When reading /etc/fstab a few special mount options are understood by systemd which influence how dependencies are created for mount points. systemd will create a dependency of type  <b>Wants</b> or  <b>Requires</b> (see option  <b>nofail</b> below), from either local-fs.target or remote-fs.target, depending whether the file system is local or remote.<div class="spacer">
+</div>
+<b>x-systemd.requires=</b><div style="margin-left: 4.00ex;">
+Configures a  <i>Requires=</i> and an  <i>After=</i> dependency between the created mount unit and another systemd unit, such as a device or mount unit. The argument should be a unit name, or an absolute path to a device node or mount point. This option may be specified more than once. This option is particularly useful for mount point declarations that need an additional device to be around (such as an external journal device for journal file systems) or an additional mount to be in place (such as an overlay file system that merges multiple mount points). See  <i>After=</i> and  <i>Requires=</i> in  <b>systemd.unit</b>(5) for details.</div>
+<div class="spacer">
+</div>
+<b>x-systemd.requires-mounts-for=</b><div style="margin-left: 4.00ex;">
+Configures a  <i>RequiresMountsFor=</i> dependency between the created mount unit and other mount units. The argument must be an absolute path. This option may be specified more than once. See  <i>RequiresMountsFor=</i> in  <b>systemd.unit</b>(5) for details.</div>
+<div class="spacer">
+</div>
+<b>x-systemd.automount</b><div style="margin-left: 4.00ex;">
+An automount unit will be created for the file system. See  <b>systemd.automount</b>(5) for details.</div>
+<div class="spacer">
+</div>
+<b>x-systemd.idle-timeout=</b><div style="margin-left: 4.00ex;">
+Configures the idleness timeout of the automount unit. See  <i>TimeoutIdleSec=</i> in  <b>systemd.automount</b>(5) for details.</div>
+<div class="spacer">
+</div>
+<b>x-systemd.device-timeout=</b><div style="margin-left: 4.00ex;">
+Configure how long systemd should wait for a device to show up before giving up on an entry from /etc/fstab. Specify a time in seconds or explicitly append a unit as &quot;s&quot;, &quot;min&quot;, &quot;h&quot;, &quot;ms&quot;.<div style="height: 1.00em;">
+&#160;</div>
+Note that this option can only be used in /etc/fstab, and will be ignored when part of  <i>Options=</i> setting in a unit file.</div>
+<div class="spacer">
+</div>
+<b>noauto</b>, <b>auto</b><div style="margin-left: 4.00ex;">
+With  <b>noauto</b>, this mount will not be added as a dependency for local-fs.target or remote-fs.target. This means that it will not be mounted automatically during boot, unless it is pulled in by some other unit. Option  <b>auto</b> has the opposite meaning and is the default.</div>
+<div class="spacer">
+</div>
+<b>nofail</b><div style="margin-left: 4.00ex;">
+With  <b>nofail</b> this mount will be only wanted, not required, by local-fs.target or remote-fs.target. This means that the boot will continue even if this mount point is not mounted successfully.</div>
+<div class="spacer">
+</div>
+<b>x-initrd.mount</b><div style="margin-left: 4.00ex;">
+An additional filesystem to be mounted in the initramfs. See initrd-fs.target description in  <b>systemd.special</b>(7).</div>
+<div class="spacer">
+</div>
+If a mount point is configured in both /etc/fstab and a unit file that is stored below /usr, the former will take precedence. If the unit file is stored below /etc, it will take precedence. This means: native unit files take precedence over traditional configuration files, but this is superseded by the rule that configuration in /etc will always take precedence over configuration in /usr.</div>
+<div class="section">
+<h1>OPTIONS</h1> Mount files must include a [Mount] section, which carries information about the file system mount points it supervises. A number of options that may be used in this section are shared with other unit types. These options are documented in  <b>systemd.exec</b>(5) and  <b>systemd.kill</b>(5). The options specific to the [Mount] section of mount units are the following:<div class="spacer">
+</div>
+<i>What=</i><div style="margin-left: 4.00ex;">
+Takes an absolute path of a device node, file or other resource to mount. See  <b>mount</b>(8) for details. If this refers to a device node, a dependency on the respective device unit is automatically created. (See  <b>systemd.device</b>(5) for more information.) This option is mandatory.</div>
+<div class="spacer">
+</div>
+<i>Where=</i><div style="margin-left: 4.00ex;">
+Takes an absolute path of a directory of the mount point. If the mount point does not exist at the time of mounting, it is created. This string must be reflected in the unit filename. (See above.) This option is mandatory.</div>
+<div class="spacer">
+</div>
+<i>Type=</i><div style="margin-left: 4.00ex;">
+Takes a string for the file system type. See  <b>mount</b>(8) for details. This setting is optional.</div>
+<div class="spacer">
+</div>
+<i>Options=</i><div style="margin-left: 4.00ex;">
+Mount options to use when mounting. This takes a comma-separated list of options. This setting is optional.</div>
+<div class="spacer">
+</div>
+<i>SloppyOptions=</i><div style="margin-left: 4.00ex;">
+Takes a boolean argument. If true, parsing of the options specified in  <i>Options=</i> is relaxed, and unknown mount options are tolerated. This corresponds with  <b>mount</b>(8)'s  <i>-s</i> switch. Defaults to off.</div>
+<div class="spacer">
+</div>
+<i>DirectoryMode=</i><div style="margin-left: 4.00ex;">
+Directories of mount points (and any parent directories) are automatically created if needed. This option specifies the file system access mode used when creating these directories. Takes an access mode in octal notation. Defaults to 0755.</div>
+<div class="spacer">
+</div>
+<i>TimeoutSec=</i><div style="margin-left: 4.00ex;">
+Configures the time to wait for the mount command to finish. If a command does not exit within the configured time, the mount will be considered failed and be shut down again. All commands still running will be terminated forcibly via  <b>SIGTERM</b>, and after another delay of this time with  <b>SIGKILL</b>. (See  <b>KillMode=</b> in  <b>systemd.kill</b>(5).) Takes a unit-less value in seconds, or a time span value such as &quot;5min 20s&quot;. Pass 0 to disable the timeout logic. The default value is set from the manager configuration file's  <i>DefaultTimeoutStart=</i> variable.</div>
+<div class="spacer">
+</div>
+Check  <b>systemd.exec</b>(5) and  <b>systemd.kill</b>(5) for more settings.</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>systemctl</b>(1),  <b>systemd.unit</b>(5),  <b>systemd.exec</b>(5),  <b>systemd.kill</b>(5),  <b>systemd.resource-control</b>(5),  <b>systemd.service</b>(5),  <b>systemd.device</b>(5),  <b>proc</b>(5),  <b>mount</b>(8),  <b>systemd-fstab-generator</b>(8),  <b>systemd.directives</b>(7)</div>
+<div class="section">
+<h1>NOTES</h1><dl>
+<dt>
+ 1.</dt>
+<dd>
+API File Systems</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+http://www.freedesktop.org/wiki/Software/systemd/APIFileSystems</div>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SD_BUS_MESSAGE_APPEND(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SD_BUS_MESSAGE_APPEND(3)</td>
+<td class="head-vol">
+sd_bus_message_append</td>
+<td class="head-rtitle">
+SD_BUS_MESSAGE_APPEND(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sd_bus_message_append - Attach fields to a D-Bus message based on a type string</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;systemd/sd-bus.h&gt;<br/>
+<div class="spacer">
+</div>
+<div style="margin-left: 26.00ex;text-indent: -26.00ex;" class="spacer">
+<b>int sd_bus_message_append(sd_bus_message&#160;*</b><i>m</i><b>, const&#160;char&#160;*</b><i>types</i><b>, ...);</b></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <b>sd_bus_message_append()</b> function appends a sequence of fields to the D-Bus message object  <i>m</i>. The type string  <i>types</i> describes the types of the field arguments that follow. For each type specified in the type string one or more arguments need to be specified, in the same order as declared in the type string.<div class="spacer">
+</div>
+The type string is composed of the elements shown in the table below. It contains zero or more single &quot;complete types&quot;. Each complete type may be one of the basic types or a fully described container type. A container type may be a structure with the contained types, a variant, an array with its element type, or a dictionary entry with the contained types. The type string is  <b>NUL</b>-terminated.<div class="spacer">
+</div>
+In case of a basic type, one argument of the corresponding type is expected.<div class="spacer">
+</div>
+A structure is denoted by a sequence of complete types between &quot;(&quot; and &quot;)&quot;. This sequence cannot be empty &#8212; it must contain at least one type. Arguments corresponding to this nested sequence follow the same rules as if they were not nested.<div class="spacer">
+</div>
+A variant is denoted by &quot;v&quot;. Corresponding arguments must begin with a type string denoting a complete type, and following that, arguments corresponding to the specified type.<div class="spacer">
+</div>
+An array is denoted by &quot;a&quot; followed by a complete type. Corresponding arguments must begin with the number of entries in the array, followed by the entries themselves, matching the element type of the array.<div class="spacer">
+</div>
+A dictionary is an array of dictionary entries, denoted by &quot;a&quot; followed by a pair of complete types between &quot;{&quot; and &quot;}&quot;. The first of those types must be a basic type. Corresponding arguments must begin with the number of dictionary entries, followed by a pair of values for each entry matching the element type of the dictionary entries.<div class="spacer">
+</div>
+For further details on the D-Bus type system, please consult the  <b>D-Bus Specification</b>[1].<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+<b>Table&#160;1.&#160;Item type specifiers</b><table class="tbl">
+<col style="width: 9.00ex;"/>
+<col style="width: 34.00ex;"/>
+<col style="width: 22.00ex;"/>
+<col style="width: 33.00ex;"/>
+<col style="width: 46.00ex;"/>
+<tbody>
+<tr>
+<td>
+Specifier</td>
+<td>
+Constant</td>
+<td>
+Description</td>
+<td>
+Size</td>
+<td>
+Expected C Type</td>
+</tr>
+<tr>
+<td>
+&quot;y&quot;</td>
+<td>
+<b>SD_BUS_TYPE_BYTE</b></td>
+<td>
+unsigned integer</td>
+<td>
+1 byte</td>
+<td>
+uint8_t</td>
+</tr>
+<tr>
+<td>
+&quot;b&quot;</td>
+<td>
+<b>SD_BUS_TYPE_BOOLEAN</b></td>
+<td>
+boolean</td>
+<td>
+4 bytes</td>
+<td>
+int</td>
+</tr>
+<tr>
+<td>
+&quot;n&quot;</td>
+<td>
+<b>SD_BUS_TYPE_INT16</b></td>
+<td>
+signed integer</td>
+<td>
+2 bytes</td>
+<td>
+int16_t</td>
+</tr>
+<tr>
+<td>
+&quot;q&quot;</td>
+<td>
+<b>SD_BUS_TYPE_UINT16</b></td>
+<td>
+unsigned integer</td>
+<td>
+2 bytes</td>
+<td>
+uint16_t</td>
+</tr>
+<tr>
+<td>
+&quot;i&quot;</td>
+<td>
+<b>SD_BUS_TYPE_INT32</b></td>
+<td>
+signed integer</td>
+<td>
+4 bytes</td>
+<td>
+int32_t</td>
+</tr>
+<tr>
+<td>
+&quot;u&quot;</td>
+<td>
+<b>SD_BUS_TYPE_UINT32</b></td>
+<td>
+unsigned integer</td>
+<td>
+4 bytes</td>
+<td>
+uint32_t</td>
+</tr>
+<tr>
+<td>
+&quot;x&quot;</td>
+<td>
+<b>SD_BUS_TYPE_INT64</b></td>
+<td>
+signed integer</td>
+<td>
+8 bytes</td>
+<td>
+int64_t</td>
+</tr>
+<tr>
+<td>
+&quot;t&quot;</td>
+<td>
+<b>SD_BUS_TYPE_UINT64</b></td>
+<td>
+unsigned integer</td>
+<td>
+8 bytes</td>
+<td>
+uint64_t</td>
+</tr>
+<tr>
+<td>
+&quot;d&quot;</td>
+<td>
+<b>SD_BUS_TYPE_DOUBLE</b></td>
+<td>
+floating-point</td>
+<td>
+8 bytes</td>
+<td>
+double</td>
+</tr>
+<tr>
+<td>
+&quot;s&quot;</td>
+<td>
+<b>SD_BUS_TYPE_STRING</b></td>
+<td>
+Unicode string</td>
+<td>
+variable</td>
+<td>
+char[]</td>
+</tr>
+<tr>
+<td>
+&quot;o&quot;</td>
+<td>
+<b>SD_BUS_TYPE_OBJECT_PATH</b></td>
+<td>
+object path</td>
+<td>
+variable</td>
+<td>
+char[]</td>
+</tr>
+<tr>
+<td>
+&quot;g&quot;</td>
+<td>
+<b>SD_BUS_TYPE_SIGNATURE</b></td>
+<td>
+signature</td>
+<td>
+variable</td>
+<td>
+char[]</td>
+</tr>
+<tr>
+<td>
+&quot;h&quot;</td>
+<td>
+<b>SD_BUS_TYPE_UNIX_FD</b></td>
+<td>
+UNIX file descriptor</td>
+<td>
+4 bytes</td>
+<td>
+int</td>
+</tr>
+<tr>
+<td>
+&quot;a&quot;</td>
+<td>
+<b>SD_BUS_TYPE_ARRAY</b></td>
+<td>
+array</td>
+<td>
+determined by array type and size</td>
+<td>
+int, followed by array contents</td>
+</tr>
+<tr>
+<td>
+&quot;v&quot;</td>
+<td>
+<b>SD_BUS_TYPE_VARIANT</b></td>
+<td>
+variant</td>
+<td>
+determined by the type argument</td>
+<td>
+signature string, followed by variant contents</td>
+</tr>
+<tr>
+<td>
+&quot;(&quot;</td>
+<td>
+<b>SD_BUS_TYPE_STRUCT_BEGIN</b></td>
+<td>
+array start</td>
+<td>
+determined by the nested types</td>
+<td>
+structure contents</td>
+</tr>
+<tr>
+<td>
+&quot;)&quot;</td>
+<td>
+<b>SD_BUS_TYPE_STRUCT_END</b></td>
+<td>
+array end</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+&quot;{&quot;</td>
+<td>
+<b>SD_BUS_TYPE_DICT_ENTRY_BEGIN</b></td>
+<td>
+dictionary entry start</td>
+<td>
+determined by the nested types</td>
+<td>
+dictionary contents</td>
+</tr>
+<tr>
+<td>
+&quot;}&quot;</td>
+<td>
+<b>SD_BUS_TYPE_DICT_ENTRY_END</b></td>
+<td>
+dictionary entry end</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>TYPES STRING GRAMMAR</h1><div style="margin-left: 4.00ex;">
+<br/>
+types ::= complete_type*<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+complete_type ::= basic_type | variant | structure | array | dictionary<br/>
+basic_type ::= &quot;y&quot; | &quot;n&quot; | &quot;q&quot; | &quot;u&quot; | &quot;i&quot; | &quot;x&quot; | &quot;t&quot; | &quot;d&quot; |<br/>
+               &quot;b&quot; | &quot;h&quot; |<br/>
+               &quot;s&quot; | &quot;o&quot; | &quot;g&quot;<br/>
+variant ::= &quot;v&quot;<br/>
+structure ::= &quot;(&quot; complete_type+ &quot;)&quot;<br/>
+array ::= &quot;a&quot; complete_type<br/>
+dictionary ::= &quot;a&quot; &quot;{&quot; basic_type complete_type &quot;}&quot;<br/>
+</div>
+</div>
+<div class="section">
+<h1>EXAMPLES</h1> Append a single basic type (the string &quot;a string&quot;):<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+sd_bus_message *m;<br/>
+...<br/>
+sd_bus_message_append(m, &quot;s&quot;, &quot;a string&quot;);<br/>
+</div>
+<div class="spacer">
+</div>
+Append all types of integers:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+uint8_t y = 1;<br/>
+int16_t n = 2;<br/>
+uint16_t q = 3;<br/>
+int32_t i = 4;<br/>
+uint32_t u = 5;<br/>
+int32_t x = 6;<br/>
+uint32_t t = 7;<br/>
+double d = 8.0;<br/>
+sd_bus_message_append(m, &quot;ynqiuxtd&quot;, y, n, q, i, u, x, t, d);<br/>
+</div>
+<div class="spacer">
+</div>
+Append a structure composed of a string and a D-Bus path:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+sd_bus_message_append(m, &quot;(so)&quot;, &quot;a string&quot;, &quot;/a/path&quot;);<br/>
+</div>
+<div class="spacer">
+</div>
+Append an array of UNIX file descriptors:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+sd_bus_message_append(m, &quot;ah&quot;, 3, STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO);<br/>
+</div>
+<div class="spacer">
+</div>
+Append a variant, with the real type &quot;g&quot; (signature), and value &quot;sdbusisgood&quot;:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+sd_bus_message_append(m, &quot;v&quot;, &quot;g&quot;, &quot;sdbusisgood&quot;);<br/>
+</div>
+<div class="spacer">
+</div>
+Append a dictionary containing the mapping {1=&gt;&quot;a&quot;, 2=&gt;&quot;b&quot;, 3=&gt;&quot;&quot;}:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+sd_bus_message_append(m, &quot;a{is}&quot;, 3, 1, &quot;a&quot;, 2, &quot;b&quot;, 3, NULL);<br/>
+     <br/>
+</div>
+</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, this call returns 0 or a positive integer. On failure, this call returns a negative errno-style error code.</div>
+<div class="section">
+<h1>ERRORS</h1> Returned errors may indicate the following problems:<div class="spacer">
+</div>
+<b>-EINVAL</b><div style="margin-left: 4.00ex;">
+Specified parameter is invalid.</div>
+<div class="spacer">
+</div>
+<b>-EPERM</b><div style="margin-left: 4.00ex;">
+Message has been sealed.</div>
+<div class="spacer">
+</div>
+<b>-ESTALE</b><div style="margin-left: 4.00ex;">
+Message is in invalid state.</div>
+<div class="spacer">
+</div>
+<b>-ENXIO</b><div style="margin-left: 4.00ex;">
+Message cannot be appended to.</div>
+<div class="spacer">
+</div>
+<b>-ENOMEM</b><div style="margin-left: 4.00ex;">
+Memory allocation failed.</div>
+</div>
+<div class="section">
+<h1>NOTES</h1>  <b>sd_bus_open_user()</b> and other functions described here are available as a shared library, which can be compiled and linked to with the  <b>libsystemd-bus</b>&#160;<b>pkg-config</b>(1) file.</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>sd-bus</b>(3),  <b>sd_bus_message_append_basic</b>(3),  <b>sd_bus_message_append_array</b>(3)</div>
+<div class="section">
+<h1>NOTES</h1><dl>
+<dt>
+ 1.</dt>
+<dd>
+D-Bus Specification</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+http://dbus.freedesktop.org/doc/dbus-specification.html#type-system</div>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

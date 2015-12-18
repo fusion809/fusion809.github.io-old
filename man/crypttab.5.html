@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+CRYPTTAB(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+CRYPTTAB(5)</td>
+<td class="head-vol">
+crypttab</td>
+<td class="head-rtitle">
+CRYPTTAB(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> crypttab - Configuration for encrypted block devices</div>
+<div class="section">
+<h1>SYNOPSIS</h1> /etc/crypttab</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The /etc/crypttab file describes encrypted block devices that are set up during system boot.<div class="spacer">
+</div>
+Empty lines and lines starting with the &quot;#&quot; character are ignored. Each of the remaining lines describes one encrypted block device, fields on the line are delimited by white space. The first two fields are mandatory, the remaining two are optional.<div class="spacer">
+</div>
+Setting up encrypted block devices using this file supports three encryption modes: LUKS, TrueCrypt and plain. See  <b>cryptsetup</b>(8) for more information about each mode. When no mode is specified in the options field and the block device contains a LUKS signature, it is opened as a LUKS device; otherwise, it is assumed to be in raw dm-crypt (plain mode) format.<div class="spacer">
+</div>
+The first field contains the name of the resulting encrypted block device; the device is set up within /dev/mapper/.<div class="spacer">
+</div>
+The second field contains a path to the underlying block device or file, or a specification of a block device via &quot;UUID=&quot; followed by the UUID.<div class="spacer">
+</div>
+The third field specifies the encryption password. If the field is not present or the password is set to &quot;none&quot; or &quot;-&quot;, the password has to be manually entered during system boot. Otherwise, the field is interpreted as a absolute path to a file containing the encryption password. For swap encryption, /dev/urandom or the hardware device /dev/hw_random can be used as the password file; using /dev/random may prevent boot completion if the system does not have enough entropy to generate a truly random encryption key.<div class="spacer">
+</div>
+The fourth field, if present, is a comma-delimited list of options. The following options are recognized:<div class="spacer">
+</div>
+<b>discard</b><div style="margin-left: 4.00ex;">
+Allow discard requests to be passed through the encrypted block device. This improves performance on SSD storage but has security implications.</div>
+<div class="spacer">
+</div>
+<b>cipher=</b><div style="margin-left: 4.00ex;">
+Specifies the cipher to use. See  <b>cryptsetup</b>(8) for possible values and the default value of this option. A cipher with unpredictable IV values, such as &quot;aes-cbc-essiv:sha256&quot;, is recommended.</div>
+<div class="spacer">
+</div>
+<b>hash=</b><div style="margin-left: 4.00ex;">
+Specifies the hash to use for password hashing. See  <b>cryptsetup</b>(8) for possible values and the default value of this option.</div>
+<div class="spacer">
+</div>
+<b>header=</b><div style="margin-left: 4.00ex;">
+Use a detached (separated) metadata device or file where the LUKS header is stored. This option is only relevant for LUKS devices. See  <b>cryptsetup</b>(8) for possible values and the default value of this option.</div>
+<div class="spacer">
+</div>
+<b>offset=</b><div style="margin-left: 4.00ex;">
+Start offset in the backend device, in 512-byte sectors. This option is only relevant for plain devices.</div>
+<div class="spacer">
+</div>
+<b>skip=</b><div style="margin-left: 4.00ex;">
+How many 512-byte sectors of the encrypted data to skip at the beginning. This is different from the  <b>--offset</b> option with respect to the sector numbers used in initialization vector (IV) calculation. Using  <b>--offset</b> will shift the IV calculation by the same negative amount. Hence, if  <b>--offset n</b>, sector n will get a sector number of 0 for the IV calculation. Using  <b>--skip</b> causes sector n to also be the first sector of the mapped device, but with its number for IV generation is n.<div style="height: 1.00em;">
+&#160;</div>
+This option is only relevant for plain devices.</div>
+<div class="spacer">
+</div>
+<b>keyfile-offset=</b><div style="margin-left: 4.00ex;">
+Specifies the number of bytes to skip at the start of the key file. See  <b>cryptsetup</b>(8) for possible values and the default value of this option.</div>
+<div class="spacer">
+</div>
+<b>keyfile-size=</b><div style="margin-left: 4.00ex;">
+Specifies the maximum number of bytes to read from the key file. See  <b>cryptsetup</b>(8) for possible values and the default value of this option. This option is ignored in plain encryption mode, as the key file size is then given by the key size.</div>
+<div class="spacer">
+</div>
+<b>key-slot=</b><div style="margin-left: 4.00ex;">
+Specifies the key slot to compare the passphrase or key against. If the key slot does not match the given passphrase or key, but another would, the setup of the device will fail regardless. This option implies  <b>luks</b>. See  <b>cryptsetup</b>(8) for possible values. The default is to try all key slots in sequential order.</div>
+<div class="spacer">
+</div>
+<b>luks</b><div style="margin-left: 4.00ex;">
+Force LUKS mode. When this mode is used, the following options are ignored since they are provided by the LUKS header on the device:  <b>cipher=</b>,  <b>hash=</b>,  <b>size=</b>.</div>
+<div class="spacer">
+</div>
+<b>noauto</b><div style="margin-left: 4.00ex;">
+This device will not be automatically unlocked on boot.</div>
+<div class="spacer">
+</div>
+<b>nofail</b><div style="margin-left: 4.00ex;">
+The system will not wait for the device to show up and be unlocked at boot, and not fail the boot if it does not show up.</div>
+<div class="spacer">
+</div>
+<b>plain</b><div style="margin-left: 4.00ex;">
+Force plain encryption mode.</div>
+<div class="spacer">
+</div>
+<b>read-only</b>, <b>readonly</b><div style="margin-left: 4.00ex;">
+Set up the encrypted block device in read-only mode.</div>
+<div class="spacer">
+</div>
+<b>size=</b><div style="margin-left: 4.00ex;">
+Specifies the key size in bits. See  <b>cryptsetup</b>(8) for possible values and the default value of this option.</div>
+<div class="spacer">
+</div>
+<b>swap</b><div style="margin-left: 4.00ex;">
+The encrypted block device will be used as a swap device, and will be formatted accordingly after setting up the encrypted block device, with  <b>mkswap</b>(8). This option implies  <b>plain</b>.<div style="height: 1.00em;">
+&#160;</div>
+WARNING: Using the  <b>swap</b> option will destroy the contents of the named partition during every boot, so make sure the underlying block device is specified correctly.</div>
+<div class="spacer">
+</div>
+<b>tcrypt</b><div style="margin-left: 4.00ex;">
+Use TrueCrypt encryption mode. When this mode is used, the following options are ignored since they are provided by the TrueCrypt header on the device or do not apply:  <b>cipher=</b>,  <b>hash=</b>,  <b>keyfile-offset=</b>,  <b>keyfile-size=</b>,  <b>size=</b>.<div style="height: 1.00em;">
+&#160;</div>
+When this mode is used, the passphrase is read from the key file given in the third field. Only the first line of this file is read, excluding the new line character.<div style="height: 1.00em;">
+&#160;</div>
+Note that the TrueCrypt format uses both passphrase and key files to derive a password for the volume. Therefore, the passphrase and all key files need to be provided. Use  <b>tcrypt-keyfile=</b> to provide the absolute path to all key files. When using an empty passphrase in combination with one or more key files, use &quot;/dev/null&quot; as the password file in the third field.</div>
+<div class="spacer">
+</div>
+<b>tcrypt-hidden</b><div style="margin-left: 4.00ex;">
+Use the hidden TrueCrypt volume. This option implies  <b>tcrypt</b>.<div style="height: 1.00em;">
+&#160;</div>
+This will map the hidden volume that is inside of the volume provided in the second field. Please note that there is no protection for the hidden volume if the outer volume is mounted instead. See  <b>cryptsetup</b>(8) for more information on this limitation.</div>
+<div class="spacer">
+</div>
+<b>tcrypt-keyfile=</b><div style="margin-left: 4.00ex;">
+Specifies the absolute path to a key file to use for a TrueCrypt volume. This implies  <b>tcrypt</b> and can be used more than once to provide several key files.<div style="height: 1.00em;">
+&#160;</div>
+See the entry for  <b>tcrypt</b> on the behavior of the passphrase and key files when using TrueCrypt encryption mode.</div>
+<div class="spacer">
+</div>
+<b>tcrypt-system</b><div style="margin-left: 4.00ex;">
+Use TrueCrypt in system encryption mode. This option implies  <b>tcrypt</b>.</div>
+<div class="spacer">
+</div>
+<b>timeout=</b><div style="margin-left: 4.00ex;">
+Specifies the timeout for querying for a password. If no unit is specified, seconds is used. Supported units are s, ms, us, min, h, d. A timeout of 0 waits indefinitely (which is the default).</div>
+<div class="spacer">
+</div>
+<b>x-systemd.device-timeout=</b><div style="margin-left: 4.00ex;">
+Specifies how long systemd should wait for a device to show up before giving up on the entry. The argument is a time in seconds or explicitly specified units of &quot;s&quot;, &quot;min&quot;, &quot;h&quot;, &quot;ms&quot;.</div>
+<div class="spacer">
+</div>
+<b>tmp</b><div style="margin-left: 4.00ex;">
+The encrypted block device will be prepared for using it as /tmp; it will be formatted using  <b>mke2fs</b>(8). This option implies  <b>plain</b>.<div style="height: 1.00em;">
+&#160;</div>
+WARNING: Using the  <b>tmp</b> option will destroy the contents of the named partition during every boot, so make sure the underlying block device is specified correctly.</div>
+<div class="spacer">
+</div>
+<b>tries=</b><div style="margin-left: 4.00ex;">
+Specifies the maximum number of times the user is queried for a password. The default is 3. If set to 0, the user is queried for a password indefinitely.</div>
+<div class="spacer">
+</div>
+<b>verify</b><div style="margin-left: 4.00ex;">
+If the encryption password is read from console, it has to be entered twice to prevent typos.</div>
+<div class="spacer">
+</div>
+At early boot and when the system manager configuration is reloaded, this file is translated into native systemd units by  <b>systemd-cryptsetup-generator</b>(8).</div>
+<div class="section">
+<h1>EXAMPLE</h1>  <b>Example&#160;1.&#160;/etc/crypttab example</b><div class="spacer">
+</div>
+Set up four encrypted block devices. One using LUKS for normal storage, another one for usage as a swap device and two TrueCrypt volumes.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+luks       UUID=2505567a-9e27-4efe-a4d5-15ad146c258b<br/>
+swap       /dev/sda7       /dev/urandom       swap<br/>
+truecrypt  /dev/sda2       /etc/container_password  tcrypt<br/>
+hidden     /mnt/tc_hidden  /dev/null    tcrypt-hidden,tcrypt-keyfile=/etc/keyfile<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>systemd-cryptsetup@.service</b>(8),  <b>systemd-cryptsetup-generator</b>(8),  <b>cryptsetup</b>(8),  <b>mkswap</b>(8),  <b>mke2fs</b>(8)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

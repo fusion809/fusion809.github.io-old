@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+TMPFILES.D(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+TMPFILES.D(5)</td>
+<td class="head-vol">
+tmpfiles.d</td>
+<td class="head-rtitle">
+TMPFILES.D(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> tmpfiles.d - Configuration for creation, deletion and cleaning of volatile and temporary files</div>
+<div class="section">
+<h1>SYNOPSIS</h1> /etc/tmpfiles.d/*.conf<div class="spacer">
+</div>
+/run/tmpfiles.d/*.conf<div class="spacer">
+</div>
+/usr/lib/tmpfiles.d/*.conf</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>systemd-tmpfiles</b> uses the configuration files from the above directories to describe the creation, cleaning and removal of volatile and temporary files and directories which usually reside in directories such as /run or /tmp.<div class="spacer">
+</div>
+Volatile and temporary files and directories are those located in /run (and its alias /var/run), /tmp, /var/tmp, the API file systems such as /sys or /proc, as well as some other directories below /var.<div class="spacer">
+</div>
+System daemons frequently require private runtime directories below /run to place communication sockets and similar in. For these, consider declaring them in their unit files using  <i>RuntimeDirectory=</i> (see  <b>systemd.exec</b>(5) for details), if this is feasible.</div>
+<div class="section">
+<h1>CONFIGURATION FORMAT</h1> Each configuration file shall be named in the style of  <i>package</i>.conf or  <i>package</i>-<i>part</i>.conf. The second variant should be used when it is desirable to make it easy to override just this part of configuration.<div class="spacer">
+</div>
+Files in /etc/tmpfiles.d override files with the same name in /usr/lib/tmpfiles.d and /run/tmpfiles.d. Files in /run/tmpfiles.d override files with the same name in /usr/lib/tmpfiles.d. Packages should install their configuration files in /usr/lib/tmpfiles.d. Files in /etc/tmpfiles.d are reserved for the local administrator, who may use this logic to override the configuration files installed by vendor packages. All configuration files are sorted by their filename in lexicographic order, regardless of which of the directories they reside in. If multiple files specify the same path, the entry in the file with the lexicographically earliest name will be applied. All other conflicting entries will be logged as errors. When two lines are prefix and suffix of each other, then the prefix is always processed first, the suffix later. Lines that take globs are applied after those accepting no globs. If multiple operations shall be applied on the same file (such as ACL, xattr, file attribute adjustments) these are always done in the same fixed order. Otherwise, the files/directories are processed in the order they are listed.<div class="spacer">
+</div>
+If the administrator wants to disable a configuration file supplied by the vendor, the recommended way is to place a symlink to /dev/null in /etc/tmpfiles.d/ bearing the same filename.<div class="spacer">
+</div>
+The configuration format is one line per path containing type, path, mode, ownership, age, and argument fields:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+#Type Path        Mode UID  GID  Age Argument<br/>
+    d    /run/user   0755 root root 10d -<br/>
+    L    /tmp/foobar -    -    -    -   /dev/null<br/>
+</div>
+<div class="spacer">
+</div>
+Fields may be enclosed within quotes and contain C-style escapes.<div class="subsection">
+<h2>Type</h2> The type consists of a single letter and optionally an exclamation mark.<div class="spacer">
+</div>
+The following line types are understood:<div class="spacer">
+</div>
+<i>f</i><div style="margin-left: 4.00ex;">
+Create a file if it does not exist yet. If the argument parameter is given, it will be written to the file. Does not follow symlinks.</div>
+<div class="spacer">
+</div>
+<i>F</i><div style="margin-left: 4.00ex;">
+Create or truncate a file. If the argument parameter is given, it will be written to the file. Does not follow symlinks.</div>
+<div class="spacer">
+</div>
+<i>w</i><div style="margin-left: 4.00ex;">
+Write the argument parameter to a file, if the file exists. Lines of this type accept shell-style globs in place of normal path names. The argument parameter will be written without a trailing newline. C-style backslash escapes are interpreted. Follows symlinks.</div>
+<div class="spacer">
+</div>
+<i>d</i><div style="margin-left: 4.00ex;">
+Create a directory if it does not exist yet.</div>
+<div class="spacer">
+</div>
+<i>D</i><div style="margin-left: 4.00ex;">
+Create or empty a directory.</div>
+<div class="spacer">
+</div>
+<i>v</i><div style="margin-left: 4.00ex;">
+Create a subvolume if the path does not exist yet and the file system supports this (btrfs). Otherwise create a normal directory, in the same way as  <i>d</i>.</div>
+<div class="spacer">
+</div>
+<i>p</i>, <i>p+</i><div style="margin-left: 4.00ex;">
+Create a named pipe (FIFO) if it does not exist yet. If suffixed with  <i>+</i> and a file already exists where the pipe is to be created, it will be removed and be replaced by the pipe.</div>
+<div class="spacer">
+</div>
+<i>L</i>, <i>L+</i><div style="margin-left: 4.00ex;">
+Create a symlink if it does not exist yet. If suffixed with  <i>+</i> and a file already exists where the symlink is to be created, it will be removed and be replaced by the symlink. If the argument is omitted, symlinks to files with the same name residing in the directory /usr/share/factory/ are created.</div>
+<div class="spacer">
+</div>
+<i>c</i>, <i>c+</i><div style="margin-left: 4.00ex;">
+Create a character device node if it does not exist yet. If suffixed with  <i>+</i> and a file already exists where the device node is to be created, it will be removed and be replaced by the device node. It is recommended to suffix this entry with an exclamation mark to only create static device nodes at boot, as udev will not manage static device nodes that are created at runtime.</div>
+<div class="spacer">
+</div>
+<i>b</i>, <i>b+</i><div style="margin-left: 4.00ex;">
+Create a block device node if it does not exist yet. If suffixed with  <i>+</i> and a file already exists where the device node is to be created, it will be removed and be replaced by the device node. It is recommended to suffix this entry with an exclamation mark to only create static device nodes at boot, as udev will not manage static device nodes that are created at runtime.</div>
+<div class="spacer">
+</div>
+<i>C</i><div style="margin-left: 4.00ex;">
+Recursively copy a file or directory, if the destination files or directories do not exist yet. Note that this command will not descend into subdirectories if the destination directory already exists. Instead, the entire copy operation is skipped. If the argument is omitted, files from the source directory /usr/share/factory/ with the same name are copied. Does not follow symlinks.</div>
+<div class="spacer">
+</div>
+<i>x</i><div style="margin-left: 4.00ex;">
+Ignore a path during cleaning. Use this type to exclude paths from clean-up as controlled with the Age parameter. Note that lines of this type do not influence the effect of  <i>r</i> or  <i>R</i> lines. Lines of this type accept shell-style globs in place of normal path names.</div>
+<div class="spacer">
+</div>
+<i>X</i><div style="margin-left: 4.00ex;">
+Ignore a path during cleaning. Use this type to exclude paths from clean-up as controlled with the Age parameter. Unlike  <i>x</i>, this parameter will not exclude the content if path is a directory, but only directory itself. Note that lines of this type do not influence the effect of  <i>r</i> or  <i>R</i> lines. Lines of this type accept shell-style globs in place of normal path names.</div>
+<div class="spacer">
+</div>
+<i>r</i><div style="margin-left: 4.00ex;">
+Remove a file or directory if it exists. This may not be used to remove non-empty directories, use  <i>R</i> for that. Lines of this type accept shell-style globs in place of normal path names. Does not follow symlinks.</div>
+<div class="spacer">
+</div>
+<i>R</i><div style="margin-left: 4.00ex;">
+Recursively remove a path and all its subdirectories (if it is a directory). Lines of this type accept shell-style globs in place of normal path names. Does not follow symlinks.</div>
+<div class="spacer">
+</div>
+<i>z</i><div style="margin-left: 4.00ex;">
+Adjust the access mode, group and user, and restore the SELinux security context of a file or directory, if it exists. Lines of this type accept shell-style globs in place of normal path names. Does not follow symlinks.</div>
+<div class="spacer">
+</div>
+<i>Z</i><div style="margin-left: 4.00ex;">
+Recursively set the access mode, group and user, and restore the SELinux security context of a file or directory if it exists, as well as of its subdirectories and the files contained therein (if applicable). Lines of this type accept shell-style globs in place of normal path names. Does not follow symlinks.</div>
+<div class="spacer">
+</div>
+<i>t</i><div style="margin-left: 4.00ex;">
+Set extended attributes. Lines of this type accept shell-style globs in place of normal path names. This can be useful for setting SMACK labels. Does not follow symlinks.</div>
+<div class="spacer">
+</div>
+<i>T</i><div style="margin-left: 4.00ex;">
+Recursively set extended attributes. Lines of this type accept shell-style globs in place of normal path names. This can be useful for setting SMACK labels. Does not follow symlinks.</div>
+<div class="spacer">
+</div>
+<i>h</i><div style="margin-left: 4.00ex;">
+Set file/directory attributes. Lines of this type accept shell-style globs in place of normal path names.<div style="height: 1.00em;">
+&#160;</div>
+The format of the argument field is  <i>[+-=][aAcCdDeijsStTu] </i>. The prefix  <i>+</i> (the default one) causes the attribute(s) to be added;  <i>-</i> causes the attribute(s) to be removed;  <i>=</i> causes the attributes to set exactly as the following letters. The letters &quot;aAcCdDeijsStTu&quot; select the new attributes for the files, see  <b>chattr</b>(1) for further information.<div style="height: 1.00em;">
+&#160;</div>
+Passing only  <i>=</i> as argument resets all the file attributes listed above. It has to be pointed out that the  <i>=</i> prefix, limits itself to the attributes corresponding to the letters listed here. All other attributes will be left untouched. Does not follow symlinks.</div>
+<div class="spacer">
+</div>
+<i>H</i><div style="margin-left: 4.00ex;">
+Recursively set file/directory attributes. Lines of this type accept shell-style globs in place of normal path names. Does not follow symlinks.</div>
+<div class="spacer">
+</div>
+<i>a</i>, <i>a+</i><div style="margin-left: 4.00ex;">
+Set POSIX ACLs (access control lists). If suffixed with  <i>+</i>, specified entries will be added to the existing set.  <b>systemd-tmpfiles</b> will automatically add the required base entries for user and group based on the access mode of the file, unless base entries already exist or are explictly specified. The mask will be added if not specified explicitly or already present. Lines of this type accept shell-style globs in place of normal path names. This can be useful for allowing additional access to certain files. Does not follow symlinks.</div>
+<div class="spacer">
+</div>
+<i>A</i>, <i>A+</i><div style="margin-left: 4.00ex;">
+Same as  <i>a</i> and  <i>a+</i>, but recursive. Does not follow symlinks.</div>
+<div class="spacer">
+</div>
+If the exclamation mark is used, this line is only safe of execute during boot, and can break a running system. Lines without the exclamation mark are presumed to be safe to execute at any time, e.g. on package upgrades.  <b>systemd-tmpfiles</b> will execute line with an exclamation mark only if option  <b>--boot</b> is given.<div class="spacer">
+</div>
+For example:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+# Make sure these are created by default so that nobody else can<br/>
+      d /tmp/.X11-unix 1777 root root 10d<div class="spacer">
+</div>
+<br/>
+      # Unlink the X11 lock files<br/>
+      r! /tmp/.X[0-9]*-lock<br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+The second line in contrast to the first one would break a running system, and will only be executed with  <b>--boot</b>.</div>
+<div class="subsection">
+<h2>Path</h2> The file system path specification supports simple specifier expansion. The following expansions are understood:<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+<b>Table&#160;1.&#160;Specifiers available</b><table class="tbl">
+<col style="width: 9.00ex;"/>
+<col style="width: 14.00ex;"/>
+<col style="width: 108.00ex;"/>
+<tbody>
+<tr>
+<td>
+Specifier</td>
+<td>
+Meaning</td>
+<td>
+Details</td>
+</tr>
+<tr>
+<td>
+&quot;%m&quot;</td>
+<td>
+Machine ID</td>
+<td>
+The machine ID of the running system, formatted as string. See <b>machine-id</b>(5) for more information.</td>
+</tr>
+<tr>
+<td>
+&quot;%b&quot;</td>
+<td>
+Boot ID</td>
+<td>
+The boot ID of the running system, formatted as string. See <b>random</b>(4) for more information.</td>
+</tr>
+<tr>
+<td>
+&quot;%H&quot;</td>
+<td>
+Host name</td>
+<td>
+The hostname of the running system.</td>
+</tr>
+<tr>
+<td>
+&quot;%v&quot;</td>
+<td>
+Kernel release</td>
+<td>
+Identical to <b>uname -r</b> output.</td>
+</tr>
+<tr>
+<td>
+&quot;%%&quot;</td>
+<td>
+Escaped %</td>
+<td>
+Single percent sign.</td>
+</tr>
+</tbody>
+</table>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="subsection">
+<h2>Mode</h2> The file access mode to use when creating this file or directory. If omitted or when set to<div style="height: 0.00em;">
+&#160;</div>
+&quot;-&quot;, the default is used: 0755 for directories, 0644 for all other file objects. For  <i>z</i>,  <i>Z</i> lines, if omitted or when set to &quot;-&quot;, the file access mode will not be modified. This parameter is ignored for  <i>x</i>,  <i>r</i>,  <i>R</i>,  <i>L</i>,  <i>t</i>, and  <i>a</i> lines.<div class="spacer">
+</div>
+Optionally, if prefixed with &quot;~&quot;, the access mode is masked based on the already set access bits for existing file or directories: if the existing file has all executable bits unset, all executable bits are removed from the new access mode, too. Similarly, if all read bits are removed from the old access mode, they will be removed from the new access mode too, and if all write bits are removed, they will be removed from the new access mode too. In addition, the sticky/SUID/SGID bit is removed unless applied to a directory. This functionality is particularly useful in conjunction with  <i>Z</i>.</div>
+<div class="subsection">
+<h2>UID, GID</h2> The user and group to use for this file or directory. This may either be a numeric user/group ID or a user or group name. If omitted or when set to &quot;-&quot;, the default 0 (root) is used. For  <i>z</i>,  <i>Z</i> lines, when omitted or when set to &quot;-&quot;, the file ownership will not be modified. These parameters are ignored for  <i>x</i>,  <i>r</i>,  <i>R</i>,  <i>L</i>,  <i>t</i>, and  <i>a</i> lines.</div>
+<div class="subsection">
+<h2>Age</h2> The date field, when set, is used to decide what files to delete when cleaning. If a file or directory is older than the current time minus the age field, it is deleted. The field format is a series of integers each followed by one of the following postfixes for the respective time units:  <b>s</b>,  <b>m</b> or  <b>min</b>,  <b>h</b>,  <b>d</b>,  <b>w</b>,  <b>ms</b>,  <b>us</b>, respectively meaning seconds, minutes, hours, days, weeks, milliseconds, and microseconds. Full names of the time units can be used too.<div class="spacer">
+</div>
+If multiple integers and units are specified, the time values are summed. If an integer is given without a unit,  <b>s</b> is assumed.<div class="spacer">
+</div>
+When the age is set to zero, the files are cleaned unconditionally.<div class="spacer">
+</div>
+The age field only applies to lines starting with  <i>d</i>,  <i>D</i>, and  <i>x</i>. If omitted or set to &quot;-&quot;, no automatic clean-up is done.<div class="spacer">
+</div>
+If the age field starts with a tilde character &quot;~&quot;, the clean-up is only applied to files and directories one level inside the directory specified, but not the files and directories immediately inside it.</div>
+<div class="subsection">
+<h2>Argument</h2> For  <i>L</i> lines determines the destination path of the symlink. For  <i>c</i>,  <i>b</i> determines the major/minor of the device node, with major and minor formatted as integers, separated by &quot;:&quot;, e.g. &quot;1:3&quot;. For  <i>f</i>,  <i>F</i>, and  <i>w</i> may be used to specify a short string that is written to the file, suffixed by a newline. For  <i>C</i>, specifies the source file or directory. For  <i>t</i>,  <i>T</i> determines extended attributes to be set. For  <i>a</i>,  <i>A</i> determines ACL attributes to be set. For  <i>h</i>,  <i>H</i> determines the file attributes to set. Ignored for all other lines.</div>
+</div>
+<div class="section">
+<h1>EXAMPLE</h1>  <b>Example&#160;1.&#160;/etc/tmpfiles.d/screen.conf example</b><div class="spacer">
+</div>
+<b>screen</b> needs two directories created at boot with specific modes and ownership.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+d /run/screens  1777 root root 10d<br/>
+d /run/uscreens 0755 root root 10d12h<br/>
+t /run/screen - - - - user.name=&quot;John Smith&quot; security.SMACK64=screen<br/>
+</div>
+<div class="spacer">
+</div>
+<b>Example&#160;2.&#160;/etc/tmpfiles.d/abrt.conf example</b><div class="spacer">
+</div>
+<b>abrt</b> needs a directory created at boot with specific mode and ownership and its content should be preserved.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+d /var/tmp/abrt 0755 abrt abrt<br/>
+x /var/tmp/abrt/*<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>systemd-tmpfiles</b>(8),  <b>systemd-delta</b>(1),  <b>systemd.exec</b>(5),  <b>attr</b>(5),  <b>getfattr</b>(1),  <b>setfattr</b>(1),  <b>setfacl</b>(1),  <b>getfacl</b>(1),  <b>chattr</b>(1)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

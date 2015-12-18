@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SD_BUS_DEFAULT(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SD_BUS_DEFAULT(3)</td>
+<td class="head-vol">
+sd_bus_default</td>
+<td class="head-rtitle">
+SD_BUS_DEFAULT(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sd_bus_default, sd_bus_default_user, sd_bus_default_system, sd_bus_open, sd_bus_open_user, sd_bus_open_system, sd_bus_open_system_remote, sd_bus_open_system_machine - Acquire a connection to a system or user bus</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;systemd/sd-bus.h&gt;<br/>
+<div class="spacer">
+</div>
+<div style="margin-left: 19.00ex;text-indent: -19.00ex;" class="spacer">
+<b>int sd_bus_default(sd_bus&#160;**</b><i>bus</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 24.00ex;text-indent: -24.00ex;" class="spacer">
+<b>int sd_bus_default_user(sd_bus&#160;**</b><i>bus</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 26.00ex;text-indent: -26.00ex;" class="spacer">
+<b>int sd_bus_default_system(sd_bus&#160;**</b><i>bus</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 16.00ex;text-indent: -16.00ex;" class="spacer">
+<b>int sd_bus_open(sd_bus&#160;**</b><i>bus</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 21.00ex;text-indent: -21.00ex;" class="spacer">
+<b>int sd_bus_open_user(sd_bus&#160;**</b><i>bus</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 23.00ex;text-indent: -23.00ex;" class="spacer">
+<b>int sd_bus_open_system(sd_bus&#160;**</b><i>bus</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 30.00ex;text-indent: -30.00ex;" class="spacer">
+<b>int sd_bus_open_system_remote(sd_bus&#160;**</b><i>bus</i><b>, const&#160;char&#160;*</b><i>host</i><b>);</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 31.00ex;text-indent: -31.00ex;" class="spacer">
+<b>int sd_bus_open_system_machine(sd_bus&#160;**</b><i>bus</i><b>, const&#160;char&#160;*</b><i>machine</i><b>);</b></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>sd_bus_default()</b> acquires a bus connection object to the user bus when invoked in user context, or to the system bus otherwise. The connection object is associated with the calling thread. Each time the function is invoked from the same thread the same object is returned, but its reference count is increased by one, as long as at least one reference is kept. When the last reference to the connection is dropped (using the  <b>sd_bus_unref</b>(3) call), the connection is terminated. Note that the connection is not automatically terminated when the associated thread ends. It is important to drop the last reference to the bus connection explicitly before the thread ends or otherwise the connection will be leaked. Also, queued but unread or unwritten messages keep the bus referenced, see below.<div class="spacer">
+</div>
+<b>sd_bus_default_user()</b> returns a user bus connection object associated with the calling thread.  <b>sd_bus_default_system()</b> is similar, but connects to the system bus. Note that  <b>sd_bus_default()</b> is identical to these two calls, depending on the execution context.<div class="spacer">
+</div>
+<b>sd_bus_open()</b> creates a new, independent bus connection to the user bus when invoked in user context, or the system bus otherwise.  <b>sd_bus_open_user()</b> is similar, but connects only to the user bus.  <b>sd_bus_open_system()</b> does the same, but connects to the system bus. In contrast to  <b>sd_bus_default()</b>,  <b>sd_bus_default_user()</b>,  <b>sd_bus_default_system()</b> these calls return new, independent connection objects that are not associated with the invoking thread and are not shared between multiple invocations. It is recommended to share connections per thread to efficiently make use the available resources. Thus, it is recommended to use  <b>sd_bus_default()</b>,  <b>sd_bus_default_user()</b>,  <b>sd_bus_default_system()</b> to connect to the user or system buses.<div class="spacer">
+</div>
+If the  <i>$DBUS_SESSION_BUS_ADDRESS</i> environment variable is set (cf.  <b>environ</b>(7)), it will be used as the address of the user bus. This variable can contain multiple addresses separated by &quot;;&quot;. If this variable is not set, a suitable default for the default user D-Bus instance will be used.<div class="spacer">
+</div>
+If the  <i>$DBUS_SYSTEM_BUS_ADDRESS</i> environment variable is set, it will be used as the address of the system bus. This variable uses the same syntax as  <i>$DBUS_SESSION_BUS_ADDRESS</i>. If this variable is not set, a suitable default for the default system D-Bus instance will be used.<div class="spacer">
+</div>
+<b>sd_bus_open_system_remote()</b> connects to the system bus on the specified  <i>host</i> using  <b>ssh</b>(1).  <i>host</i> consists of an optional user name followed by the &quot;@&quot; symbol, and the hostname.<div class="spacer">
+</div>
+<b>sd_bus_open_system_machine()</b> connects to the system bus in the specified  <i>machine</i>, where  <i>machine</i> is the name of a local container. See  <b>machinectl</b>(1) for more information about the &quot;machine&quot; concept. Note that connections into local containers are only available to privileged processes at this time.<div class="spacer">
+</div>
+These calls allocate a bus connection object and initiate the connection to a well-known bus of some form. An alternative to using these high-level calls is to create an unconnected bus object with  <b>sd_bus_new</b>(3) and to connect it with  <b>sd_bus_start</b>(3).</div>
+<div class="section">
+<h1>REFERENCE OWNERSHIP</h1> The functions  <b>sd_bus_open()</b>,  <b>sd_bus_open_user()</b>,  <b>sd_bus_open_system()</b>,  <b>sd_bus_open_system_remote()</b>, and  <b>sd_bus_open_system_machine()</b> return a new connection object and the caller owns the sole reference. When not needed anymore, this reference should be destroyed with  <b>sd_bus_unref</b>(3).<div class="spacer">
+</div>
+The functions  <b>sd_bus_default()</b>,  <b>sd_bus_default_user()</b> and  <b>sd_bus_default_system()</b> do not necessarily create a new object, but increase the connection reference of an existing connection object by one. Use  <b>sd_bus_unref</b>(3) to drop the reference.<div class="spacer">
+</div>
+Queued but unwritten/unread messages also keep a reference to their bus connection object. For this reason, even if an application dropped all references to a bus connection it might not get destroyed right-away. Until all incoming queued messages are read, and until all outgoing unwritten messages are written, the bus object will stay alive.  <b>sd_bus_flush()</b> may be used to write all outgoing queued messages so they drop their references. To flush the unread incoming messages use  <b>sd_bus_close()</b>, which will also close the bus connection. When using the default bus logic it is a good idea to first invoke  <b>sd_bus_flush()</b> followed by  <b>sd_bus_close()</b> when a thread or process terminates, and thus its bus connection object should be freed.<div class="spacer">
+</div>
+The life-cycle of the default bus connection should be the responsibility of the code that creates/owns the thread the default bus connection object is associated with. Library code should neither call  <b>sd_bus_flush()</b> nor  <b>sd_bus_close()</b> on default bus objects unless it does so in its own private, self-allocated thread. Library code should not use the default bus object in other threads unless it is clear that the program using it will life-cycle the bus connection object and flush and close it before exiting from the thread. In libraries where it is not clear that the calling program will life-cycle the bus connection object it is hence recommended to use  <b>sd_bus_open_system()</b> instead of  <b>sd_bus_default_system()</b> and related calls.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, these calls return 0 or a positive integer. On failure, these calls return a negative errno-style error code.</div>
+<div class="section">
+<h1>ERRORS</h1> Returned errors may indicate the following problems:<div class="spacer">
+</div>
+<b>-EINVAL</b><div style="margin-left: 4.00ex;">
+The specified parameters are invalid.</div>
+<div class="spacer">
+</div>
+<b>-ENOMEM</b><div style="margin-left: 4.00ex;">
+Memory allocation failed.</div>
+<div class="spacer">
+</div>
+<b>-ESOCKTNOSUPPORT</b><div style="margin-left: 4.00ex;">
+The protocol version required to connect to the selected bus is not supported.</div>
+<div class="spacer">
+</div>
+In addition, any further connection-related errors may be by returned. See  <b>sd_bus_send</b>(3).</div>
+<div class="section">
+<h1>NOTES</h1>  <b>sd_bus_open_user()</b> and the other functions described here are available as a shared library, which can be compiled and linked to with the  <b>libsystemd</b>&#160;<b>pkg-config</b>(1) file.</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>sd-bus</b>(3),  <b>sd_bus_new</b>(3),  <b>sd_bus_ref</b>(3),  <b>sd_bus_unref</b>(3),  <b>ssh</b>(1),  <b>systemd-machined.service</b>(8),  <b>machinectl</b>(1)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

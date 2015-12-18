@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SYSTEMD.SPECIAL(7)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SYSTEMD.SPECIAL(7)</td>
+<td class="head-vol">
+systemd.special</td>
+<td class="head-rtitle">
+SYSTEMD.SPECIAL(7)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> systemd.special - Special systemd units</div>
+<div class="section">
+<h1>SYNOPSIS</h1> basic.target, bluetooth.target, ctrl-alt-del.target, cryptsetup.target, cryptsetup-pre.target, dbus.service, dbus.socket, default.target, display-manager.service, emergency.target, exit.target, final.target, getty.target, graphical.target, halt.target, hibernate.target, hybrid-sleep.target, initrd-fs.target, kbrequest.target, kexec.target, local-fs.target, local-fs-pre.target, multi-user.target, network.target, network-online.target, network-pre.target, nss-lookup.target, nss-user-lookup.target, paths.target, poweroff.target, printer.target, reboot.target, remote-fs.target, remote-fs-pre.target, rescue.target, initrd-root-fs.target, rpcbind.target, runlevel2.target, runlevel3.target, runlevel4.target, runlevel5.target, shutdown.target, sigpwr.target, sleep.target, smartcard.target, sockets.target, sound.target, suspend.target, swap.target, sysinit.target, syslog.socket, system-update.target, time-sync.target, timers.target, umount.target, -.slice, system.slice, user.slice, machine.slice</div>
+<div class="section">
+<h1>DESCRIPTION</h1> A few units are treated specially by systemd. They have special internal semantics and cannot be renamed.</div>
+<div class="section">
+<h1>SPECIAL SYSTEM UNITS</h1> basic.target<div style="margin-left: 4.00ex;">
+A special target unit covering basic boot-up.<div style="height: 1.00em;">
+&#160;</div>
+systemd automatically adds dependencies of the types  <i>Requires=</i> and  <i>After=</i> for this target unit to all services (except for those with  <i>DefaultDependencies=no</i>).<div style="height: 1.00em;">
+&#160;</div>
+Usually this should pull-in all local mount points plus /var, /tmp and /var/tmp, swap devices, sockets, timers, path units and other basic initialization necessary for general purpose daemons. The mentioned mount points are special cased to allow them to be remote.<div style="height: 1.00em;">
+&#160;</div>
+This target usually does not pull in any non-target units directly, but rather does so indirectly via other early boot targets. It is instead meant as a synchronization point for late boot services. Refer to  <b>bootup</b>(7) for details on the targets involved.</div>
+<div class="spacer">
+</div>
+ctrl-alt-del.target<div style="margin-left: 4.00ex;">
+systemd starts this target whenever Control+Alt+Del is pressed on the console. Usually this should be aliased (symlinked) to reboot.target.</div>
+<div class="spacer">
+</div>
+cryptsetup.target<div style="margin-left: 4.00ex;">
+A target that pulls in setup services for all encrypted block devices.</div>
+<div class="spacer">
+</div>
+dbus.service<div style="margin-left: 4.00ex;">
+A special unit for the D-Bus bus daemon. As soon as this service is fully started up systemd will connect to it and register its service.</div>
+<div class="spacer">
+</div>
+dbus.socket<div style="margin-left: 4.00ex;">
+A special unit for the D-Bus system bus socket. All units with  <i>Type=dbus</i> automatically gain a dependency on this unit.</div>
+<div class="spacer">
+</div>
+default.target<div style="margin-left: 4.00ex;">
+The default unit systemd starts at bootup. Usually this should be aliased (symlinked) to multi-user.target or graphical.target.<div style="height: 1.00em;">
+&#160;</div>
+The default unit systemd starts at bootup can be overridden with the  <i>systemd.unit=</i> kernel command line option.</div>
+<div class="spacer">
+</div>
+display-manager.service<div style="margin-left: 4.00ex;">
+The display manager service. Usually this should be aliased (symlinked) to gdm.service or a similar display manager service.</div>
+<div class="spacer">
+</div>
+emergency.target<div style="margin-left: 4.00ex;">
+A special target unit that starts an emergency shell on the main console. This unit is supposed to be used with the kernel command line option  <i>systemd.unit=</i> and has otherwise little use.</div>
+<div class="spacer">
+</div>
+final.target<div style="margin-left: 4.00ex;">
+A special target unit that is used during the shutdown logic and may be used to pull in late services after all normal services are already terminated and all mounts unmounted.</div>
+<div class="spacer">
+</div>
+getty.target<div style="margin-left: 4.00ex;">
+A special target unit that pulls in statically configured local TTY getty instances.</div>
+<div class="spacer">
+</div>
+graphical.target<div style="margin-left: 4.00ex;">
+A special target unit for setting up a graphical login screen. This pulls in multi-user.target.<div style="height: 1.00em;">
+&#160;</div>
+Units that are needed for graphical logins shall add  <i>Wants=</i> dependencies for their unit to this unit (or multi-user.target) during installation. This is best configured via  <i>WantedBy=graphical.target</i> in the unit's &quot;[Install]&quot; section.</div>
+<div class="spacer">
+</div>
+hibernate.target<div style="margin-left: 4.00ex;">
+A special target unit for hibernating the system. This pulls in sleep.target.</div>
+<div class="spacer">
+</div>
+hybrid-sleep.target<div style="margin-left: 4.00ex;">
+A special target unit for hibernating and suspending the system at the same time. This pulls in sleep.target.</div>
+<div class="spacer">
+</div>
+halt.target<div style="margin-left: 4.00ex;">
+A special target unit for shutting down and halting the system. Note that this target is distinct from poweroff.target in that it generally really just halts the system rather than powering it down.<div style="height: 1.00em;">
+&#160;</div>
+Applications wanting to halt the system should start this unit.</div>
+<div class="spacer">
+</div>
+initrd-fs.target<div style="margin-left: 4.00ex;">
+<b>systemd-fstab-generator</b>(3) automatically adds dependencies of type  <i>Before=</i> to sysroot-usr.mount and all mount points found in /etc/fstab that have  <b>x-initrd.mount</b> and not have  <b>noauto</b> mount options set.</div>
+<div class="spacer">
+</div>
+kbrequest.target<div style="margin-left: 4.00ex;">
+systemd starts this target whenever Alt+ArrowUp is pressed on the console. This is a good candidate to be aliased (symlinked) to rescue.target.</div>
+<div class="spacer">
+</div>
+kexec.target<div style="margin-left: 4.00ex;">
+A special target unit for shutting down and rebooting the system via kexec.<div style="height: 1.00em;">
+&#160;</div>
+Applications wanting to reboot the system with kexec should start this unit.</div>
+<div class="spacer">
+</div>
+local-fs.target<div style="margin-left: 4.00ex;">
+<b>systemd-fstab-generator</b>(3) automatically adds dependencies of type  <i>Before=</i> to all mount units that refer to local mount points for this target unit. In addition, it adds dependencies of type  <i>Wants=</i> to this target unit for those mounts listed in /etc/fstab that have the  <b>auto</b> mount option set.</div>
+<div class="spacer">
+</div>
+multi-user.target<div style="margin-left: 4.00ex;">
+A special target unit for setting up a multi-user system (non-graphical). This is pulled in by graphical.target.<div style="height: 1.00em;">
+&#160;</div>
+Units that are needed for a multi-user system shall add  <i>Wants=</i> dependencies for their unit to this unit during installation. This is best configured via  <i>WantedBy=multi-user.target</i> in the unit's &quot;[Install]&quot; section.</div>
+<div class="spacer">
+</div>
+network-online.target<div style="margin-left: 4.00ex;">
+Units that strictly require a configured network connection should pull in network-online.target (via a  <i>Wants=</i> type dependency) and order themselves after it. This target unit is intended to pull in a service that delays further execution until the network is sufficiently set up. What precisely this requires is left to the implementation of the network managing service.<div style="height: 1.00em;">
+&#160;</div>
+Note the distinction between this unit and network.target. This unit is an active unit (i.e. pulled in by the consumer rather than the provider of this functionality) and pulls in a service which possibly adds substantial delays to further execution. In contrast, network.target is a passive unit (i.e. pulled in by the provider of the functionality, rather than the consumer) that usually does not delay execution much. Usually, network.target is part of the boot of most systems, while network-online.target is not, except when at least one unit requires it. Also see  <b>Running Services After the Network is up</b>[1] for more information.<div style="height: 1.00em;">
+&#160;</div>
+All mount units for remote network file systems automatically pull in this unit, and order themselves after it. Note that networking daemons that simply provide functionality to other hosts generally do not need to pull this in.</div>
+<div class="spacer">
+</div>
+paths.target<div style="margin-left: 4.00ex;">
+A special target unit that sets up all path units (see  <b>systemd.path</b>(5) for details) that shall be active after boot.<div style="height: 1.00em;">
+&#160;</div>
+It is recommended that path units installed by applications get pulled in via  <i>Wants=</i> dependencies from this unit. This is best configured via a  <i>WantedBy=paths.target</i> in the path unit's &quot;[Install]&quot; section.</div>
+<div class="spacer">
+</div>
+poweroff.target<div style="margin-left: 4.00ex;">
+A special target unit for shutting down and powering off the system.<div style="height: 1.00em;">
+&#160;</div>
+Applications wanting to power off the system should start this unit.<div style="height: 1.00em;">
+&#160;</div>
+runlevel0.target is an alias for this target unit, for compatibility with SysV.</div>
+<div class="spacer">
+</div>
+reboot.target<div style="margin-left: 4.00ex;">
+A special target unit for shutting down and rebooting the system.<div style="height: 1.00em;">
+&#160;</div>
+Applications wanting to reboot the system should start this unit.<div style="height: 1.00em;">
+&#160;</div>
+runlevel6.target is an alias for this target unit, for compatibility with SysV.</div>
+<div class="spacer">
+</div>
+remote-fs.target<div style="margin-left: 4.00ex;">
+Similar to local-fs.target, but for remote mount points.<div style="height: 1.00em;">
+&#160;</div>
+systemd automatically adds dependencies of type  <i>After=</i> for this target unit to all SysV init script service units with an LSB header referring to the &quot;$remote_fs&quot; facility.</div>
+<div class="spacer">
+</div>
+rescue.target<div style="margin-left: 4.00ex;">
+A special target unit for setting up the base system and a rescue shell.<div style="height: 1.00em;">
+&#160;</div>
+runlevel1.target is an alias for this target unit, for compatibility with SysV.</div>
+<div class="spacer">
+</div>
+initrd-root-fs.target<div style="margin-left: 4.00ex;">
+<b>systemd-fstab-generator</b>(3) automatically adds dependencies of type  <i>Before=</i> to the sysroot.mount unit, which is generated from the kernel command line.</div>
+<div class="spacer">
+</div>
+runlevel2.target, runlevel3.target, runlevel4.target, runlevel5.target<div style="margin-left: 4.00ex;">
+These are targets that are called whenever the SysV compatibility code asks for runlevel 2, 3, 4, 5, respectively. It is a good idea to make this an alias for (i.e. symlink to) multi-user.target (for runlevel 2) or graphical.target (the others).</div>
+<div class="spacer">
+</div>
+shutdown.target<div style="margin-left: 4.00ex;">
+A special target unit that terminates the services on system shutdown.<div style="height: 1.00em;">
+&#160;</div>
+Services that shall be terminated on system shutdown shall add  <i>Conflicts=</i> dependencies to this unit for their service unit, which is implicitly done when  <i>DefaultDependencies=yes</i> is set (the default).</div>
+<div class="spacer">
+</div>
+sigpwr.target<div style="margin-left: 4.00ex;">
+A special target that is started when systemd receives the SIGPWR process signal, which is normally sent by the kernel or UPS daemons when power fails.</div>
+<div class="spacer">
+</div>
+sleep.target<div style="margin-left: 4.00ex;">
+A special target unit that is pulled in by suspend.target, hibernate.target and hybrid-sleep.target and may be used to hook units into the sleep state logic.</div>
+<div class="spacer">
+</div>
+sockets.target<div style="margin-left: 4.00ex;">
+A special target unit that sets up all socket units.(see  <b>systemd.socket</b>(5) for details) that shall be active after boot.<div style="height: 1.00em;">
+&#160;</div>
+Services that can be socket-activated shall add  <i>Wants=</i> dependencies to this unit for their socket unit during installation. This is best configured via a  <i>WantedBy=sockets.target</i> in the socket unit's &quot;[Install]&quot; section.</div>
+<div class="spacer">
+</div>
+suspend.target<div style="margin-left: 4.00ex;">
+A special target unit for suspending the system. This pulls in sleep.target.</div>
+<div class="spacer">
+</div>
+swap.target<div style="margin-left: 4.00ex;">
+Similar to local-fs.target, but for swap partitions and swap files.</div>
+<div class="spacer">
+</div>
+sysinit.target<div style="margin-left: 4.00ex;">
+This target pulls in the services required for system initialization. System services pulled in by this target should declare  <i>DefaultDependencies=no</i> and specify all their dependencies manually, including access to anything more than a read only root filesystem. For details on the dependencies of this target, refer to  <b>bootup</b>(7).</div>
+<div class="spacer">
+</div>
+syslog.socket<div style="margin-left: 4.00ex;">
+The socket unit syslog implementations should listen on. All userspace log messages will be made available on this socket. For more information about syslog integration, please consult the  <b>Syslog Interface</b>[2] document.</div>
+<div class="spacer">
+</div>
+system-update.target<div style="margin-left: 4.00ex;">
+A special target unit that is used for off-line system updates.  <b>systemd-system-update-generator</b>(8) will redirect the boot process to this target if /system-update exists. For more information see the  <b>System Updates Specification</b>[3].</div>
+<div class="spacer">
+</div>
+timers.target<div style="margin-left: 4.00ex;">
+A special target unit that sets up all timer units (see  <b>systemd.timer</b>(5) for details) that shall be active after boot.<div style="height: 1.00em;">
+&#160;</div>
+It is recommended that timer units installed by applications get pulled in via  <i>Wants=</i> dependencies from this unit. This is best configured via  <i>WantedBy=timers.target</i> in the timer unit's &quot;[Install]&quot; section.</div>
+<div class="spacer">
+</div>
+umount.target<div style="margin-left: 4.00ex;">
+A special target unit that umounts all mount and automount points on system shutdown.<div style="height: 1.00em;">
+&#160;</div>
+Mounts that shall be unmounted on system shutdown shall add Conflicts dependencies to this unit for their mount unit, which is implicitly done when  <i>DefaultDependencies=yes</i> is set (the default).</div>
+</div>
+<div class="section">
+<h1>SPECIAL SYSTEM UNITS FOR DEVICES</h1> Some target units are automatically pulled in as devices of certain kinds show up in the system. These may be used to automatically activate various services based on the specific type of the available hardware.<div class="spacer">
+</div>
+bluetooth.target<div style="margin-left: 4.00ex;">
+This target is started automatically as soon as a Bluetooth controller is plugged in or becomes available at boot.<div style="height: 1.00em;">
+&#160;</div>
+This may be used to pull in Bluetooth management daemons dynamically when Bluetooth hardware is found.</div>
+<div class="spacer">
+</div>
+printer.target<div style="margin-left: 4.00ex;">
+This target is started automatically as soon as a printer is plugged in or becomes available at boot.<div style="height: 1.00em;">
+&#160;</div>
+This may be used to pull in printer management daemons dynamically when printer hardware is found.</div>
+<div class="spacer">
+</div>
+smartcard.target<div style="margin-left: 4.00ex;">
+This target is started automatically as soon as a smartcard controller is plugged in or becomes available at boot.<div style="height: 1.00em;">
+&#160;</div>
+This may be used to pull in smartcard management daemons dynamically when smartcard hardware is found.</div>
+<div class="spacer">
+</div>
+sound.target<div style="margin-left: 4.00ex;">
+This target is started automatically as soon as a sound card is plugged in or becomes available at boot.<div style="height: 1.00em;">
+&#160;</div>
+This may be used to pull in audio management daemons dynamically when audio hardware is found.</div>
+</div>
+<div class="section">
+<h1>SPECIAL PASSIVE SYSTEM UNITS</h1> A number of special system targets are defined that can be used to properly order boot-up of optional services. These targets are generally not part of the initial boot transaction, unless they are explicitly pulled in by one of the implementing services. Note specifically that these  <i>passive</i> target units are generally not pulled in by the consumer of a service, but by the provider of the service. This means: a consuming service should order itself after these targets (as appropriate), but not pull it in. A providing service should order itself before these targets (as appropriate) and pull it in (via a  <i>Wants=</i> type dependency).<div class="spacer">
+</div>
+Note that these passive units cannot be started manually, i.e. &quot;systemctl start time-sync.target&quot; will fail with an error. They can only be pulled in by dependency. This is enforced since they exist for ordering purposes only and thus are not useful as only unit within a transaction.<div class="spacer">
+</div>
+cryptsetup-pre.target<div style="margin-left: 4.00ex;">
+This passive target unit may be pulled in by services that want to run before any encrypted block device is set up. All encrypted block devices are set up after this target has been reached. Since the shutdown order is implicitly the reverse start-up order between units, this target is particularly useful to ensure that a service is shut down only after all encrypted block devices are fully stopped.</div>
+<div class="spacer">
+</div>
+local-fs-pre.target<div style="margin-left: 4.00ex;">
+This target unit is automatically ordered before all local mount points marked with  <b>auto</b> (see above). It can be used to execute certain units before all local mounts.</div>
+<div class="spacer">
+</div>
+network.target<div style="margin-left: 4.00ex;">
+This unit is supposed to indicate when network functionality is available, but it is only very weakly defined what that is supposed to mean, with one exception: at shutdown, a unit that is ordered after network.target will be stopped before the network -- to whatever level it might be set up then -- is shut down. It is hence useful when writing service files that require network access on shutdown, which should order themselves after this target, but not pull it in. Also see  <b>Running Services After the Network is up</b>[1] for more information. Also see network-online.target described above.<div style="height: 1.00em;">
+&#160;</div>
+systemd automatically adds dependencies of type  <i>After=</i> for this target unit to all SysV init script service units with an LSB header referring to the &quot;$network&quot; facility.</div>
+<div class="spacer">
+</div>
+network-pre.target<div style="margin-left: 4.00ex;">
+This passive target unit may be pulled in by services that want to run before any network is set up, for example for the purpose of setting up a firewall. All network management software orders itself after this target, but does not pull it in.</div>
+<div class="spacer">
+</div>
+nss-lookup.target<div style="margin-left: 4.00ex;">
+A target that should be used as synchronization point for all host/network name service lookups. Note that this is independent of user/group name lookups for which nss-user-lookup.target should be used. All services for which the availability of full host/network name resolution is essential should be ordered after this target, but not pull it in. systemd automatically adds dependencies of type  <i>After=</i> for this target unit to all SysV init script service units with an LSB header referring to the &quot;$named&quot; facility.</div>
+<div class="spacer">
+</div>
+nss-user-lookup.target<div style="margin-left: 4.00ex;">
+A target that should be used as synchronization point for all user/group name service lookups. Note that this is independent of host/network name lookups for which nss-lookup.target should be used. All services for which the availability of the full user/group database is essential should be ordered after this target, but not pull it in. Note that system users are always resolvable, and hence do not require any special ordering against this target.</div>
+<div class="spacer">
+</div>
+remote-fs-pre.target<div style="margin-left: 4.00ex;">
+This target unit is automatically ordered before all remote mount point units (see above). It can be used to run certain units before the remote mounts are established. Note that this unit is generally not part of the initial transaction, unless the unit that wants to be ordered before all remote mounts pulls it in via a  <i>Wants=</i> type dependency. If the unit wants to be pulled in by the first remote mount showing up, it should use network-online.target (see above).</div>
+<div class="spacer">
+</div>
+rpcbind.target<div style="margin-left: 4.00ex;">
+The portmapper/rpcbind pulls in this target and orders itself before it, to indicate its availability. systemd automatically adds dependencies of type  <i>After=</i> for this target unit to all SysV init script service units with an LSB header referring to the &quot;$portmap&quot; facility.</div>
+<div class="spacer">
+</div>
+time-sync.target<div style="margin-left: 4.00ex;">
+Services responsible for synchronizing the system clock from a remote source (such as NTP client implementations) should pull in this target and order themselves before it. All services where correct time is essential should be ordered after this unit, but not pull it in. systemd automatically adds dependencies of type  <i>After=</i> for this target unit to all SysV init script service units with an LSB header referring to the &quot;$time&quot; facility.</div>
+</div>
+<div class="section">
+<h1>SPECIAL USER UNITS</h1> When systemd runs as a user instance, the following special units are available, which have similar definitions as their system counterparts: default.target, shutdown.target, sockets.target, timers.target, paths.target, bluetooth.target, printer.target, smartcard.target, sound.target.<div class="spacer">
+</div>
+In addition, the following special unit is understood only when systemd runs as service instance:<div class="spacer">
+</div>
+exit.target<div style="margin-left: 4.00ex;">
+A special service unit for shutting down the user service manager.<div style="height: 1.00em;">
+&#160;</div>
+Applications wanting to terminate the user service manager should start this unit. If systemd receives  <b>SIGTERM</b> or  <b>SIGINT</b> when running as user service daemon, it will start this unit.<div style="height: 1.00em;">
+&#160;</div>
+Normally, this pulls in shutdown.target which in turn should be conflicted by all units that want to be shut down on user service manager exit.</div>
+</div>
+<div class="section">
+<h1>SPECIAL SLICE UNITS</h1> There are four &quot;.slice&quot; units which form the basis of the hierarchy for assignment of resources for services, users, and virtual machines or containers.<div class="spacer">
+</div>
+-.slice<div style="margin-left: 4.00ex;">
+The root slice is the root of the hierarchy. It usually does not contain units directly, but may be used to set defaults for the whole tree.</div>
+<div class="spacer">
+</div>
+system.slice<div style="margin-left: 4.00ex;">
+By default, all system services started by  <b>systemd</b> are found in this slice.</div>
+<div class="spacer">
+</div>
+user.slice<div style="margin-left: 4.00ex;">
+By default, all user processes and services started on behalf of the user, including the per-user systemd instance are found in this slice.</div>
+<div class="spacer">
+</div>
+machine.slice<div style="margin-left: 4.00ex;">
+By default, all virtual machines and containers registered with  <b>systemd-machined</b> are found in this slice.</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>systemd.unit</b>(5),  <b>systemd.service</b>(5),  <b>systemd.socket</b>(5),  <b>systemd.target</b>(5),  <b>systemd.slice</b>(5),  <b>bootup</b>(7),  <b>systemd-fstab-generator</b>(8)</div>
+<div class="section">
+<h1>NOTES</h1><dl>
+<dt>
+ 1.</dt>
+<dd>
+Running Services After the Network is up</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+http://www.freedesktop.org/wiki/Software/systemd/NetworkTarget</div>
+<dl>
+<dt>
+ 2.</dt>
+<dd>
+Syslog Interface</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+http://www.freedesktop.org/wiki/Software/systemd/syslog</div>
+<dl>
+<dt>
+ 3.</dt>
+<dd>
+System Updates Specification</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+http://freedesktop.org/wiki/Software/systemd/SystemUpdates</div>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SD_WATCHDOG_ENABLED(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SD_WATCHDOG_ENABLED(3)</td>
+<td class="head-vol">
+sd_watchdog_enabled</td>
+<td class="head-rtitle">
+SD_WATCHDOG_ENABLED(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sd_watchdog_enabled - Check whether the service manager expects watchdog keep-alive notifications from a service</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;systemd/sd-daemon.h&gt;<br/>
+<div class="spacer">
+</div>
+<div style="margin-left: 24.00ex;text-indent: -24.00ex;" class="spacer">
+<b>int sd_watchdog_enabled(int&#160;</b><i>unset_environment</i><b>, uint64_t&#160;*</b><i>usec</i><b>);</b></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>sd_watchdog_enabled()</b> may be called by a service to detect whether the service manager expects regular keep-alive watchdog notification events from it, and the timeout after which the manager will act on the service if it did not get such a notification.<div class="spacer">
+</div>
+If the  <i>$WATCHDOG_USEC</i> environment variable is set, and the  <i>$WATCHDOG_PID</i> variable is unset or set to the PID of the current process, the service manager expects notifications from this process. The manager will usually terminate a service when it does not get a notification message within the specified time after startup and after each previous message. It is recommended that a daemon sends a keep-alive notification message to the service manager every half of the time returned here. Notification messages may be sent with  <b>sd_notify</b>(3) with a message string of &quot;WATCHDOG=1&quot;.<div class="spacer">
+</div>
+If the  <i>unset_environment</i> parameter is non-zero,  <b>sd_watchdog_enabled()</b> will unset the  <i>$WATCHDOG_USEC</i> and  <i>$WATCHDOG_PID</i> environment variables before returning (regardless of whether the function call itself succeeded or not). Those variables are no longer inherited by child processes. Further calls to  <b>sd_watchdog_enabled()</b> will also return with zero.<div class="spacer">
+</div>
+If the  <i>usec</i> parameter is non-NULL,  <b>sd_watchdog_enabled()</b> will write the timeout in &#181;s for the watchdog logic to it.<div class="spacer">
+</div>
+To enable service supervision with the watchdog logic, use  <i>WatchdogSec=</i> in service files. See  <b>systemd.service</b>(5) for details.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On failure, this call returns a negative errno-style error code. If the service manager expects watchdog keep-alive notification messages to be sent, &gt; 0 is returned, otherwise 0 is returned. Only if the return value is &gt; 0, the  <i>usec</i> parameter is valid after the call.</div>
+<div class="section">
+<h1>NOTES</h1> These APIs are implemented as a shared library, which can be compiled and linked to with the  <b>libsystemd</b>&#160;<b>pkg-config</b>(1) file.<div class="spacer">
+</div>
+Internally, this functions parses the  <i>$WATCHDOG_PID</i> and  <i>$WATCHDOG_USEC</i> environment variable. The call will ignore these variables if  <i>$WATCHDOG_PID</i> does not contain the PID of the current process, under the assumption that in that case, the variables were set for a different process further up the process tree.</div>
+<div class="section">
+<h1>ENVIRONMENT</h1>  <i>$WATCHDOG_PID</i><div style="margin-left: 4.00ex;">
+Set by the system manager for supervised process for which watchdog support is enabled, and contains the PID of that process. See above for details.</div>
+<div class="spacer">
+</div>
+<i>$WATCHDOG_USEC</i><div style="margin-left: 4.00ex;">
+Set by the system manager for supervised process for which watchdog support is enabled, and contains the watchdog timeout in &#181;s See above for details.</div>
+</div>
+<div class="section">
+<h1>HISTORY</h1> The watchdog functionality and the  <i>$WATCHDOG_USEC</i> variable were added in systemd-41.<div class="spacer">
+</div>
+<b>sd_watchdog_enabled()</b> function was added in systemd-209. Since that version the  <i>$WATCHDOG_PID</i> variable is also set.</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>sd-daemon</b>(3),  <b>daemon</b>(7),  <b>systemd.service</b>(5),  <b>sd_notify</b>(3)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

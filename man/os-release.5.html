@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+OS-RELEASE(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+OS-RELEASE(5)</td>
+<td class="head-vol">
+os-release</td>
+<td class="head-rtitle">
+OS-RELEASE(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> os-release - Operating system identification</div>
+<div class="section">
+<h1>SYNOPSIS</h1> /etc/os-release<div class="spacer">
+</div>
+/usr/lib/os-release</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The /etc/os-release and /usr/lib/os-release files contain operating system identification data.<div class="spacer">
+</div>
+The basic file format of os-release is a newline-separated list of environment-like shell-compatible variable assignments. It is possible to source the configuration from shell scripts, however, beyond mere variable assignments, no shell features are supported (this means variable expansion is explicitly not supported), allowing applications to read the file without implementing a shell compatible execution engine. Variable assignment values must be enclosed in double or single quotes if they include spaces, semicolons or other special characters outside of A-Z, a-z, 0-9. Shell special characters (&quot;$&quot;, quotes, backslash, backtick) must be escaped with backslashes, following shell style. All strings should be in UTF-8 format, and non-printable characters should not be used. It is not supported to concatenate multiple individually quoted strings. Lines beginning with &quot;#&quot; shall be ignored as comments.<div class="spacer">
+</div>
+The file /etc/os-release takes precedence over /usr/lib/os-release. Applications should check for the former, and exclusively use its data if it exists, and only fall back to /usr/lib/os-release if it is missing. Applications should not read data from both files at the same time. /usr/lib/os-release is the recommended place to store OS release information as part of vendor trees. /etc/os-release should be a relative symlink to /usr/lib/os-release, to provide compatibility with applications only looking at /etc. A relative symlink instead of an absolute symlink is necessary to avoid breaking the link in a chroot or initrd environment such as dracut.<div class="spacer">
+</div>
+os-release contains data that is defined by the operating system vendor and should generally not be changed by the administrator.<div class="spacer">
+</div>
+As this file only encodes names and identifiers it should not be localized.<div class="spacer">
+</div>
+The /etc/os-release and /usr/lib/os-release files might be symlinks to other files, but it is important that the file is available from earliest boot on, and hence must be located on the root file system.<div class="spacer">
+</div>
+For a longer rationale for os-release please refer to the  <b>Announcement of /etc/os-release</b>[1].</div>
+<div class="section">
+<h1>OPTIONS</h1> The following OS identifications parameters may be set using os-release:<div class="spacer">
+</div>
+<i>NAME=</i><div style="margin-left: 4.00ex;">
+A string identifying the operating system, without a version component, and suitable for presentation to the user. If not set, defaults to &quot;NAME=Linux&quot;. Example: &quot;NAME=Fedora&quot; or &quot;NAME=&quot;Debian GNU/Linux&quot;&quot;.</div>
+<div class="spacer">
+</div>
+<i>VERSION=</i><div style="margin-left: 4.00ex;">
+A string identifying the operating system version, excluding any OS name information, possibly including a release code name, and suitable for presentation to the user. This field is optional. Example: &quot;VERSION=17&quot; or &quot;VERSION=&quot;17 (Beefy Miracle)&quot;&quot;.</div>
+<div class="spacer">
+</div>
+<i>ID=</i><div style="margin-left: 4.00ex;">
+A lower-case string (no spaces or other characters outside of 0-9, a-z, &quot;.&quot;, &quot;_&quot; and &quot;-&quot;) identifying the operating system, excluding any version information and suitable for processing by scripts or usage in generated filenames. If not set, defaults to &quot;ID=linux&quot;. Example: &quot;ID=fedora&quot; or &quot;ID=debian&quot;.</div>
+<div class="spacer">
+</div>
+<i>ID_LIKE=</i><div style="margin-left: 4.00ex;">
+A space-separated list of operating system identifiers in the same syntax as the  <i>ID=</i> setting. It should list identifiers of operating systems that are closely related to the local operating system in regards to packaging and programming interfaces, for example listing one or more OS identifiers the local OS is a derivative from. An OS should generally only list other OS identifiers it itself is a derivative of, and not any OSes that are derived from it, though symmetric relationships are possible. Build scripts and similar should check this variable if they need to identify the local operating system and the value of  <i>ID=</i> is not recognized. Operating systems should be listed in order of how closely the local operating system relates to the listed ones, starting with the closest. This field is optional. Example: for an operating system with &quot;ID=centos&quot;, an assignment of &quot;ID_LIKE=&quot;rhel fedora&quot;&quot; would be appropriate. For an operating system with &quot;ID=ubuntu&quot;, an assignment of &quot;ID_LIKE=debian&quot; is appropriate.</div>
+<div class="spacer">
+</div>
+<i>VERSION_ID=</i><div style="margin-left: 4.00ex;">
+A lower-case string (mostly numeric, no spaces or other characters outside of 0-9, a-z, &quot;.&quot;, &quot;_&quot; and &quot;-&quot;) identifying the operating system version, excluding any OS name information or release code name, and suitable for processing by scripts or usage in generated filenames. This field is optional. Example: &quot;VERSION_ID=17&quot; or &quot;VERSION_ID=11.04&quot;.</div>
+<div class="spacer">
+</div>
+<i>PRETTY_NAME=</i><div style="margin-left: 4.00ex;">
+A pretty operating system name in a format suitable for presentation to the user. May or may not contain a release code name or OS version of some kind, as suitable. If not set, defaults to &quot;PRETTY_NAME=&quot;Linux&quot;&quot;. Example: &quot;PRETTY_NAME=&quot;Fedora 17 (Beefy Miracle)&quot;&quot;.</div>
+<div class="spacer">
+</div>
+<i>ANSI_COLOR=</i><div style="margin-left: 4.00ex;">
+A suggested presentation color when showing the OS name on the console. This should be specified as string suitable for inclusion in the ESC [ m ANSI/ECMA-48 escape code for setting graphical rendition. This field is optional. Example: &quot;ANSI_COLOR=&quot;0;31&quot;&quot; for red, or &quot;ANSI_COLOR=&quot;1;34&quot;&quot; for light blue.</div>
+<div class="spacer">
+</div>
+<i>CPE_NAME=</i><div style="margin-left: 4.00ex;">
+A CPE name for the operating system, in URI binding syntax, following the  <b>Common Platform Enumeration Specification</b>[2] as proposed by the NIST. This field is optional. Example: &quot;CPE_NAME=&quot;cpe:/o:fedoraproject:fedora:17&quot;&quot;</div>
+<div class="spacer">
+</div>
+<i>HOME_URL=</i>, <i>SUPPORT_URL=</i>, <i>BUG_REPORT_URL=</i>, <i>PRIVACY_POLICY_URL=</i><div style="margin-left: 4.00ex;">
+Links to resources on the Internet related the operating system.  <i>HOME_URL=</i> should refer to the homepage of the operating system, or alternatively some homepage of the specific version of the operating system.  <i>SUPPORT_URL=</i> should refer to the main support page for the operating system, if there is any. This is primarily intended for operating systems which vendors provide support for.  <i>BUG_REPORT_URL=</i> should refer to the main bug reporting page for the operating system, if there is any. This is primarily intended for operating systems that rely on community QA.  <i>PRIVACY_POLICY_URL=</i> should refer to the main privacy policy page for the operation system, if there is any. These settings are optional, and providing only some of these settings is common. These URLs are intended to be exposed in &quot;About this system&quot; UIs behind links with captions such as &quot;About this Operating System&quot;, &quot;Obtain Support&quot;, &quot;Report a Bug&quot;, or &quot;Privacy Policy&quot;. The values should be in  <b>RFC3986 format</b>[3], and should be &quot;http:&quot; or &quot;https:&quot; URLs, and possibly &quot;mailto:&quot; or &quot;tel:&quot;. Only one URL shall be listed in each setting. If multiple resources need to be referenced, it is recommended to provide an online landing page linking all available resources. Examples: &quot;HOME_URL=&quot;https://fedoraproject.org/&quot;&quot; and &quot;BUG_REPORT_URL=&quot;https://bugzilla.redhat.com/&quot;&quot;</div>
+<div class="spacer">
+</div>
+<i>BUILD_ID=</i><div style="margin-left: 4.00ex;">
+A string uniquely identifying the system image used as the origin for a distribution (it is not updated with system updates). The field can be identical between different VERSION_IDs as BUILD_ID is an only a unique identifier to a specific version. Distributions that release each update as a new version would only need to use VERSION_ID as each build is already distinct based on the VERSION_ID. This field is optional. Example: &quot;BUILD_ID=&quot;2013-03-20.3&quot;&quot; or &quot;BUILD_ID=201303203&quot;.</div>
+<div class="spacer">
+</div>
+<i>VARIANT=</i><div style="margin-left: 4.00ex;">
+A string identifying a specific variant or edition of the operating system suitable for presentation to the user. This field may be used to inform the user that the configuration of this system is subject to a specific divergent set of rules or default configuration settings. This field is optional and may not be implemented on all systems. Examples: &quot;VARIANT=&quot;Server Edition&quot;&quot;, &quot;VARIANT=&quot;Smart Refrigerator Edition&quot;&quot; Note: this field is for display purposes only. The  <i>VARIANT_ID</i> field should be used for making programmatic decisions.</div>
+<div class="spacer">
+</div>
+<i>VARIANT_ID=</i><div style="margin-left: 4.00ex;">
+A lower-case string (no spaces or other characters outside of 0-9, a-z, &quot;.&quot;, &quot;_&quot; and &quot;-&quot;), identifying a specific variant or edition of the operating system. This may be interpreted by other packages in order to determine a divergent default configuration. This field is optional and may not be implemented on all systems. Examples: &quot;VARIANT_ID=server&quot;, &quot;VARIANT_ID=embedded&quot;</div>
+<div class="spacer">
+</div>
+If you are reading this file from C code or a shell script to determine the OS or a specific version of it, use the  <i>ID</i> and  <i>VERSION_ID</i> fields, possibly with  <i>ID_LIKE</i> as fallback for  <i>ID</i>. When looking for an OS identification string for presentation to the user use the  <i>PRETTY_NAME</i> field.<div class="spacer">
+</div>
+Note that operating system vendors may choose not to provide version information, for example to accommodate for rolling releases. In this case,  <i>VERSION</i> and  <i>VERSION_ID</i> may be unset. Applications should not rely on these fields to be set.<div class="spacer">
+</div>
+Operating system vendors may extend the file format and introduce new fields. It is highly recommended to prefix new fields with an OS specific name in order to avoid name clashes. Applications reading this file must ignore unknown fields. Example: &quot;DEBIAN_BTS=&quot;debbugs://bugs.debian.org/&quot;&quot;</div>
+<div class="section">
+<h1>EXAMPLE</h1><div style="margin-left: 4.00ex;">
+<br/>
+NAME=Fedora<br/>
+VERSION=&quot;17 (Beefy Miracle)&quot;<br/>
+ID=fedora<br/>
+VERSION_ID=17<br/>
+PRETTY_NAME=&quot;Fedora 17 (Beefy Miracle)&quot;<br/>
+ANSI_COLOR=&quot;0;34&quot;<br/>
+CPE_NAME=&quot;cpe:/o:fedoraproject:fedora:17&quot;<br/>
+HOME_URL=&quot;https://fedoraproject.org/&quot;<br/>
+BUG_REPORT_URL=&quot;https://bugzilla.redhat.com/&quot;<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>lsb_release</b>(1),  <b>hostname</b>(5),  <b>machine-id</b>(5),  <b>machine-info</b>(5)</div>
+<div class="section">
+<h1>NOTES</h1><dl>
+<dt>
+ 1.</dt>
+<dd>
+Announcement of /etc/os-release</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+http://0pointer.de/blog/projects/os-release</div>
+<dl>
+<dt>
+ 2.</dt>
+<dd>
+Common Platform Enumeration Specification</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+http://scap.nist.gov/specifications/cpe/</div>
+<dl>
+<dt>
+ 3.</dt>
+<dd>
+RFC3986 format</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+https://tools.ietf.org/html/rfc3986</div>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

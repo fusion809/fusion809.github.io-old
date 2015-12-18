@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SYSTEMD.NETDEV(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SYSTEMD.NETDEV(5)</td>
+<td class="head-vol">
+systemd.network</td>
+<td class="head-rtitle">
+SYSTEMD.NETDEV(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> systemd.netdev - Virtual Network Device configuration</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <i>netdev</i>.netdev</div>
+<div class="section">
+<h1>DESCRIPTION</h1> Network setup is performed by  <b>systemd-networkd</b>(8).<div class="spacer">
+</div>
+Virtual Network Device files must have the extension .netdev; other extensions are ignored. Virtual network devices are created as soon as networkd is started. If a netdev with the specified name already exists, networkd will use that as-is rather than create its own. Note that the settings of the pre-existing netdev will not be changed by networkd.<div class="spacer">
+</div>
+The .netdev files are read from the files located in the system network directory /usr/lib/systemd/network, the volatile runtime network directory /run/systemd/network and the local administration network directory /etc/systemd/network. All configuration files are collectively sorted and processed in lexical order, regardless of the directories in which they live. However, files with identical filenames replace each other. Files in /etc have the highest priority, files in /run take precedence over files with the same name in /usr/lib. This can be used to override a system-supplied configuration file with a local file if needed. As a special case, an empty file (file size 0) or symlink with the same name pointing to /dev/null, disable the configuration file entirely (it is &quot;masked&quot;).</div>
+<div class="section">
+<h1>SUPPORTED NETDEV KINDS</h1> The following kinds of virtual network devices may be configured in .netdev files:<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+<b>Table&#160;1.&#160;Supported kinds of virtual network devices</b><table class="tbl">
+<col style="width: 15.00ex;"/>
+<col style="width: 169.00ex;"/>
+<tbody>
+<tr>
+<td>
+Kind</td>
+<td>
+Description</td>
+</tr>
+<tr>
+<td>
+<i>bond</i></td>
+<td>
+A bond device is an aggregation of all its slave devices. See <b>Linux Ethernet Bonding Driver HOWTO</b>[1] for details.Local configuration</td>
+</tr>
+<tr>
+<td>
+<i>bridge</i></td>
+<td>
+A bridge device is a software switch, each of its slave devices and the bridge itself are ports of the switch.</td>
+</tr>
+<tr>
+<td>
+<i>dummy</i></td>
+<td>
+A dummy device drops all packets sent to it.</td>
+</tr>
+<tr>
+<td>
+<i>gre</i></td>
+<td>
+A Level 3 GRE tunnel over IPv4. See <b>RFC 2784</b>[2] for details.</td>
+</tr>
+<tr>
+<td>
+<i>gretap</i></td>
+<td>
+A Level 2 GRE tunnel over IPv4.</td>
+</tr>
+<tr>
+<td>
+<i>ip6gre</i></td>
+<td>
+A Level 3 GRE tunnel over IPv6.</td>
+</tr>
+<tr>
+<td>
+<i>ip6tnl</i></td>
+<td>
+An IPv4 or IPv6 tunnel over IPv6</td>
+</tr>
+<tr>
+<td>
+<i>ip6gretap</i></td>
+<td>
+An Level 2 GRE tunnel over IPv6.</td>
+</tr>
+<tr>
+<td>
+<i>ipip</i></td>
+<td>
+An IPv4 over IPv4 tunnel.</td>
+</tr>
+<tr>
+<td>
+<i>ipvlan</i></td>
+<td>
+An ipvlan device is a stacked device which receives packets from its underlying device based on IP address filtering.</td>
+</tr>
+<tr>
+<td>
+<i>macvlan</i></td>
+<td>
+A macvlan device is a stacked device which receives packets from its underlying device based on MAC address filtering.</td>
+</tr>
+<tr>
+<td>
+<i>macvtap</i></td>
+<td>
+A macvtap device is a stacked device which receives packets from its underlying device based on MAC address filtering.</td>
+</tr>
+<tr>
+<td>
+<i>sit</i></td>
+<td>
+An IPv6 over IPv4 tunnel.</td>
+</tr>
+<tr>
+<td>
+<i>tap</i></td>
+<td>
+A persistent Level 2 tunnel between a network device and a device node.</td>
+</tr>
+<tr>
+<td>
+<i>tun</i></td>
+<td>
+A persistent Level 3 tunnel between a network device and a device node.</td>
+</tr>
+<tr>
+<td>
+<i>veth</i></td>
+<td>
+An ethernet tunnel between a pair of network devices.</td>
+</tr>
+<tr>
+<td>
+<i>vlan</i></td>
+<td>
+A VLAN is a stacked device which receives packets from its underlying device based on VLAN tagging. See <b>IEEE 802.1Q</b>[3] for details.</td>
+</tr>
+<tr>
+<td>
+<i>vti</i></td>
+<td>
+An IPv4 over IPSec tunnel.</td>
+</tr>
+<tr>
+<td>
+<i>vti6</i></td>
+<td>
+An IPv6 over IPSec tunnel.</td>
+</tr>
+<tr>
+<td>
+<i>vxlan</i></td>
+<td>
+A virtual extensible LAN (vxlan), for connecting Cloud computing deployments.</td>
+</tr>
+</tbody>
+</table>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>[MATCH] SECTION OPTIONS</h1> A virtual network device is only created if the<div style="height: 0.00em;">
+&#160;</div>
+&quot;[Match]&quot; section matches the current environment, or if the section is empty. The following keys are accepted:<div class="spacer">
+</div>
+<i>Host=</i><div style="margin-left: 4.00ex;">
+Matches against the hostname or machine ID of the host. See &quot;ConditionHost=&quot; in  <b>systemd.unit</b>(5) for details.</div>
+<div class="spacer">
+</div>
+<i>Virtualization=</i><div style="margin-left: 4.00ex;">
+Checks whether the system is executed in a virtualized environment and optionally test whether it is a specific implementation. See &quot;ConditionVirtualization=&quot; in  <b>systemd.unit</b>(5) for details.</div>
+<div class="spacer">
+</div>
+<i>KernelCommandLine=</i><div style="margin-left: 4.00ex;">
+Checks whether a specific kernel command line option is set (or if prefixed with the exclamation mark unset). See &quot;ConditionKernelCommandLine=&quot; in  <b>systemd.unit</b>(5) for details.</div>
+<div class="spacer">
+</div>
+<i>Architecture=</i><div style="margin-left: 4.00ex;">
+Checks whether the system is running on a specific architecture. See &quot;ConditionArchitecture=&quot; in  <b>systemd.unit</b>(5) for details.</div>
+</div>
+<div class="section">
+<h1>[NETDEV] SECTION OPTIONS</h1> The &quot;[NetDev]&quot; section accepts the following keys:<div class="spacer">
+</div>
+<i>Description=</i><div style="margin-left: 4.00ex;">
+A free-form description of the netdev.</div>
+<div class="spacer">
+</div>
+<i>Name=</i><div style="margin-left: 4.00ex;">
+The interface name used when creating the netdev. This option is compulsory.</div>
+<div class="spacer">
+</div>
+<i>Kind=</i><div style="margin-left: 4.00ex;">
+The netdev kind. This option is compulsory. See the &quot;Supported netdev kinds&quot; section for the valid keys.</div>
+<div class="spacer">
+</div>
+<i>MTUBytes=</i><div style="margin-left: 4.00ex;">
+The maximum transmission unit in bytes to set for the device. The usual suffixes K, M, G, are supported and are understood to the base of 1024. This key is not currently supported for &quot;tun&quot; or &quot;tap&quot; devices.</div>
+<div class="spacer">
+</div>
+<i>MACAddress=</i><div style="margin-left: 4.00ex;">
+The MAC address to use for the device. If none is given, one is generated based on the interface name and the  <b>machine-id</b>(5). This key is not currently supported for &quot;tun&quot; or &quot;tap&quot; devices.</div>
+</div>
+<div class="section">
+<h1>[VLAN] SECTION OPTIONS</h1> The &quot;[VLAN]&quot; section only applies for netdevs of kind &quot;vlan&quot;, and accepts the following key:<div class="spacer">
+</div>
+<i>Id=</i><div style="margin-left: 4.00ex;">
+The VLAN ID to use. An integer in the range 0&#8211;4094. This option is compulsory.</div>
+</div>
+<div class="section">
+<h1>[MACVLAN] SECTION OPTIONS</h1> The &quot;[MACVLAN]&quot; section only applies for netdevs of kind &quot;macvlan&quot;, and accepts the following key:<div class="spacer">
+</div>
+<i>Mode=</i><div style="margin-left: 4.00ex;">
+The MACVLAN mode to use. The supported options are &quot;private&quot;, &quot;vepa&quot;, &quot;bridge&quot;, and &quot;passthru&quot;.</div>
+</div>
+<div class="section">
+<h1>[MACVTAP] SECTION OPTIONS</h1> The &quot;[MACVTAP]&quot; section applies for netdevs of kind &quot;macvtap&quot; and accepts the same key as &quot;[MACVLAN].&quot;</div>
+<div class="section">
+<h1>[IPVLAN] SECTION OPTIONS</h1> The &quot;[IPVLAN]&quot; section only applies for netdevs of kind &quot;ipvlan&quot;, and accepts the following key:<div class="spacer">
+</div>
+<i>Mode=</i><div style="margin-left: 4.00ex;">
+The IPVLAN mode to use. The supported options are &quot;L2&quot; and &quot;L3&quot;.</div>
+</div>
+<div class="section">
+<h1>[VXLAN] SECTION OPTIONS</h1> The &quot;[VXLAN]&quot; section only applies for netdevs of kind &quot;vxlan&quot;, and accepts the following keys:<div class="spacer">
+</div>
+<i>Id=</i><div style="margin-left: 4.00ex;">
+The VXLAN ID to use.</div>
+<div class="spacer">
+</div>
+<i>Group=</i><div style="margin-left: 4.00ex;">
+An assigned multicast group IP address.</div>
+<div class="spacer">
+</div>
+<i>TOS=</i><div style="margin-left: 4.00ex;">
+The Type Of Service byte value for a vxlan interface.</div>
+<div class="spacer">
+</div>
+<i>TTL=</i><div style="margin-left: 4.00ex;">
+A fixed Time To Live N on Virtual eXtensible Local Area Network packets. N is a number in the range 1-255. 0 is a special value meaning that packets inherit the TTL value.</div>
+<div class="spacer">
+</div>
+<i>MacLearning=</i><div style="margin-left: 4.00ex;">
+A boolean. When true, enables dynamic MAC learning to discover remote MAC addresses.</div>
+<div class="spacer">
+</div>
+<i>FDBAgeingSec=</i><div style="margin-left: 4.00ex;">
+The lifetime of Forwarding Database entry learnt by the kernel in seconds.</div>
+<div class="spacer">
+</div>
+<i>ARPProxy=</i><div style="margin-left: 4.00ex;">
+A boolean. When true, enables ARP proxy.</div>
+<div class="spacer">
+</div>
+<i>L2MissNotification=</i><div style="margin-left: 4.00ex;">
+A boolean. When true, enables netlink LLADDR miss notifications.</div>
+<div class="spacer">
+</div>
+<i>L3MissNotification=</i><div style="margin-left: 4.00ex;">
+A boolean. When true, enables netlink IP ADDR miss notifications.</div>
+<div class="spacer">
+</div>
+<i>RouteShortCircuit=</i><div style="margin-left: 4.00ex;">
+A boolean. When true route short circuit is turned on.</div>
+<div class="spacer">
+</div>
+<i>UDPCheckSum=</i><div style="margin-left: 4.00ex;">
+A boolean. When true transmitting UDP checksums when doing VXLAN/IPv4 is turned on.</div>
+<div class="spacer">
+</div>
+<i>UDP6ZeroChecksumTx=</i><div style="margin-left: 4.00ex;">
+A boolean. When true sending zero checksums in VXLAN/IPv6 is turned on.</div>
+<div class="spacer">
+</div>
+<i>UDP6ZeroCheckSumRx=</i><div style="margin-left: 4.00ex;">
+A boolean. When true receiving zero checksums in VXLAN/IPv6 is turned on.</div>
+<div class="spacer">
+</div>
+<i>GroupPolicyExtension=</i><div style="margin-left: 4.00ex;">
+A boolean. When true it enables Group Policy VXLAN extension security label mechanism across network peers based on VXLAN. For details about the Group Policy VXLAN see the  <b>VXLAN Group Policy</b>[4] document. Defaults to false.</div>
+</div>
+<div class="section">
+<h1>[TUNNEL] SECTION OPTIONS</h1> The &quot;[Tunnel]&quot; section only applies for netdevs of kind &quot;ipip&quot;, &quot;sit&quot;, &quot;gre&quot;, &quot;gretap&quot;, &quot;ip6gre&quot;, &quot;ip6gretap&quot;, &quot;vti&quot;, &quot;vti6&quot;, and &quot;ip6tnl&quot; and accepts the following keys:<div class="spacer">
+</div>
+<i>Local=</i><div style="margin-left: 4.00ex;">
+A static local address for tunneled packets. It must be an address on another interface of this host.</div>
+<div class="spacer">
+</div>
+<i>Remote=</i><div style="margin-left: 4.00ex;">
+The remote endpoint of the tunnel.</div>
+<div class="spacer">
+</div>
+<i>TOS=</i><div style="margin-left: 4.00ex;">
+The Type Of Service byte value for a tunnel interface. For details about the TOS see the  <b>Type of Service in the Internet Protocol Suite</b>[5] document.</div>
+<div class="spacer">
+</div>
+<i>TTL=</i><div style="margin-left: 4.00ex;">
+A fixed Time To Live N on tunneled packets. N is a number in the range 1-255. 0 is a special value meaning that packets inherit the TTL value. The default value for IPv4 tunnels is: inherit. The default value for IPv6 tunnels is: 64.</div>
+<div class="spacer">
+</div>
+<i>DiscoverPathMTU=</i><div style="margin-left: 4.00ex;">
+A boolean. When true, enables Path MTU Discovery on the tunnel.</div>
+<div class="spacer">
+</div>
+<i>IPv6FlowLabel=</i><div style="margin-left: 4.00ex;">
+Configures The 20-bit Flow Label (see  <b>RFC 6437</b>[6]) field in the IPv6 header (see  <b>RFC 2460</b>[7]), is used by a node to label packets of a flow. It's only used for IPv6 Tunnels. A Flow Label of zero is used to indicate packets that have not been labeled. Takes following values. When &quot;inherit&quot; it uses the original flowlabel, or can be configured to any value between 0 to 0xFFFFF.</div>
+<div class="spacer">
+</div>
+<i>CopyDSCP=</i><div style="margin-left: 4.00ex;">
+A boolean. When true, the Differentiated Service Code Point (DSCP) field will be copied to the inner header from outer header during the decapsulation of an IPv6 tunnel packet. DSCP is a field in an IP packet that enables different levels of service to be assigned to network traffic. Defaults to &quot;no&quot;.</div>
+<div class="spacer">
+</div>
+<i>EncapsulationLimit=</i><div style="margin-left: 4.00ex;">
+The Tunnel Encapsulation Limit option specifies how many additional levels of encapsulation are permitted to be prepended to the packet. For example, a Tunnel Encapsulation Limit option containing a limit value of zero means that a packet carrying that option may not enter another tunnel before exiting the current tunnel. (see  <b>RFC 2473</b>[8]). The valid range is 0-255 and &quot;none&quot;. Defaults to 4.</div>
+<div class="spacer">
+</div>
+<i>Mode=</i><div style="margin-left: 4.00ex;">
+An &quot;ip6tnl&quot; tunnels can have three modes &quot;ip6ip6&quot; for IPv6 over IPv6, &quot;ipip6&quot; for IPv4 over IPv6 or &quot;any&quot; for either.</div>
+</div>
+<div class="section">
+<h1>[PEER] SECTION OPTIONS</h1> The &quot;[Peer]&quot; section only applies for netdevs of kind &quot;veth&quot; and accepts the following key:<div class="spacer">
+</div>
+<i>Name=</i><div style="margin-left: 4.00ex;">
+The interface name used when creating the netdev. This option is compulsory.</div>
+<div class="spacer">
+</div>
+<i>MACAddress=</i><div style="margin-left: 4.00ex;">
+The peer MACAddress, if not set it is generated in the same way as the MAC address of the main interface.</div>
+</div>
+<div class="section">
+<h1>[TUN] SECTION OPTIONS</h1> The &quot;[Tun]&quot; section only applies for netdevs of kind &quot;tun&quot;, and accepts the following keys:<div class="spacer">
+</div>
+<i>OneQueue=</i><div style="margin-left: 4.00ex;">
+Takes a boolean argument. Configures whether all packets are queued at the device (enabled), or a fixed number of packets are queued at the device and the rest at the &quot;qdisc&quot;. Defaults to &quot;no&quot;.</div>
+<div class="spacer">
+</div>
+<i>MultiQueue=</i><div style="margin-left: 4.00ex;">
+Takes a boolean argument. Configures whether to use multiple file descriptors (queues) to parallelize packets sending and receiving. Defaults to &quot;no&quot;.</div>
+<div class="spacer">
+</div>
+<i>PacketInfo=</i><div style="margin-left: 4.00ex;">
+Takes a boolean argument. Configures whether packets should be prepended with four extra bytes (two flag bytes and two protocol bytes). If disabled it indicates that the packets will be pure IP packets. Defaults to &quot;no&quot;.</div>
+<div class="spacer">
+</div>
+<i>VNetHeader=</i><div style="margin-left: 4.00ex;">
+Takes a boolean argument. Configures IFF_VNET_HDR flag for a tap device. It allows sending and receiving larger Generic Segmentation Offload (GSO) packets. This may increase throughput significantly. Defaults to &quot;no&quot;.</div>
+<div class="spacer">
+</div>
+<i>User=</i><div style="margin-left: 4.00ex;">
+User to grant access to the /dev/net/tun device.</div>
+<div class="spacer">
+</div>
+<i>Group=</i><div style="margin-left: 4.00ex;">
+Group to grant access to the /dev/net/tun device.</div>
+</div>
+<div class="section">
+<h1>[TAP] SECTION OPTIONS</h1> The &quot;[Tap]&quot; section only applies for netdevs of kind &quot;tap&quot;, and accepts the same keys as the &quot;[Tun]&quot; section.</div>
+<div class="section">
+<h1>[BOND] SECTION OPTIONS</h1> The &quot;[Bond]&quot; section accepts the following key:<div class="spacer">
+</div>
+<i>Mode=</i><div style="margin-left: 4.00ex;">
+Specifies one of the bonding policies. The default is &quot;balance-rr&quot; (round robin). Possible values are &quot;balance-rr&quot;, &quot;active-backup&quot;, &quot;balance-xor&quot;, &quot;broadcast&quot;, &quot;802.3ad&quot;, &quot;balance-tlb&quot;, and &quot;balance-alb&quot;.</div>
+<div class="spacer">
+</div>
+<i>TransmitHashPolicy=</i><div style="margin-left: 4.00ex;">
+Selects the transmit hash policy to use for slave selection in balance-xor, 802.3ad, and tlb modes. Possible values are &quot;layer2&quot;, &quot;layer3+4&quot;, &quot;layer2+3&quot;, &quot;encap2+3&quot;, &quot;802.3ad&quot;, and &quot;encap3+4&quot;.</div>
+<div class="spacer">
+</div>
+<i>LACPTransmitRate=</i><div style="margin-left: 4.00ex;">
+Specifies the rate with which link partner transmits Link Aggregation Control Protocol Data Unit packets in 802.3ad mode. Possible values are &quot;slow&quot;, which requests partner to transmit LACPDUs every 30 seconds, and &quot;fast&quot;, which requests partner to transmit LACPDUs every second. The default value is &quot;slow&quot;.</div>
+<div class="spacer">
+</div>
+<i>MIIMonitorSec=</i><div style="margin-left: 4.00ex;">
+Specifies the frequency that Media Independent Interface link monitoring will occur. A value of zero disables MII link monitoring. This value is rounded down to the nearest millisecond. The default value is 0.</div>
+<div class="spacer">
+</div>
+<i>UpDelaySec=</i><div style="margin-left: 4.00ex;">
+Specifies the delay before a link is enabled after a link up status has been detected. This value is rounded down to a multiple of MIIMonitorSec. The default value is 0.</div>
+<div class="spacer">
+</div>
+<i>DownDelaySec=</i><div style="margin-left: 4.00ex;">
+Specifies the delay before a link is disabled after a link down status has been detected. This value is rounded down to a multiple of MIIMonitorSec. The default value is 0.</div>
+<div class="spacer">
+</div>
+<i>LearnPacketIntervalSec=</i><div style="margin-left: 4.00ex;">
+Specifies the number of seconds between instances where the bonding driver sends learning packets to each slaves peer switch. The valid range is 1 - 0x7fffffff; the default value is 1. This Option has effect only in balance-tlb and balance-alb modes.</div>
+<div class="spacer">
+</div>
+<i>AdSelect=</i><div style="margin-left: 4.00ex;">
+Specifies the 802.3ad aggregation selection logic to use. Possible values are &quot;stable&quot;, &quot;bandwidth&quot;, &quot;count&quot;</div>
+<div class="spacer">
+</div>
+<i>FailOverMACPolicy=</i><div style="margin-left: 4.00ex;">
+Specifies whether active-backup mode should set all slaves to the same MAC address at enslavement or, when enabled, perform special handling of the bond's MAC address in accordance with the selected policy. The default policy is none. Possible values are &quot;none&quot;, &quot;active&quot;, &quot;follow&quot;</div>
+<div class="spacer">
+</div>
+<i>ARPValidate=</i><div style="margin-left: 4.00ex;">
+Specifies whether or not ARP probes and replies should be validated in any mode that supports ARP monitoring, or whether non-ARP traffic should be filtered (disregarded) for link monitoring purposes. Possible values are &quot;none&quot;, &quot;active&quot;, &quot;backup&quot;, &quot;all&quot;</div>
+<div class="spacer">
+</div>
+<i>ARPIntervalSec=</i><div style="margin-left: 4.00ex;">
+Specifies the ARP link monitoring frequency in milliseconds. A value of 0 disables ARP monitoring. The default value is 0.</div>
+<div class="spacer">
+</div>
+<i>ARPIPTargets=</i><div style="margin-left: 4.00ex;">
+Specifies the IP addresses to use as ARP monitoring peers when ARPIntervalSec is greater than 0. These are the targets of the ARP request sent to determine the health of the link to the targets. Specify these values in ipv4 dotted decimal format. At least one IP address must be given for ARP monitoring to function. The maximum number of targets that can be specified is 16. The default value is no IP addresses.</div>
+<div class="spacer">
+</div>
+<i>ARPAllTargets=</i><div style="margin-left: 4.00ex;">
+Specifies the quantity of ARPIPTargets that must be reachable in order for the ARP monitor to consider a slave as being up. This option affects only active-backup mode for slaves with ARPValidate enabled. Possible values are &quot;any&quot;, &quot;all&quot;</div>
+<div class="spacer">
+</div>
+<i>PrimaryReselectPolicy=</i><div style="margin-left: 4.00ex;">
+Specifies the reselection policy for the primary slave. This affects how the primary slave is chosen to become the active slave when failure of the active slave or recovery of the primary slave occurs. This option is designed to prevent flip-flopping between the primary slave and other slaves. Possible values are &quot;always&quot;, &quot;better&quot;, &quot;failure&quot;</div>
+<div class="spacer">
+</div>
+<i>ResendIGMP=</i><div style="margin-left: 4.00ex;">
+Specifies the number of IGMP membership reports to be issued after a failover event. One membership report is issued immediately after the failover, subsequent packets are sent in each 200ms interval. The valid range is (0 - 255). Defaults to 1. A value of 0 prevents the IGMP membership report from being issued in response to the failover event.</div>
+<div class="spacer">
+</div>
+<i>PacketsPerSlave=</i><div style="margin-left: 4.00ex;">
+Specify the number of packets to transmit through a slave before moving to the next one. When set to 0 then a slave is chosen at random. The valid range is (0 - 65535). Defaults to 1. This option has effect only in balance-rr mode.</div>
+<div class="spacer">
+</div>
+<i>GratuitousARP=</i><div style="margin-left: 4.00ex;">
+Specify the number of peer notifications (gratuitous ARPs and unsolicited IPv6 Neighbor Advertisements) to be issued after a failover event. As soon as the link is up on the new slave a peer notification is sent on the bonding device and each VLAN sub-device. This is repeated at each link monitor interval (ARPIntervalSec or MIIMonitorSec, whichever is active) if the number is greater than 1. The valid range is (0 - 255). Default value is 1. These options affect only the active-backup mode.</div>
+<div class="spacer">
+</div>
+<i>AllSlavesActive=</i><div style="margin-left: 4.00ex;">
+A boolean. Specifies that duplicate frames (received on inactive ports) should be dropped false or delivered true. Normally, bonding will drop duplicate frames (received on inactive ports), which is desirable for most users. But there are some times it is nice to allow duplicate frames to be delivered. The default value is false (drop duplicate frames received on inactive ports).</div>
+<div class="spacer">
+</div>
+<i>MinLinks=</i><div style="margin-left: 4.00ex;">
+Specifies the minimum number of links that must be active before asserting carrier. The default value is 0.</div>
+<div class="spacer">
+</div>
+For more detail information see  <b>Linux Ethernet Bonding Driver HOWTO</b>[1]</div>
+<div class="section">
+<h1>EXAMPLE</h1>  <b>Example&#160;1.&#160;/etc/systemd/network/bridge.netdev</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+[NetDev]<br/>
+Name=bridge0<br/>
+Kind=bridge<br/>
+</div>
+<div class="spacer">
+</div>
+<b>Example&#160;2.&#160;/etc/systemd/network/vlan1.netdev</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+[Match]<br/>
+Virtualization=no<div class="spacer">
+</div>
+<br/>
+[NetDev]<br/>
+Name=vlan1<br/>
+Kind=vlan<div class="spacer">
+</div>
+<br/>
+[VLAN]<br/>
+Id=1<br/>
+</div>
+<div class="spacer">
+</div>
+<b>Example&#160;3.&#160;/etc/systemd/network/ipip.netdev</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+[NetDev]<br/>
+Name=ipip-tun<br/>
+Kind=ipip<br/>
+MTUBytes=1480<div class="spacer">
+</div>
+<br/>
+[Tunnel]<br/>
+Local=192.168.223.238<br/>
+Remote=192.169.224.239<br/>
+TTL=64<br/>
+</div>
+<div class="spacer">
+</div>
+<b>Example&#160;4.&#160;/etc/systemd/network/tap.netdev</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+[NetDev]<br/>
+Name=tap-test<br/>
+Kind=tap<div class="spacer">
+</div>
+<br/>
+[Tap]<br/>
+MultiQueue=true<br/>
+PacketInfo=true<br/>
+</div>
+<div class="spacer">
+</div>
+<b>Example&#160;5.&#160;/etc/systemd/network/sit.netdev</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+[NetDev]<br/>
+Name=sit-tun<br/>
+Kind=sit<br/>
+MTUBytes=1480<div class="spacer">
+</div>
+<br/>
+[Tunnel]<br/>
+Local=10.65.223.238<br/>
+Remote=10.65.223.239<br/>
+</div>
+<div class="spacer">
+</div>
+<b>Example&#160;6.&#160;/etc/systemd/network/gre.netdev</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+[NetDev]<br/>
+Name=gre-tun<br/>
+Kind=gre<br/>
+MTUBytes=1480<div class="spacer">
+</div>
+<br/>
+[Tunnel]<br/>
+Local=10.65.223.238<br/>
+Remote=10.65.223.239<br/>
+</div>
+<div class="spacer">
+</div>
+<b>Example&#160;7.&#160;/etc/systemd/network/vti.netdev</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+[NetDev]<br/>
+Name=vti-tun<br/>
+Kind=vti<br/>
+MTUBytes=1480<div class="spacer">
+</div>
+<br/>
+[Tunnel]<br/>
+Local=10.65.223.238<br/>
+Remote=10.65.223.239<br/>
+</div>
+<div class="spacer">
+</div>
+<b>Example&#160;8.&#160;/etc/systemd/network/veth.netdev</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+[NetDev]<br/>
+Name=veth-test<br/>
+Kind=veth<div class="spacer">
+</div>
+<br/>
+[Peer]<br/>
+Name=veth-peer<br/>
+</div>
+<div class="spacer">
+</div>
+<b>Example&#160;9.&#160;/etc/systemd/network/bond.netdev</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+[NetDev]<br/>
+Name=bond1<br/>
+Kind=bond<div class="spacer">
+</div>
+<br/>
+[Bond]<br/>
+Mode=802.3ad<br/>
+TransmitHashPolicy=layer3+4<br/>
+MIIMonitorSec=1s<br/>
+LACPTransmitRate=fast<br/>
+</div>
+<div class="spacer">
+</div>
+<b>Example&#160;10.&#160;/etc/systemd/network/dummy.netdev</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+[NetDev]<br/>
+Name=dummy-test<br/>
+Kind=dummy<br/>
+MACAddress=12:34:56:78:9a:bc<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1><div style="height: 1.00em;">
+&#160;</div>
+<b>systemd</b>(1),  <b>systemd-networkd</b>(8),  <b>systemd.link</b>(5),  <b>systemd.network</b>(5)</div>
+<div class="section">
+<h1>NOTES</h1><dl>
+<dt>
+ 1.</dt>
+<dd>
+Linux Ethernet Bonding Driver HOWTO</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+https://www.kernel.org/doc/Documentation/networking/bonding.txt</div>
+<dl>
+<dt>
+ 2.</dt>
+<dd>
+RFC 2784</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+https://tools.ietf.org/html/rfc2784</div>
+<dl>
+<dt>
+ 3.</dt>
+<dd>
+IEEE 802.1Q</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+http://www.ieee802.org/1/pages/802.1Q.html</div>
+<dl>
+<dt>
+ 4.</dt>
+<dd>
+VXLAN Group Policy</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+https://tools.ietf.org/html/draft-smith-vxlan-group-policy</div>
+<dl>
+<dt>
+ 5.</dt>
+<dd>
+Type of Service in the Internet Protocol Suite</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+http://tools.ietf.org/html/rfc1349</div>
+<dl>
+<dt>
+ 6.</dt>
+<dd>
+RFC 6437</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+https://tools.ietf.org/html/rfc6437</div>
+<dl>
+<dt>
+ 7.</dt>
+<dd>
+RFC 2460</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+https://tools.ietf.org/html/rfc2460</div>
+<dl>
+<dt>
+ 8.</dt>
+<dd>
+RFC 2473</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+https://tools.ietf.org/html/rfc2473#section-4.1.1</div>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+systemd 226</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+
