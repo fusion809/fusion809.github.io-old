@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+qfile(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+qfile(1)</td>
+<td class="head-vol">
+qfile</td>
+<td class="head-rtitle">
+qfile(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> qfile - list all pkgs owning files</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>qfile</b>  <i>&lt;opts&gt; &lt;filename&gt;</i></div>
+<div class="section">
+<h1>DESCRIPTION</h1></div>
+<div class="section">
+<h1>OPTIONS</h1><dl>
+<dt>
+<b>-S</b>, <b>--slots</b></dt>
+<dd>
+Display installed packages with slots</dd>
+</dl>
+<dl>
+<dt>
+<b>-R</b>, <b>--root-prefix</b></dt>
+<dd>
+Assume arguments are already prefixed by $ROOT</dd>
+</dl>
+<dl>
+<dt>
+<b>-f</b> <i>&lt;arg&gt;</i>, <b>--from</b> <i>&lt;arg&gt;</i></dt>
+<dd>
+Read arguments from file &lt;arg&gt; (&quot;-&quot; for stdin)</dd>
+</dl>
+<dl>
+<dt>
+<b>-m</b> <i>&lt;arg&gt;</i>, <b>--max-args</b> <i>&lt;arg&gt;</i></dt>
+<dd>
+Treat from file arguments by groups of &lt;arg&gt; (defaults to 5000)</dd>
+</dl>
+<dl>
+<dt>
+<b>-b</b>, <b>--basename</b></dt>
+<dd>
+Match any component of the path</dd>
+</dl>
+<dl>
+<dt>
+<b>-o</b>, <b>--orphans</b></dt>
+<dd>
+List orphan files</dd>
+</dl>
+<dl>
+<dt>
+<b>-x</b> <i>&lt;arg&gt;</i>, <b>--exclude</b> <i>&lt;arg&gt;</i></dt>
+<dd>
+Don't look in package &lt;arg&gt; (used with --orphans)</dd>
+</dl>
+<dl>
+<dt>
+<b>-e</b>, <b>--exact</b></dt>
+<dd>
+Exact match (used with --exclude)</dd>
+</dl>
+<dl>
+<dt>
+<b>--root</b> <i>&lt;arg&gt;</i></dt>
+<dd>
+Set the ROOT env var</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b>, <b>--verbose</b></dt>
+<dd>
+Make a lot of noise</dd>
+</dl>
+<dl>
+<dt>
+<b>-q</b>, <b>--quiet</b></dt>
+<dd>
+Tighter output; suppress warnings</dd>
+</dl>
+<dl>
+<dt>
+<b>-C</b>, <b>--nocolor</b></dt>
+<dd>
+Don't output color</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>, <b>--help</b></dt>
+<dd>
+Print this help and exit</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>, <b>--version</b></dt>
+<dd>
+Print version and exit</dd>
+</dl>
+</div>
+<div class="section">
+<h1>FINDING FILES OWNERS</h1> This is the default behavior of  <b>qfile</b>.  It will list the packages which own the files (or directories, or symlinks, or anything else Portage can install) you are querying.  Query items may be file paths or simple file names. By default, output includes packages names and the complete paths to the matching files.  If using  <b>--exact</b>, versions of the packages will also be shown.  At the contrary, when using  <b>--quiet</b>, only package names are listed, without files paths.  Finally,  <b>--verbose</b> is similar to  <b>--exact</b>, but may adds a few warnings.  The return status of  <b>qfile</b> will be <i>0</i> as soon as an owning package has been found for one of the query items.<div class="spacer">
+</div>
+Find names of package(s) owning &quot;/bin/bash&quot;:<br/>
+	$ qfile -q /bin/bash<br/>
+	app-shells/bash<br/>
+<div class="spacer">
+</div>
+Find package(s) owning any file named &quot;bash&quot;, and show paths of this files:<br/>
+	$ qfile bash<br/>
+	app-shells/bash (/bin/bash)<br/>
+	app-shells/bash (/etc/bash)<br/>
+<div class="spacer">
+</div>
+Find packages(s) owning the file named &quot;bash&quot; in the current directory. Also display their exact version:<br/>
+	$ cd /bin<br/>
+	$ qfile -e ./bash<br/>
+	app-shells/bash-3.1_p17 (/bin/bash)<br/>
+<div class="spacer">
+</div>
+Find the package(s) owning the libraries needed by the Bash binary:<br/>
+	$ qfile $(scanelf -nq -F%n#F /bin/bash | tr , '\n')<br/>
+	sys-libs/ncurses (/lib/libncurses.so.5)<br/>
+	sys-libs/glibc (/lib/libdl.so.2)<br/>
+	sys-libs/glibc (/lib/libc.so.6)<br/>
+</div>
+<div class="section">
+<h1>FINDING ORPHAN FILES</h1>  <b>qfile</b> can also, with the <b>--orphans</b> option, find files which are not owned by any package.  This behavior is the opposite of the usual file owner search: the output is the list of query items for which no reference has been found in your installed packages database.  The  <b>--exact</b> option has no effect in this mode, whereas  <b>--verbose</b> may add a few warning messages.  As for  <b>--quiet</b>, it will completly turn off the output, leaving just a silent test command, which returns  <i>0</i> if and only if there was no orphan in your query items.<div class="spacer">
+</div>
+Find the orphan libtool files of your system:<br/>
+	$ qfile -o $(find /lib /usr/lib -name &quot;*.la&quot;)<br/>
+	/usr/lib/libGL.la<br/>
+<div class="spacer">
+</div>
+Find the libraries needed by the binary &quot;foo&quot; which have not been installed by any package:<br/>
+	$ qfile -o $(scanelf -nq -F%n#F /path/to/foo | tr , '\n')<br/>
+	libinstalledmanually.so.2<br/>
+</div>
+<div class="section">
+<h1>$ROOT HANDLING</h1> By setting the  <i>ROOT</i> environment variable, you can force <b>qfile</b> to work in the sytem of your choice. This example shows queries for owner of &quot;/bin/sh&quot;, first on your main system, and then on a system mounted on &quot;/mnt&quot;:<br/>
+	$ qfile -q /bin/sh<br/>
+	app-shells/bash<br/>
+	$ ROOT=/mnt qfile -q /bin/sh<br/>
+	sys-apps/busybox<br/>
+<div class="spacer">
+</div>
+Note that the query item is &quot;/bin/sh&quot; in both commands: by default, what  <b>qfile</b> looks for is file paths as they are recorded in the packages database of the target system, and this paths don't include  <i>$ROOT</i>. If, at the contrary, you want to query files with their current actual paths (including the mount point), you should add the  <b>--root-prefix</b> ( <b>-R</b>) option:<br/>
+	$ ROOT=/mnt qfile -Rq /mnt/bin/sh<br/>
+	sys-apps/busybox<br/>
+<div class="spacer">
+</div>
+The other difference beetween defaults and <b>-R</b> queries is the output of files paths.  The former doesn't include the  <i>$ROOT</i> prefix, and the later does:<br/>
+	$ ROOT=/mnt qfile sh<br/>
+	sys-apps/busybox (/bin/sh)<br/>
+	$ ROOT=/mnt qfile -R sh<br/>
+	sys-apps/busybox (/mnt/bin/sh)<br/>
+<div class="spacer">
+</div>
+Sure, the same differences hold when querying for orphan files:<br/>
+	$ ROOT=/mnt qfile -o $(ls /mnt/bin/ | sed 's:^/mnt::')<br/>
+	/bin/dostuff.sh<br/>
+	$ ROOT=/mnt qfile -Ro /mnt/bin/*<br/>
+	/mnt/bin/dostuff.sh<br/>
+</div>
+<div class="section">
+<h1>READING ARGUMENTS FROM A FILE/STDIN</h1> When you try to launch  <b>qfile</b> with a large number of arguments, you may hit the following shell error:<br/>
+	$ qfile -o $(find /usr/lib)<br/>
+	bash: ./qfile: Argument list too long<br/>
+<div class="spacer">
+</div>
+To avoid that, you must use the <b>--from</b> (<b>-f</b>) option, which allows reading your arguments list in a file:<br/>
+	$ find /usr/lib &gt; ~/usr-lib.list<br/>
+	$ qfile -o -f ~/usr-lib.list<br/>
+	/usr/lib/libMagick-5.5.7-Q16.so.0.0.0<br/>
+	/usr/lib/libGL.so<br/>
+	...<br/>
+<div class="spacer">
+</div>
+Your arguments list must be formatted with one file per line, and without any kind of garbage (no leading or trailing space, no empty line, etc.).  The default  <b>find</b> output format is just fine in general.<div class="spacer">
+</div>
+You can also read the arguments list from standard input with the &quot;<b>-</b>&quot; pseudo filename, which is useful with shell pipes:<br/>
+	$ find /usr/lib | qfile -o -f -<br/>
+	/usr/lib/libMagick-5.5.7-Q16.so.0.0.0<br/>
+	/usr/lib/libGL.so<br/>
+	...<br/>
+<div class="spacer">
+</div>
+Here is an other example of use.  This script lists some files which may be orphan config files left behind by Portage after uninstallation or upgrade of some packages:<br/>
+	#!/bin/bash<br/>
+	SEARCH_PATHS=&quot;$(portageq envvar CONFIG_PROTECT)&quot;<br/>
+	SEARCH_MASK=&quot;$(portageq envvar CONFIG_PROTECT_MASK) \<br/>
+		/etc/runlevels /etc/portage \<br/>
+		/etc/ssl/certs /etc/ssh \<br/>
+		/etc/bash_completion.d /etc/cups&quot;<br/>
+	for path in ${SEARCH_MASK} ; do<br/>
+		EXCLUDE=&quot;${EXCLUDE} -not -path ${path}/*&quot;<br/>
+	done<br/>
+	set -f<br/>
+	find ${SEARCH_PATHS} ${EXCLUDE} | qfile -o -f -<br/>
+<div class="spacer">
+</div>
+<b>IMPORTANT:</b> this script is just a quick example.  Do not blindly delete the files it will list!<div class="spacer">
+</div>
+When reading arguments from a file or from stdin, <b>qfile</b> will, for performances reasons, treat then by groups of 5000 (search owners of the 5000 first files, then of the 5000 following ones, etc.).  This magic value should be fine in most cases, but you can change it if you really want, using the  <b>--max-args</b> option (<b>-m</b>).  Using a greater value will eat a bit more memory, but may be a bit faster for really big queries.  Be careful though, using some stupidly high or low value can completly kill the performances.  In short, you probably don't want to touch this option.</div>
+<div class="section">
+<h1>SEARCHING FOR FILE COLLISIONS</h1> A last option of  <b>qfile</b> is <b>--exclude</b> (<b>-x</b>), which will makes it skip one particular package when doing its files owners search.  This option takes one argument, which can be a package name ( <b>bash</b> or  <b>app-shells/bash</b>), or a versioned package (<b>bash-3.2_p9-r1</b> or  <b>app-shells/bash-3.2_p9-r1</b>), or a slotted package (<b>bash:0</b> or  <b>app-shells/bash:0</b>). It is useful for finding file collisions beetween packages (ie., comparing the contents of one package with the contents of all the others).<div class="spacer">
+</div>
+For example, the following script will search collisions beetween all your installed packages. Be careful, this will takes time:<br/>
+	#!/bin/bash<br/>
+	cd $(portageq vdb_path)<br/>
+	for pkg in *-*/*-* ; do<br/>
+		[[ -f ${pkg}/CONTENTS ]] || continue<br/>
+		collisions=$(sed -n \<br/>
+				'/^obj\|^sym/s:^... \([^ ]\+\).*:1:p' \<br/>
+				${pkg}/CONTENTS \<br/>
+			| qfile -e -x ${pkg} -f -)<br/>
+		[[ -n ${collisions} ]] \<br/>
+			&amp;&amp; echo &quot;&gt;&gt;&gt; ${pkg}:&quot; \<br/>
+			&amp;&amp; echo &quot;${collisions}&quot;<br/>
+	done<br/>
+<div class="spacer">
+</div>
+An other example is the following script, which can be used to check that a binary package (.tbz2) has no conflict with any of your installed packages, but the one it may replace (same name and slot), if any:<br/>
+#!/bin/bash<br/>
+pkgver=$(basename &quot;${1}&quot;)<br/>
+pkgver=${pkgver%%.tbz2}<br/>
+pn=$(qatom ${pkgver} | cut -d\  -f2)<br/>
+tmpdir=$(mktemp -t -d) || exit 1<br/>
+tarbz2=${tmpdir}/${pkgver}.tar.bz2<br/>
+xpak=${tmpdir}/${pkgver}.xpak<br/>
+qtbz2 -s &quot;${1}&quot; &quot;${tarbz2}&quot; &quot;${xpak}&quot;<br/>
+categ=$(qxpak -O -x &quot;${xpak}&quot; CATEGORY)<br/>
+slot=$(qxpak -O -x &quot;${xpak}&quot; SLOT)<br/>
+tar tjf &quot;${tarbz2}&quot; \<br/>
+	| sed -e 's:^\./:/:' -e '\:/$:d' \<br/>
+	| qfile -e -f - -x ${categ}/${pn}:${slot}<br/>
+rm -rf &quot;${tmpdir}&quot;</div>
+<div class="section">
+<h1>ADDITIONAL CONTRIBUTORS</h1><br/>
+TGL degrenier[at]easyconnect.fr<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/<div style="height: 0.00em;">
+&#160;</div>
+Product: Portage Development; Component: Tools</div>
+<div class="section">
+<h1>AUTHORS</h1><br/>
+Ned Ludd &lt;solar@gentoo.org&gt;<br/>
+Mike Frysinger &lt;vapier@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>q</b>(1), <b>qatom</b>(1), <b>qcache</b>(1), <b>qcheck</b>(1), <b>qdepends</b>(1), <b>qgrep</b>(1), <b>qlist</b>(1), <b>qlop</b>(1), <b>qmerge</b>(1), <b>qpkg</b>(1), <b>qsearch</b>(1), <b>qsize</b>(1), <b>qtbz2</b>(1), <b>quse</b>(1), <b>qxpak</b>(1)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Mar 2014</td>
+<td class="foot-os">
+Gentoo Foundation</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+
