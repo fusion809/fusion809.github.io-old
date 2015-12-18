@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+MYSQLDUMP(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+MYSQLDUMP(1)</td>
+<td class="head-vol">
+MariaDB Database System</td>
+<td class="head-rtitle">
+MYSQLDUMP(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> mysqldump - a database backup program</div>
+<div class="section">
+<h1>SYNOPSIS</h1><div style="margin-left: 48.00ex;text-indent: -48.00ex;" class="spacer">
+<b>mysqldump [</b><b></b><i>options</i><b>] [</b><b></b><i>db_name</i><b> [</b><b></b><i>tbl_name</i><b> ...]]</b></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <b>mysqldump</b> client is a backup program originally written by Igor Romanenko. It can be used to dump a database or a collection of databases for backup or transfer to another SQL server (not necessarily a MariaDB server). The dump typically contains SQL statements to create the table, populate it, or both. However,  <b>mysqldump</b> can also be used to generate files in CSV, other delimited text, or XML format.<div class="spacer">
+</div>
+If you are doing a backup on the server and your tables all are MyISAM tables, consider using the  <b>mysqlhotcopy</b> instead because it can accomplish faster backups and faster restores. See  <b>mysqlhotcopy</b>(1).<div class="spacer">
+</div>
+There are three general ways to invoke  <b>mysqldump</b>:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>mysqldump [</b><b></b><i>options</i><b>] </b><b></b><i>db_name</i><b> [</b><b></b><i>tbl_name</i><b> ...]</b><br/>
+shell&gt; <b>mysqldump [</b><b></b><i>options</i><b>] --databases </b><b></b><i>db_name</i><b> ...</b><br/>
+shell&gt; <b>mysqldump [</b><b></b><i>options</i><b>] --all-databases</b><br/>
+</div>
+<div class="spacer">
+</div>
+If you do not name any tables following  <i>db_name</i> or if you use the  <b>--databases</b> or  <b>--all-databases</b> option, entire databases are dumped.<div class="spacer">
+</div>
+<b>mysqldump</b> does not dump the INFORMATION_SCHEMA or performance_schema databases by default. To dump these, name them explicitly on the command line, although you must also use the  <b>--skip-lock-tables</b> option.<div class="spacer">
+</div>
+To see a list of the options your version of  <b>mysqldump</b> supports, execute  <b>mysqldump --help</b>.<div class="spacer">
+</div>
+Some  <b>mysqldump</b> options are shorthand for groups of other options:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Use of  <b>--opt</b> is the same as specifying  <b>--add-drop-table</b>,  <b>--add-locks</b>,  <b>--create-options</b>,  <b>--disable-keys</b>,  <b>--extended-insert</b>,  <b>--lock-tables</b>,  <b>--quick</b>, and  <b>--set-charset</b>. All of the options that  <b>--opt</b> stands for also are on by default because  <b>--opt</b> is on by default.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Use of  <b>--compact</b> is the same as specifying  <b>--skip-add-drop-table</b>,  <b>--skip-add-locks</b>,  <b>--skip-comments</b>,  <b>--skip-disable-keys</b>, and  <b>--skip-set-charset</b> options.</div>
+<div class="spacer">
+</div>
+To reverse the effect of a group option, uses its  <b>--skip-</b><b></b><i>xxx</i> form ( <b>--skip-opt</b> or  <b>--skip-compact</b>). It is also possible to select only part of the effect of a group option by following it with options that enable or disable specific features. Here are some examples:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;To select the effect of  <b>--opt</b> except for some features, use the  <b>--skip</b> option for each feature. To disable extended inserts and memory buffering, use  <b>--opt</b>  <b>--skip-extended-insert</b>  <b>--skip-quick</b>. (Actually,  <b>--skip-extended-insert</b>  <b>--skip-quick</b> is sufficient because  <b>--opt</b> is on by default.)</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;To reverse  <b>--opt</b> for all features except index disabling and table locking, use  <b>--skip-opt</b>  <b>--disable-keys</b>  <b>--lock-tables</b>.</div>
+<div class="spacer">
+</div>
+When you selectively enable or disable the effect of a group option, order is important because options are processed first to last. For example,  <b>--disable-keys</b>  <b>--lock-tables</b>  <b>--skip-opt</b> would not have the intended effect; it is the same as  <b>--skip-opt</b> by itself.<div class="spacer">
+</div>
+<b>mysqldump</b> can retrieve and dump table contents row by row, or it can retrieve the entire content from a table and buffer it in memory before dumping it. Buffering in memory can be a problem if you are dumping large tables. To dump tables row by row, use the  <b>--quick</b> option (or  <b>--opt</b>, which enables  <b>--quick</b>). The  <b>--opt</b> option (and hence  <b>--quick</b>) is enabled by default, so to enable memory buffering, use  <b>--skip-quick</b>.<div class="spacer">
+</div>
+If you are using a recent version of  <b>mysqldump</b> to generate a dump to be reloaded into a very old MySQL server, you should not use the  <b>--opt</b> or  <b>--extended-insert</b> option. Use  <b>--skip-opt</b> instead.<div class="spacer">
+</div>
+<b>mysqldump</b> supports the following options, which can be specified on the command line or in the [mysqldump] and [client] option file groups.  <b>mysqldump</b> also supports the options for processing option file.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--help</b>,  <b>-?</b><div style="height: 1.00em;">
+&#160;</div>
+Display a help message and exit.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--add-drop-database</b><div style="height: 1.00em;">
+&#160;</div>
+Add a DROP DATABASE statement before each CREATE DATABASE statement. This option is typically used in conjunction with the  <b>--all-databases</b> or  <b>--databases</b> option because no CREATE DATABASE statements are written unless one of those options is specified.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--add-drop-table</b><div style="height: 1.00em;">
+&#160;</div>
+Add a DROP TABLE statement before each CREATE TABLE statement.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--add-locks</b><div style="height: 1.00em;">
+&#160;</div>
+Surround each table dump with LOCK TABLES and UNLOCK TABLES statements. This results in faster inserts when the dump file is reloaded.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--all-databases</b>,  <b>-A</b><div style="height: 1.00em;">
+&#160;</div>
+Dump all tables in all databases. This is the same as using the  <b>--databases</b> option and naming all the databases on the command line.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--all-tablespaces</b>,  <b>-Y</b><div style="height: 1.00em;">
+&#160;</div>
+Adds to a table dump all SQL statements needed to create any tablespaces used by an NDBCLUSTER table. This information is not otherwise included in the output from  <b>mysqldump</b>. This option is currently relevant only to MySQL Cluster tables.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--allow-keywords</b><div style="height: 1.00em;">
+&#160;</div>
+Allow creation of column names that are keywords. This works by prefixing each column name with the table name.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--apply-slave-statements</b><div style="height: 1.00em;">
+&#160;</div>
+Adds 'STOP SLAVE' prior to 'CHANGE MASTER' and 'START SLAVE' to bottom of dump.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--character-sets-dir=</b><b></b><i>path</i><div style="height: 1.00em;">
+&#160;</div>
+The directory where character sets are installed.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--comments</b>,  <b>-i</b><div style="height: 1.00em;">
+&#160;</div>
+Write additional information in the dump file such as program version, server version, and host. This option is enabled by default. To suppress this additional information, use  <b>--skip-comments</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--compact</b><div style="height: 1.00em;">
+&#160;</div>
+Produce more compact output. This option enables the  <b>--skip-add-drop-table</b>,  <b>--skip-add-locks</b>,  <b>--skip-comments</b>,  <b>--skip-disable-keys</b>, and  <b>--skip-set-charset</b> options.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--compatible=</b><b></b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+Produce output that is more compatible with other database systems or with older MySQL servers. The value of  <i>name</i> can be ansi, mysql323, mysql40, postgresql, oracle, mssql, db2, maxdb, no_key_options, no_table_options, or no_field_options. To use several values, separate them by commas. These values have the same meaning as the corresponding options for setting the server SQL mode.<div style="height: 1.00em;">
+&#160;</div>
+This option does not guarantee compatibility with other servers. It only enables those SQL mode values that are currently available for making dump output more compatible. For example,  <b>--compatible=oracle</b> does not map data types to Oracle types or use Oracle comment syntax.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--complete-insert</b>,  <b>-c</b><div style="height: 1.00em;">
+&#160;</div>
+Use complete INSERT statements that include column names.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--compress</b>,  <b>-C</b><div style="height: 1.00em;">
+&#160;</div>
+Compress all information sent between the client and the server if both support compression.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--create-options</b>,  <b>-a</b><div style="height: 1.00em;">
+&#160;</div>
+Include all MariaDB-specific table options in the CREATE TABLE statements. Use  <b>--skip-create-options</b> to disable.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--databases</b>,  <b>-B</b><div style="height: 1.00em;">
+&#160;</div>
+Dump several databases. Normally,  <b>mysqldump</b> treats the first name argument on the command line as a database name and following names as table names. With this option, it treats all name arguments as database names. CREATE DATABASE and USE statements are included in the output before each new database.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--debug[=</b><b></b><i>debug_options</i><b>]</b>,  <b>-# [</b><b></b><i>debug_options</i><b>]</b><div style="height: 1.00em;">
+&#160;</div>
+Write a debugging log. A typical  <i>debug_options</i> string is &#180;d:t:o, <i>file_name</i>&#180;. The default value is &#180;d:t:o,/tmp/mysqldump.trace&#180;.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--debug-check</b><div style="height: 1.00em;">
+&#160;</div>
+Print some debugging information when the program exits.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--debug-info</b><div style="height: 1.00em;">
+&#160;</div>
+Print debugging information and memory and CPU usage statistics when the program exits.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--default-auth</b><div style="height: 1.00em;">
+&#160;</div>
+Default authentication client-side plugin to use.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--default-character-set=</b><b></b><i>charset_name</i><div style="height: 1.00em;">
+&#160;</div>
+Use  <i>charset_name</i> as the default character set. If no character set is specified,  <b>mysqldump</b> uses utf8.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--defaults-extra-file=</b><b></b><i>filename</i><div style="height: 1.00em;">
+&#160;</div>
+Set <b></b><i>filename</i> as the file to read default options from after the global defaults files has been read. Must be given as first option.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--defaults-file=</b><b></b><i>filename</i><div style="height: 1.00em;">
+&#160;</div>
+Set <b></b><i>filename</i> as the file to read default options from, override global defaults files. Must be given as first option.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--defaults-group-suffix=</b><b></b><i>str</i>,<div style="height: 1.00em;">
+&#160;</div>
+Also read groups with a suffix of <i>str</i>. For example, since mysqldump normally reads the [client] and [mysqldump] groups, --defaults-group-suffix=x would cause it to also read the groups [mysqldump_x] and [client_x].</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--delayed-insert</b><div style="height: 1.00em;">
+&#160;</div>
+Write INSERT DELAYED statements rather than INSERT statements.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--delete-master-logs</b><div style="height: 1.00em;">
+&#160;</div>
+On a master replication server, delete the binary logs by sending a PURGE BINARY LOGS statement to the server after performing the dump operation. This option automatically enables  <b>--master-data</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--disable-keys</b>,  <b>-K</b><div style="height: 1.00em;">
+&#160;</div>
+For each table, surround the INSERT statements with /*!40000 ALTER TABLE  <i>tbl_name</i> DISABLE KEYS */; and /*!40000 ALTER TABLE  <i>tbl_name</i> ENABLE KEYS */; statements. This makes loading the dump file faster because the indexes are created after all rows are inserted. This option is effective only for nonunique indexes of MyISAM tables.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--dump-date</b><div style="height: 1.00em;">
+&#160;</div>
+If the  <b>--comments</b> option is given,  <b>mysqldump</b> produces a comment at the end of the dump of the following form:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+-- Dump completed on <i>DATE</i><br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+However, the date causes dump files taken at different times to appear to be different, even if the data are otherwise identical.  <b>--dump-date</b> and  <b>--skip-dump-date</b> control whether the date is added to the comment. The default is  <b>--dump-date</b> (include the date in the comment).  <b>--skip-dump-date</b> suppresses date printing</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--events</b>,  <b>-E</b><div style="height: 1.00em;">
+&#160;</div>
+Include Event Scheduler events for the dumped databases in the output.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--extended-insert</b>,  <b>-e</b><div style="height: 1.00em;">
+&#160;</div>
+Use multiple-row INSERT syntax that include several VALUES lists. This results in a smaller dump file and speeds up inserts when the file is reloaded.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--fields-terminated-by=...</b>,  <b>--fields-enclosed-by=...</b>,  <b>--fields-optionally-enclosed-by=...</b>,  <b>--fields-escaped-by=...</b><div style="height: 1.00em;">
+&#160;</div>
+These options are used with the  <b>--tab</b> option and have the same meaning as the corresponding FIELDS clauses for LOAD DATA INFILE.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--first-slave</b><div style="height: 1.00em;">
+&#160;</div>
+Removed in MariaDB 5.5. Use  <b>--lock-all-tables</b> instead.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--flush-logs</b>,  <b>-F</b><div style="height: 1.00em;">
+&#160;</div>
+Flush the MariaDB server log files before starting the dump. This option requires the RELOAD privilege. If you use this option in combination with the  <b>--all-databases</b> option, the logs are flushed  <i>for each database dumped</i>. The exception is when using  <b>--lock-all-tables</b> or  <b>--master-data</b>: In this case, the logs are flushed only once, corresponding to the moment that all tables are locked. If you want your dump and the log flush to happen at exactly the same moment, you should use  <b>--flush-logs</b> together with either  <b>--lock-all-tables</b> or  <b>--master-data</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--flush-privileges</b><div style="height: 1.00em;">
+&#160;</div>
+Send a FLUSH PRIVILEGES statement to the server after dumping the mysql database. This option should be used any time the dump contains the mysql database and any other database that depends on the data in the mysql database for proper restoration.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--force</b>,  <b>-f</b><div style="height: 1.00em;">
+&#160;</div>
+Continue even if an SQL error occurs during a table dump.<div style="height: 1.00em;">
+&#160;</div>
+One use for this option is to cause  <b>mysqldump</b> to continue executing even when it encounters a view that has become invalid because the definition refers to a table that has been dropped. Without  <b>--force</b>,  <b>mysqldump</b> exits with an error message. With  <b>--force</b>,  <b>mysqldump</b> prints the error message, but it also writes an SQL comment containing the view definition to the dump output and continues executing.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--gtid</b><div style="height: 1.00em;">
+&#160;</div>
+Available from MariaDB 10.0.13, and is used together with <b>--master-data</b> and <b>--dump-slave</b> to more conveniently set up a new GTID slave. It causes those options to output SQL statements that configure the slave to use the global transaction ID to connect to the master instead of old-style filename/offset positions. The old-style positions are still included in comments when <b>--gtid</b> is used; likewise the GTID position is included in comments even if <b>--gtid</b> is not used.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--hex-blob</b><div style="height: 1.00em;">
+&#160;</div>
+Dump binary columns using hexadecimal notation (for example, &#180;abc&#180; becomes 0x616263). The affected data types are BINARY, VARBINARY, the BLOB types, and BIT.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--host=</b><b></b><i>host_name</i>,  <b>-h </b><b></b><i>host_name</i><div style="height: 1.00em;">
+&#160;</div>
+Dump data from the MariaDB server on the given host. The default host is localhost.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ignore-table=</b><b></b><i>db_name.tbl_name</i><div style="height: 1.00em;">
+&#160;</div>
+Do not dump the given table, which must be specified using both the database and table names. To ignore multiple tables, use this option multiple times. This option also can be used to ignore views.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--include-master-host-port</b><div style="height: 1.00em;">
+&#160;</div>
+Add the MASTER_HOST and MASTER_PORT options for the CHANGE MASTER TO statement when using the  <b>--dump-slave</b> option for a slave dump.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--insert-ignore</b><div style="height: 1.00em;">
+&#160;</div>
+Write INSERT IGNORE statements rather than INSERT statements.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--lines-terminated-by=...</b><div style="height: 1.00em;">
+&#160;</div>
+This option is used with the  <b>--tab</b> option and has the same meaning as the corresponding LINES clause for LOAD DATA INFILE.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--lock-all-tables</b>,  <b>-x</b><div style="height: 1.00em;">
+&#160;</div>
+Lock all tables across all databases. This is achieved by acquiring a global read lock for the duration of the whole dump. This option automatically turns off  <b>--single-transaction</b> and  <b>--lock-tables</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--lock-tables</b>,  <b>-l</b><div style="height: 1.00em;">
+&#160;</div>
+For each dumped database, lock all tables to be dumped before dumping them. The tables are locked with READ LOCAL to allow concurrent inserts in the case of MyISAM tables. For transactional tables such as InnoDB,  <b>--single-transaction</b> is a much better option than  <b>--lock-tables</b> because it does not need to lock the tables at all.<div style="height: 1.00em;">
+&#160;</div>
+Because  <b>--lock-tables</b> locks tables for each database separately, this option does not guarantee that the tables in the dump file are logically consistent between databases. Tables in different databases may be dumped in completely different states.<div style="height: 1.00em;">
+&#160;</div>
+Use <b>--skip-lock-tables</b> to disable.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--log-error=</b><b></b><i>file_name</i><div style="height: 1.00em;">
+&#160;</div>
+Log warnings and errors by appending them to the named file. The default is to do no logging.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--master-data[=</b><b></b><i>value</i><b>]</b><div style="height: 1.00em;">
+&#160;</div>
+Use this option to dump a master replication server to produce a dump file that can be used to set up another server as a slave of the master. It causes the dump output to include a CHANGE MASTER TO statement that indicates the binary log coordinates (file name and position) of the dumped server. These are the master server coordinates from which the slave should start replicating after you load the dump file into the slave.<div style="height: 1.00em;">
+&#160;</div>
+If the option value is 2, the CHANGE MASTER TO statement is written as an SQL comment, and thus is informative only; it has no effect when the dump file is reloaded. If the option value is 1, the statement is not written as a comment and takes effect when the dump file is reloaded. If no option value is specified, the default value is 1.<div style="height: 1.00em;">
+&#160;</div>
+This option requires the RELOAD privilege and the binary log must be enabled.<div style="height: 1.00em;">
+&#160;</div>
+The  <b>--master-data</b> option automatically turns off  <b>--lock-tables</b>. It also turns on  <b>--lock-all-tables</b>, unless  <b>--single-transaction</b> also is specified. In all cases, any action on logs happens at the exact moment of the dump.<div style="height: 1.00em;">
+&#160;</div>
+It is also possible to set up a slave by dumping an existing slave of the master. To do this, use the following procedure on the existing slave:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+ 1.Stop the slave&#180;s SQL thread and get its current status:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+mysql&gt; <b>STOP SLAVE SQL_THREAD;</b><br/>
+mysql&gt; <b>SHOW SLAVE STATUS;</b><br/>
+</div>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+ 2.From the output of the SHOW SLAVE STATUS statement, the binary log coordinates of the master server from which the new slave should start replicating are the values of the Relay_Master_Log_File and Exec_Master_Log_Pos fields. Denote those values as  <i>file_name</i> and  <i>file_pos</i>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+ 3.Dump the slave server:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>mysqldump --master-data=2 --all-databases &gt; dumpfile</b><br/>
+</div>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+ 4.Restart the slave:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+mysql&gt; <b>START SLAVE;</b><br/>
+</div>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+ 5.On the new slave, load the dump file:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>mysql &lt; dumpfile</b><br/>
+</div>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+ 6.On the new slave, set the replication coordinates to those of the master server obtained earlier:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+mysql&gt; <b>CHANGE MASTER TO</b><br/>
+    -&gt; <b>MASTER_LOG_FILE = &#180;</b><b></b><i>file_name</i><b>&#180;, MASTER_LOG_POS = </b><b></b><i>file_pos</i><b>;</b><br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+The CHANGE MASTER TO statement might also need other parameters, such as MASTER_HOST to point the slave to the correct master server host. Add any such parameters as necessary.</div>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--max-allowed-packet=</b><b></b><i>length</i><div style="height: 1.00em;">
+&#160;</div>
+Sets the maximum packet length to send to or recieve from server.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--net-buffer-length=</b><b></b><i>length</i><div style="height: 1.00em;">
+&#160;</div>
+Sets the buffer size for TCP/IP and socket communication.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--no-autocommit</b><div style="height: 1.00em;">
+&#160;</div>
+Enclose the INSERT statements for each dumped table within SET autocommit = 0 and COMMIT statements.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--no-create-db</b>,  <b>-n</b><div style="height: 1.00em;">
+&#160;</div>
+This option suppresses the CREATE DATABASE statements that are otherwise included in the output if the  <b>--databases</b> or  <b>--all-databases</b> option is given.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--no-create-info</b>,  <b>-t</b><div style="height: 1.00em;">
+&#160;</div>
+Do not write CREATE TABLE statements that re-create each dumped table.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--no-data</b>,  <b>-d</b><div style="height: 1.00em;">
+&#160;</div>
+Do not write any table row information (that is, do not dump table contents). This is useful if you want to dump only the CREATE TABLE statement for the table (for example, to create an empty copy of the table by loading the dump file).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--no-defaults</b><div style="height: 1.00em;">
+&#160;</div>
+Do not read default options from any option file. This must be given as the first argument.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--no-set-names</b>,  <b>-N</b><div style="height: 1.00em;">
+&#160;</div>
+This has the same effect as  <b>--skip-set-charset</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--opt</b><div style="height: 1.00em;">
+&#160;</div>
+This option is shorthand. It is the same as specifying  <b>--add-drop-table</b>  <b>--add-locks</b>  <b>--create-options</b>  <b>--disable-keys</b>  <b>--extended-insert</b>  <b>--lock-tables</b>  <b>--quick</b>  <b>--set-charset</b>. It should give you a fast dump operation and produce a dump file that can be reloaded into a MariaDB server quickly.<div style="height: 1.00em;">
+&#160;</div>
+<i>The </i><i></i><b>--opt</b><i> option is enabled by default. Use </i><i></i><b>--skip-opt</b><i> to disable it.</i> See the discussion at the beginning of this section for information about selectively enabling or disabling a subset of the options affected by  <b>--opt</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--order-by-primary</b><div style="height: 1.00em;">
+&#160;</div>
+Dump each table&#180;s rows sorted by its primary key, or by its first unique index, if such an index exists. This is useful when dumping a MyISAM table to be loaded into an InnoDB table, but will make the dump operation take considerably longer.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--password[=</b><b></b><i>password</i><b>]</b>,  <b>-p[</b><b></b><i>password</i><b>]</b><div style="height: 1.00em;">
+&#160;</div>
+The password to use when connecting to the server. If you use the short option form (<b>-p</b>), you  <i>cannot</i> have a space between the option and the password. If you omit the  <i>password</i> value following the  <b>--password</b> or  <b>-p</b> option on the command line,  <b>mysqldump</b> prompts for one.<div style="height: 1.00em;">
+&#160;</div>
+Specifying a password on the command line should be considered insecure. You can use an option file to avoid giving the password on the command line.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--pipe</b>,  <b>-W</b><div style="height: 1.00em;">
+&#160;</div>
+On Windows, connect to the server via a named pipe. This option applies only if the server supports named-pipe connections.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--plugin-dir</b><div style="height: 1.00em;">
+&#160;</div>
+Directory for client-side plugins.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--port=</b><b></b><i>port_num</i>,  <b>-P </b><b></b><i>port_num</i><div style="height: 1.00em;">
+&#160;</div>
+The TCP/IP port number to use for the connection.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--protocol={TCP|SOCKET|PIPE|MEMORY}</b><div style="height: 1.00em;">
+&#160;</div>
+The connection protocol to use for connecting to the server. It is useful when the other connection parameters normally would cause a protocol to be used other than the one you want.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--quick</b>,  <b>-q</b><div style="height: 1.00em;">
+&#160;</div>
+This option is useful for dumping large tables. It forces  <b>mysqldump</b> to retrieve rows for a table from the server a row at a time rather than retrieving the entire row set and buffering it in memory before writing it out.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--print-defaults</b><div style="height: 1.00em;">
+&#160;</div>
+Print the program argument list and exit. This must be given as the first argument.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--quote-names</b>,  <b>-Q</b><div style="height: 1.00em;">
+&#160;</div>
+Quote identifiers (such as database, table, and column names) within &#8220;`&#8221; characters. If the ANSI_QUOTES SQL mode is enabled, identifiers are quoted within &#8220;&quot;&#8221; characters. This option is enabled by default. It can be disabled with  <b>--skip-quote-names</b>, but this option should be given after any option such as  <b>--compatible</b> that may enable  <b>--quote-names</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--replace</b><div style="height: 1.00em;">
+&#160;</div>
+Write REPLACE statements rather than INSERT statements.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--result-file=</b><b></b><i>file_name</i>,  <b>-r </b><b></b><i>file_name</i><div style="height: 1.00em;">
+&#160;</div>
+Direct output to a given file. This option should be used on Windows to prevent newline &#8220;\n&#8221; characters from being converted to &#8220;\r\n&#8221; carriage return/newline sequences. The result file is created and its previous contents overwritten, even if an error occurs while generating the dump.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--routines</b>,  <b>-R</b><div style="height: 1.00em;">
+&#160;</div>
+Included stored routines (procedures and functions) for the dumped databases in the output. Use of this option requires the SELECT privilege for the mysql.proc table. The output generated by using  <b>--routines</b> contains CREATE PROCEDURE and CREATE FUNCTION statements to re-create the routines. However, these statements do not include attributes such as the routine creation and modification timestamps. This means that when the routines are reloaded, they will be created with the timestamps equal to the reload time.<div style="height: 1.00em;">
+&#160;</div>
+If you require routines to be re-created with their original timestamp attributes, do not use  <b>--routines</b>. Instead, dump and reload the contents of the mysql.proc table directly, using a MariaDB account that has appropriate privileges for the mysql database.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--set-charset</b><div style="height: 1.00em;">
+&#160;</div>
+Add SET NAMES  <i>default_character_set</i> to the output. This option is enabled by default. To suppress the SET NAMES statement, use  <b>--skip-set-charset</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--single-transaction</b><div style="height: 1.00em;">
+&#160;</div>
+This option sends a START TRANSACTION SQL statement to the server before dumping data. It is useful only with transactional tables such as InnoDB, because then it dumps the consistent state of the database at the time when BEGIN was issued without blocking any applications.<div style="height: 1.00em;">
+&#160;</div>
+When using this option, you should keep in mind that only InnoDB tables are dumped in a consistent state. For example, any MyISAM or MEMORY tables dumped while using this option may still change state.<div style="height: 1.00em;">
+&#160;</div>
+While a  <b>--single-transaction</b> dump is in process, to ensure a valid dump file (correct table contents and binary log coordinates), no other connection should use the following statements: ALTER TABLE, CREATE TABLE, DROP TABLE, RENAME TABLE, TRUNCATE TABLE. A consistent read is not isolated from those statements, so use of them on a table to be dumped can cause the SELECT that is performed by  <b>mysqldump</b> to retrieve the table contents to obtain incorrect contents or fail.<div style="height: 1.00em;">
+&#160;</div>
+The  <b>--single-transaction</b> option and the  <b>--lock-tables</b> option are mutually exclusive because LOCK TABLES causes any pending transactions to be committed implicitly.<div style="height: 1.00em;">
+&#160;</div>
+To dump large tables, you should combine the  <b>--single-transaction</b> option with  <b>--quick</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--skip-add-drop-table</b><div style="height: 1.00em;">
+&#160;</div>
+Disable the  <b>--add-drop-table</b> option.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--skip-add-locks</b><div style="height: 1.00em;">
+&#160;</div>
+Disable the  <b>--add-locks</b> option.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--skip-comments</b><div style="height: 1.00em;">
+&#160;</div>
+Disable the  <b>--comments</b> option.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--skip-compact</b><div style="height: 1.00em;">
+&#160;</div>
+Disable the  <b>--compact</b> option.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--skip-disable-keys</b><div style="height: 1.00em;">
+&#160;</div>
+Disable the  <b>--disable-keys</b> option.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--skip-extended-insert</b><div style="height: 1.00em;">
+&#160;</div>
+Disable the  <b>--extended-insert</b> option.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--skip-opt</b><div style="height: 1.00em;">
+&#160;</div>
+Disable the  <b>--opt</b> option.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--skip-quick</b><div style="height: 1.00em;">
+&#160;</div>
+Disable the  <b>--quick</b> option.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--skip-quote-names</b><div style="height: 1.00em;">
+&#160;</div>
+Disable the  <b>--quote-names</b> option.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--skip-set-charset</b><div style="height: 1.00em;">
+&#160;</div>
+Disable the  <b>--set-charset</b> option.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--skip-triggers</b><div style="height: 1.00em;">
+&#160;</div>
+Disable the  <b>--triggers</b> option.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--skip-tz-utc</b><div style="height: 1.00em;">
+&#160;</div>
+Disable the  <b>--tz-utc</b> option.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--socket=</b><b></b><i>path</i>,  <b>-S </b><b></b><i>path</i><div style="height: 1.00em;">
+&#160;</div>
+For connections to localhost, the Unix socket file to use, or, on Windows, the name of the named pipe to use.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl</b><div style="height: 1.00em;">
+&#160;</div>
+Enable SSL for connection (automatically enabled with other flags). Disable with  <b>--skip-ssl</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-ca=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+CA file in PEM format (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-capath=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+CA directory (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-cert=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+X509 cert in PEM format (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-cipher=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+SSL cipher to use (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-key=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+X509 key in PEM format (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-crl=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+Certificate revocation list (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-crlpath=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+Certificate revocation list path (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-verify-server-cert</b><div style="height: 1.00em;">
+&#160;</div>
+Verify server's &quot;Common Name&quot; in its cert against hostname used when connecting. This option is disabled by default.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--tab=</b><b></b><i>path</i>,  <b>-T </b><b></b><i>path</i><div style="height: 1.00em;">
+&#160;</div>
+Produce tab-separated text-format data files. For each dumped table,  <b>mysqldump</b> creates a  <i>tbl_name</i>.sql file that contains the CREATE TABLE statement that creates the table, and the server writes a  <i>tbl_name</i>.txt file that contains its data. The option value is the directory in which to write the files.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<div style="height: 0.00em;">
+&#160;</div>
+<b>Note</b><div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+This option should be used only when  <b>mysqldump</b> is run on the same machine as the  <b>mysqld</b> server. You must have the FILE privilege, and the server must have permission to write files in the directory that you specify.<div style="height: 0.50em;">
+&#160;</div>
+</div>
+By default, the .txt data files are formatted using tab characters between column values and a newline at the end of each line. The format can be specified explicitly using the  <b>--fields-</b><b></b><i>xxx</i> and  <b>--lines-terminated-by</b> options.<div style="height: 1.00em;">
+&#160;</div>
+Column values are converted to the character set specified by the  <b>--default-character-set</b> option.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--tables</b><div style="height: 1.00em;">
+&#160;</div>
+Override the  <b>--databases</b> or  <b>-B</b> option.  <b>mysqldump</b> regards all name arguments following the option as table names.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--triggers</b><div style="height: 1.00em;">
+&#160;</div>
+Include triggers for each dumped table in the output. This option is enabled by default; disable it with  <b>--skip-triggers</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--tz-utc</b><div style="height: 1.00em;">
+&#160;</div>
+This option enables TIMESTAMP columns to be dumped and reloaded between servers in different time zones.  <b>mysqldump</b> sets its connection time zone to UTC and adds SET TIME_ZONE=&#180;+00:00&#180; to the dump file. Without this option, TIMESTAMP columns are dumped and reloaded in the time zones local to the source and destination servers, which can cause the values to change if the servers are in different time zones.  <b>--tz-utc</b> also protects against changes due to daylight saving time.  <b>--tz-utc</b> is enabled by default. To disable it, use  <b>--skip-tz-utc</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--user=</b><b></b><i>user_name</i>,  <b>-u </b><b></b><i>user_name</i><div style="height: 1.00em;">
+&#160;</div>
+The MariaDB user name to use when connecting to the server.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--verbose</b>,  <b>-v</b><div style="height: 1.00em;">
+&#160;</div>
+Verbose mode. Print more information about what the program does.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--version</b>,  <b>-V</b><div style="height: 1.00em;">
+&#160;</div>
+Display version information and exit.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--where=&#180;</b><b></b><i>where_condition</i><b>&#180;</b>,  <b>-w &#180;</b><b></b><i>where_condition</i><b>&#180;</b><div style="height: 1.00em;">
+&#160;</div>
+Dump only rows selected by the given WHERE condition. Quotes around the condition are mandatory if it contains spaces or other characters that are special to your command interpreter.<div style="height: 1.00em;">
+&#160;</div>
+Examples:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+--where=&quot;user=&#180;jimf&#180;&quot;<br/>
+-w&quot;userid&gt;1&quot;<br/>
+-w&quot;userid&lt;1&quot;<br/>
+</div>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--xml</b>,  <b>-X</b><div style="height: 1.00em;">
+&#160;</div>
+Write dump output as well-formed XML.<div style="height: 1.00em;">
+&#160;</div>
+<b>NULL</b><b>, </b><b>&#180;NULL&#180;</b><b>, and Empty Values</b>: For a column named  <i>column_name</i>, the NULL value, an empty string, and the string value &#180;NULL&#180; are distinguished from one another in the output generated by this option as follows.<table class="tbl">
+<col style="width: 29.00ex;"/>
+<col style="width: 49.00ex;"/>
+<tbody>
+<tr>
+<td>
+<b>Value</b>:</td>
+<td>
+<b>XML Representation</b>:</td>
+</tr>
+<tr>
+<td>
+NULL (<i>unknown value</i>)</td>
+<td>
+&lt;field name=&quot;<i>column_name</i>&quot; xsi:nil=&quot;true&quot; /&gt;</td>
+</tr>
+<tr>
+<td>
+&#180;&#180; (<i>empty string</i>)</td>
+<td>
+&lt;field name=&quot;<i>column_name</i>&quot;&gt;&lt;/field&gt;</td>
+</tr>
+<tr>
+<td>
+&#180;NULL&#180; (<i>string value</i>)</td>
+<td>
+&lt;field name=&quot;<i>column_name</i>&quot;&gt;NULL&lt;/field&gt;</td>
+</tr>
+</tbody>
+</table>
+<div style="height: 1.00em;">
+&#160;</div>
+The output from the  <b>mysql</b> client when run using the  <b>--xml</b> option also follows the preceding rules. (See the section called &#8220;MYSQL OPTIONS&#8221;.)<div style="height: 1.00em;">
+&#160;</div>
+XML output from  <b>mysqldump</b> includes the XML namespace, as shown here:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>mysqldump --xml -u root world City</b><br/>
+&lt;?xml version=&quot;1.0&quot;?&gt;<br/>
+&lt;mysqldump xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&gt;<br/>
+&lt;database name=&quot;world&quot;&gt;<br/>
+&lt;table_structure name=&quot;City&quot;&gt;<br/>
+&lt;field Field=&quot;ID&quot; Type=&quot;int(11)&quot; Null=&quot;NO&quot; Key=&quot;PRI&quot; Extra=&quot;auto_increment&quot; /&gt;<br/>
+&lt;field Field=&quot;Name&quot; Type=&quot;char(35)&quot; Null=&quot;NO&quot; Key=&quot;&quot; Default=&quot;&quot; Extra=&quot;&quot; /&gt;<br/>
+&lt;field Field=&quot;CountryCode&quot; Type=&quot;char(3)&quot; Null=&quot;NO&quot; Key=&quot;&quot; Default=&quot;&quot; Extra=&quot;&quot; /&gt;<br/>
+&lt;field Field=&quot;District&quot; Type=&quot;char(20)&quot; Null=&quot;NO&quot; Key=&quot;&quot; Default=&quot;&quot; Extra=&quot;&quot; /&gt;<br/>
+&lt;field Field=&quot;Population&quot; Type=&quot;int(11)&quot; Null=&quot;NO&quot; Key=&quot;&quot; Default=&quot;0&quot; Extra=&quot;&quot; /&gt;<br/>
+&lt;key Table=&quot;City&quot; Non_unique=&quot;0&quot; Key_name=&quot;PRIMARY&quot; Seq_in_index=&quot;1&quot; Column_name=&quot;ID&quot;<br/>
+Collation=&quot;A&quot; Cardinality=&quot;4079&quot; Null=&quot;&quot; Index_type=&quot;BTREE&quot; Comment=&quot;&quot; /&gt;<br/>
+&lt;options Name=&quot;City&quot; Engine=&quot;MyISAM&quot; Version=&quot;10&quot; Row_format=&quot;Fixed&quot; Rows=&quot;4079&quot;<br/>
+Avg_row_length=&quot;67&quot; Data_length=&quot;273293&quot; Max_data_length=&quot;18858823439613951&quot;<br/>
+Index_length=&quot;43008&quot; Data_free=&quot;0&quot; Auto_increment=&quot;4080&quot;<br/>
+Create_time=&quot;2007-03-31 01:47:01&quot; Update_time=&quot;2007-03-31 01:47:02&quot;<br/>
+Collation=&quot;latin1_swedish_ci&quot; Create_options=&quot;&quot; Comment=&quot;&quot; /&gt;<br/>
+&lt;/table_structure&gt;<br/>
+&lt;table_data name=&quot;City&quot;&gt;<br/>
+&lt;row&gt;<br/>
+&lt;field name=&quot;ID&quot;&gt;1&lt;/field&gt;<br/>
+&lt;field name=&quot;Name&quot;&gt;Kabul&lt;/field&gt;<br/>
+&lt;field name=&quot;CountryCode&quot;&gt;AFG&lt;/field&gt;<br/>
+&lt;field name=&quot;District&quot;&gt;Kabol&lt;/field&gt;<br/>
+&lt;field name=&quot;Population&quot;&gt;1780000&lt;/field&gt;<br/>
+&lt;/row&gt;<br/>
+<i>...</i><br/>
+&lt;row&gt;<br/>
+&lt;field name=&quot;ID&quot;&gt;4079&lt;/field&gt;<br/>
+&lt;field name=&quot;Name&quot;&gt;Rafah&lt;/field&gt;<br/>
+&lt;field name=&quot;CountryCode&quot;&gt;PSE&lt;/field&gt;<br/>
+&lt;field name=&quot;District&quot;&gt;Rafah&lt;/field&gt;<br/>
+&lt;field name=&quot;Population&quot;&gt;92020&lt;/field&gt;<br/>
+&lt;/row&gt;<br/>
+&lt;/table_data&gt;<br/>
+&lt;/database&gt;<br/>
+&lt;/mysqldump&gt;<br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="spacer">
+</div>
+You can also set the following variables by using  <b>--</b><b></b><i>var_name</i><b>=</b><b></b><i>value</i> syntax:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;max_allowed_packet<div style="height: 1.00em;">
+&#160;</div>
+The maximum size of the buffer for client/server communication. The maximum is 1GB.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;net_buffer_length<div style="height: 1.00em;">
+&#160;</div>
+The initial size of the buffer for client/server communication. When creating multiple-row INSERT statements (as with the  <b>--extended-insert</b> or  <b>--opt</b> option),  <b>mysqldump</b> creates rows up to net_buffer_length length. If you increase this variable, you should also ensure that the net_buffer_length variable in the MariaDB server is at least this large.</div>
+<div class="spacer">
+</div>
+A common use of  <b>mysqldump</b> is for making a backup of an entire database:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>mysqldump </b><b></b><i>db_name</i><b> &gt; </b><b></b><i>backup-file.sql</i><br/>
+</div>
+<div class="spacer">
+</div>
+You can load the dump file back into the server like this:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>mysql </b><b></b><i>db_name</i><b> &lt; </b><b></b><i>backup-file.sql</i><br/>
+</div>
+<div class="spacer">
+</div>
+Or like this:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>mysql -e &quot;source </b><b></b><i>/path-to-backup/backup-file.sql</i><b>&quot; </b><b></b><i>db_name</i><br/>
+</div>
+<div class="spacer">
+</div>
+<b>mysqldump</b> is also very useful for populating databases by copying data from one MariaDB server to another:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>mysqldump --opt </b><b></b><i>db_name</i><b> | mysql --host=</b><b></b><i>remote_host</i><b> -C </b><b></b><i>db_name</i><br/>
+</div>
+<div class="spacer">
+</div>
+It is possible to dump several databases with one command:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>mysqldump --databases </b><b></b><i>db_name1</i><b> [</b><b></b><i>db_name2</i><b> ...] &gt; my_databases.sql</b><br/>
+</div>
+<div class="spacer">
+</div>
+To dump all databases, use the  <b>--all-databases</b> option:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>mysqldump --all-databases &gt; all_databases.sql</b><br/>
+</div>
+<div class="spacer">
+</div>
+For InnoDB tables,  <b>mysqldump</b> provides a way of making an online backup:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>mysqldump --all-databases --single-transaction &gt; all_databases.sql</b><br/>
+</div>
+<div class="spacer">
+</div>
+This backup acquires a global read lock on all tables (using FLUSH TABLES WITH READ LOCK) at the beginning of the dump. As soon as this lock has been acquired, the binary log coordinates are read and the lock is released. If long updating statements are running when the FLUSH statement is issued, the MariaDB server may get stalled until those statements finish. After that, the dump becomes lock free and does not disturb reads and writes on the tables. If the update statements that the MariaDB server receives are short (in terms of execution time), the initial lock period should not be noticeable, even with many updates.<div class="spacer">
+</div>
+For point-in-time recovery (also known as &#8220;roll-forward,&#8221; when you need to restore an old backup and replay the changes that happened since that backup), it is often useful to rotate the binary log or at least know the binary log coordinates to which the dump corresponds:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>mysqldump --all-databases --master-data=2 &gt; all_databases.sql</b><br/>
+</div>
+<div class="spacer">
+</div>
+Or:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>mysqldump --all-databases --flush-logs --master-data=2</b><br/>
+              <b>&gt; all_databases.sql</b><br/>
+</div>
+<div class="spacer">
+</div>
+The  <b>--master-data</b> and  <b>--single-transaction</b> options can be used simultaneously, which provides a convenient way to make an online backup suitable for use prior to point-in-time recovery if tables are stored using the InnoDB storage engine.<div class="spacer">
+</div>
+If you encounter problems backing up views, please read the section that covers restrictions on views which describes a workaround for backing up views when this fails due to insufficient privileges.</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright 2007-2008 MySQL AB, 2008-2010 Sun Microsystems, Inc., 2010-2015 MariaDB Foundation<div class="spacer">
+</div>
+This documentation is free software; you can redistribute it and/or modify it only under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.<div class="spacer">
+</div>
+This documentation is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.<div class="spacer">
+</div>
+You should have received a copy of the GNU General Public License along with the program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA or see http://www.gnu.org/licenses/.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NOTES</h1><dl>
+<dt>
+ 1.</dt>
+<dd>
+Bug#30123</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+http://bugs.mysql.com/bug.php?id=30123</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> For more information, please refer to the MariaDB Knowledge Base, available online at https://mariadb.com/kb/</div>
+<div class="section">
+<h1>AUTHOR</h1> MariaDB Foundation (http://www.mariadb.org/).</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+04/08/2015</td>
+<td class="foot-os">
+MariaDB 10.0</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

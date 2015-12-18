@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+MYSQL-TEST-RUN()</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+MYSQL-TEST-RUN()</td>
+<td class="head-vol">
+</td>
+<td class="head-rtitle">
+MYSQL-TEST-RUN()</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> mysql-test-run.pl - run MariaDB test suite</div>
+<div class="section">
+<h1>SYNOPSIS</h1><div style="margin-left: 29.00ex;text-indent: -29.00ex;" class="spacer">
+<b>mysql-test-run.pl [</b><b></b><i>options</i><b>]</b></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <b>mysql-test-run.pl</b> Perl script is the main application used to run the MariaDB test suite. It invokes  <b>mysqltest</b> to run individual test cases.<div class="spacer">
+</div>
+Invoke  <b>mysql-test-run.pl</b> in the mysql-test directory like this:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>mysql-test-run.pl [</b><b></b><i>options</i><b>] [</b><b></b><i>test_name</i><b>] ...</b><br/>
+</div>
+<div class="spacer">
+</div>
+Each  <i>test_name</i> argument names a test case. The test case file that corresponds to the test name is t/ <i>test_name</i>.test.<div class="spacer">
+</div>
+For each  <i>test_name</i> argument,  <b>mysql-test-run.pl</b> runs the named test case. With no  <i>test_name</i> arguments,  <b>mysql-test-run.pl</b> runs all .test files in the t subdirectory.<div class="spacer">
+</div>
+If no suffix is given for the test name, a suffix of .test is assumed. Any leading path name is ignored. These commands are equivalent:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>mysql-test-run.pl mytest</b><br/>
+shell&gt; <b>mysql-test-run.pl mytest.test</b><br/>
+shell&gt; <b>mysql-test-run.pl t/mytest.test</b><br/>
+</div>
+<div class="spacer">
+</div>
+A suite name can be given as part of the test name. That is, the syntax for naming a test is:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+[<i>suite_name</i>.]<i>test_name</i>[.<i>suffix</i>]<br/>
+</div>
+<div class="spacer">
+</div>
+If a suite name is given,  <b>mysql-test-run.pl</b> looks in that suite for the test. The test file corresponding to a test named  <i>suite_name.test_name</i> is found in suite/ <i>suite_name</i>/t/<i>test_name</i>.test. There is also an implicit suite name main for the tests in the top t directory. With no suite name,  <b>mysql-test-run.pl</b> looks in the default list of suites for a match and runs the test in any suites where it finds the test. Suppose that the default suite list is main, binlog, rpl, and that a test mytest.test exists in the main and rpl suites. With an argument of mytest or mytest.test,  <b>mysql-test-run.pl</b> will run mytest.test from the main and rpl suites.<div class="spacer">
+</div>
+To run a family of test cases for which the names share a common prefix, use the  <b>--do-test=</b><b></b><i>prefix</i> option. For example,  <b>--do-test=rpl</b> runs the replication tests (test cases that have names beginning with rpl).  <b>--skip-test</b> has the opposite effect of skipping test cases for which the names share a common prefix.<div class="spacer">
+</div>
+The argument for the  <b>--do-test</b> and  <b>--skip-test</b> options also allows more flexible specification of which tests to perform or skip. If the argument contains a pattern metacharacter other than a lone period, it is interpreted as a Perl regular expression and applies to test names that match the pattern. If the argument contains a lone period or does not contain any pattern metacharacters, it is interpreted the same way as previously and matches test names that begin with the argument value. For example,  <b>--do-test=testa</b> matches tests that begin with testa,  <b>--do-test=main.testa</b> matches tests in the main test suite that begin with testa, and  <b>--do-test=main.*testa</b> matches test names that contain main followed by testa with anything in between. In the latter case, the pattern match is not anchored to the beginning of the test name, so it also matches names such as xmainytesta.<div class="spacer">
+</div>
+To perform setup prior to running tests,  <b>mysql-test-run.pl</b> needs to invoke  <b>mysqld</b> with the  <b>--bootstrap</b> and  <b>--skip-grant-tables</b> options. If MySQL was configured with the  <b>--disable-grant-options</b> option,  <b>--bootstrap</b>,  <b>--skip-grant-tables</b>, and  <b>--init-file</b> will be disabled. To handle this, set the MYSQLD_BOOTSTRAP environment variable to the full path name of a server that has all options enabled.  <b>mysql-test-run.pl</b> will use that server to perform setup; it is not used to run the tests.<div class="spacer">
+</div>
+The init_file test will fail if  <b>--init-file</b> is disabled. This is an expected failure that can be handled as follows:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>export MYSQLD_BOOTSTRAP</b><br/>
+shell&gt; <b>MYSQLD_BOOTSTRAP=/full/path/to/mysqld</b><br/>
+shell&gt; <b>make test force=&quot;--skip-test=init_file&quot;</b><br/>
+</div>
+<div class="spacer">
+</div>
+To run  <b>mysql-test-run.pl</b> on Windows, you&#180;ll need either Cygwin or ActiveState Perl to run it. You may also need to install the modules required by the script. To run the test script, change location into the mysql-test directory, set the MTR_VS_CONFIG environment variable to the configuration you selected earlier (or use the  <b>--vs-config</b> option), and invoke  <b>mysql-test-run.pl</b>. For example (using Cygwin and the  <b>bash</b> shell):<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>cd mysql-test</b><br/>
+shell&gt; <b>export MTR_VS_CONFIG=debug</b><br/>
+shell&gt; <b>./mysqltest-run.pl --force --timer</b><br/>
+shell&gt; <b>./mysqltest-run.pl --force --timer --ps-protocol</b><br/>
+</div>
+<div class="spacer">
+</div>
+<b>mysql-test-run.pl</b> uses several environment variables. Some of them are listed in the following table. Some of these are set from the outside and used by  <b>mysql-test-run.pl</b>, others are set by  <b>mysql-test-run.pl</b> instead, and may be referred to in tests.<table class="tbl">
+<col style="width: 22.00ex;"/>
+<col style="width: 395.00ex;"/>
+<tbody>
+<tr>
+<td>
+<b>Variable</b></td>
+<td>
+<b>Meaning</b></td>
+</tr>
+<tr>
+<td>
+MTR_VERSION</td>
+<td>
+If set to 1, will run the older version 1 of                 <b>mysql-test-run.pl</b>. This will affect                 what functionailty is available and what command line                 options are supported.</td>
+</tr>
+<tr>
+<td>
+MTR_MEM</td>
+<td>
+If set to anything, will run tests with files in &quot;memory&quot; using tmpfs or                 ramdisk. Not available on Windows. Same as                 <b>--mem</b> option</td>
+</tr>
+<tr>
+<td>
+MTR_PARALLEL</td>
+<td>
+If set, defines number of parallel threads executing tests. Same as                 <b>--parallel</b> option</td>
+</tr>
+<tr>
+<td>
+MTR_BUILD_THREAD</td>
+<td>
+If set, defines which port number range is used for the server</td>
+</tr>
+<tr>
+<td>
+MTR_PORT_BASE</td>
+<td>
+If set, defines which port number range is used for the server</td>
+</tr>
+<tr>
+<td>
+MTR_<i>NAME</i>_TIMEOUT</td>
+<td>
+Setting of a timeout in minutes or seconds, corresponding to command                 line option                 <b>--</b><b></b><i>name</i><b>-timeout</b>.                 Avaliable timeout names are TESTCASE,                 SUITE (both in minutes) and                 START, SHUTDOWN                 (both in seconds). These variables are supported from                 MySQL 5.1.44.</td>
+</tr>
+<tr>
+<td>
+MYSQL_TEST</td>
+<td>
+Path name to <b>mysqltest</b> binary</td>
+</tr>
+<tr>
+<td>
+MYSQLD_BOOTSTRAP</td>
+<td>
+Full path name to <b>mysqld</b> that has all options enabled</td>
+</tr>
+<tr>
+<td>
+MYSQLTEST_VARDIR</td>
+<td>
+Path name to the var directory that is used for                 logs, temporary files, and so forth</td>
+</tr>
+<tr>
+<td>
+MYSQL_TEST_DIR</td>
+<td>
+Full path to the mysql-test directory where tests                 are being run from</td>
+</tr>
+<tr>
+<td>
+MYSQL_TMP_DIR</td>
+<td>
+Path to temp directory used for temporary files during tests</td>
+</tr>
+</tbody>
+</table>
+<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+The variable MTR_PORT_BASE was added in MySQL 5.1.45 as a more logical replacement for MTR_BUILD_THREAD. It gives the actual port number directly (will be rounded down to a multiple of 10). If you use MTR_BUILD_THREAD, the port number is found by multiplying this by 10 and adding 10000.<div class="spacer">
+</div>
+Tests sometimes rely on certain environment variables being defined. For example, certain tests assume that MYSQL_TEST is defined so that  <b>mysqltest</b> can invoke itself with exec $MYSQL_TEST.<div class="spacer">
+</div>
+Other tests may refer to the last three variables listed in the preceding table, to locate files to read or write. For example, tests that need to create files will typically put them in $MYSQL_TMP_DIR/ <i>file_name</i>.<div class="spacer">
+</div>
+If you are running  <b>mysql-test-run.pl</b> version 1 by setting MTR_VERSION, note that this only affects the test driver, not the test client (and its language) or the tests themselves.<div class="spacer">
+</div>
+A few tests might not run with version 1 because they depend on some feature of version 2. You may have those tests skipped by adding the test name to the file lib/v1/incompatible.tests. This feature is available from MySQL 5.1.40.<div class="spacer">
+</div>
+<b>mysql-test-run.pl</b> supports the options in the following list. An argument of  <b>--</b> tells  <b>mysql-test-run.pl</b> not to process any following arguments as options.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--help</b>,  <b>-h</b><div style="height: 1.00em;">
+&#160;</div>
+Display a help message and exit.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--big-test</b><div style="height: 1.00em;">
+&#160;</div>
+Allow tests marked as &quot;big&quot; to run. Tests can be thus marked by including the line  <b>--source include/big_test.inc</b>, and they will only be run if this option is given, or if the environment variable BIG_TEST is set to 1. Repeat this option twice to run only &quot;big&quot; tests.<div style="height: 1.00em;">
+&#160;</div>
+This is typically used for tests that take a very long to run, or that use many resources, so that they are not suitable for running as part of a normal test suite run.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--boot-dbx</b><div style="height: 1.00em;">
+&#160;</div>
+Run the mysqld server used for bootstrapping the database through the dbx debugger.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--boot-ddd</b><div style="height: 1.00em;">
+&#160;</div>
+Run the mysqld server used for bootstrapping the database through the ddd debugger.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--boot-gdb</b><div style="height: 1.00em;">
+&#160;</div>
+Run the mysqld server used for bootstrapping the database through the gdb debugger.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--[mtr-]build-thread=</b><b></b><i>number</i><div style="height: 1.00em;">
+&#160;</div>
+Specify a number to calculate port numbers from. The formula is 10 *  <i>build_thread</i> + 10000. Instead of a number, it can be set to auto, which is also the default value, in which case  <b>mysql-test-run.pl</b> will allocate a number unique to this host.<div style="height: 1.00em;">
+&#160;</div>
+The value (number or auto) can also be set with the MTR_BUILD_THREAD environment variable.<div style="height: 1.00em;">
+&#160;</div>
+The more logical  <b>--port-base</b> is supported as an alternative.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--callgrind</b><div style="height: 1.00em;">
+&#160;</div>
+Instructs  <b>valgrind</b> to use  <b>callgrind</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--check-testcases</b><div style="height: 1.00em;">
+&#160;</div>
+Check test cases for side effects. This is done by checking system state before and after each test case; if there is any difference, a warning to that effect will be written, but the test case will not be marked as failed because of it. This check is enabled by default.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--client-bindir=</b><b></b><i>path</i><div style="height: 1.00em;">
+&#160;</div>
+The path to the directory where client binaries are located.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--client-dbx</b><div style="height: 1.00em;">
+&#160;</div>
+Start  <b>mysqltest</b> in the  <b>dbx</b> debugger.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--client-ddd</b><div style="height: 1.00em;">
+&#160;</div>
+Start  <b>mysqltest</b> in the  <b>ddd</b> debugger.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--client-debugger=</b><b></b><i>debugger</i><div style="height: 1.00em;">
+&#160;</div>
+Start  <b>mysqltest</b> in the named debugger.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--client-gdb</b><div style="height: 1.00em;">
+&#160;</div>
+Start  <b>mysqltest</b> in the  <b>gdb</b> debugger.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--client-libdir=</b><b></b><i>path</i><div style="height: 1.00em;">
+&#160;</div>
+The path to the directory where client libraries are located.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--combination=</b><b></b><i>value</i><div style="height: 1.00em;">
+&#160;</div>
+Extra options to pass to  <b>mysqld</b>. The value should consist of one or more comma-separated  <b>mysqld</b> options. This option is similar to  <b>--mysqld</b> but should be given two or more times.  <b>mysql-test-run.pl</b> executes multiple test runs, using the options for each instance of  <b>--combination</b> in successive runs. If  <b>--combination</b> is given only once, it has no effect. For test runs specific to a given test suite, an alternative to the use of  <b>--combination</b> is to create a combinations file in the suite directory. The file should contain a section of options for each test run.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--comment=</b><b></b><i>str</i><div style="height: 1.00em;">
+&#160;</div>
+Write  <i>str</i> to the output within lines filled with #, as a form of banner.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--compress</b><div style="height: 1.00em;">
+&#160;</div>
+Compress all information sent between the client and the server if both support compression.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--cursor-protocol</b><div style="height: 1.00em;">
+&#160;</div>
+Use the cursor protocol between client and server (implies  <b>--ps-protocol</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--dbx</b><div style="height: 1.00em;">
+&#160;</div>
+Start the  <b>mysqld(s)</b> in the  <b>dbx</b> debugger.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ddd</b><div style="height: 1.00em;">
+&#160;</div>
+Start the  <b>mysqld(s)</b> in the  <b>ddd</b> debugger.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--debug</b><div style="height: 1.00em;">
+&#160;</div>
+Dump trace output for all clients and servers.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--debug-common</b><div style="height: 1.00em;">
+&#160;</div>
+Same as <b>--debug</b>, but sets the 'd' debug flags to &quot;query,info,error,enter,exit&quot;.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--debug-server</b><div style="height: 1.00em;">
+&#160;</div>
+Use debug version of server, but without turning on tracing.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--debugger=</b><b></b><i>debugger</i><div style="height: 1.00em;">
+&#160;</div>
+Start  <b>mysqld</b> using the named debugger.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--debug-sync-timeout=</b><b></b><i>N</i><div style="height: 1.00em;">
+&#160;</div>
+Controls whether the Debug Sync facility for testing and debugging is enabled. The option value is a timeout in seconds. The default value is 300. A value of 0 disables Debug Sync. The value of this option also becomes the default timeout for individual synchronization points.<div style="height: 1.00em;">
+&#160;</div>
+<b>mysql-test-run.pl</b> passes  <b>--loose-debug-sync-timeout=</b><b></b><i>N</i> to  <b>mysqld</b>. The  <b>--loose</b> prefix is used so that  <b>mysqld</b> does not fail if Debug Sync is not compiled in.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--defaults-file=</b><b></b><i>file_name</i><div style="height: 1.00em;">
+&#160;</div>
+Use the named file as fixed config file template for all tests.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--defaults_extra_file=</b><b></b><i>file_name</i><div style="height: 1.00em;">
+&#160;</div>
+Add setting from the named file to all generated configs.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--do-test=</b><b></b><i>prefix</i>|<b></b><i>regex</i><div style="height: 1.00em;">
+&#160;</div>
+Run all test cases having a name that begins with the given  <i>prefix</i> value, or fulfils the  <i>regex</i>. This option provides a convenient way to run a family of similarly named tests.<div style="height: 1.00em;">
+&#160;</div>
+The argument for the  <b>--do-test</b> option also allows more flexible specification of which tests to perform. If the argument contains a pattern metacharacter other than a lone period, it is interpreted as a Perl regular expression and applies to test names that match the pattern. If the argument contains a lone period or does not contain any pattern metacharacters, it is interpreted the same way as previously and matches test names that begin with the argument value. For example,  <b>--do-test=testa</b> matches tests that begin with testa,  <b>--do-test=main.testa</b> matches tests in the main test suite that begin with testa, and  <b>--do-test=main.*testa</b> matches test names that contain main followed by testa with anything in between. In the latter case, the pattern match is not anchored to the beginning of the test name, so it also matches names such as xmainytestz.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--dry-run</b><div style="height: 1.00em;">
+&#160;</div>
+Don't run any tests, print the list of tests that were selected for execution.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--embedded-server</b><div style="height: 1.00em;">
+&#160;</div>
+Use a version of  <b>mysqltest</b> built with the embedded server.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--enable-disabled</b><div style="height: 1.00em;">
+&#160;</div>
+Ignore any disabled.def file, and also run tests marked as disabled. Success or failure of those tests will be reported the same way as other tests.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--experimental=</b><b></b><i>file_name</i><div style="height: 1.00em;">
+&#160;</div>
+Specify a file that contains a list of test cases that should be displayed with the [ exp-fail ] code rather than [ fail ] if they fail.<div style="height: 1.00em;">
+&#160;</div>
+For an example of a file that might be specified via this option, see mysql-test/collections/default.experimental.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--extern</b>  <i>option</i>=<i>value</i><div style="height: 1.00em;">
+&#160;</div>
+Use an already running server. The option/value pair is what is needed by the  <b>mysql</b> client to connect to the server. Each  <b>--extern</b> option can only take one option/value pair as an argument, so you need to repeat  <b>--extern</b> for each pair needed. Example:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+      ./mysql-test-run.pl --extern socket=var/tmp/mysqld.1.sock alias<br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+Note: If a test case has an .opt file that requires the server to be restarted with specific options, the file will not be used. The test case likely will fail as a result.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--fast</b><div style="height: 1.00em;">
+&#160;</div>
+Do not perform controlled shutdown when servers need to be restarted or at the end of the test run. This is equivalent to using --shutdown-timeout=0.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--force-restart</b><div style="height: 1.00em;">
+&#160;</div>
+Always restart servers between tests.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--force</b><div style="height: 1.00em;">
+&#160;</div>
+Normally,  <b>mysql-test-run.pl</b> exits if a test case fails.  <b>--force</b> causes execution to continue regardless of test case failure.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--gcov</b><div style="height: 1.00em;">
+&#160;</div>
+Collect coverage information after the test. The result is a  <b>gcov</b> file per source and header file.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--gcov-src-dir</b><div style="height: 1.00em;">
+&#160;</div>
+Colllect coverage only within the given subdirectory. For example, if you're only developing the SQL layer, it makes sense to use  <b>--gcov-src-dir=sql</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--gdb</b><div style="height: 1.00em;">
+&#160;</div>
+Start the  <b>mysqld(s)</b> in the  <b>gdb</b> debugger.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--gprof</b><div style="height: 1.00em;">
+&#160;</div>
+Collect profiling information using the  <b>gprof</b> profiling tool.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--manual-dbx</b><div style="height: 1.00em;">
+&#160;</div>
+Use a server that has already been started by the user in the  <b>dbx</b> debugger.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--manual-ddd</b><div style="height: 1.00em;">
+&#160;</div>
+Use a server that has already been started by the user in the  <b>ddd</b> debugger.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--manual-debug</b><div style="height: 1.00em;">
+&#160;</div>
+Use a server that has already been started by the user in a debugger.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--manual-gdb</b><div style="height: 1.00em;">
+&#160;</div>
+Use a server that has already been started by the user in the  <b>gdb</b> debugger.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--manual-lldb</b><div style="height: 1.00em;">
+&#160;</div>
+Use a server that has already been started by the user in the  <b>lldb</b> debugger.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--mark-progress</b><div style="height: 1.00em;">
+&#160;</div>
+Marks progress with timing (in milliseconds) and line number in var/log/ <i>testname</i>.progress.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--max-connections=</b><b></b><i>num</i><div style="height: 1.00em;">
+&#160;</div>
+The maximum number of simultaneous server connections that may be used per test. If not set, the maximum is 128. Minimum allowed limit is 8, maximum is 5120. Corresponds to the same option for  <b>mysqltest</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--max-save-core=</b><b></b><i>N</i><div style="height: 1.00em;">
+&#160;</div>
+Limit the number of core files saved, to avoid filling up disks in case of a frequently crashing server. Defaults to 5, set to 0 for no limit. May also be set with the environment variable MTR_MAX_SAVE_CORE</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--max-save-datadir=</b><b></b><i>N</i><div style="height: 1.00em;">
+&#160;</div>
+Limit the number of data directories saved after failed tests, to avoid filling up disks in case of frequent failures. Defaults to 20, set to 0 for no limit. May also be set with the environment variable MTR_MAX_SAVE_DATADIR</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--max-test-fail=</b><b></b><i>N</i><div style="height: 1.00em;">
+&#160;</div>
+Stop execution after the specified number of tests have failed, to avoid using up resources (and time) in case of massive failures. retries are not counted, nor are failures of tests marked experimental. Defaults to 10, set to 0 for no limit. May also be set with the environment variable MTR_MAX_TEST_FAIL</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--mem</b><div style="height: 1.00em;">
+&#160;</div>
+This option is not supported on Windows.<div style="height: 1.00em;">
+&#160;</div>
+Run the test suite in memory, using tmpfs or ramdisk. This can decrease test times significantly, in particular if you would otherwise be running over a remote file system.  <b>mysql-test-run.pl</b> attempts to find a suitable location using a built-in list of standard locations for tmpfs and puts the var directory there. This option also affects placement of temporary files, which are created in var/tmp.<div style="height: 1.00em;">
+&#160;</div>
+The default list includes /dev/shm. You can also enable this option by setting the environment variable MTR_MEM[= <i>dir_name</i>]. If  <i>dir_name</i> is given, it is added to the beginning of the list of locations to search, so it takes precedence over any built-in locations.<div style="height: 1.00em;">
+&#160;</div>
+Once you have run tests with  <b>--mem</b> within a mysql-testdirectory, a soflink var will have been set up to the temporary directory, and this will be re-used the next time, until the soflink is deleted. Thus, you do not have to repeat the  <b>--mem</b> option next time.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--mysqld=</b><b></b><i>value</i><div style="height: 1.00em;">
+&#160;</div>
+Extra options to pass to  <b>mysqld</b>. The value should consist of one or more comma-separated  <b>mysqld</b> options.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--mysqld-env=</b><b></b><i>VAR=VAL</i><div style="height: 1.00em;">
+&#160;</div>
+Specify additional environment settings for &quot;mysqld&quot;. Use additional <b>--mysqld-env</b> options to set more than one variable.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--nocheck-testcases</b><div style="height: 1.00em;">
+&#160;</div>
+Disable the check for test case side effects; see  <b>--check-testcases</b> for a description.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--noreorder</b><div style="height: 1.00em;">
+&#160;</div>
+Do not reorder tests to reduce number of restarts, but run them in exactly the order given. If a whole suite is to be run, the tests are run in alphabetical order, though similiar combinations will be grouped together. If more than one suite is listed, the tests are run one suite at a time, in the order listed.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--notimer</b><div style="height: 1.00em;">
+&#160;</div>
+Cause  <b>mysqltest</b> not to generate a timing file. The effect of this is that the report from each test case does not include the timing in milliseconds as it normally does.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--nowarnings</b><div style="height: 1.00em;">
+&#160;</div>
+Do not look for and report errors and warning in the server logs.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--parallel={</b><b></b><i>N</i><b>|auto}</b><div style="height: 1.00em;">
+&#160;</div>
+Run tests using  <i>N</i> parallel threads. By default, 1 thread is used. Use  <b>--parallel=auto</b> for auto-setting of  <i>N</i>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--[mtr-]port-base=</b><b></b><i>P</i><div style="height: 1.00em;">
+&#160;</div>
+Specify base of port numbers to be used; a block of 10 will be allocated.  <i>P</i> should be divisible by 10; if it is not, it will be rounded down. If running with more than one parallel test thread, thread 2 will use the next block of 10 and so on.<div style="height: 1.00em;">
+&#160;</div>
+If the port number is given as auto, which is also the default,  <b>mysql-test-run.pl</b> will allocate a number unique to this host. The value may also be given with the environment variable MTR_PORT_BASE.<div style="height: 1.00em;">
+&#160;</div>
+If both <b>--build-thread</b> and <b>--port-base</b> are used,  <b>--port-base</b> takes precedence.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--print-testcases</b><div style="height: 1.00em;">
+&#160;</div>
+Do not run any tests, but print details about all tests, in the order they would have been run.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ps-protocol</b><div style="height: 1.00em;">
+&#160;</div>
+Use the binary protocol between client and server.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--record</b><div style="height: 1.00em;">
+&#160;</div>
+Pass the  <b>--record</b> option to  <b>mysqltest</b>. This option requires a specific test case to be named on the command line.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--reorder</b><div style="height: 1.00em;">
+&#160;</div>
+Reorder tests to minimize the number of server restarts needed. This is the default behavior. There is no guarantee that a particular set of tests will always end up in the same order.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--repeat=</b><b></b><i>N</i><div style="height: 1.00em;">
+&#160;</div>
+Run each test  <i>N</i> number of times.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--report-features</b><div style="height: 1.00em;">
+&#160;</div>
+First run a &quot;test&quot; that reports MariaDB features, displaying the output of SHOW ENGINES and SHOW VARIABLES. This can be used to verify that binaries are built with all required features.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--report-times</b><div style="height: 1.00em;">
+&#160;</div>
+Report how much time has been spent on different phases of test execution.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--retry=</b><b></b><i>N</i><div style="height: 1.00em;">
+&#160;</div>
+If a test fails, it is retried up to a maximum of  <i>N</i> runs (default 1). Retries are also limited by the maximum number of failures before stopping, set with the  <b>--retry-failure</b> option. This option has no effect unless  <b>--force</b> is also used; without it, test execution will terminate after the first failure.<div style="height: 1.00em;">
+&#160;</div>
+The  <b>--retry</b> and  <b>--retry-failure</b> options do not affect how many times a test repeated with  <b>--repeat</b> may fail in total, as each repetition is considered a new test case, which may in turn be retried if it fails.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--retry-failure=</b><b></b><i>N</i><div style="height: 1.00em;">
+&#160;</div>
+When using the <b>--retry</b> option to retry failed tests, stop when N failures have occured (default 2). Setting it to 0 or 1 effectively turns off retries.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--shutdown-timeout=</b><b></b><i>SECONDS</i><div style="height: 1.00em;">
+&#160;</div>
+Max number of seconds to wait for servers to do controlled shutdown before killing them. Default is 10.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--skip-combinations</b><div style="height: 1.00em;">
+&#160;</div>
+Do not apply combinations; ignore combinations file or option.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--skip-rpl</b><div style="height: 1.00em;">
+&#160;</div>
+Skip replication test cases.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--skip-ssl</b><div style="height: 1.00em;">
+&#160;</div>
+Do not start  <b>mysqld</b> with support for SSL connections.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--skip-test=</b><b></b><i>regex</i>|<b></b><i>regex</i><div style="height: 1.00em;">
+&#160;</div>
+Specify a regular expression to be applied to test case names. Cases with names that match the expression are skipped. tests to skip.<div style="height: 1.00em;">
+&#160;</div>
+The argument for the  <b>--skip-test</b> option allows more flexible specification of which tests to skip. If the argument contains a pattern metacharacter other than a lone period, it is interpreted as a Perl regular expression and applies to test names that match the pattern. See the description of the  <b>--do-test</b> option for details.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--skip-test-list=</b><b></b><i>FILE</i><div style="height: 1.00em;">
+&#160;</div>
+Skip the tests listed in FILE. Each line in the file is an entry and should be formatted as: &lt;TESTNAME&gt; : &lt;COMMENT&gt;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--skip-*</b><div style="height: 1.00em;">
+&#160;</div>
+<b>--skip-*</b> options not otherwise recognized by  <b>mysql-test-run.pl</b> are passed to the master server.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--sleep=</b><b></b><i>N</i><div style="height: 1.00em;">
+&#160;</div>
+Pass  <b>--sleep=</b><b></b><i>N</i> to  <b>mysqltest</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--sp-protocol</b><div style="height: 1.00em;">
+&#160;</div>
+Create a stored procedure to execute all queries.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl</b><div style="height: 1.00em;">
+&#160;</div>
+If  <b>mysql-test-run.pl</b> is started with the  <b>--ssl</b> option, it sets up a secure connection for all test cases. In this case, if  <b>mysqld</b> does not support SSL,  <b>mysql-test-run.pl</b> exits with an error message: Couldn&#180;t find support for SSL</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--staging-run</b><div style="height: 1.00em;">
+&#160;</div>
+Run a limited number of tests (no slow tests). Used for running staging trees with valgrind.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--start</b><div style="height: 1.00em;">
+&#160;</div>
+Initialize and start servers with the startup settings for the specified test case. You can use this option to start a server to which you can connect later. For example, after building a source distribution you can start a server and connect to it with the  <b>mysql</b> client like this:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>cd mysql-test</b><br/>
+shell&gt; <b>./mysql-test-run.pl --start alias &amp;</b><br/>
+shell&gt; <b>../mysql -S ./var/tmp/master.sock -h localhost -u root</b><br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+If no tests are named on the command line, the server(s) will be started with settings for the first test that would have been run without the  <b>--start</b> option.<div style="height: 1.00em;">
+&#160;</div>
+<b>mysql-test-run.pl</b> will stop once the server has been started, but will terminate if the server dies. If killed, it will also shut down the server.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--start-and-exit</b><div style="height: 1.00em;">
+&#160;</div>
+Same  <b>--start</b>, but mysql-test-run terminates and leaves just the server running.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--start-dirty</b><div style="height: 1.00em;">
+&#160;</div>
+This is similar to  <b>--start</b>, but will skip the database initialization phase and assume that database files are already available. Usually this means you must have run another test first.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--start-from=</b><b></b><i>test_name</i><div style="height: 1.00em;">
+&#160;</div>
+<b>mysql-test-run.pl</b> sorts the list of names of the test cases to be run, and then begins with  <i>test_name</i>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--strace</b><div style="height: 1.00em;">
+&#160;</div>
+Run the &quot;mysqld&quot; executables using strace. Default options are <b>-f -o var/log/'mysqld-name'.strace</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--strace-client</b><div style="height: 1.00em;">
+&#160;</div>
+Create  <b>strace</b> output for  <b>mysqltest</b>, optionally specifying name and path to the trace program to use.<div style="height: 1.00em;">
+&#160;</div>
+Example: ./mysql-test-run.pl --strace-client=ktrace</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--strace-option</b>=<b></b><i>ARGS</i><div style="height: 1.00em;">
+&#160;</div>
+Option to give  <b>strace</b>, replaces default option(s).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--stress=</b><b></b><i>ARGS</i><div style="height: 1.00em;">
+&#160;</div>
+Run stress test, providing options to mysql-stress-test.pl. Options are separated by comma.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--suite[s]=</b><b></b><i>suite_name...</i><div style="height: 1.00em;">
+&#160;</div>
+Comma separated list of suite names to run. The default is: &quot;main-,archive-,binlog-,csv-,federated-,funcs_1-,funcs_2-,handler-,heap-,innodb-,innodb_fts-, innodb_zip-,maria-,multi_source-,optimizer_unfixed_bugs-,parts-,percona-,perfschema-, plugins-,roles-,rpl-,sys_vars-,unit-,vcol-&quot;.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--stop-file=</b><b></b><i>file</i><div style="height: 1.00em;">
+&#160;</div>
+If this file is detected, mysqltest will not start new tests until the file is removed (also MTR_STOP_FILE environment variable).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--stop-keep-alive=</b><b></b><i>sec</i><div style="height: 1.00em;">
+&#160;</div>
+Works with <b>--stop-file</b>, print messages every <i>sec</i> seconds when mysqltest is waiting to remove the file (for buildbot) (also MTR_STOP_KEEP_ALIVE environment variable).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--suite-timeout=</b><b></b><i>minutes</i><div style="height: 1.00em;">
+&#160;</div>
+Specify the maximum test suite runtime in minutes. The default is 360.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--testcase-timeout</b><div style="height: 1.00em;">
+&#160;</div>
+Specify the maximum test case runtime in minutes. The default is 15.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--timediff</b><div style="height: 1.00em;">
+&#160;</div>
+Used with <b>--timestamp</b>, also print time passed since the previous test started.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--timer</b><div style="height: 1.00em;">
+&#160;</div>
+Cause  <b>mysqltest</b> to generate a timing file. The default file is named ./var/log/timer.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--timestamp</b><div style="height: 1.00em;">
+&#160;</div>
+Prints a timestamp before the test case name in each test report line, showing when the test ended.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--tmpdir=</b><b></b><i>path</i><div style="height: 1.00em;">
+&#160;</div>
+The directory where temporary file are stored. The default location is ./var/tmp. The environment variable MYSQL_TMP_DIR will be set to the path for this directory, whether it has the default value or has been set explicitly. This may be referred to in tests.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--user=</b><b></b><i>user_name</i><div style="height: 1.00em;">
+&#160;</div>
+The MariaDB user name to use when connecting to the server (default root).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--user-args</b><div style="height: 1.00em;">
+&#160;</div>
+In combination with <b>start*</b> and no test name, drops arguments to mysqld except those specified with <b>--mysqld</b> (if any).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--valgrind[-all]</b><div style="height: 1.00em;">
+&#160;</div>
+Run  <b>mysqltest</b> and  <b>mysqld</b> with  <b>valgrind</b>. This and the following  <b>--valgrind</b> options require that the executables have been built with  <b>valgrind</b> support.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--valgrind-mysqld</b><div style="height: 1.00em;">
+&#160;</div>
+Run the  <b>mysqld</b> server with  <b>valgrind</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--valgrind-mysqltest</b><div style="height: 1.00em;">
+&#160;</div>
+Run the  <b>mysqltest</b> and  <b>mysql_client_test</b> executables with  <b>valgrind</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--valgrind-option=</b><b></b><i>str</i><div style="height: 1.00em;">
+&#160;</div>
+Option to give <b>valgrind</b>. Replaces default option(s). Can be specified more then once&amp;.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--valgrind-path=</b><b></b><i>path</i><div style="height: 1.00em;">
+&#160;</div>
+Path to the  <b>valgrind</b> executable.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--vardir=</b><b></b><i>path</i><div style="height: 1.00em;">
+&#160;</div>
+Specify the path where files generated during the test run are stored. The default location is ./var. The environment variable MYSQLTEST_VARDIR will be set to the path for this directory, whether it has the default value or has been set explicitly. This may be referred to in tests.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--verbose</b><div style="height: 1.00em;">
+&#160;</div>
+Give more verbose output regarding test execution. Use the option twice to get even more output. Note that the output generated within each test case is not affected.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--verbose-restart</b><div style="height: 1.00em;">
+&#160;</div>
+Write when and why servers are restarted between test cases.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--view-protocol</b><div style="height: 1.00em;">
+&#160;</div>
+Create a view to execute all non updating queries.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--vs-config=</b><b></b><i>config_val</i><div style="height: 1.00em;">
+&#160;</div>
+Visual Studio configuration used to create executables (default: MTR_VS_CONFIG environment variable) This option is for Windows only.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--wait-all</b><div style="height: 1.00em;">
+&#160;</div>
+If  <b>--start</b> or  <b>--start-dirty</b> is used, wait for all servers to exit before termination. Otherwise, it will terminate if one (of several) servers is restarted.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--warnings</b><div style="height: 1.00em;">
+&#160;</div>
+Search the server log for errors or warning after each test and report any suspicious ones; if any are found, the test will be marked as failed. This is the default behavior, it may be turned off with  <b>--nowarnings</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+</div>
+</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright &#169; 2007, 2010, Oracle and/or its affiliates, 2010-2015 MariaDB Foundation<div class="spacer">
+</div>
+This documentation is free software; you can redistribute it and/or modify it only under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.<div class="spacer">
+</div>
+This documentation is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.<div class="spacer">
+</div>
+You should have received a copy of the GNU General Public License along with the program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA or see http://www.gnu.org/licenses/.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> For more information, please refer to the MariaDB Knowledge Base, available online at https://mariadb.com/kb/</div>
+<div class="section">
+<h1>AUTHOR</h1> MariaDB Foundation (http://www.mariadb.org/).</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+</td>
+<td class="foot-os">
+</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

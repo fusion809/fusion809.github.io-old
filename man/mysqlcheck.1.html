@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+MYSQLCHECK(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+MYSQLCHECK(1)</td>
+<td class="head-vol">
+MariaDB Database System</td>
+<td class="head-rtitle">
+MYSQLCHECK(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> mysqlcheck - a table maintenance program</div>
+<div class="section">
+<h1>SYNOPSIS</h1><div style="margin-left: 49.00ex;text-indent: -49.00ex;" class="spacer">
+<b>mysqlcheck [</b><b></b><i>options</i><b>] [</b><b></b><i>db_name</i><b> [</b><b></b><i>tbl_name</i><b> ...]]</b></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <b>mysqlcheck</b> client performs table maintenance: It checks, repairs, optimizes, or analyzes tables.<div class="spacer">
+</div>
+Each table is locked and therefore unavailable to other sessions while it is being processed, although for check operations, the table is locked with a READ lock only. Table maintenance operations can be time-consuming, particularly for large tables. If you use the  <b>--databases</b> or  <b>--all-databases</b> option to process all tables in one or more databases, an invocation of  <b>mysqlcheck</b> might take a long time. (This is also true for  <b>mysql_upgrade</b> because that program invokes  <b>mysqlcheck</b> to check all tables and repair them if necessary.)<div class="spacer">
+</div>
+<b>mysqlcheck</b> is similar in function to  <b>myisamchk</b>, but works differently. The main operational difference is that  <b>mysqlcheck</b> must be used when the  <b>mysqld</b> server is running, whereas  <b>myisamchk</b> should be used when it is not. The benefit of using  <b>mysqlcheck</b> is that you do not have to stop the server to perform table maintenance.<div class="spacer">
+</div>
+<b>mysqlcheck</b> uses the SQL statements CHECK TABLE, REPAIR TABLE, ANALYZE TABLE, and OPTIMIZE TABLE in a convenient way for the user. It determines which statements to use for the operation you want to perform, and then sends the statements to the server to be executed.<div class="spacer">
+</div>
+The MyISAM storage engine supports all four maintenance operations, so  <b>mysqlcheck</b> can be used to perform any of them on MyISAM tables. Other storage engines do not necessarily support all operations. In such cases, an error message is displayed. For example, if test.t is a MEMORY table, an attempt to check it produces this result:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>mysqlcheck test t</b><br/>
+test.t<br/>
+note     : The storage engine for the table doesn&#180;t support check<br/>
+</div>
+<div class="spacer">
+</div>
+If  <b>mysqlcheck</b> is unable to repair a table, see the MariaDB Knowledge Base for manual table repair strategies. This will be the case, for example, for InnoDB tables, which can be checked with CHECK TABLE, but not repaired with REPAIR TABLE.<div class="spacer">
+</div>
+The use of  <b>mysqlcheck</b> with partitioned tables is not supported.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<div style="height: 0.00em;">
+&#160;</div>
+<b>Caution</b><div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+It is best to make a backup of a table before performing a table repair operation; under some circumstances the operation might cause data loss. Possible causes include but are not limited to file system errors.<div style="height: 0.50em;">
+&#160;</div>
+</div>
+<div class="spacer">
+</div>
+There are three general ways to invoke  <b>mysqlcheck</b>:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>mysqlcheck [</b><b></b><i>options</i><b>] </b><b></b><i>db_name</i><b> [</b><b></b><i>tbl_name</i><b> ...]</b><br/>
+shell&gt; <b>mysqlcheck [</b><b></b><i>options</i><b>] --databases </b><b></b><i>db_name</i><b> ...</b><br/>
+shell&gt; <b>mysqlcheck [</b><b></b><i>options</i><b>] --all-databases</b><br/>
+</div>
+<div class="spacer">
+</div>
+If you do not name any tables following  <i>db_name</i> or if you use the  <b>--databases</b> or  <b>--all-databases</b> option, entire databases are checked.<div class="spacer">
+</div>
+<b>mysqlcheck</b> has a special feature compared to other client programs. The default behavior of checking tables ( <b>--check</b>) can be changed by renaming the binary. If you want to have a tool that repairs tables by default, you should just make a copy of  <b>mysqlcheck</b> named  <b>mysqlrepair</b>, or make a symbolic link to  <b>mysqlcheck</b> named  <b>mysqlrepair</b>. If you invoke  <b>mysqlrepair</b>, it repairs tables.<div class="spacer">
+</div>
+The following names can be used to change  <b>mysqlcheck</b> default behavior.<table class="tbl">
+<col style="width: 19.00ex;"/>
+<col style="width: 40.00ex;"/>
+<tbody>
+<tr>
+<td>
+<b>mysqlrepair</b></td>
+<td>
+The default option is <b>--repair</b></td>
+</tr>
+<tr>
+<td>
+<b>mysqlanalyze</b></td>
+<td>
+The default option is <b>--analyze</b></td>
+</tr>
+<tr>
+<td>
+<b>mysqloptimize</b></td>
+<td>
+The default option is <b>--optimize</b></td>
+</tr>
+</tbody>
+</table>
+<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+<b>mysqlcheck</b> supports the following options, which can be specified on the command line or in the [mysqlcheck] and [client] option file groups.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--help</b>,  <b>-?</b><div style="height: 1.00em;">
+&#160;</div>
+Display a help message and exit.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--all-databases</b>,  <b>-A</b><div style="height: 1.00em;">
+&#160;</div>
+Check all tables in all databases. This is the same as using the  <b>--databases</b> option and naming all the databases on the command line.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--all-in-1</b>,  <b>-1</b><div style="height: 1.00em;">
+&#160;</div>
+Instead of issuing a statement for each table, execute a single statement for each database that names all the tables from that database to be processed.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--analyze</b>,  <b>-a</b><div style="height: 1.00em;">
+&#160;</div>
+Analyze the tables.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--auto-repair</b><div style="height: 1.00em;">
+&#160;</div>
+If a checked table is corrupted, automatically fix it. Any necessary repairs are done after all tables have been checked.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--character-sets-dir=</b><b></b><i>path</i><div style="height: 1.00em;">
+&#160;</div>
+The directory where character sets are installed.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--check</b>,  <b>-c</b><div style="height: 1.00em;">
+&#160;</div>
+Check the tables for errors. This is the default operation.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--check-only-changed</b>,  <b>-C</b><div style="height: 1.00em;">
+&#160;</div>
+Check only tables that have changed since the last check or that have not been closed properly.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--check-upgrade</b>,  <b>-g</b><div style="height: 1.00em;">
+&#160;</div>
+Invoke CHECK TABLE with the FOR UPGRADE option to check tables for incompatibilities with the current version of the server. This option automatically enables the  <b>--fix-db-names</b> and  <b>--fix-table-names</b> options.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--compress</b><div style="height: 1.00em;">
+&#160;</div>
+Compress all information sent between the client and the server if both support compression.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--databases</b>,  <b>-B</b><div style="height: 1.00em;">
+&#160;</div>
+Process all tables in the named databases. Normally,  <b>mysqlcheck</b> treats the first name argument on the command line as a database name and following names as table names. With this option, it treats all name arguments as database names.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--debug[=</b><b></b><i>debug_options</i><b>]</b>,  <b>-# [</b><b></b><i>debug_options</i><b>]</b><div style="height: 1.00em;">
+&#160;</div>
+Write a debugging log. A typical  <i>debug_options</i> string is &#180;d:t:o, <i>file_name</i>&#180;. The default is &#180;d:t:o&#180;.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--debug-check</b><div style="height: 1.00em;">
+&#160;</div>
+Print some debugging information when the program exits.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--debug-info</b><div style="height: 1.00em;">
+&#160;</div>
+Print debugging information and memory and CPU usage statistics when the program exits.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--default-auth=</b><b></b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+Default authentication client-side plugin to use.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--default-character-set=</b><b></b><i>charset_name</i><div style="height: 1.00em;">
+&#160;</div>
+Use  <i>charset_name</i> as the default character set.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--defaults-extra-file=</b><b></b><i>filename</i><div style="height: 1.00em;">
+&#160;</div>
+Set <b></b><i>filename</i> as the file to read default options from after the global defaults files has been read. Must be given as first option.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--defaults-file=</b><b></b><i>filename</i><div style="height: 1.00em;">
+&#160;</div>
+Set <b></b><i>filename</i> as the file to read default options from, override global defaults files. Must be given as first option.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--extended</b>,  <b>-e</b><div style="height: 1.00em;">
+&#160;</div>
+If you are using this option to check tables, it ensures that they are 100% consistent but takes a long time.<div style="height: 1.00em;">
+&#160;</div>
+If you are using this option to repair tables, it will force using the old, slow, repair with keycache method, instead of the much faster repair by sorting.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--fast</b>,  <b>-F</b><div style="height: 1.00em;">
+&#160;</div>
+Check only tables that have not been closed properly.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--fix-db-names</b><div style="height: 1.00em;">
+&#160;</div>
+Convert database names to the format used since MySQL 5.1. Only database names that contain special characters are affected.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--fix-table-names</b><div style="height: 1.00em;">
+&#160;</div>
+Convert table names (including views) to the format used since MySQL 5.1. Only table names that contain special characters are affected.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--flush</b>,<div style="height: 1.00em;">
+&#160;</div>
+Flush each table after check. This is useful if you don't want to have the checked tables take up space in the caches after the check.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--force</b>,  <b>-f</b><div style="height: 1.00em;">
+&#160;</div>
+Continue even if an SQL error occurs.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--host=</b><b></b><i>host_name</i>,  <b>-h </b><b></b><i>host_name</i><div style="height: 1.00em;">
+&#160;</div>
+Connect to the MariaDB server on the given host.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--medium-check</b>,  <b>-m</b><div style="height: 1.00em;">
+&#160;</div>
+Do a check that is faster than an  <b>--extended</b> operation. This finds only 99.99% of all errors, which should be good enough in most cases.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--no-defaults</b><div style="height: 1.00em;">
+&#160;</div>
+Do not read default options from any option file. This must be given as the first argument.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--optimize</b>,  <b>-o</b><div style="height: 1.00em;">
+&#160;</div>
+Optimize the tables.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--password[=</b><b></b><i>password</i><b>]</b>,  <b>-p[</b><b></b><i>password</i><b>]</b><div style="height: 1.00em;">
+&#160;</div>
+The password to use when connecting to the server. If you use the short option form (<b>-p</b>), you  <i>cannot</i> have a space between the option and the password. If you omit the  <i>password</i> value following the  <b>--password</b> or  <b>-p</b> option on the command line,  <b>mysqlcheck</b> prompts for one.<div style="height: 1.00em;">
+&#160;</div>
+Specifying a password on the command line should be considered insecure. You can use an option file to avoid giving the password on the command line.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--pipe</b>,  <b>-W</b><div style="height: 1.00em;">
+&#160;</div>
+On Windows, connect to the server via a named pipe. This option applies only if the server supports named-pipe connections.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--plugin-dir=</b><b></b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+ Directory for client-side plugins.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--port=</b><b></b><i>port_num</i>,  <b>-P </b><b></b><i>port_num</i><div style="height: 1.00em;">
+&#160;</div>
+The TCP/IP port number to use for the connection.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--print-defaults</b><div style="height: 1.00em;">
+&#160;</div>
+Print the program argument list and exit. This must be given as the first argument.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--process-tables</b><div style="height: 1.00em;">
+&#160;</div>
+Perform the requested operation on tables. Defaults to on; use <b>--skip-process-tables</b> to disable.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--process-views=</b><b></b><i>val</i><div style="height: 1.00em;">
+&#160;</div>
+Perform the requested operation (only CHECK VIEW or REPAIR VIEW). Possible values are NO, YES (correct the checksum, if necessary, add the mariadb-version field), UPGRADE_FROM_MYSQL (same as YES and toggle the algorithm MERGE&lt;-&gt;TEMPTABLE.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--protocol={TCP|SOCKET|PIPE|MEMORY}</b><div style="height: 1.00em;">
+&#160;</div>
+The connection protocol to use for connecting to the server. It is useful when the other connection parameters normally would cause a protocol to be used other than the one you want.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--quick</b>,  <b>-q</b><div style="height: 1.00em;">
+&#160;</div>
+If you are using this option to check tables, it prevents the check from scanning the rows to check for incorrect links. This is the fastest check method.<div style="height: 1.00em;">
+&#160;</div>
+If you are using this option to repair tables, it tries to repair only the index tree. This is the fastest repair method.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--repair</b>,  <b>-r</b><div style="height: 1.00em;">
+&#160;</div>
+Perform a repair that can fix almost anything except unique keys that are not unique.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--silent</b>,  <b>-s</b><div style="height: 1.00em;">
+&#160;</div>
+Silent mode. Print only error messages.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--skip-database=</b><b></b><i>db_name</i>  <b>-s</b><div style="height: 1.00em;">
+&#160;</div>
+Don't process the database (case-sensitive) specified as argument.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--socket=</b><b></b><i>path</i>,  <b>-S </b><b></b><i>path</i><div style="height: 1.00em;">
+&#160;</div>
+For connections to localhost, the Unix socket file to use, or, on Windows, the name of the named pipe to use.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl</b><div style="height: 1.00em;">
+&#160;</div>
+Enable SSL for connection (automatically enabled with other flags). Disable with  <b>--skip-ssl</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-ca=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+CA file in PEM format (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-capath=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+CA directory (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-cert=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+X509 cert in PEM format (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-cipher=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+SSL cipher to use (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-key=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+X509 key in PEM format (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-crl=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+Certificate revocation list (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-crlpath=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+Certificate revocation list path (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-verify-server-cert</b><div style="height: 1.00em;">
+&#160;</div>
+Verify server's &quot;Common Name&quot; in its cert against hostname used when connecting. This option is disabled by default.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--tables</b><div style="height: 1.00em;">
+&#160;</div>
+Override the  <b>--databases</b> or  <b>-B</b> option. All name arguments following the option are regarded as table names.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--use-frm</b><div style="height: 1.00em;">
+&#160;</div>
+For repair operations on MyISAM tables, get the table structure from the .frm file so that the table can be repaired even if the .MYI header is corrupted.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--user=</b><b></b><i>user_name</i>,  <b>-u </b><b></b><i>user_name</i><div style="height: 1.00em;">
+&#160;</div>
+The MariaDB user name to use when connecting to the server.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--verbose</b>,  <b>-v</b><div style="height: 1.00em;">
+&#160;</div>
+Verbose mode. Print information about the various stages of program operation. Using one  <b>--verbose</b> option will give you more information about what mysqlcheck is doing.<div style="height: 1.00em;">
+&#160;</div>
+Using two <b>--verbose</b> options will also give you connection information.<div style="height: 1.00em;">
+&#160;</div>
+Using it 3 times will print out all CHECK, RENAME and ALTER TABLE during the check phase.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--version</b>,  <b>-V</b><div style="height: 1.00em;">
+&#160;</div>
+Display version information and exit.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--write-binlog</b><div style="height: 1.00em;">
+&#160;</div>
+This option is enabled by default, so that ANALYZE TABLE, OPTIMIZE TABLE, and REPAIR TABLE statements generated by  <b>mysqlcheck</b> are written to the binary log. Use  <b>--skip-write-binlog</b> to cause NO_WRITE_TO_BINLOG to be added to the statements so that they are not logged. Use the  <b>--skip-write-binlog</b> when these statements should not be sent to replication slaves or run when using the binary logs for recovery from backup.</div>
+</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright 2007-2008 MySQL AB, 2008-2010 Sun Microsystems, Inc., 2010-2015 MariaDB Foundation<div class="spacer">
+</div>
+This documentation is free software; you can redistribute it and/or modify it only under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.<div class="spacer">
+</div>
+This documentation is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.<div class="spacer">
+</div>
+You should have received a copy of the GNU General Public License along with the program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA or see http://www.gnu.org/licenses/.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> For more information, please refer to the MariaDB Knowledge Base, available online at https://mariadb.com/kb/</div>
+<div class="section">
+<h1>AUTHOR</h1> MariaDB Foundation (http://www.mariadb.org/).</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+04/08/2015</td>
+<td class="foot-os">
+MariaDB 10.0</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

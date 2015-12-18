@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+MYSQLTEST(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+MYSQLTEST(1)</td>
+<td class="head-vol">
+MariaDB Database System</td>
+<td class="head-rtitle">
+MYSQLTEST(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> mysqltest - program to run test cases<div style="height: 0.00em;">
+&#160;</div>
+mysqltest_embedded - program to run embedded test cases</div>
+<div class="section">
+<h1>SYNOPSIS</h1><div style="margin-left: 30.00ex;text-indent: -30.00ex;" class="spacer">
+<b>mysqltest [</b><b></b><i>options</i><b>] [</b><b></b><i>db_name</i><b>]</b></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 39.00ex;text-indent: -39.00ex;" class="spacer">
+<b>mysqltest_embedded [</b><b></b><i>options</i><b>] [</b><b></b><i>db_name</i><b>]</b></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <b>mysqltest</b> program runs a test case against a MariaDB server and optionally compares the output with a result file. This program reads input written in a special test language. Typically, you invoke  <b>mysqltest</b> via  <b>mysql-test-run.pl</b> rather than invoking it directly.<div class="spacer">
+</div>
+<b>mysqltest_embedded</b> is similar but is built with support for the libmysqld embedded server.<div class="spacer">
+</div>
+Features of  <b>mysqltest</b>:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Can send SQL statements to MariaDB servers for execution</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Can execute external shell commands</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Can test whether the result from an SQL statement or shell command is as expected</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Can connect to one or more standalone  <b>mysqld</b> servers and switch between connections</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Can connect to an embedded server (libmysqld), if MariaDB is compiled with support for libmysqld. (In this case, the executable is named  <b>mysqltest_embedded</b> rather than  <b>mysqltest</b>.)</div>
+<div class="spacer">
+</div>
+By default,  <b>mysqltest</b> reads the test case on the standard input. To run  <b>mysqltest</b> this way, you normally invoke it like this:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>mysqltest [</b><b></b><i>options</i><b>] [</b><b></b><i>db_name</i><b>] &lt; </b><b></b><i>test_file</i><br/>
+</div>
+<div class="spacer">
+</div>
+You can also name the test case file with a  <b>--test-file=</b><b></b><i>file_name</i> option.<div class="spacer">
+</div>
+The exit value from  <b>mysqltest</b> is 0 for success, 1 for failure, and 62 if it skips the test case (for example, if after checking some preconditions it decides not to run the test).<div class="spacer">
+</div>
+<b>mysqltest</b> supports the following options:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--help</b>,  <b>-?</b><div style="height: 1.00em;">
+&#160;</div>
+Display a help message and exit.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--basedir=</b><b></b><i>dir_name</i>,  <b>-b </b><b></b><i>dir_name</i><div style="height: 1.00em;">
+&#160;</div>
+The base directory for tests.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--character-sets-dir=</b><b></b><i>path</i><div style="height: 1.00em;">
+&#160;</div>
+The directory where character sets are installed.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--compress</b>,  <b>-C</b><div style="height: 1.00em;">
+&#160;</div>
+Compress all information sent between the client and the server if both support compression.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--connect-timeout=</b><i>num</i><div style="height: 1.00em;">
+&#160;</div>
+This can be used to set the MYSQL_OPT_CONNECT_TIMEOUT parameter of mysql_options to change the number of seconds before an unsuccessful connection attempt times out.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--continue-on-error</b><div style="height: 1.00em;">
+&#160;</div>
+Continue test even if we got an error. This is mostly useful when testing a storage engine to see what from a test file it can execute, or to find all syntax errors in a newly created big test file.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--cursor-protocol</b><div style="height: 1.00em;">
+&#160;</div>
+Use cursors for prepared statements.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--database=</b><b></b><i>db_name</i>,  <b>-D </b><b></b><i>db_name</i><div style="height: 1.00em;">
+&#160;</div>
+The default database to use.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--debug[=</b><b></b><i>debug_options</i><b>]</b>,  <b>-#[</b><b></b><i>debug_options</i><b>]</b><div style="height: 1.00em;">
+&#160;</div>
+Write a debugging log if MariaDB is built with debugging support. The default  <i>debug_options</i> value is &#180;d:t:S:i:O,/tmp/mysqltest.trace&#180;.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--debug-check</b><div style="height: 1.00em;">
+&#160;</div>
+Print some debugging information when the program exits.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--debug-info</b><div style="height: 1.00em;">
+&#160;</div>
+Print debugging information and memory and CPU usage statistics when the program exits.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--host=</b><b></b><i>host_name</i>,  <b>-h </b><b></b><i>host_name</i><div style="height: 1.00em;">
+&#160;</div>
+Connect to the MariaDB server on the given host.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--logdir=</b><b></b><i>dir_name</i><div style="height: 1.00em;">
+&#160;</div>
+The directory to use for log files.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--mark-progress</b><div style="height: 1.00em;">
+&#160;</div>
+Write the line number and elapsed time to  <i>test_file</i>.progress.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--max-connect-retries=</b><b></b><i>num</i><div style="height: 1.00em;">
+&#160;</div>
+The maximum number of connection attempts when connecting to server.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--max-connections=</b><b></b><i>num</i><div style="height: 1.00em;">
+&#160;</div>
+The maximum number of simultaneous server connections per client (that is, per test). If not set, the maximum is 128. Minimum allowed limit is 8, maximum is 5120.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--no-defaults</b><div style="height: 1.00em;">
+&#160;</div>
+Do not read default options from any option files. If used, this must be the first option.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--non-blocking-api</b><div style="height: 1.00em;">
+&#160;</div>
+Use the non-blocking client API for communication.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--overlay-dir=</b><i>dir_name</i><div style="height: 1.00em;">
+&#160;</div>
+Overlay directory.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--password[=</b><b></b><i>password</i><b>]</b>,  <b>-p[</b><b></b><i>password</i><b>]</b><div style="height: 1.00em;">
+&#160;</div>
+The password to use when connecting to the server. If you use the short option form (<b>-p</b>), you  <i>cannot</i> have a space between the option and the password. If you omit the  <i>password</i> value following the  <b>--password</b> or  <b>-p</b> option on the command line, you are prompted for one.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--plugin-dir=</b><i>dir_name</i><div style="height: 1.00em;">
+&#160;</div>
+Directory for client-side plugins.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--port=</b><b></b><i>port_num</i>,  <b>-P </b><b></b><i>port_num</i><div style="height: 1.00em;">
+&#160;</div>
+The TCP/IP port number to use for the connection or 0 for default to, in order of preference, my.cnf, $MYSQL_TCP_PORT, /etc/services, built-in default (3306).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--prologue=</b><b></b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+Include the contents of the given file before processing the contents of the test file. The included file should have the same format as other  <b>mysqltest</b> test files. This option has the same effect as putting a --source  <i>file_name</i> command as the first line of the test file.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--protocol={TCP|SOCKET|PIPE|MEMORY}</b><div style="height: 1.00em;">
+&#160;</div>
+The connection protocol to use for connecting to the server. It is useful when the other connection parameters normally would cause a protocol to be used other than the one you want.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ps-protocol</b><div style="height: 1.00em;">
+&#160;</div>
+Use the prepared-statement protocol for communication.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--quiet</b><div style="height: 1.00em;">
+&#160;</div>
+Suppress all normal output. This is a synonym for  <b>--silent</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--record</b>,  <b>-r</b><div style="height: 1.00em;">
+&#160;</div>
+Record the output that results from running the test file into the file named by the  <b>--result-file</b> option, if that option is given. It is an error to use this option without also using  <b>--result-file</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--result-file=</b><b></b><i>file_name</i>,  <b>-R </b><b></b><i>file_name</i><div style="height: 1.00em;">
+&#160;</div>
+This option specifies the file for test case expected results.  <b>--result-file</b>, together with  <b>--record</b>, determines how  <b>mysqltest</b> treats the test actual and expected results for a test case:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;If the test produces no results,  <b>mysqltest</b> exits with an error message to that effect, unless  <b>--result-file</b> is given and the named file is an empty file.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Otherwise, if  <b>--result-file</b> is not given,  <b>mysqltest</b> sends test results to the standard output.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;With  <b>--result-file</b> but not  <b>--record</b>,  <b>mysqltest</b> reads the expected results from the given file and compares them with the actual results. If the results do not match,  <b>mysqltest</b> writes a .reject file in the same directory as the result file, outputs a diff of the two files, and exits with an error.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;With both  <b>--result-file</b> and  <b>--record</b>,  <b>mysqltest</b> updates the given file by writing the actual test results to it.</div>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--result-format-version=</b><i>#</i><div style="height: 1.00em;">
+&#160;</div>
+Version of the result file format to use.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--server-arg=</b><b></b><i>value</i>,  <b>-A </b><b></b><i>value</i><div style="height: 1.00em;">
+&#160;</div>
+Pass the argument as an argument to the embedded server. For example,  <b>--server-arg=--tmpdir=/tmp</b> or  <b>--server-arg=--core</b>. Up to 64 arguments can be given.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--server-file=</b><b></b><i>file_name</i>,  <b>-F </b><b></b><i>file_name</i><div style="height: 1.00em;">
+&#160;</div>
+Read arguments for the embedded server from the given file. The file should contain one argument per line.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--silent</b>,  <b>-s</b><div style="height: 1.00em;">
+&#160;</div>
+Suppress all normal output.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--sleep=</b><b></b><i>num</i>,  <b>-T </b><b></b><i>num</i><div style="height: 1.00em;">
+&#160;</div>
+Cause all sleep commands in the test case file to sleep  <i>num</i> seconds. This option does not affect real_sleep commands.<div style="height: 1.00em;">
+&#160;</div>
+An option value of 0 can be used, which effectively disables sleep commands in the test case.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--socket=</b><b></b><i>path</i>,  <b>-S </b><b></b><i>path</i><div style="height: 1.00em;">
+&#160;</div>
+The socket file to use when connecting to localhost (which is the default host).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--sp-protocol</b><div style="height: 1.00em;">
+&#160;</div>
+Execute DML statements within a stored procedure. For every DML statement,  <b>mysqltest</b> creates and invokes a stored procedure that executes the statement rather than executing the statement directly.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl</b><div style="height: 1.00em;">
+&#160;</div>
+Enable SSL for connection (automatically enabled with other flags). Disable with  <b>--skip-ssl</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-ca=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+CA file in PEM format (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-capath=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+CA directory (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-cert=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+X509 cert in PEM format (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-cipher=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+SSL cipher to use (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-key=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+X509 key in PEM format (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-crl=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+Certificate revocation list (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-crlpath=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+Certificate revocation list path (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-verify-server-cert</b><div style="height: 1.00em;">
+&#160;</div>
+Verify server's &quot;Common Name&quot; in its cert against hostname used when connecting. This option is disabled by default.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--suite-dir=</b><i>dir_name</i><div style="height: 1.00em;">
+&#160;</div>
+Suite directory.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--tail-lines=</b><b></b><i>nn</i><div style="height: 1.00em;">
+&#160;</div>
+Specify how many lines of the result to include in the output if the test fails because an SQL statement fails. The default is 0, meaning no lines of result printed.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--test-file=</b><b></b><i>file_name</i>,  <b>-x </b><b></b><i>file_name</i><div style="height: 1.00em;">
+&#160;</div>
+Read test input from this file. The default is to read from the standard input.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--timer-file=</b><b></b><i>file_name</i>,  <b>-m </b><b></b><i>file_name</i><div style="height: 1.00em;">
+&#160;</div>
+If given, the number of microseconds spent running the test will be written to this file. This is used by  <b>mysql-test-run.pl</b> for its reporting.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--tmpdir=</b><b></b><i>dir_name</i>,  <b>-t </b><b></b><i>dir_name</i><div style="height: 1.00em;">
+&#160;</div>
+The temporary directory where socket files are created.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--user=</b><b></b><i>user_name</i>,  <b>-u </b><b></b><i>user_name</i><div style="height: 1.00em;">
+&#160;</div>
+The MariaDB user name to use when connecting to the server.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--verbose</b>,  <b>-v</b><div style="height: 1.00em;">
+&#160;</div>
+Verbose mode. Print out more information about what the program does.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--version</b>,  <b>-V</b><div style="height: 1.00em;">
+&#160;</div>
+Display version information and exit.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--view-protocol</b><div style="height: 1.00em;">
+&#160;</div>
+Every SELECT statement is wrapped inside a view.</div>
+</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright &#169; 2007, 2010, Oracle and/or its affiliates, 2010-2015 MariaDB Foundation<div class="spacer">
+</div>
+This documentation is free software; you can redistribute it and/or modify it only under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.<div class="spacer">
+</div>
+This documentation is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.<div class="spacer">
+</div>
+You should have received a copy of the GNU General Public License along with the program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA or see http://www.gnu.org/licenses/.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> For more information, please refer to the MariaDB Knowledge Base, available online at https://mariadb.com/kb/</div>
+<div class="section">
+<h1>AUTHOR</h1> MariaDB Foundation (http://www.mariadb.org/).</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+04/08/2015</td>
+<td class="foot-os">
+MariaDB 10.0</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

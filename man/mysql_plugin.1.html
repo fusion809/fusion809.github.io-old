@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+MYSQL_PLUGIN(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+MYSQL_PLUGIN(1)</td>
+<td class="head-vol">
+MariaDB Database System</td>
+<td class="head-rtitle">
+MYSQL_PLUGIN(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> mysql_plugin - configure MariaDB server plugins</div>
+<div class="section">
+<h1>SYNOPSIS</h1><div style="margin-left: 47.00ex;text-indent: -47.00ex;" class="spacer">
+<b>mysql_plugin [</b><b></b><i>options</i><b>] </b><b></b><i>plugin</i><b> {ENABLE|DISABLE}</b></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <b>mysql_plugin</b> utility enables MariaDB administrators to manage which plugins a MariaDB server loads. It provides an alternative to manually specifying the  <b>--plugin-load</b> option at server startup or using the INSTALL PLUGIN and UNINSTALL PLUGIN statements at runtime.<div class="spacer">
+</div>
+Depending on whether  <b>mysql_plugin</b> is invoked to enable or disable plugins, it inserts or deletes rows in the mysql.plugin table that serves as a plugin registry. (To perform this operation,  <b>mysql_plugin</b> invokes the MariaDB server in bootstrap mode. This means that the server must not already be running.) For normal server startups, the server loads and enables plugins listed in mysql.plugin automatically. For additional control over plugin activation, use  <b>--</b><b></b><i>plugin_name</i> options named for specific plugins.<div class="spacer">
+</div>
+Each invocation of  <b>mysql_plugin</b> reads a configuration file to determine how to configure the plugins contained in a single plugin library object file. To invoke  <b>mysql_plugin</b>, use this syntax:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+mysql_plugin [<i>options</i>] <i>plugin</i> {ENABLE|DISABLE}<br/>
+</div>
+<div class="spacer">
+</div>
+<i>plugin</i> is the name of the plugin to configure. ENABLE or DISABLE (not case sensitive) specify whether to enable or disable components of the plugin library named in the configuration file. The order of the  <i>plugin</i> and ENABLE or DISABLE arguments does not matter.<div class="spacer">
+</div>
+For example, to configure components of a plugin library file named myplugins.so on Linux or myplugins.dll on Windows, specify a  <i>plugin</i> value of myplugins. Suppose that this plugin library contains three plugins, plugin1, plugin2, and plugin3, all of which should be configured under  <b>mysql_plugin</b> control. By convention, configuration files have a suffix of .ini and the same basename as the plugin library, so the default configuration file name for this plugin library is myplugins.ini. The configuration file contents look like this:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+myplugins<br/>
+plugin1<br/>
+plugin2<br/>
+plugin3<br/>
+</div>
+<div class="spacer">
+</div>
+The first line in the myplugins.ini file is the name of the library object file, without any extension such as .so or .dll. The remaining lines are the names of the components to be enabled or disabled. Each value in the file should be on a separate line. Lines on which the first character is '#' are taken as comments and ignored.<div class="spacer">
+</div>
+To enable the plugins listed in the configuration file, invoke  <b>mysql_plugin</b> this way:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>mysql_plugin myplugins ENABLE</b><br/>
+</div>
+<div class="spacer">
+</div>
+To disable the plugins, use DISABLE rather than ENABLE.<div class="spacer">
+</div>
+An error occurs if  <b>mysql_plugin</b> cannot find the configuration file or plugin library file, or if  <b>mysql_plugin</b> cannot start the MariaDB server.<div class="spacer">
+</div>
+<b>mysql_plugin</b> supports the following options, which can be specified on the command line or in the [mysqld] group of any option file. For options specified in a [mysqld] group,  <b>mysql_plugin</b> recognizes the  <b>--basedir</b>,  <b>--datadir</b>, and  <b>--plugin-dir</b> options and ignores others.<div class="spacer">
+</div>
+mysql_plugin Options<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--help</b>,  <b>-?</b><div style="height: 1.00em;">
+&#160;</div>
+Display a help message and exit.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--basedir=</b><b></b><i>path</i>,  <b>-b </b><b></b><i>path</i><div style="height: 1.00em;">
+&#160;</div>
+The server base directory.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--datadir=</b><b></b><i>path</i>,  <b>-d </b><b></b><i>path</i><div style="height: 1.00em;">
+&#160;</div>
+The server data directory.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--my-print-defaults=</b><b></b><i>path</i>,  <b>-b </b><b></b><i>path</i><div style="height: 1.00em;">
+&#160;</div>
+The path to the  <b>my_print_defaults</b> program.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--mysqld=</b><b></b><i>path</i>,  <b>-b </b><b></b><i>path</i><div style="height: 1.00em;">
+&#160;</div>
+The path to the  <b>mysqld</b> server.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--no-defaults</b>,  <b>-p</b><div style="height: 1.00em;">
+&#160;</div>
+Do not read values from the configuration file. This option enables an administrator to skip reading defaults from the configuration file.<div style="height: 1.00em;">
+&#160;</div>
+With  <b>mysql_plugin</b>, this option need not be given first on the command line, unlike most other MariaDB programs that support  <b>--no-defaults</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--plugin-dir=</b><b></b><i>path</i>,  <b>-p </b><b></b><i>path</i><div style="height: 1.00em;">
+&#160;</div>
+The server plugin directory.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--plugin-ini=</b><b></b><i>file_name</i>,  <b>-i </b><b></b><i>file_name</i><div style="height: 1.00em;">
+&#160;</div>
+The  <b>mysql_plugin</b> configuration file. Relative path names are interpreted relative to the current directory. If this option is not given, the default is  <i>plugin</i>.ini in the plugin directory, where  <i>plugin</i> is the  <i>plugin</i> argument on the command line.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--print-defaults</b>,  <b>-P</b><div style="height: 1.00em;">
+&#160;</div>
+Display the default values from the configuration file. This option causes  <b>mysql_plugin</b> to print the defaults for  <b>--basedir</b>,  <b>--datadir</b>, and  <b>--plugin-dir</b> if they are found in the configuration file. If no value for a variable is found, nothing is shown.<div style="height: 1.00em;">
+&#160;</div>
+With  <b>mysql_plugin</b>, this option need not be given first on the command line, unlike most other MariaDB programs that support  <b>--print-defaults</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--verbose</b>,  <b>-v</b><div style="height: 1.00em;">
+&#160;</div>
+Verbose mode. Print more information about what the program does. This option can be used multiple times to increase the amount of information.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--version</b>,  <b>-V</b><div style="height: 1.00em;">
+&#160;</div>
+Display version information and exit.</div>
+</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright &#169; 1997, 2013, Oracle and/or its affiliates. All rights reserved., 2013-2015 MariaDB Foundation<div class="spacer">
+</div>
+This documentation is free software; you can redistribute it and/or modify it only under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.<div class="spacer">
+</div>
+This documentation is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.<div class="spacer">
+</div>
+You should have received a copy of the GNU General Public License along with the program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA or see http://www.gnu.org/licenses/.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> For more information, please refer to the MariaDB Knowledge Base, available online at https://mariadb.com/kb/</div>
+<div class="section">
+<h1>AUTHOR</h1> MariaDB Foundation (http://www.mariadb.org/).</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+04/08/2015</td>
+<td class="foot-os">
+MariaDB 10.0</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+MYSQL_UPGRADE(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+MYSQL_UPGRADE(1)</td>
+<td class="head-vol">
+MariaDB Database System</td>
+<td class="head-rtitle">
+MYSQL_UPGRADE(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> mysql_upgrade - check tables for MariaDB upgrade</div>
+<div class="section">
+<h1>SYNOPSIS</h1><div style="margin-left: 24.00ex;text-indent: -24.00ex;" class="spacer">
+<b>mysql_upgrade [</b><b></b><i>options</i><b>]</b></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>mysql_upgrade</b> examines all tables in all databases for incompatibilities with the current version of the MariaDB Server.  <b>mysql_upgrade</b> also upgrades the system tables so that you can take advantage of new privileges or capabilities that might have been added.<div class="spacer">
+</div>
+<b>mysql_upgrade</b> should be executed each time you upgrade MariaDB.<div class="spacer">
+</div>
+If a table is found to have a possible incompatibility,  <b>mysql_upgrade</b> performs a table check. If any problems are found, a table repair is attempted.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<div style="height: 0.00em;">
+&#160;</div>
+<b>Note</b><div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+On Windows Server 2008 and Windows Vista, you must run  <b>mysql_upgrade</b> with administrator privileges. You can do this by running a Command Prompt as Administrator and running the command. Failure to do so may result in the upgrade failing to execute correctly.<div style="height: 0.50em;">
+&#160;</div>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<div style="height: 0.00em;">
+&#160;</div>
+<b>Caution</b><div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+You should always back up your current MariaDB installation  <i>before</i> performing an upgrade.<div style="height: 0.50em;">
+&#160;</div>
+</div>
+<div class="spacer">
+</div>
+To use  <b>mysql_upgrade</b>, make sure that the server is running, and then invoke it like this:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>mysql_upgrade [</b><b></b><i>options</i><b>]</b><br/>
+</div>
+<div class="spacer">
+</div>
+After running  <b>mysql_upgrade</b>, stop the server and restart it so that any changes made to the system tables take effect.<div class="spacer">
+</div>
+<b>mysql_upgrade</b> executes the following commands to check and repair tables and to upgrade the system tables:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+mysqlcheck --all-databases --check-upgrade --auto-repair<br/>
+mysql &lt; <i>fix_priv_tables</i><br/>
+mysqlcheck --all-databases --check-upgrade --fix-db-names --fix-table-names<br/>
+</div>
+<div class="spacer">
+</div>
+Notes about the preceding commands:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Because  <b>mysql_upgrade</b> invokes  <b>mysqlcheck</b> with the  <b>--all-databases</b> option, it processes all tables in all databases, which might take a long time to complete. Each table is locked and therefore unavailable to other sessions while it is being processed. Check and repair operations can be time-consuming, particularly for large tables.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;For details about what checks the  <b>--check-upgrade</b> option entails, see the description of the FOR UPGRADE option of the CHECK TABLE statement.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<i>fix_priv_tables</i> represents a script generated internally by  <b>mysql_upgrade</b> that contains SQL statements to upgrade the tables in the mysql database.</div>
+<div class="spacer">
+</div>
+All checked and repaired tables are marked with the current MariaDB version number. This ensures that next time you run  <b>mysql_upgrade</b> with the same version of the server, it can tell whether there is any need to check or repair the table again.<div class="spacer">
+</div>
+<b>mysql_upgrade</b> also saves the MariaDB version number in a file named mysql_upgrade_info in the data directory. This is used to quickly check whether all tables have been checked for this release so that table-checking can be skipped. To ignore this file and perform the check regardless, use the  <b>--force</b> option.<div class="spacer">
+</div>
+If you install MariaDB from RPM packages on Linux, you must install the server and client RPMs.  <b>mysql_upgrade</b> is included in the server RPM but requires the client RPM because the latter includes  <b>mysqlcheck</b>.<div class="spacer">
+</div>
+<b>mysql_upgrade</b> supports the following options, which can be specified on the command line or in the [mysql_upgrade] and [client] option file groups. Other options are passed to  <b>mysqlcheck</b>. For example, it might be necessary to specify the  <b>--password[=</b><b></b><i>password</i><b>]</b> option.  <b>mysql_upgrade</b> also supports the options for processing option files.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--help</b>,  <b>-?</b><div style="height: 1.00em;">
+&#160;</div>
+Display a short help message and exit.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--basedir=</b><b></b><i>path</i><div style="height: 1.00em;">
+&#160;</div>
+Old option accepted for backward compatibility but ignored.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--character-sets-dir=</b><b></b><i>path</i><div style="height: 1.00em;">
+&#160;</div>
+Old option accepted for backward compatibility but ignored.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--datadir=</b><b></b><i>path</i><div style="height: 1.00em;">
+&#160;</div>
+Old option accepted for backward compatibility but ignored.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--debug=</b><b></b><i>path</i>,  <b>-# </b><i>path</i><div style="height: 1.00em;">
+&#160;</div>
+For debug builds, output debug log.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--debug-check</b><div style="height: 1.00em;">
+&#160;</div>
+Print some debugging information when the program exits.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--debug-info</b>,  <b>-T</b><div style="height: 1.00em;">
+&#160;</div>
+Print debugging information and memory and CPU usage statistics when the program exits.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--default-character-set=</b><b></b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+Old option accepted for backward compatibility but ignored.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--force</b><div style="height: 1.00em;">
+&#160;</div>
+Ignore the mysql_upgrade_info file and force execution of  <b>mysqlcheck</b> even if  <b>mysql_upgrade</b> has already been executed for the current version of MariaDB.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--host</b><div style="height: 1.00em;">
+&#160;</div>
+Connect to MariaDB on the given host.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--password[=</b><b></b><i>password</i><b>]</b>,  <b>-p[</b><b></b><i>password</i><b>]</b><div style="height: 1.00em;">
+&#160;</div>
+The password to use when connecting to the server. If you use the short option form (<b>-p</b>), you  <i>cannot</i> have a space between the option and the password. If you omit the  <i>password</i> value following the  <b>--password</b> or  <b>-p</b> option on the command line,  <b>mysql_upgrade</b> prompts for one.<div style="height: 1.00em;">
+&#160;</div>
+Specifying a password on the command line should be considered insecure. You can use an option file to avoid giving the password on the command line.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--port=</b><b></b><i>port_num</i>,  <b>-P </b><b></b><i>port_num</i><div style="height: 1.00em;">
+&#160;</div>
+The TCP/IP port number to use for the connection.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--protocol={TCP|SOCKET|PIPE|MEMORY}</b><div style="height: 1.00em;">
+&#160;</div>
+The connection protocol to use for connecting to the server. It is useful when the other connection parameters normally would cause a protocol to be used other than the one you want.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--silent</b><div style="height: 1.00em;">
+&#160;</div>
+Print less information.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--socket=</b><b></b><i>path</i>,  <b>-S </b><b></b><i>path</i><div style="height: 1.00em;">
+&#160;</div>
+For connections to localhost, the Unix socket file to use, or, on Windows, the name of the named pipe to use.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl</b><div style="height: 1.00em;">
+&#160;</div>
+Enable SSL for connection (automatically enabled with other flags). Disable with  <b>--skip-ssl</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-ca=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+CA file in PEM format (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-capath=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+CA directory (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-cert=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+X509 cert in PEM format (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-cipher=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+SSL cipher to use (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-key=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+X509 key in PEM format (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-crl=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+Certificate revocation list (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-crlpath=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+Certificate revocation list path (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-verify-server-cert</b><div style="height: 1.00em;">
+&#160;</div>
+Verify server's &quot;Common Name&quot; in its cert against hostname used when connecting. This option is disabled by default.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--tmpdir=</b><b></b><i>path</i>,  <b>-t </b><b></b><i>path</i><div style="height: 1.00em;">
+&#160;</div>
+The path name of the directory to use for creating temporary files.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--upgrade-system-tables</b>,  <b>-s </b><div style="height: 1.00em;">
+&#160;</div>
+Only upgrade the system tables in the mysql database. Tables in other databases are not checked or touched.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--user=</b><b></b><i>user_name</i>,  <b>-u </b><b></b><i>user_name</i><div style="height: 1.00em;">
+&#160;</div>
+The MariaDB user name to use when connecting to the server and not using the current login.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--verbose</b><div style="height: 1.00em;">
+&#160;</div>
+Display more output about the process. Using it twice will print connection arguments; using it 3 times will print out all CHECK, RENAME and ALTER TABLE commands used during the check phase; using it 4 times (added in MariaDB 10.0.14) will also write out all mysqlcheck commands used.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--version</b>,  <b>-V</b><div style="height: 1.00em;">
+&#160;</div>
+Output version information and exit.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--version-check</b>,  <b>-k</b><div style="height: 1.00em;">
+&#160;</div>
+Run this program only if its 'server version' matches the version of the server to which it's connecting. Note: the 'server version' of the program is the version of the MariaDB server with which it was built/distributed. Defaults to on; use  <b>--skip-version-check</b> to disable.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--write-binlog</b><div style="height: 1.00em;">
+&#160;</div>
+Cause binary logging to be enabled while  <b>mysql_upgrade</b> runs. This is the default behavior; to disable binary logging during the upgrade, use the inverse of this option (that is, start the program with  <b>--skip-write-binlog</b>).</div>
+</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright 2007-2008 MySQL AB, 2008-2010 Sun Microsystems, Inc., 2010-2015 MariaDB Foundation<div class="spacer">
+</div>
+This documentation is free software; you can redistribute it and/or modify it only under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.<div class="spacer">
+</div>
+This documentation is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.<div class="spacer">
+</div>
+You should have received a copy of the GNU General Public License along with the program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA or see http://www.gnu.org/licenses/.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> For more information, please refer to the MariaDB Knowledge Base, available online at https://mariadb.com/kb/</div>
+<div class="section">
+<h1>AUTHOR</h1> MariaDB Foundation (http://www.mariadb.org/).</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+04/08/2015</td>
+<td class="foot-os">
+MariaDB 10.0</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

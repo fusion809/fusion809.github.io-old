@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+MYSQLSLAP(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+MYSQLSLAP(1)</td>
+<td class="head-vol">
+MariaDB Database System</td>
+<td class="head-rtitle">
+MYSQLSLAP(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> mysqlslap - load emulation client</div>
+<div class="section">
+<h1>SYNOPSIS</h1><div style="margin-left: 20.00ex;text-indent: -20.00ex;" class="spacer">
+<b>mysqlslap [</b><b></b><i>options</i><b>]</b></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>mysqlslap</b> is a diagnostic program designed to emulate client load for a MariaDB server and to report the timing of each stage. It works as if multiple clients are accessing the server.<div class="spacer">
+</div>
+Invoke  <b>mysqlslap</b> like this:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>mysqlslap [</b><b></b><i>options</i><b>]</b><br/>
+</div>
+<div class="spacer">
+</div>
+Some options such as  <b>--create</b> or  <b>--query</b> enable you to specify a string containing an SQL statement or a file containing statements. If you specify a file, by default it must contain one statement per line. (That is, the implicit statement delimiter is the newline character.) Use the  <b>--delimiter</b> option to specify a different delimiter, which enables you to specify statements that span multiple lines or place multiple statements on a single line. You cannot include comments in a file;  <b>mysqlslap</b> does not understand them.<div class="spacer">
+</div>
+<b>mysqlslap</b> runs in three stages:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+ 1.Create schema, table, and optionally any stored programs or data you want to using for the test. This stage uses a single client connection.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+ 2.Run the load test. This stage can use many client connections.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+ 3.Clean up (disconnect, drop table if specified). This stage uses a single client connection.</div>
+<div class="spacer">
+</div>
+Examples:<div class="spacer">
+</div>
+Supply your own create and query SQL statements, with 50 clients querying and 200 selects for each:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+mysqlslap --delimiter=&quot;;&quot; \<br/>
+  --create=&quot;CREATE TABLE a (b int);INSERT INTO a VALUES (23)&quot; \<br/>
+  --query=&quot;SELECT * FROM a&quot; --concurrency=50 --iterations=200<br/>
+</div>
+<div class="spacer">
+</div>
+Let  <b>mysqlslap</b> build the query SQL statement with a table of two INT columns and three VARCHAR columns. Use five clients querying 20 times each. Do not create the table or insert the data (that is, use the previous test&#180;s schema and data):<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+mysqlslap --concurrency=5 --iterations=20 \<br/>
+  --number-int-cols=2 --number-char-cols=3 \<br/>
+  --auto-generate-sql<br/>
+</div>
+<div class="spacer">
+</div>
+Tell the program to load the create, insert, and query SQL statements from the specified files, where the create.sql file has multiple table creation statements delimited by &#180;;&#180; and multiple insert statements delimited by &#180;;&#180;. The  <b>--query</b> file will have multiple queries delimited by &#180;;&#180;. Run all the load statements, then run all the queries in the query file with five clients (five times each):<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+mysqlslap --concurrency=5 \<br/>
+  --iterations=5 --query=query.sql --create=create.sql \<br/>
+  --delimiter=&quot;;&quot;<br/>
+</div>
+<div class="spacer">
+</div>
+<b>mysqlslap</b> supports the following options, which can be specified on the command line or in the [mysqlslap] and [client] option file groups.  <b>mysqlslap</b> also supports the options for processing option files.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--help</b>,  <b>-?</b><div style="height: 1.00em;">
+&#160;</div>
+Display a help message and exit.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--auto-generate-sql</b>,  <b>-a</b><div style="height: 1.00em;">
+&#160;</div>
+Generate SQL statements automatically when they are not supplied in files or via command options.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--auto-generate-sql-add-autoincrement</b><div style="height: 1.00em;">
+&#160;</div>
+Add an AUTO_INCREMENT column to automatically generated tables.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--auto-generate-sql-execute-number=</b><b></b><i>N</i><div style="height: 1.00em;">
+&#160;</div>
+Specify how many queries to generate automatically.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--auto-generate-sql-guid-primary</b><div style="height: 1.00em;">
+&#160;</div>
+Add a GUID-based primary key to automatically generated tables.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--auto-generate-sql-load-type=</b><b></b><i>type</i><div style="height: 1.00em;">
+&#160;</div>
+Specify the test load type. The allowable values are read (scan tables), write (insert into tables), key (read primary keys), update (update primary keys), or mixed (half inserts, half scanning selects). The default is mixed.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--auto-generate-sql-secondary-indexes=</b><b></b><i>N</i><div style="height: 1.00em;">
+&#160;</div>
+Specify how many secondary indexes to add to automatically generated tables. By default, none are added.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--auto-generate-sql-unique-query-number=</b><b></b><i>N</i><div style="height: 1.00em;">
+&#160;</div>
+How many different queries to generate for automatic tests. For example, if you run a key test that performs 1000 selects, you can use this option with a value of 1000 to run 1000 unique queries, or with a value of 50 to perform 50 different selects. The default is 10.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--auto-generate-sql-unique-write-number=</b><b></b><i>N</i><div style="height: 1.00em;">
+&#160;</div>
+How many different queries to generate for  <b>--auto-generate-sql-write-number</b>. The default is 10.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--auto-generate-sql-write-number=</b><b></b><i>N</i><div style="height: 1.00em;">
+&#160;</div>
+How many row inserts to perform on each thread. The default is 100.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--commit=</b><b></b><i>N</i><div style="height: 1.00em;">
+&#160;</div>
+How many statements to execute before committing. The default is 0 (no commits are done).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--compress</b>,  <b>-C</b><div style="height: 1.00em;">
+&#160;</div>
+Compress all information sent between the client and the server if both support compression.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--concurrency=</b><b></b><i>N</i>,  <b>-c </b><b></b><i>N</i><div style="height: 1.00em;">
+&#160;</div>
+The number of clients to simulate when issuing the SELECT statement.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--create=</b><b></b><i>value</i><div style="height: 1.00em;">
+&#160;</div>
+The file or string containing the statement to use for creating the table.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--create-schema=</b><b></b><i>value</i><div style="height: 1.00em;">
+&#160;</div>
+The schema in which to run the tests.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--csv[=</b><b></b><i>file_name</i><b>]</b><div style="height: 1.00em;">
+&#160;</div>
+Generate output in comma-separated values format. The output goes to the named file, or to the standard output if no file is given.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--debug[=</b><b></b><i>debug_options</i><b>]</b>,  <b>-# [</b><b></b><i>debug_options</i><b>]</b><div style="height: 1.00em;">
+&#160;</div>
+Write a debugging log. A typical  <i>debug_options</i> string is &#180;d:t:o, <i>file_name</i>&#180;. The default is &#180;d:t:o,/tmp/mysqlslap.trace&#180;.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--debug-check</b><div style="height: 1.00em;">
+&#160;</div>
+Print some debugging information when the program exits.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--debug-info</b>,  <b>-T</b><div style="height: 1.00em;">
+&#160;</div>
+Print debugging information and memory and CPU usage statistics when the program exits.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--default-auth=</b><b></b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+Default authentication client-side plugin to use.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--defaults-extra-file=</b><b></b><i>filename</i><div style="height: 1.00em;">
+&#160;</div>
+Set <b></b><i>filename</i> as the file to read default options from after the global defaults files has been read.  Must be given as first option.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--defaults-file=</b><b></b><i>filename</i><div style="height: 1.00em;">
+&#160;</div>
+Set <b></b><i>filename</i> as the file to read default options from, override global defaults files. Must be given as first option.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--delimiter=</b><b></b><i>str</i>,  <b>-F </b><b></b><i>str</i><div style="height: 1.00em;">
+&#160;</div>
+The delimiter to use in SQL statements supplied in files or via command options.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--detach=</b><b></b><i>N</i><div style="height: 1.00em;">
+&#160;</div>
+Detach (close and reopen) each connection after each  <i>N</i> statements. The default is 0 (connections are not detached).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--engine=</b><b></b><i>engine_name</i>,  <b>-e </b><b></b><i>engine_name</i><div style="height: 1.00em;">
+&#160;</div>
+Comma separated list of storage engines to use for creating the table. The test is run for each engine. You can also specify an option for an engine after a colon, for example  <b>memory:max_row=2300</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--host=</b><b></b><i>host_name</i>,  <b>-h </b><b></b><i>host_name</i><div style="height: 1.00em;">
+&#160;</div>
+Connect to the MariaDB server on the given host.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--init-command=str</b><div style="height: 1.00em;">
+&#160;</div>
+SQL Command to execute when connecting to MariaDB server. Will automatically be re-executed when reconnecting.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--iterations=</b><b></b><i>N</i>,  <b>-i </b><b></b><i>N</i><div style="height: 1.00em;">
+&#160;</div>
+The number of times to run the tests.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--no-defaults</b><div style="height: 1.00em;">
+&#160;</div>
+Do not read default options from any option file. This must be given as the first argument.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--no-drop</b><div style="height: 1.00em;">
+&#160;</div>
+Do not drop any schema created during the test after the test is complete.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--number-char-cols=</b><b></b><i>N</i>,  <b>-x </b><b></b><i>N</i><div style="height: 1.00em;">
+&#160;</div>
+The number of VARCHAR columns to use if  <b>--auto-generate-sql</b> is specified.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--number-int-cols=</b><b></b><i>N</i>,  <b>-y </b><b></b><i>N</i><div style="height: 1.00em;">
+&#160;</div>
+The number of INT columns to use if  <b>--auto-generate-sql</b> is specified.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--number-of-queries=</b><b></b><i>N</i><div style="height: 1.00em;">
+&#160;</div>
+Limit each client to approximately this many queries. Query counting takes into account the statement delimiter. For example, if you invoke  <b>mysqlslap</b> as follows, the ; delimiter is recognized so that each instance of the query string counts as two queries. As a result, 5 rows (not 10) are inserted.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>mysqlslap --delimiter=&quot;;&quot; --number-of-queries=10</b><br/>
+         <b>--query=&quot;use test;insert into t values(null)&quot;</b><br/>
+</div>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--only-print</b><div style="height: 1.00em;">
+&#160;</div>
+Do not connect to databases.  <b>mysqlslap</b> only prints what it would have done.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--password[=</b><b></b><i>password</i><b>]</b>,  <b>-p[</b><b></b><i>password</i><b>]</b><div style="height: 1.00em;">
+&#160;</div>
+The password to use when connecting to the server. If you use the short option form (<b>-p</b>), you  <i>cannot</i> have a space between the option and the password. If you omit the  <i>password</i> value following the  <b>--password</b> or  <b>-p</b> option on the command line,  <b>mysqlslap</b> prompts for one.<div style="height: 1.00em;">
+&#160;</div>
+Specifying a password on the command line should be considered insecure. You can use an option file to avoid giving the password on the command line.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--pipe</b>,  <b>-W</b><div style="height: 1.00em;">
+&#160;</div>
+On Windows, connect to the server via a named pipe. This option applies only if the server supports named-pipe connections.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--plugin-dir=</b><i>dir_name</i><div style="height: 1.00em;">
+&#160;</div>
+Directory for client-side plugins.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--port=</b><b></b><i>port_num</i>,  <b>-P </b><b></b><i>port_num</i><div style="height: 1.00em;">
+&#160;</div>
+The TCP/IP port number to use for the connection.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--post-query=</b><b></b><i>value</i><div style="height: 1.00em;">
+&#160;</div>
+The file or string containing the statement to execute after the tests have completed. This execution is not counted for timing purposes.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--post-system=</b><b></b><i>str</i><div style="height: 1.00em;">
+&#160;</div>
+The string to execute via system() after the tests have completed. This execution is not counted for timing purposes.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--pre-query=</b><b></b><i>value</i><div style="height: 1.00em;">
+&#160;</div>
+The file or string containing the statement to execute before running the tests. This execution is not counted for timing purposes.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--pre-system=</b><b></b><i>str</i><div style="height: 1.00em;">
+&#160;</div>
+The string to execute via system() before running the tests. This execution is not counted for timing purposes.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--print-defaults</b><div style="height: 1.00em;">
+&#160;</div>
+Print the program argument list and exit. This must be given as the first argument.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--protocol={TCP|SOCKET|PIPE|MEMORY}</b><div style="height: 1.00em;">
+&#160;</div>
+The connection protocol to use for connecting to the server. It is useful when the other connection parameters normally would cause a protocol to be used other than the one you want.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--query=</b><b></b><i>value</i>,  <b>-q </b><b></b><i>value</i><div style="height: 1.00em;">
+&#160;</div>
+The file or string containing the SELECT statement to use for retrieving data.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--shared-memory-base-name=</b><b></b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+On Windows, the shared-memory name to use, for connections made via shared memory to a local server. This option applies only if the server supports shared-memory connections.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--silent</b>,  <b>-s</b><div style="height: 1.00em;">
+&#160;</div>
+Silent mode. No output.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--socket=</b><b></b><i>path</i>,  <b>-S </b><b></b><i>path</i><div style="height: 1.00em;">
+&#160;</div>
+For connections to localhost, the Unix socket file to use, or, on Windows, the name of the named pipe to use.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl</b><div style="height: 1.00em;">
+&#160;</div>
+Enable SSL for connection (automatically enabled with other flags). Disable with  <b>--skip-ssl</b>.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-ca=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+CA file in PEM format (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-capath=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+CA directory (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-cert=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+X509 cert in PEM format (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-cipher=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+SSL cipher to use (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-key=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+X509 key in PEM format (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-crl=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+Certificate revocation list (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-crlpath=</b><i>name</i><div style="height: 1.00em;">
+&#160;</div>
+Certificate revocation list path (check OpenSSL docs, implies  <b>--ssl</b>).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--ssl-verify-server-cert</b><div style="height: 1.00em;">
+&#160;</div>
+Verify server's &quot;Common Name&quot; in its cert against hostname used when connecting. This option is disabled by default.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--user=</b><b></b><i>user_name</i>,  <b>-u </b><b></b><i>user_name</i><div style="height: 1.00em;">
+&#160;</div>
+The MariaDB user name to use when connecting to the server.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--verbose</b>,  <b>-v</b><div style="height: 1.00em;">
+&#160;</div>
+Verbose mode. Print more information about what the program does. This option can be used multiple times to increase the amount of information.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--version</b>,  <b>-V</b><div style="height: 1.00em;">
+&#160;</div>
+Display version information and exit.</div>
+</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright 2007-2008 MySQL AB, 2008-2010 Sun Microsystems, Inc., 2010-2015 MariaDB Foundation<div class="spacer">
+</div>
+This documentation is free software; you can redistribute it and/or modify it only under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.<div class="spacer">
+</div>
+This documentation is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.<div class="spacer">
+</div>
+You should have received a copy of the GNU General Public License along with the program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA or see http://www.gnu.org/licenses/.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> For more information, please refer to the MariaDB Knowledge Base, available online at https://mariadb.com/kb/</div>
+<div class="section">
+<h1>AUTHOR</h1> MariaDB Foundation (http://www.mariadb.org/).</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+04/08/2015</td>
+<td class="foot-os">
+MariaDB 10.0</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

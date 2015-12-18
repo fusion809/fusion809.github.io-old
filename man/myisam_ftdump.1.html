@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+MYISAM_FTDUMP(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+MYISAM_FTDUMP(1)</td>
+<td class="head-vol">
+MariaDB Database System</td>
+<td class="head-rtitle">
+MYISAM_FTDUMP(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> myisam_ftdump - display full-text index information</div>
+<div class="section">
+<h1>SYNOPSIS</h1><div style="margin-left: 43.00ex;text-indent: -43.00ex;" class="spacer">
+<b>myisam_ftdump [</b><b></b><i>options</i><b>] </b><b></b><i>tbl_name</i><b> </b><b></b><i>index_num</i></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>myisam_ftdump</b> displays information about FULLTEXT indexes in MyISAM tables. It reads the MyISAM index file directly, so it must be run on the server host where the table is located. Before using  <b>myisam_ftdump</b>, be sure to issue a FLUSH TABLES statement first if the server is running.<div class="spacer">
+</div>
+<b>myisam_ftdump</b> scans and dumps the entire index, which is not particularly fast. On the other hand, the distribution of words changes infrequently, so it need not be run often.<div class="spacer">
+</div>
+Invoke  <b>myisam_ftdump</b> like this:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>myisam_ftdump [</b><b></b><i>options</i><b>] </b><b></b><i>tbl_name</i><b> </b><b></b><i>index_num</i><br/>
+</div>
+<div class="spacer">
+</div>
+The  <i>tbl_name</i> argument should be the name of a MyISAM table. You can also specify a table by naming its index file (the file with the .MYI suffix). If you do not invoke  <b>myisam_ftdump</b> in the directory where the table files are located, the table or index file name must be preceded by the path name to the table&#180;s database directory. Index numbers begin with 0.<div class="spacer">
+</div>
+Example: Suppose that the test database contains a table named mytexttablel that has the following definition:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+CREATE TABLE mytexttable<br/>
+(<br/>
+  id   INT NOT NULL,<br/>
+  txt  TEXT NOT NULL,<br/>
+  PRIMARY KEY (id),<br/>
+  FULLTEXT (txt)<br/>
+);<br/>
+</div>
+<div class="spacer">
+</div>
+The index on id is index 0 and the FULLTEXT index on txt is index 1. If your working directory is the test database directory, invoke  <b>myisam_ftdump</b> as follows:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>myisam_ftdump mytexttable 1</b><br/>
+</div>
+<div class="spacer">
+</div>
+If the path name to the test database directory is /usr/local/mysql/data/test, you can also specify the table name argument using that path name. This is useful if you do not invoke  <b>myisam_ftdump</b> in the database directory:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>myisam_ftdump /usr/local/mysql/data/test/mytexttable 1</b><br/>
+</div>
+<div class="spacer">
+</div>
+You can use  <b>myisam_ftdump</b> to generate a list of index entries in order of frequency of occurrence like this:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>myisam_ftdump -c mytexttable 1 | sort -r</b><br/>
+</div>
+<div class="spacer">
+</div>
+<b>myisam_ftdump</b> supports the following options:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--help</b>,  <b>-h</b>  <b>-?</b><div style="height: 1.00em;">
+&#160;</div>
+Display a help message and exit.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--count</b>,  <b>-c</b><div style="height: 1.00em;">
+&#160;</div>
+Calculate per-word statistics (counts and global weights).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--dump</b>,  <b>-d</b><div style="height: 1.00em;">
+&#160;</div>
+Dump the index, including data offsets and word weights.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--length</b>,  <b>-l</b><div style="height: 1.00em;">
+&#160;</div>
+Report the length distribution.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--stats</b>,  <b>-s</b><div style="height: 1.00em;">
+&#160;</div>
+Report global index statistics. This is the default operation if no other operation is specified.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--verbose</b>,  <b>-v</b><div style="height: 1.00em;">
+&#160;</div>
+Verbose mode. Print more output about what the program does.</div>
+</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright 2007-2008 MySQL AB, 2008-2010 Sun Microsystems, Inc., 2010-2015 MariaDB Foundation<div class="spacer">
+</div>
+This documentation is free software; you can redistribute it and/or modify it only under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.<div class="spacer">
+</div>
+This documentation is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.<div class="spacer">
+</div>
+You should have received a copy of the GNU General Public License along with the program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA or see http://www.gnu.org/licenses/.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> For more information, please refer to the MariaDB Knowledge Base, available online at https://mariadb.com/kb/</div>
+<div class="section">
+<h1>AUTHOR</h1> MariaDB Foundation (http://www.mariadb.org/).</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+04/08/2015</td>
+<td class="foot-os">
+MariaDB 10.0</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

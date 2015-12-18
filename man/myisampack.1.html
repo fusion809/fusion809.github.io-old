@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+MYISAMPACK(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+MYISAMPACK(1)</td>
+<td class="head-vol">
+MariaDB Database System</td>
+<td class="head-rtitle">
+MYISAMPACK(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> myisampack - generate compressed, read-only MyISAM tables</div>
+<div class="section">
+<h1>SYNOPSIS</h1><div style="margin-left: 38.00ex;text-indent: -38.00ex;" class="spacer">
+<b>myisampack [</b><b></b><i>options</i><b>] </b><b></b><i>file_name</i><b> ...</b></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <b>myisampack</b> utility compresses MyISAM tables.  <b>myisampack</b> works by compressing each column in the table separately. Usually,  <b>myisampack</b> packs the data file 40%&#8211;70%.<div class="spacer">
+</div>
+When the table is used later, the server reads into memory the information needed to decompress columns. This results in much better performance when accessing individual rows, because you only have to uncompress exactly one row.<div class="spacer">
+</div>
+MySQL uses mmap() when possible to perform memory mapping on compressed tables. If mmap() does not work, MySQL falls back to normal read/write file operations.<div class="spacer">
+</div>
+Please note the following:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;If the  <b>mysqld</b> server was invoked with external locking disabled, it is not a good idea to invoke  <b>myisampack</b> if the table might be updated by the server during the packing process. It is safest to compress tables with the server stopped.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;After packing a table, it becomes read only. This is generally intended (such as when accessing packed tables on a CD).</div>
+<div class="spacer">
+</div>
+Invoke  <b>myisampack</b> like this:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>myisampack [</b><b></b><i>options</i><b>] </b><b></b><i>file_name</i><b> ...</b><br/>
+</div>
+<div class="spacer">
+</div>
+Each file name argument should be the name of an index (.MYI) file. If you are not in the database directory, you should specify the path name to the file. It is permissible to omit the .MYI extension.<div class="spacer">
+</div>
+After you compress a table with  <b>myisampack</b>, you should use  <b>myisamchk -rq</b> to rebuild its indexes.  <b>myisamchk</b>(1).<div class="spacer">
+</div>
+<b>myisampack</b> supports the following options. It also reads option files and supports the options for processing them described at Section&#160;4.2.3.3.1, &#8220;Command-Line Options that Affect Option-File Handling&#8221;.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--help</b>,  <b>-?</b><div style="height: 1.00em;">
+&#160;</div>
+Display a help message and exit.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--backup</b>,  <b>-b</b><div style="height: 1.00em;">
+&#160;</div>
+Make a backup of each table&#180;s data file using the name  <i>tbl_name</i>.OLD.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--character-sets-dir=</b><b></b><i>path</i><div style="height: 1.00em;">
+&#160;</div>
+The directory where character sets are installed. See Section&#160;9.5, &#8220;Character Set Configuration&#8221;.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--debug[=</b><b></b><i>debug_options</i><b>]</b>,  <b>-# [</b><b></b><i>debug_options</i><b>]</b><div style="height: 1.00em;">
+&#160;</div>
+Write a debugging log. A typical  <i>debug_options</i> string is &#180;d:t:o, <i>file_name</i>&#180;. The default is &#180;d:t:o&#180;.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--force</b>,  <b>-f</b><div style="height: 1.00em;">
+&#160;</div>
+Produce a packed table even if it becomes larger than the original or if the intermediate file from an earlier invocation of  <b>myisampack</b> exists. ( <b>myisampack</b> creates an intermediate file named  <i>tbl_name</i>.TMD in the database directory while it compresses the table. If you kill  <b>myisampack</b>, the .TMD file might not be deleted.) Normally,  <b>myisampack</b> exits with an error if it finds that  <i>tbl_name</i>.TMD exists. With  <b>--force</b>,  <b>myisampack</b> packs the table anyway.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--join=</b><b></b><i>big_tbl_name</i>,  <b>-j </b><b></b><i>big_tbl_name</i><div style="height: 1.00em;">
+&#160;</div>
+Join all tables named on the command line into a single packed table  <i>big_tbl_name</i>. All tables that are to be combined  <i>must</i> have identical structure (same column names and types, same indexes, and so forth).<div style="height: 1.00em;">
+&#160;</div>
+<i>big_tbl_name</i> must not exist prior to the join operation. All source tables named on the command line to be merged into  <i>big_tbl_name</i> must exist. The source tables are read for the join operation but not modified. The join operation does not create a .frm file for  <i>big_tbl_name</i>, so after the join operation finishes, copy the .frm file from one of the source tables and name it  <i>big_tbl_name</i>.frm.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--silent</b>,  <b>-s</b><div style="height: 1.00em;">
+&#160;</div>
+Silent mode. Write output only when errors occur.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--test</b>,  <b>-t</b><div style="height: 1.00em;">
+&#160;</div>
+Do not actually pack the table, just test packing it.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--tmpdir=</b><b></b><i>path</i>,  <b>-T </b><b></b><i>path</i><div style="height: 1.00em;">
+&#160;</div>
+Use the named directory as the location where  <b>myisampack</b> creates temporary files.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--verbose</b>,  <b>-v</b><div style="height: 1.00em;">
+&#160;</div>
+Verbose mode. Write information about the progress of the packing operation and its result.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--version</b>,  <b>-V</b><div style="height: 1.00em;">
+&#160;</div>
+Display version information and exit.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;<b>--wait</b>,  <b>-w</b><div style="height: 1.00em;">
+&#160;</div>
+Wait and retry if the table is in use. If the  <b>mysqld</b> server was invoked with external locking disabled, it is not a good idea to invoke  <b>myisampack</b> if the table might be updated by the server during the packing process.</div>
+<div class="spacer">
+</div>
+The following sequence of commands illustrates a typical table compression session:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>ls -l station.*</b><br/>
+-rw-rw-r--   1 monty    my         994128 Apr 17 19:00 station.MYD<br/>
+-rw-rw-r--   1 monty    my          53248 Apr 17 19:00 station.MYI<br/>
+-rw-rw-r--   1 monty    my           5767 Apr 17 19:00 station.frm<br/>
+shell&gt; <b>myisamchk -dvv station</b><br/>
+MyISAM file:     station<br/>
+Isam-version:  2<br/>
+Creation time: 1996-03-13 10:08:58<br/>
+Recover time:  1997-02-02  3:06:43<br/>
+Data records:              1192  Deleted blocks:              0<br/>
+Datafile parts:            1192  Deleted data:                0<br/>
+Datafile pointer (bytes):     2  Keyfile pointer (bytes):     2<br/>
+Max datafile length:   54657023  Max keyfile length:   33554431<br/>
+Recordlength:               834<br/>
+Record format: Fixed length<br/>
+table description:<br/>
+Key Start Len Index   Type                 Root  Blocksize    Rec/key<br/>
+1   2     4   unique  unsigned long        1024       1024          1<br/>
+2   32    30  multip. text                10240       1024          1<br/>
+Field Start Length Type<br/>
+1     1     1<br/>
+2     2     4<br/>
+3     6     4<br/>
+4     10    1<br/>
+5     11    20<br/>
+6     31    1<br/>
+7     32    30<br/>
+8     62    35<br/>
+9     97    35<br/>
+10    132   35<br/>
+11    167   4<br/>
+12    171   16<br/>
+13    187   35<br/>
+14    222   4<br/>
+15    226   16<br/>
+16    242   20<br/>
+17    262   20<br/>
+18    282   20<br/>
+19    302   30<br/>
+20    332   4<br/>
+21    336   4<br/>
+22    340   1<br/>
+23    341   8<br/>
+24    349   8<br/>
+25    357   8<br/>
+26    365   2<br/>
+27    367   2<br/>
+28    369   4<br/>
+29    373   4<br/>
+30    377   1<br/>
+31    378   2<br/>
+32    380   8<br/>
+33    388   4<br/>
+34    392   4<br/>
+35    396   4<br/>
+36    400   4<br/>
+37    404   1<br/>
+38    405   4<br/>
+39    409   4<br/>
+40    413   4<br/>
+41    417   4<br/>
+42    421   4<br/>
+43    425   4<br/>
+44    429   20<br/>
+45    449   30<br/>
+46    479   1<br/>
+47    480   1<br/>
+48    481   79<br/>
+49    560   79<br/>
+50    639   79<br/>
+51    718   79<br/>
+52    797   8<br/>
+53    805   1<br/>
+54    806   1<br/>
+55    807   20<br/>
+56    827   4<br/>
+57    831   4<br/>
+shell&gt; <b>myisampack station.MYI</b><br/>
+Compressing station.MYI: (1192 records)<br/>
+- Calculating statistics<br/>
+normal:     20  empty-space:   16  empty-zero:     12  empty-fill:  11<br/>
+pre-space:   0  end-space:     12  table-lookups:   5  zero:         7<br/>
+Original trees:  57  After join: 17<br/>
+- Compressing file<br/>
+87.14%<br/>
+Remember to run myisamchk -rq on compressed tables<br/>
+shell&gt; <b>ls -l station.*</b><br/>
+-rw-rw-r--   1 monty    my         127874 Apr 17 19:00 station.MYD<br/>
+-rw-rw-r--   1 monty    my          55296 Apr 17 19:04 station.MYI<br/>
+-rw-rw-r--   1 monty    my           5767 Apr 17 19:00 station.frm<br/>
+shell&gt; <b>myisamchk -dvv station</b><br/>
+MyISAM file:     station<br/>
+Isam-version:  2<br/>
+Creation time: 1996-03-13 10:08:58<br/>
+Recover time:  1997-04-17 19:04:26<br/>
+Data records:               1192  Deleted blocks:              0<br/>
+Datafile parts:             1192  Deleted data:                0<br/>
+Datafile pointer (bytes):      3  Keyfile pointer (bytes):     1<br/>
+Max datafile length:    16777215  Max keyfile length:     131071<br/>
+Recordlength:                834<br/>
+Record format: Compressed<br/>
+table description:<br/>
+Key Start Len Index   Type                 Root  Blocksize    Rec/key<br/>
+1   2     4   unique  unsigned long       10240       1024          1<br/>
+2   32    30  multip. text                54272       1024          1<br/>
+Field Start Length Type                         Huff tree  Bits<br/>
+1     1     1      constant                             1     0<br/>
+2     2     4      zerofill(1)                          2     9<br/>
+3     6     4      no zeros, zerofill(1)                2     9<br/>
+4     10    1                                           3     9<br/>
+5     11    20     table-lookup                         4     0<br/>
+6     31    1                                           3     9<br/>
+7     32    30     no endspace, not_always              5     9<br/>
+8     62    35     no endspace, not_always, no empty    6     9<br/>
+9     97    35     no empty                             7     9<br/>
+10    132   35     no endspace, not_always, no empty    6     9<br/>
+11    167   4      zerofill(1)                          2     9<br/>
+12    171   16     no endspace, not_always, no empty    5     9<br/>
+13    187   35     no endspace, not_always, no empty    6     9<br/>
+14    222   4      zerofill(1)                          2     9<br/>
+15    226   16     no endspace, not_always, no empty    5     9<br/>
+16    242   20     no endspace, not_always              8     9<br/>
+17    262   20     no endspace, no empty                8     9<br/>
+18    282   20     no endspace, no empty                5     9<br/>
+19    302   30     no endspace, no empty                6     9<br/>
+20    332   4      always zero                          2     9<br/>
+21    336   4      always zero                          2     9<br/>
+22    340   1                                           3     9<br/>
+23    341   8      table-lookup                         9     0<br/>
+24    349   8      table-lookup                        10     0<br/>
+25    357   8      always zero                          2     9<br/>
+26    365   2                                           2     9<br/>
+27    367   2      no zeros, zerofill(1)                2     9<br/>
+28    369   4      no zeros, zerofill(1)                2     9<br/>
+29    373   4      table-lookup                        11     0<br/>
+30    377   1                                           3     9<br/>
+31    378   2      no zeros, zerofill(1)                2     9<br/>
+32    380   8      no zeros                             2     9<br/>
+33    388   4      always zero                          2     9<br/>
+34    392   4      table-lookup                        12     0<br/>
+35    396   4      no zeros, zerofill(1)               13     9<br/>
+36    400   4      no zeros, zerofill(1)                2     9<br/>
+37    404   1                                           2     9<br/>
+38    405   4      no zeros                             2     9<br/>
+39    409   4      always zero                          2     9<br/>
+40    413   4      no zeros                             2     9<br/>
+41    417   4      always zero                          2     9<br/>
+42    421   4      no zeros                             2     9<br/>
+43    425   4      always zero                          2     9<br/>
+44    429   20     no empty                             3     9<br/>
+45    449   30     no empty                             3     9<br/>
+46    479   1                                          14     4<br/>
+47    480   1                                          14     4<br/>
+48    481   79     no endspace, no empty               15     9<br/>
+49    560   79     no empty                             2     9<br/>
+50    639   79     no empty                             2     9<br/>
+51    718   79     no endspace                         16     9<br/>
+52    797   8      no empty                             2     9<br/>
+53    805   1                                          17     1<br/>
+54    806   1                                           3     9<br/>
+55    807   20     no empty                             3     9<br/>
+56    827   4      no zeros, zerofill(2)                2     9<br/>
+57    831   4      no zeros, zerofill(1)                2     9<br/>
+</div>
+<div class="spacer">
+</div>
+<b>myisampack</b> displays the following kinds of information:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;normal<div style="height: 1.00em;">
+&#160;</div>
+The number of columns for which no extra packing is used.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;empty-space<div style="height: 1.00em;">
+&#160;</div>
+The number of columns containing values that are only spaces. These occupy one bit.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;empty-zero<div style="height: 1.00em;">
+&#160;</div>
+The number of columns containing values that are only binary zeros. These occupy one bit.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;empty-fill<div style="height: 1.00em;">
+&#160;</div>
+The number of integer columns that do not occupy the full byte range of their type. These are changed to a smaller type. For example, a BIGINT column (eight bytes) can be stored as a TINYINT column (one byte) if all its values are in the range from -128 to 127.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;pre-space<div style="height: 1.00em;">
+&#160;</div>
+The number of decimal columns that are stored with leading spaces. In this case, each value contains a count for the number of leading spaces.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;end-space<div style="height: 1.00em;">
+&#160;</div>
+The number of columns that have a lot of trailing spaces. In this case, each value contains a count for the number of trailing spaces.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;table-lookup<div style="height: 1.00em;">
+&#160;</div>
+The column had only a small number of different values, which were converted to an ENUM before Huffman compression.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;zero<div style="height: 1.00em;">
+&#160;</div>
+The number of columns for which all values are zero.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Original trees<div style="height: 1.00em;">
+&#160;</div>
+The initial number of Huffman trees.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;After join<div style="height: 1.00em;">
+&#160;</div>
+The number of distinct Huffman trees left after joining trees to save some header space.</div>
+<div class="spacer">
+</div>
+After a table has been compressed, the Field lines displayed by  <b>myisamchk -dvv</b> include additional information about each column:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Type<div style="height: 1.00em;">
+&#160;</div>
+The data type. The value may contain any of the following descriptors:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;constant<div style="height: 1.00em;">
+&#160;</div>
+All rows have the same value.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;no endspace<div style="height: 1.00em;">
+&#160;</div>
+Do not store endspace.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;no endspace, not_always<div style="height: 1.00em;">
+&#160;</div>
+Do not store endspace and do not do endspace compression for all values.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;no endspace, no empty<div style="height: 1.00em;">
+&#160;</div>
+Do not store endspace. Do not store empty values.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;table-lookup<div style="height: 1.00em;">
+&#160;</div>
+The column was converted to an ENUM.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;zerofill(<i>N</i>)<div style="height: 1.00em;">
+&#160;</div>
+The most significant  <i>N</i> bytes in the value are always 0 and are not stored.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;no zeros<div style="height: 1.00em;">
+&#160;</div>
+Do not store zeros.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;always zero<div style="height: 1.00em;">
+&#160;</div>
+Zero values are stored using one bit.</div>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Huff tree<div style="height: 1.00em;">
+&#160;</div>
+The number of the Huffman tree associated with the column.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Bits<div style="height: 1.00em;">
+&#160;</div>
+The number of bits used in the Huffman tree.</div>
+<div class="spacer">
+</div>
+After you run  <b>myisampack</b>, you must run  <b>myisamchk</b> to re-create any indexes. At this time, you can also sort the index blocks and create statistics needed for the MySQL optimizer to work more efficiently:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+shell&gt; <b>myisamchk -rq --sort-index --analyze </b><b></b><i>tbl_name</i><b>.MYI</b><br/>
+</div>
+<div class="spacer">
+</div>
+After you have installed the packed table into the MySQL database directory, you should execute  <b>mysqladmin flush-tables</b> to force  <b>mysqld</b> to start using the new table.<div class="spacer">
+</div>
+To unpack a packed table, use the  <b>--unpack</b> option to  <b>myisamchk</b>.</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright 2007-2008 MySQL AB, 2008-2010 Sun Microsystems, Inc., 2010-2015 MariaDB Foundation<div class="spacer">
+</div>
+This documentation is free software; you can redistribute it and/or modify it only under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.<div class="spacer">
+</div>
+This documentation is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.<div class="spacer">
+</div>
+You should have received a copy of the GNU General Public License along with the program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA or see http://www.gnu.org/licenses/.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> For more information, please refer to the MariaDB Knowledge Base, available online at https://mariadb.com/kb/</div>
+<div class="section">
+<h1>AUTHOR</h1> MariaDB Foundation (http://www.mariadb.org/).</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+04/08/2015</td>
+<td class="foot-os">
+MariaDB 10.0</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+
