@@ -6,12 +6,12 @@ or with Entropy using the command:
 I would recommend installing Layman using Entropy as it is less error-prone and the Layman package it installs was compiled with all the USE flags required to add every type of overlay available (including Bazaar (bzr), Git, Mercurial (hg) and Subversion (svn)). It is important to note that the Layman packages in the Entropy repositories do not have `dev-vcs/bazaar`, `dev-vcs/git`, `dev-vcs/mercurial` or `dev-vcs/subversion` listed amongst its dependencies, which means each of these packages will need to be installed manually in order to add overlays managed by them. If you want to install Layman and these version control systems run:
 {% include coder.html line1="equo i -av app-portage/layman dev-vcs/bazaar dev-vcs/git dev-vcs/mercurial dev-vcs/subversion" %}
 
-Layman-added overlays (and the ebuilds contained within them) are stored in <code>/var/lib/layman/</code>.
+Layman-added overlays (and the ebuilds contained within them) are stored in `/var/lib/layman/`.
 
 #### Layman Syntax
 The basic syntax for Layman is:
 {% include coder.html line1="layman [<em>options</em>] [<em>action</em>]" %}
-As with emerge, I am not going to cover every option and action available for layman, as that would take too long, plus this is not meant to be a substitute for the manpages of the package managers and other tools covered in this post. Some of the more important/frequently-used actions and options are covered in tables 4 and 5. Please note that all actions when given in long form, if they require input (like `--add` does) this input must be specified with an equal sign and no spaces. For example to add the `sabayon` overlay you may run:
+As with emerge, I am not going to cover every option and action available for layman, as that would take too long, plus this is not meant to be a substitute for the manpages of the package managers and other tools covered in this post. Some of the more important/frequently-used actions and options are covered in tables 4 and 5. Please note that all actions when given in long form, if they require input (like `--add` does) this input must be specified with an equal sign and no spaces. For example, to add the [`sabayon`](https://github.com/Sabayon/for-gentoo) overlay you may run:
 {% include coder.html line1="layman --add=sabayon" %}
 or in shortened notation:
 {% include coder.html line1="layman -a sabayon" %}
