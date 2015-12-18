@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+KILLPROC(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+KILLPROC(8)</td>
+<td class="head-vol">
+The SuSE boot concept</td>
+<td class="head-rtitle">
+KILLPROC(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> Killproc - Send signals to processes by full path name</div>
+<div class="section">
+<h1>SYNOPSIS</h1><div style="margin-left: 5.00ex;text-indent: -5.00ex;" class="spacer">
+<b>killproc</b> [<b>-vqLN</b>] [<b>-g</b>|<b>-G</b>] [<b>-p&#160;<i>pid_file</i></b>] [<b>-i&#160;<i>ingnore_file</i></b>] [<b>-c&#160;<i>root</i></b>] [<b>-t&#160;<i>&lt;sec&gt;</i></b>] [<b>-<i>&lt;SIG&gt;</i></b>] <i>/full/path/to/executable</i></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;text-indent: -5.00ex;" class="spacer">
+<b>killproc</b> <b>-n</b> [<b>-vq</b>] [<b>-g</b>|<b>-G</b>] [<b>-t&#160;<i>&lt;sec&gt;</i></b>] [<b>-<i>&lt;SIG&gt;</i></b>] <i>name_of_kernel_thread</i></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;text-indent: -5.00ex;" class="spacer">
+<b>killproc</b> <b>&#160;&#160;</b> [<b>-vq</b>] [<b>-g</b>|<b>-G</b>] [<b>-t&#160;<i>&lt;sec&gt;</i></b>] [<b>-<i>&lt;SIG&gt;</i></b>] <i>basename_of_executable</i></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;text-indent: -5.00ex;" class="spacer">
+<b>killproc</b> <b>-l</b></div>
+</div>
+<div class="section">
+<h1>SYNOPSIS LSB 3.1</h1><div style="margin-left: 5.00ex;text-indent: -5.00ex;" class="spacer">
+<b>killproc</b> [<b>-p&#160;<i>pid_file</i></b>] <i>/full/path/to/executable</i> [<b>-<i>&lt;SIG&gt;</i></b>]</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>killproc</b> sends signals to all processes that use the specified executable. If no signal name is specified, the signal <b>SIGTERM</b> is sent. If this program is not called with the name <b>killproc</b> then <b>SIGHUP</b> is used. Note that if <b>SIGTERM</b> is used and does not terminate a process the signal <b>SIGKILL</b> is send after a few seconds (default is 5 seconds, see option <b>-t</b>). If a program has been terminated successfully and a <b>verified</b> pid file was found, this pid file will be removed if the terminated process didn't already do so.<div class="spacer">
+</div>
+<b>killproc</b> does not use the pid to send a signal to a process but the full path of the corresponding program which is used to identify the executable (see<b> proc</b>(5)). Only if inode number (/proc/<b>&lt;pid&gt;</b>/exe) and full path name of the executable (/proc/<b>&lt;pid&gt;</b>/cmdline) are unavailable or if the executable has changed its zeroth argument, <b>killproc</b> uses the base name (/proc/<b>&lt;pid&gt;</b>/stat) to identify the running program. Note that if the option <b>-n</b> for kernel thread is given, only (/proc/<b>&lt;pid&gt;</b>/stat) is used.  For this case an existing symbolic link (/proc/<b>&lt;pid&gt;</b>/exe) indicates that the <b>&lt;pid&gt;</b> is not a kernel thread.<div class="spacer">
+</div>
+The last variant of the <b>killproc</b> call is only with the basename of the executable.  This is required by the Linux Standard Base Specification (LSB). Note that this disables the comparision of the inodes of the executable and the information found within the proc table (see<b> proc</b>(5)). This implies that if no pid file is found it may happens that programs or script with the same base name will killed instead. <b>killproc</b> tries to determine the pid of its parent and pid of the parent of its parent to not to kill those two processes.<div class="spacer">
+</div>
+Extended functionality is provided by the <b>-p</b> <i>pid_file</i> option (former option <b>-f</b> changed due to the LSB specification). If this option is specified, <b>killproc</b> tries to send the signal to the pid read from this file instead of from the default pid file (/var/run/<b>&lt;basename&gt;</b>.pid). If the <i>pid_file</i> does not exist, <b>killproc</b> assumes that the daemon is not running. It is possible to use a process identity number instead of a pid file.<div class="spacer">
+</div>
+For the possibility of having two different sessions of one binary program, the option <b>-i</b> <i>ignore_file</i> allows to specify a pid file which pid number is used to <b>ignore</b> all processes of corresponding process <b>session</b>.<div class="spacer">
+</div>
+The option <b>-v</b> turns on verbosity about which signal is being sent. The option <b>-q</b> is <b>ignored</b> for compatibility with older versions. If the option <b>-G</b> is used, the signal will not only sent to the running executable, but also to all members of the session that the specified executable leads. Whereas the option <b>-g</b> the signal sends to the group including the executable. If unsure use <b>-G</b>.</div>
+<div class="section">
+<h1>REQUIRED</h1><dl>
+<dt>
+<i>/full/path/to/executable</i> or <i>name_of_kernel_thread</i></dt>
+<dd>
+Specifies the executable to which the signal should be sent, or alternatively, if the option <b>-n</b> is used, the name of the kernel thread. This argument is always required.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>OPTIONS</h1><dl>
+<dt>
+<b>-G</b></dt>
+<dd>
+Sends the signal to all session followers (children) of the identified process.</dd>
+</dl>
+<dl>
+<dt>
+<b>-g</b></dt>
+<dd>
+Sends the signal to all members of the session including the identified process. Note that usually the option <b>-G</b> should be used.</dd>
+</dl>
+<dl>
+<dt>
+<b>-L</b></dt>
+<dd>
+This option causes symlinks to be followed, as the like-named option in <b>ls</b>(1). <b>Note</b>: for the file name the original name of the program is used instead of the name of the symbolic link.</dd>
+</dl>
+<dl>
+<dt>
+<b>-p</b><i> pid_file</i></dt>
+<dd>
+(Former option <b>-f</b> changed due to the LSB specification.) Use an alternate pid file instead of the default (/var/run/<b>&lt;basename&gt;</b>.pid). If the <i>pid_file</i> does not exist, <b>killproc</b> assumes that the daemon is not running. It is possible to use a process identity number instead of a pid file.</dd>
+</dl>
+<dl>
+<dt>
+<b>-i</b><i> ignore_file</i></dt>
+<dd>
+The pid found in this file is used as <b>session</b> id of the same binary program which should be ignored by <b>killproc</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>-c</b><i> root</i></dt>
+<dd>
+Change root directory to <i>root</i> for services which have been started with this option by <b>startproc</b>(8).</dd>
+</dl>
+<dl>
+<dt>
+<b>-n</b></dt>
+<dd>
+This option indicates that a kernel thread should be signaled.  In this case not the executable with its full path name is required but the name of the kernel thread.</dd>
+</dl>
+<dl>
+<dt>
+<b>-N</b></dt>
+<dd>
+With this option the location of the executable is checked about NFS file system and if true the <b>stat</b>(2) system call is not applied on the <b>exe</b> symbolic link under <b>/proc</b>(5). Otherwise <b>killproc</b> could be locked if the corresponding NFS server is currently not online or available. This implies that the inode number check between the exectuable on the command line and the exectuable of the <b>exec</b> symbolic link will be skipped.</dd>
+</dl>
+<dl>
+<dt>
+<b>-<i>&lt;SIG&gt;</i></b></dt>
+<dd>
+Signals  can be specified either by name (e.g.<b> -HUP</b>,<b> -SIGHUP</b>) or by number (e.g.<b> -1</b>).</dd>
+</dl>
+<dl>
+<dt>
+<b>-t<i>&lt;sec&gt;</i></b></dt>
+<dd>
+The number <i>&lt;sec&gt;</i> specifies the seconds to wait between the sent signal <b>SIGTERM</b> and the subsequentially signal <b>SIGKILL</b> if the first <b>SIGTERM</b> does not show any result within the first few milli seconds.  This defaults to <b>5</b> seconds.</dd>
+</dl>
+<dl>
+<dt>
+<b>-q</b></dt>
+<dd>
+This option is ignored.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b></dt>
+<dd>
+Be more verbose.</dd>
+</dl>
+<dl>
+<dt>
+<b>-l</b></dt>
+<dd>
+This option list all available signals and some of their synonyms by their number and signal names to standard out. and exits.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>EXAMPLES</h1><dl>
+<dt>
+<b>killproc -TERM /usr/sbin/sendmail</b></dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+sends the signal <b>SIGTERM</b> to the running sendmail process. If a pid file <i>sendmail.pid</i> exists in <i>/var/run/</i> then the pid from this file is being used after verification to terminate the sendmail process.  Other running processes are ignored.</dd>
+</dl>
+<dl>
+<dt>
+<b>killproc -p /var/myrun/lpd.pid -TERM /usr/sbin/lpd</b></dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+sends the signal <b>SIGTERM</b> to the pid found in <i>/var/myrun/lpd.pid</i> if and only if this pid belongs to <i>/usr/sbin/lpd</i>. If the named <i>/var/myrun/lpd.pid</i> does not exist, <b>killproc</b> assumes that the daemon of <b>/usr/sbin/lpd</b> is not running.  The exit status is set to 0 for successfully delivering the given signals <b>SIGTERM</b> and <b>SIGKILL</b> otherwise to 7 if the program was not running.  It is also successful if <b>no</b> signal was specified and <b>no program</b> was there for Termination because it is already terminated.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>EXIT CODES</h1> The exit codes have the following <b>LSB</b> conform conditions:<div class="spacer">
+</div>
+<div style="margin-left: 7.00ex;">
+<dl>
+<dt>
+0</dt>
+<dd>
+Success or program was not running (no signal specified)</dd>
+</dl>
+<dl>
+<dt>
+1</dt>
+<dd>
+Generic or unspecified error</dd>
+</dl>
+<dl>
+<dt>
+2</dt>
+<dd>
+Invalid or excess argument(s)</dd>
+</dl>
+<dl>
+<dt>
+4</dt>
+<dd>
+Insufficient privilege(s)</dd>
+</dl>
+<dl>
+<dt>
+5</dt>
+<dd>
+Program is not installed</dd>
+</dl>
+<dl>
+<dt>
+7</dt>
+<dd>
+Program was not running to receive the specified signal</dd>
+</dl>
+</div>
+<div class="spacer">
+</div>
+In some error cases, diagnostic output is sent to standard error, or, if standard error is not available, <b>syslogd</b>(8) is being used.</div>
+<div class="section">
+<h1>NOTE</h1> <b>killproc</b> is a replacment for the Bourne shell function <b>killproc</b> found in the widely used SysVinit package of Miquel van Smoorenburg, &lt;miquels@cistron.nl&gt;.</div>
+<div class="section">
+<h1>BUGS</h1> Identifying a process based on the executable file and the corresponding inode number only works if the process stays alive during killproc's execution. Impure executables like shell scripts (the inode number of the shell is not identical to that of the script) and programs rewriting their zeroth argument may not be identified by a file name.<div class="spacer">
+</div>
+<b>Killproc</b> isn't able to signal processes being in the zombie state. Zombies are processes which  arn't alive but listed in the process table to have the exit status ready for the corresponding parent processes.</div>
+<div class="section">
+<h1>FILES</h1><dl>
+<dt>
+<i>/proc/</i></dt>
+<dd>
+path to the proc file system (see<b> proc</b>(5)).</dd>
+</dl>
+<dl>
+<dt>
+<i>/etc/init.d/</i></dt>
+<dd>
+path to the SuSE boot concept script base directory as required by the Linux Standard  Base  Specification (LSB) (see<b> init.d</b>(7)).</dd>
+</dl>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>startproc</b>(8), <b>checkproc</b>(8), <b>insserv</b>(8), <b>init.d</b>(7), <b>kill</b>(1), <b>skill</b>(1), <b>killall</b>(8), <b>killall5</b>(8), <b>signal</b>(7), <b>proc</b>(5).</div>
+<div class="section">
+<h1>COPYRIGHT</h1> 1994-2005 Werner Fink, 1996-2005 SuSE GmbH Nuernberg, Germany.</div>
+<div class="section">
+<h1>AUTHOR</h1> Werner Fink &lt;werner@suse.de&gt;</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+November 10, 2000</td>
+<td class="foot-os">
+3rd Berkeley Distribution</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

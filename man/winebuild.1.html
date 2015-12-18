@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+WINEBUILD(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+WINEBUILD(1)</td>
+<td class="head-vol">
+Wine Developers Manual</td>
+<td class="head-rtitle">
+WINEBUILD(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> winebuild - Wine dll builder</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>winebuild</b> [<i>options</i>]&#160;[<i>inputfile</i>...]</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>winebuild</b> generates the assembly files that are necessary to build a Wine dll, which is basically a Win32 dll encapsulated inside a Unix library.<div class="spacer">
+</div>
+<b>winebuild</b> has different modes, depending on what kind of file it is asked to generate. The mode is specified by one of the mode options specified below. In addition to the mode option, various other command-line option can be specified, as described in the  <b>OPTIONS</b> section.</div>
+<div class="section">
+<h1>MODE OPTIONS</h1> You have to specify exactly one of the following options, depending on what you want winebuild to generate.<dl>
+<dt>
+<b>--dll</b></dt>
+<dd>
+Build an assembly file from a .spec file (see <b>SPEC FILE SYNTAX</b> for details), or from a standard Windows .def file. The .spec/.def file is specified via the  <b>-E</b> option. The resulting file must be assembled and linked to the other object files to build a working Wine dll.  In this mode, the <i>input files</i> should be the list of all object files that will be linked into the final dll, to allow <b>winebuild</b> to get the list of all undefined symbols that need to be imported from other dlls.</dd>
+</dl>
+<dl>
+<dt>
+<b>--exe</b></dt>
+<dd>
+Build an assembly file for an executable. This is basically the same as the  <b>--dll</b> mode except that it doesn't require a .spec/.def file as input, since an executable need not export functions. Some executables however do export functions, and for those a .spec/.def file can be specified via the  <b>-E</b> option. The executable is named from the .spec/.def file name if present, or explicitly through the  <b>-F</b> option. The resulting file must be assembled and linked to the other object files to build a working Wine executable, and all the other object files must be listed as <i>input files.</i></dd>
+</dl>
+<dl>
+<dt>
+<b>--def</b></dt>
+<dd>
+Build a .def file from a spec file. The .spec file is specified via the  <b>-E</b> option. This is used when building dlls with a PE (Win32) compiler.</dd>
+</dl>
+<dl>
+<dt>
+<b>--implib</b></dt>
+<dd>
+Build a PE import library from a spec file. The .spec file is specified via the  <b>-E</b> option.</dd>
+</dl>
+<dl>
+<dt>
+<b>--resources</b></dt>
+<dd>
+Generate a .o file containing all the input resources. This is useful when building with a PE compiler, since the PE binutils cannot handle multiple resource files as input. For a standard Unix build, the resource files are automatically included when building the spec file, so there's no need for an intermediate .o file.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>OPTIONS</h1><dl>
+<dt>
+<b>--as-cmd=</b><i>as-command</i></dt>
+<dd>
+Specify the command to use to compile assembly files; the default is  <b>as</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>-b,&#160;--target=</b><i>cpu-manufacturer[<b>-</b><i>kernel</i>]<b>-</b><i>os</i></i></dt>
+<dd>
+Specify the target CPU and platform on which the generated code will be built. The target specification is in the standard autoconf format as returned by config.sub.</dd>
+</dl>
+<dl>
+<dt>
+<b>--cc-cmd=</b><i>cc-command</i></dt>
+<dd>
+Specify the C compiler to use to compile assembly files; the default is to instead use the assembler specified with  <b>--as-cmd</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>-d,&#160;--delay-lib=</b><i>name</i></dt>
+<dd>
+Set the delayed import mode for the specified library, which must be one of the libraries imported with the  <b>-l</b> option. Delayed mode means that the library won't be loaded until a function imported from it is actually called.</dd>
+</dl>
+<dl>
+<dt>
+<b>-D&#160;</b><i>symbol</i></dt>
+<dd>
+Ignored for compatibility with the C compiler.</dd>
+</dl>
+<dl>
+<dt>
+<b>-e,&#160;--entry=</b><i>function</i></dt>
+<dd>
+Specify the module entry point function; if not specified, the default is <b>DllMain</b> for dlls, and <b>main</b> for executables (if the standard C <b>main</b> is not defined, <b>WinMain</b> is used instead). This is only valid for Win32 modules.</dd>
+</dl>
+<dl>
+<dt>
+<b>-E,&#160;--export=</b><i>filename</i></dt>
+<dd>
+Specify a .spec file (see <b>SPEC FILE SYNTAX</b> for details), or a standard Windows .def file that defines the exports of the DLL or executable that is being built.</dd>
+</dl>
+<dl>
+<dt>
+<b>--external-symbols</b></dt>
+<dd>
+Allow linking to external symbols directly from the spec file. Normally symbols exported by a dll have to be defined in the dll itself; this option makes it possible to use symbols defined in another Unix library (for symbols defined in another dll, a <i>forward</i> specification must be used instead).</dd>
+</dl>
+<dl>
+<dt>
+<b>-f&#160;</b><i>option</i></dt>
+<dd>
+Specify a code generation option. Currently <b>-fPIC</b> and  <b>-fasynchronous-unwind-tables</b> are supported. Other options are ignored for compatibility with the C compiler.</dd>
+</dl>
+<dl>
+<dt>
+<b>--fake-module</b></dt>
+<dd>
+Create a fake PE module for a dll or exe, instead of the normal assembly or object file. The PE module contains the resources for the module, but no executable code.</dd>
+</dl>
+<dl>
+<dt>
+<b>-F,&#160;--filename=</b><i>filename</i></dt>
+<dd>
+Set the file name of the module. The default is to use the base name of the spec file (without any extension).</dd>
+</dl>
+<dl>
+<dt>
+<b>-h, --help</b></dt>
+<dd>
+Display a usage message and exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-H,&#160;--heap=</b><i>size</i></dt>
+<dd>
+Specify the size of the module local heap in bytes (only valid for Win16 modules); default is no local heap.</dd>
+</dl>
+<dl>
+<dt>
+<b>-I&#160;</b><i>directory</i></dt>
+<dd>
+Ignored for compatibility with the C compiler.</dd>
+</dl>
+<dl>
+<dt>
+<b>-k, --kill-at</b></dt>
+<dd>
+Remove the stdcall decorations from the symbol names in the generated .def file. Only meaningful in  <b>--def</b> mode.</dd>
+</dl>
+<dl>
+<dt>
+<b>-K&#160;</b><i>flags</i></dt>
+<dd>
+Ignored for compatibility with the C compiler.</dd>
+</dl>
+<dl>
+<dt>
+<b>--large-address-aware</b></dt>
+<dd>
+Set a flag in the executable to notify the loader that this application supports address spaces larger than 2 gigabytes.</dd>
+</dl>
+<dl>
+<dt>
+<b>--ld-cmd=</b><i>ld-command</i></dt>
+<dd>
+Specify the command to use to link the object files; the default is  <b>ld</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>-L,&#160;--library-path=</b><i>directory</i></dt>
+<dd>
+Append the specified directory to the list of directories that are searched for import libraries.</dd>
+</dl>
+<dl>
+<dt>
+<b>-l,&#160;--library=</b><i>name</i></dt>
+<dd>
+Import the specified library, looking for a corresponding  <i>libname.def</i> file in the directories specified with the <b>-L</b> option.</dd>
+</dl>
+<dl>
+<dt>
+<b>-m16, -m32, -m64</b></dt>
+<dd>
+Generate respectively 16-bit, 32-bit or 64-bit code.</dd>
+</dl>
+<dl>
+<dt>
+<b>-marm,&#160;-mthumb,&#160;-mcpu=</b><i>option</i></dt>
+<dd>
+Set code generation options for the assembler.</dd>
+</dl>
+<dl>
+<dt>
+<b>-M,&#160;--main-module=</b><i>module</i></dt>
+<dd>
+When building a 16-bit dll, set the name of its 32-bit counterpart to  <i>module</i>. This is used to enforce that the load order for the 16-bit dll matches that of the 32-bit one.</dd>
+</dl>
+<dl>
+<dt>
+<b>-N,&#160;--dll-name=</b><i>dllname</i></dt>
+<dd>
+Set the internal name of the module. It is only used in Win16 modules. The default is to use the base name of the spec file (without any extension). This is used for KERNEL, since it lives in KRNL386.EXE. It shouldn't be needed otherwise.</dd>
+</dl>
+<dl>
+<dt>
+<b>--nm-cmd=</b><i>nm-command</i></dt>
+<dd>
+Specify the command to use to get the list of undefined symbols; the default is  <b>nm</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>--nxcompat=</b><i>yes|<i>no</i></i></dt>
+<dd>
+Specify whether the module is compatible with no-exec support. The default is yes.</dd>
+</dl>
+<dl>
+<dt>
+<b>-o,&#160;--output=</b><i>file</i></dt>
+<dd>
+Set the name of the output file (default is standard output). If the output file name ends in .o, the text output is sent to a temporary file that is then assembled to produce the specified .o file.</dd>
+</dl>
+<dl>
+<dt>
+<b>-r,&#160;--res=</b><i>rsrc.res</i></dt>
+<dd>
+Load resources from the specified binary resource file. The  <i>rsrc.res</i> file can be produced from a source resource file with <b>wrc</b>(1) (or with a Windows resource compiler).<div style="height: 0.00em;">
+&#160;</div>
+This option is only necessary for Win16 resource files, the Win32 ones can simply listed as <i>input files</i> and will automatically be handled correctly (though the <b>-r</b> option will also work for Win32 files).</dd>
+</dl>
+<dl>
+<dt>
+<b>--save-temps</b></dt>
+<dd>
+Do not delete the various temporary files that <b>winebuild</b> generates.</dd>
+</dl>
+<dl>
+<dt>
+<b>--subsystem=</b><i>subsystem[<b>:</b><i>major</i>[<b>.</b><i>minor</i>]]</i></dt>
+<dd>
+Set the subsystem of the executable, which can be one of the following:<div style="height: 0.00em;">
+&#160;</div>
+<b>console</b> for a command line executable,<div style="height: 0.00em;">
+&#160;</div>
+<b>windows</b> for a graphical executable,<div style="height: 0.00em;">
+&#160;</div>
+<b>native</b> for a native-mode dll,<div style="height: 0.00em;">
+&#160;</div>
+<b>wince</b> for a ce dll.<div style="height: 0.00em;">
+&#160;</div>
+The entry point of a command line executable is a normal C <b>main</b> function. A  <b>wmain</b> function can be used instead if you need the argument array to use Unicode strings. A graphical executable has a  <b>WinMain</b> entry point.<div style="height: 0.00em;">
+&#160;</div>
+Optionally a major and minor subsystem version can also be specified; the default subsystem version is 4.0.</dd>
+</dl>
+<dl>
+<dt>
+<b>-u,&#160;--undefined=</b><i>symbol</i></dt>
+<dd>
+Add <i>symbol</i> to the list of undefined symbols when invoking the linker. This makes it possible to force a specific module of a static library to be included when resolving imports.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v, --verbose</b></dt>
+<dd>
+Display the various subcommands being invoked by <b>winebuild</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>--version</b></dt>
+<dd>
+Display the program version and exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-w, --warnings</b></dt>
+<dd>
+Turn on warnings.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>SPEC FILE SYNTAX</h1><div class="subsection">
+<h2>General syntax</h2> A spec file should contain a list of ordinal declarations. The general syntax is the following:<div class="spacer">
+</div>
+<i>ordinal functype</i> [<i>flags</i>]&#160;<i>exportname</i>&#160;<b>(</b>&#160;[<i>args...</i>]<i>&#160;<b>)</b></i><b>&#160;[</b><i><b>handler</b></i><b>]</b><div style="height: 0.00em;">
+&#160;</div>
+<i>ordinal&#160;</i><b>variable</b> [<i>flags</i>]&#160;<i>exportname</i>&#160;<b>(</b>&#160;[<i>data...</i>]<i>&#160;<b>)</b></i><div style="height: 0.00em;">
+&#160;</div>
+<i>ordinal&#160;</i><b>extern</b> [<i>flags</i>]&#160;<i>exportname</i>&#160;[<i>symbolname</i>]<div style="height: 0.00em;">
+&#160;</div>
+<i>ordinal&#160;</i><b>stub</b> [<i>flags</i>]&#160;<i>exportname</i>&#160;[&#160;<b>(</b><i><b>args...</b></i><b></b><b>)</b>&#160;]<div style="height: 0.00em;">
+&#160;</div>
+<i>ordinal&#160;</i><b>equate</b> [<i>flags</i>]&#160;<i>exportname&#160;data</i><div style="height: 0.00em;">
+&#160;</div>
+<b>#&#160;</b><i>comments</i><div class="spacer">
+</div>
+Declarations must fit on a single line, except if the end of line is escaped using a backslash character. The <b>#</b> character anywhere in a line causes the rest of the line to be ignored as a comment.<div class="spacer">
+</div>
+<i>ordinal</i> specifies the ordinal number corresponding to the entry point, or '@' for automatic ordinal allocation (Win32 only).<div class="spacer">
+</div>
+<i>flags</i> is a series of optional flags, preceded by a '-' character. The supported flags are:<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+<b>-norelay</b></dt>
+<dd>
+The entry point is not displayed in relay debugging traces (Win32 only).</dd>
+</dl>
+<dl>
+<dt>
+<b>-noname</b></dt>
+<dd>
+The entry point will be exported by ordinal instead of by name. The name is still available for importing.</dd>
+</dl>
+<dl>
+<dt>
+<b>-ret16</b></dt>
+<dd>
+The function returns a 16-bit value (Win16 only).</dd>
+</dl>
+<dl>
+<dt>
+<b>-ret64</b></dt>
+<dd>
+The function returns a 64-bit value (Win32 only).</dd>
+</dl>
+<dl>
+<dt>
+<b>-register</b></dt>
+<dd>
+The function uses CPU register to pass arguments.</dd>
+</dl>
+<dl>
+<dt>
+<b>-private</b></dt>
+<dd>
+The function cannot be imported from other dlls, it can only be accessed through GetProcAddress.</dd>
+</dl>
+<dl>
+<dt>
+<b>-ordinal</b></dt>
+<dd>
+The entry point will be imported by ordinal instead of by name. The name is still exported.</dd>
+</dl>
+<dl>
+<dt>
+<b>-arch=</b><i>cpu[<b>,</b><i>cpu</i>]</i></dt>
+<dd>
+The entry point is only available on the specified CPU architecture(s). The names  <b>win32</b> and <b>win64</b> match all 32-bit or 64-bit CPU architectures respectively. In 16-bit dlls, specifying  <b>-arch=win32</b> causes the entry point to be exported from the 32-bit wrapper module.</dd>
+</dl>
+</div>
+</div>
+<div class="subsection">
+<h2>Function ordinals</h2> Syntax:<div style="height: 0.00em;">
+&#160;</div>
+<i>ordinal functype</i> [<i>flags</i>]&#160;<i>exportname</i>&#160;<b>(</b>&#160;[<i>args...</i>]<i>&#160;<b>)</b></i><b>&#160;[</b><i><b>handler</b></i><b>]</b><div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+This declaration defines a function entry point.  The prototype defined by <i>exportname</i>&#160;<b>(</b>&#160;[<i>args...</i>]<i>&#160;<b>)</b></i>  <b>specifies the name available for dynamic linking and the format of the</b>  <b>arguments. '@' can be used instead of</b> <i>exportname</i> for ordinal-only exports.<div class="spacer">
+</div>
+<i>functype</i> should be one of:<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+<b>stdcall</b></dt>
+<dd>
+for a normal Win32 function</dd>
+</dl>
+<dl>
+<dt>
+<b>pascal</b></dt>
+<dd>
+for a normal Win16 function</dd>
+</dl>
+<dl>
+<dt>
+<b>cdecl</b></dt>
+<dd>
+for a Win16 or Win32 function using the C calling convention</dd>
+</dl>
+<dl>
+<dt>
+<b>varargs</b></dt>
+<dd>
+for a Win16 or Win32 function using the C calling convention with a variable number of arguments</dd>
+</dl>
+<dl>
+<dt>
+<b>thiscall</b></dt>
+<dd>
+for a Win32 function using the <i>thiscall</i> calling convention (first parameter in %ecx register on i386)</dd>
+</dl>
+</div>
+<div class="spacer">
+</div>
+<i>args</i> should be one or several of:<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+<b>word</b></dt>
+<dd>
+(16-bit unsigned value)</dd>
+</dl>
+<dl>
+<dt>
+<b>s_word</b></dt>
+<dd>
+(16-bit signed word)</dd>
+</dl>
+<dl>
+<dt>
+<b>long</b></dt>
+<dd>
+(pointer-sized integer value)</dd>
+</dl>
+<dl>
+<dt>
+<b>int64</b></dt>
+<dd>
+(64-bit integer value)</dd>
+</dl>
+<dl>
+<dt>
+<b>int128</b></dt>
+<dd>
+(128-bit integer value)</dd>
+</dl>
+<dl>
+<dt>
+<b>float</b></dt>
+<dd>
+(32-bit floating point value)</dd>
+</dl>
+<dl>
+<dt>
+<b>double</b></dt>
+<dd>
+(64-bit floating point value)</dd>
+</dl>
+<dl>
+<dt>
+<b>ptr</b></dt>
+<dd>
+(linear pointer)</dd>
+</dl>
+<dl>
+<dt>
+<b>str</b></dt>
+<dd>
+(linear pointer to a null-terminated ASCII string)</dd>
+</dl>
+<dl>
+<dt>
+<b>wstr</b></dt>
+<dd>
+(linear pointer to a null-terminated Unicode string)</dd>
+</dl>
+<dl>
+<dt>
+<b>segptr</b></dt>
+<dd>
+(segmented pointer)</dd>
+</dl>
+<dl>
+<dt>
+<b>segstr</b></dt>
+<dd>
+(segmented pointer to a null-terminated ASCII string).</dd>
+</dl>
+<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;text-indent: -5.00ex;" class="spacer">
+Note: The 16-bit and segmented pointer types are only valid for Win16 functions.</div>
+</div>
+<div class="spacer">
+</div>
+<i>handler</i> is the name of the actual C function that will implement that entry point in 32-bit mode. The handler can also be specified as <i>dllname</i><b>.</b><i>function</i> to define a forwarded function (one whose implementation is in another dll). If <i>handler</i> is not specified, it is assumed to be identical to <i>exportname.</i><div class="spacer">
+</div>
+This first example defines an entry point for the 32-bit GetFocus() call:<dl>
+<dt>
+</dt>
+<dd>
+@ stdcall GetFocus() GetFocus</dd>
+</dl>
+<div class="spacer">
+</div>
+This second example defines an entry point for the 16-bit CreateWindow() call (the ordinal 100 is just an example); it also shows how long lines can be split using a backslash:<dl>
+<dt>
+</dt>
+<dd>
+100 pascal CreateWindow(ptr ptr long s_word s_word s_word \<br/>
+    s_word word word word ptr) WIN_CreateWindow</dd>
+</dl>
+<div class="spacer">
+</div>
+To declare a function using a variable number of arguments, specify the function as <b>varargs</b> and declare it in the C file with a '...' parameter for a Win32 function, or with an extra VA_LIST16 argument for a Win16 function. See the wsprintf* functions in user.exe.spec and user32.spec for an example.</div>
+<div class="subsection">
+<h2>Variable ordinals</h2> Syntax:<div style="height: 0.00em;">
+&#160;</div>
+<i>ordinal&#160;</i><b>variable</b> [<i>flags</i>]&#160;<i>exportname</i>&#160;<b>(</b>&#160;[<i>data...</i>]<i>&#160;<b>)</b></i><div class="spacer">
+</div>
+This declaration defines data storage as 32-bit words at the ordinal specified. <i>exportname</i> will be the name available for dynamic linking. <i>data</i> can be a decimal number or a hex number preceded by &quot;0x&quot;.  The following example defines the variable VariableA at ordinal 2 and containing 4 ints:<dl>
+<dt>
+</dt>
+<dd>
+2 variable VariableA(-1 0xff 0 0)</dd>
+</dl>
+<div class="spacer">
+</div>
+This declaration only works in Win16 spec files. In Win32 you should use <b>extern</b> instead (see below).</div>
+<div class="subsection">
+<h2>Extern ordinals</h2> Syntax:<div style="height: 0.00em;">
+&#160;</div>
+<i>ordinal&#160;</i><b>extern</b> [<i>flags</i>]&#160;<i>exportname</i>&#160;[<i>symbolname</i>]<div class="spacer">
+</div>
+This declaration defines an entry that simply maps to a C symbol (variable or function). It only works in Win32 spec files. <i>exportname</i> will point to the symbol <i>symbolname</i> that must be defined in the C code. Alternatively, it can be of the form <i>dllname</i><b>.</b><i>symbolname</i> to define a forwarded symbol (one whose implementation is in another dll). If <i>symbolname</i> is not specified, it is assumed to be identical to <i>exportname.</i></div>
+<div class="subsection">
+<h2>Stub ordinals</h2> Syntax:<div style="height: 0.00em;">
+&#160;</div>
+<i>ordinal&#160;</i><b>stub</b> [<i>flags</i>]&#160;<i>exportname</i>&#160;[&#160;<b>(</b><i><b>args...</b></i><b></b><b>)</b>&#160;]<div class="spacer">
+</div>
+This declaration defines a stub function. It makes the name and ordinal available for dynamic linking, but will terminate execution with an error message if the function is ever called.</div>
+<div class="subsection">
+<h2>Equate ordinals</h2> Syntax:<div style="height: 0.00em;">
+&#160;</div>
+<i>ordinal&#160;</i><b>equate</b> [<i>flags</i>]&#160;<i>exportname&#160;data</i><div class="spacer">
+</div>
+This declaration defines an ordinal as an absolute value. <i>exportname</i> will be the name available for dynamic linking. <i>data</i> can be a decimal number or a hex number preceded by &quot;0x&quot;.</div>
+</div>
+<div class="section">
+<h1>AUTHORS</h1> <b>winebuild</b> has been worked on by many people over the years. The main authors are Robert J. Amstadt, Alexandre Julliard, Martin von Loewis, Ulrich Weigand and Eric Youngdale. Many other people have contributed new features and bug fixes. For a complete list, see the git commit logs.</div>
+<div class="section">
+<h1>BUGS</h1> It is not yet possible to use a PE-format dll in an import specification; only Wine dlls can be imported.<div class="spacer">
+</div>
+Bugs can be reported on the <a class="link-ext" href="http://bugs.winehq.org"><b>Wine bug tracker</b></a></div>
+<div class="section">
+<h1>AVAILABILITY</h1> <b>winebuild</b> is part of the Wine distribution, which is available through WineHQ, the <a class="link-ext" href="http://www.winehq.org/"><b>Wine development headquarters</b></a></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>wine</b>(1), <b>winegcc</b>(1), <b>wrc</b>(1),<div style="height: 0.00em;">
+&#160;</div>
+<a class="link-ext" href="http://www.winehq.org/help"><b>Wine documentation and support</b></a></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+October 2005</td>
+<td class="foot-os">
+Wine 1.7.55</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

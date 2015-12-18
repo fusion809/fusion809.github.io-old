@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+WEBAPP-CONFIG(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+WEBAPP-CONFIG(8)</td>
+<td class="head-vol">
+Reference</td>
+<td class="head-rtitle">
+WEBAPP-CONFIG(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> webapp-config - manage installs of web-based applications for virtual hosting</div>
+<div class="section">
+<h1>SYNOPSIS</h1><div style="margin-left: 14.00ex;text-indent: -14.00ex;" class="spacer">
+<b>webapp-config</b> [<b>--bug-report</b>] [<b>-dghusDE</b>&#160;<b>--soft</b>&#160;<b>--copy</b>&#160;<b>--secure</b>] <b>-I</b> {<i>app-name</i>} {<i>app-version</i>}</div>
+<div class="spacer">
+</div>
+<div style="margin-left: 14.00ex;text-indent: -14.00ex;" class="spacer">
+<b>webapp-config</b> [<b>--bug-report</b>] [<b>-dghusDE</b>&#160;<b>--soft</b>&#160;<b>--copy</b>&#160;<b>--secure</b>] <b>-U</b> {<i>app-name</i>} {<i>app-version</i>}</div>
+<div class="spacer">
+</div>
+<div style="margin-left: 14.00ex;text-indent: -14.00ex;" class="spacer">
+<b>webapp-config</b> [<b>--bug-report</b>] {<b>-d</b>&#160;<i>directory</i>} [<i>--secure</i>] <b>-C</b> {<i>app-name</i>} {<i>app-version</i>}</div>
+<div class="spacer">
+</div>
+<div style="margin-left: 14.00ex;text-indent: -14.00ex;" class="spacer">
+<b>webapp-config</b> <b>--list-installs</b> [[<i>app-name</i>] | [<i>app-version</i>]]</div>
+<div class="spacer">
+</div>
+<div style="margin-left: 14.00ex;text-indent: -14.00ex;" class="spacer">
+<b>webapp-config</b> <b>--list-unused-installs</b> [{&#160;<i>app-name</i>&#160;}&#160;[&#160;<i>app-version</i>&#160;]]</div>
+<div class="spacer">
+</div>
+<div style="margin-left: 14.00ex;text-indent: -14.00ex;" class="spacer">
+<b>webapp-config</b> <b>--prune-database</b> {<i>pretend</i>} | {<i>clean</i>}</div>
+<div class="spacer">
+</div>
+<div style="margin-left: 14.00ex;text-indent: -14.00ex;" class="spacer">
+<b>webapp-config</b> <b>--show-installed</b> [[<b>-d</b>&#160;<i>directory</i>]]</div>
+<div class="spacer">
+</div>
+<div style="margin-left: 14.00ex;text-indent: -14.00ex;" class="spacer">
+<b>webapp-config</b> <b>--show-postinst</b> {<i>app-name</i>} {<i>app-version</i>}</div>
+<div class="spacer">
+</div>
+<div style="margin-left: 14.00ex;text-indent: -14.00ex;" class="spacer">
+<b>webapp-config</b> <b>--list-servers</b> | <b>-v</b> | <b>--version</b> | <b>-h</b> | <b>--help</b></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>webapp-config</b> is a powerful tool that allows you to install, upgrade, and remove web-based applications in a virtual-hosting environment.</div>
+<div class="section">
+<h1>WEB-BASED APPLICATIONS AND VIRTUAL HOSTS</h1>  <b>webapp-config</b> is aimed at providing the package management functionality that you need if you are running multiple web sites off of the same computer (virtual hosting).<div class="subsection">
+<h2>Two-Stage Install</h2> Package managers such as  <b>rpm</b> and  <b>emerge</b> are designed to install one copy of a package, and to install it onto one fixed location. This conflicts with the needs of a virtual hosting environment, where you need to be able to install a package in multiple places, so that it can be part of more than just the one website. But package managers are essential for maintaining a computer over time - so how can we have both?<div class="spacer">
+</div>
+The answer is a two-stage install. The traditional package manager installs a master copy into /usr/share/webapps/. This master copy isn't fit to run - but it is ready to then be used by  <b>webapp-config</b> to install the package multiple times in multiple places.</div>
+<div class="subsection">
+<h2>Multiple Installations Of The Same Package</h2>  <b>webapp-config</b> allows you to install multiple copies of the same package on the same computer at the same time. You choose which directory to install each separate copy into.<div class="spacer">
+</div>
+We call these multiple installations &quot;virtual copies&quot;.<div class="spacer">
+</div>
+You can also have different versions of the same package installed at the same time. This allows you to gradually roll out a new version of a package across your sites; you are not forced to upgrade every single website at once.<div class="spacer">
+</div>
+<b>webapp-config</b> minimises the number of duplicated files to the absolute minimum possible, to keep disk space usage low. The majority of files are hard linked to the master copy; only configuration files, and any files that the package needs to write to, are copied into the virtual copy.</div>
+<div class="subsection">
+<h2>File Ownership And Permissions</h2> If you are used to installing web-based applications by hand, you'll appreciate that it can be a pain to get every file owned by the correct user, and with the correct permissions. Some files need to be owned by the user that the webserver runs as. Others need to be owned by specific shell accounts, so that those users can login and edit the configuration files. If your Linux distribution offers you a choice of web servers - each running under a different user - even the installers can struggle to get it right.<div class="spacer">
+</div>
+With  <b>webapp-config</b>, you tell the installer which web server you are going to be using, and which shell account needs to be able to edit the configuration files.  <b>webapp-config</b> then installs your files with the correct ownership and permissions.</div>
+<div class="subsection">
+<h2>Protected Configuration Files</h2>  <b>webapp-config</b> automatically ensures that your configuration files are never overwritten during an upgrade - even if you have not edited the files at all. Additionally,  <b>webapp-config</b> will never overwrite any file that it did not install, or that has been changed since it was installed by  <b>webapp-config</b>.  <b>webapp-config</b> uses md5 checksums to determine whether a file has been changed or not. In the case of symbolic links,  <b>webapp-config</b> will not replace a symlink that points to a different file.<div class="spacer">
+</div>
+When an upgrade does attempt to overwrite a protected file,  <b>webapp-config</b> creates a ._cfg file with the new file inside. You can use  <b>etc-update</b> to complete the install, just as you would with the regular  <b>emerge</b>.</div>
+<div class="subsection">
+<h2>File Copying Options</h2> A virtual copy is built mostly by creating hard links to files under /usr/share/webapps. If a hard link cannot be created, the file is copied from /usr/share/webapps instead.<div class="spacer">
+</div>
+Hard links can only be created to files on the same filesystem. If you keep /usr/share/webapps and /var/www on different filesystems,  <b>webapp-config</b> cannot use hard links, and will be forced to copy the files instead.<div class="spacer">
+</div>
+There are three ways to get around the hard link problem.<div class="spacer">
+</div>
+The easiest way is to make /usr/share/webapps a symlink to a directory under /var/www. For most people, this will ensure that everything is on the same filesystem.<div class="spacer">
+</div>
+However, if you keep the websites you host on separate filesystems (like I do), then  <b>webapp-config</b> is never going to be able to hard-link files for you.<div class="spacer">
+</div>
+As an alternative you can choose to use the  <b>--soft</b> command-line switch. This switch tells  <b>webapp-config</b> to create symbolic links instead of hard links. Symbolic links work across filesystems.<div class="spacer">
+</div>
+The problem with using symbolic links is that some packages do not work when the virtual copy is made from symbolic links. Many users - and system administrators alas - have also complained that they find directories full of symbolic links confusing. For these reasons, symbolic links are not used by default in  <b>webapp-config</b> any more.<div class="spacer">
+</div>
+You may also choose the  <b>--copy</b> command-line switch. This particular switch tells  <b>webapp-config</b> to directly copy the files from /usr/share/webapps/ instead of hard links. Copying directly works across filesystems with the drawback of using more space but if you are going to use it across file systems you may want this instead of symbolic links, as this means that the files in /usr/share/webapps/ will not be touched when the files in the location of your virtualhost are altered.</div>
+<div class="subsection">
+<h2>Virtual File Voodoo</h2> By default, the master copy contains the metadata that decides which files get linked into a virtual copy and which files do not. Files are either owned by the web server (server-owned), are configuration files (config-owned), or are linked in (virtual). Directories can be server-ownedor config-owned, but most of the time they need to be just plain directories (default-owned) created inside the installation directory (set with the  <b>-d</b> switch).  <b>webapp-config</b> provides a number of switches which allows you to override the master copy's metadata - if you ever find that you need to.<div class="spacer">
+</div>
+The  <b>--default-dirs</b> and  <b>--virtual-files</b> switches allow you to decide what  <b>webapp-config</b> will do if (respectively) a directory or a file is marked as being default or virtual. You can tell  <b>webapp-config</b> to make the directory or file any of the other choices - server-owned or config-owned - instead.</div>
+<div class="subsection">
+<h2>${ROOT}</h2> This version of webapp-config is intended to fully support ${ROOT}. If you are unsure what that means, consult  <b>emerge</b>(1)</div>
+</div>
+<div class="section">
+<h1>ACTIONS</h1>  <b>-I</b> <i>app-name</i> <i>app-version</i>, <b>--install</b> <i>app-name</i> <i>app-version</i><div style="margin-left: 4.00ex;">
+Activate  <i>install mode</i>.</div>
+<div class="spacer">
+</div>
+<b>-U</b> <i>app-name</i> <i>app-version</i>, <b>--upgrade</b> <i>app-name</i> <i>app-version</i><div style="margin-left: 4.00ex;">
+Activate  <i>upgrade mode</i>.</div>
+<div class="spacer">
+</div>
+<b>-C</b> <i>app-name</i> <i>app-version</i>, <b>--clean</b> <i>app-name</i> <i>app-version</i><div style="margin-left: 4.00ex;">
+Activate  <i>remove mode</i>.</div>
+<div class="spacer">
+</div>
+<b>-li</b> <i>app-name</i> <i>app-version</i>, <b>--list-installs</b> <i>app-name</i> <i>app-version</i><div style="margin-left: 4.00ex;">
+Outputs a list of all the virtual copies of the  <i>app-name</i>-<i>app-version</i> package.<div style="height: 1.00em;">
+&#160;</div>
+If you omit  <i>app-name</i> or  <i>app-version</i> webapp-config will display all available packages/versions.</div>
+<div class="spacer">
+</div>
+<b>-lui</b> <i>app-name</i> <i>app-version</i>, <b>--list-unused-installs</b> <i>app-name</i> <i>app-version</i><div style="margin-left: 4.00ex;">
+Outputs a list of all the master copies of the  <i>app-name</i>-<i>app-version</i> package that have not been installed using  <b>webapp-config</b>  <b>-I</b>.</div>
+<div class="spacer">
+</div>
+<b>-pd</b> <i>action</i>, <b>--prune-database</b> <i>action</i><div style="margin-left: 4.00ex;">
+Cleans up the installed webapps database for lingering uninstalled webapps. Behavior is determined by the  <i>action</i> given.<div style="height: 1.00em;">
+&#160;</div>
+<i>action</i> must be one of:<div class="spacer">
+</div>
+pretend<div style="margin-left: 4.00ex;">
+Shows output of what would be cleaned from the database</div>
+<div class="spacer">
+</div>
+clean<div style="margin-left: 4.00ex;">
+Removes webapp entries that are not installed on the system</div>
+</div>
+<div class="spacer">
+</div>
+<b>-si</b>, <b>--show-installed</b><div style="margin-left: 4.00ex;">
+Outputs the app-name and app-version of the application installed in  <i>directory</i>.<div style="height: 1.00em;">
+&#160;</div>
+Use the  <b>-d</b> switch to tell  <b>webapp-config</b> which  <i>directory</i> to look in.  <i>directory</i> is a directory under the htdocs dir.</div>
+<div class="spacer">
+</div>
+<b>-spi</b> <i>app-name</i> <i>app-version</i>, <b>--show-postinst</b> <i>app-name</i> <i>app-version</i><div style="margin-left: 4.00ex;">
+Displays the post-installation instructions of the  <i>app-name</i>-<i>app-version</i> package. Very handy if you didn't see them displayed when the package was installed.</div>
+<div class="spacer">
+</div>
+<b>-spu</b> <i>app-name</i> <i>app-version</i>, <b>--show-postupgrade</b> <i>app-name</i> <i>app-version</i><div style="margin-left: 4.00ex;">
+Displays the post-upgrade instructions of the  <i>app-name</i>-<i>app-version</i> package. Very handy if you didn't see them displayed when the package was upgraded.</div>
+<div class="spacer">
+</div>
+<b>-ls</b>, <b>--list-servers</b><div style="margin-left: 4.00ex;">
+Outputs a list of the web servers that  <b>webapp-config</b> currently supports.<div style="height: 1.00em;">
+&#160;</div>
+Use the  <b>-s</b>  <i>server</i> switch to change which web-server an install or upgrade should use.</div>
+<div class="spacer">
+</div>
+<b>-?</b>, <b>--help</b><div style="margin-left: 4.00ex;">
+Provide a list of supported switches. Also lists all the default values for each switch.</div>
+<div class="spacer">
+</div>
+<b>-v</b>, <b>--version</b><div style="margin-left: 4.00ex;">
+Displays the current version number of  <b>webapp-config</b></div>
+</div>
+<div class="section">
+<h1>OPTIONS</h1> List of the remaining switches that  <b>webapp-config</b> accepts. To see the default values that  <b>webapp-config</b> will use when a switch is omitted, use  <b>webapp-config --help</b>.<div class="spacer">
+</div>
+<i>app-name</i> <i>app-version</i><div style="margin-left: 4.00ex;">
+Together, these two parameters tell  <b>webapp-config</b> which package to install ( <b>-I</b> mode), upgrade to ( <b>-U</b> mode), or to search for ( <b>--list-installs</b> mode).<div style="height: 1.00em;">
+&#160;</div>
+They must be the last two parameters passed to  <b>webapp-config</b>.<div style="height: 1.00em;">
+&#160;</div>
+These parameters are not optional.</div>
+<div class="spacer">
+</div>
+<b>--bug-report</b>, <b>--pretend</b>, <b>-p</b><div style="margin-left: 4.00ex;">
+Provide output to include inside a bug-report.<div style="height: 1.00em;">
+&#160;</div>
+Use this switch if you're having problems with the install (<b>-I</b> mode), upgrade ( <b>-U</b> mode), or clean ( <b>-C</b> mode) operations. Add this switch to the command-line that's not working, and make sure you paste the output into your bug report.<div style="height: 1.00em;">
+&#160;</div>
+If you need to use this switch, make sure it's the first switch you use to call  <b>webapp-config</b>.</div>
+<div class="spacer">
+</div>
+<b>-s</b> <i>server</i>, <b>--server</b> <i>server</i><div style="margin-left: 4.00ex;">
+Set which web-server to install (<b>-I</b> mode) or upgrade ( <b>-U</b> mode) for.<div style="height: 1.00em;">
+&#160;</div>
+<b>webapp-config</b> needs to know which web server you are going to use to access your virtual copy. If you don't provide the correct switch, your virtual copy may not work correctly.<div style="height: 1.00em;">
+&#160;</div>
+Use  <b>webapp-config --list-servers</b> to see a list of valid  <i>server</i> settings.</div>
+<div class="spacer">
+</div>
+<b>-u</b> <i>user</i>, <b>--user</b> <i>user</i><div style="margin-left: 4.00ex;">
+Set which user will own any installed configuration files.<div style="height: 1.00em;">
+&#160;</div>
+When  <b>webapp-apache</b> creates a virtual copy ( <b>-I</b> mode), the virtual copy creates  <i>local</i> copies of any configuration files that the package needs to use. By using the  <b>-u</b> switch, you can specify which  <i>user</i> owns these configuration files.<div style="height: 1.00em;">
+&#160;</div>
+If you give shell accounts out to the users who host websites on your computer, the  <b>-u</b> allows you to give ownership of the configuration file (and therefore write permission) to the shell account associated with the website.<div style="height: 1.00em;">
+&#160;</div>
+<i>user</i> can be a username or a numerical user id.</div>
+<div class="spacer">
+</div>
+<b>-g</b> <i>group</i>, <b>--group</b> <i>group</i><div style="margin-left: 4.00ex;">
+Set which group will own any installed configuration files.<div style="height: 1.00em;">
+&#160;</div>
+When  <b>webapp-apache</b> creates a virtual copy ( <b>-I</b> mode), the virtual copy creates  <i>local</i> copies of any configuration files that the package needs to use. By using the  <b>-g</b> switch, you can specify which  <i>group</i> owns these configuration files.<div style="height: 1.00em;">
+&#160;</div>
+If you give shell accounts out to groups of users who host websites on your computer, the  <b>-g</b> allows you to give ownership of the configuration file (and therefore write permission) to the group associated with the website.<div style="height: 1.00em;">
+&#160;</div>
+<i>group</i> can be a group name or a numerical group id.</div>
+<div class="spacer">
+</div>
+<b>-d</b> <i>directory</i>, <b>--dir</b> <i>directory</i><div style="margin-left: 4.00ex;">
+Specify where to create the virtual copy.<div style="height: 1.00em;">
+&#160;</div>
+The  <b>webapp-config</b> tool allows you to create a virtual copy anywhere you want. You are no longer limited to installing a web-based app in /home/httpd/htdocs/&lt;package-name&gt;/! Simply use the  <b>-d</b> switch to tell  <b>webapp-config</b> where you want to create your virtual copy.<div style="height: 1.00em;">
+&#160;</div>
+<i>directory</i> is a directory under your htdocs dir. If you do not set the  <i>hostname</i> correctly (by using the  <b>-h</b> switch),  <b>webapp-config</b> will look under the wrong htdocs directory!<div style="height: 1.00em;">
+&#160;</div>
+This option is required by the  <b>-C</b> switch.</div>
+<div class="spacer">
+</div>
+<b>-h</b> <i>host</i>, <b>--host</b> <i>host</i><div style="margin-left: 4.00ex;">
+Specify the fully-qualified domain name of the virtual host.<div style="height: 1.00em;">
+&#160;</div>
+Some web-based applications - whether through genuine need or bad design - need to know the hostname of the website that they are part of.<div style="height: 1.00em;">
+&#160;</div>
+Some web-based applications need to install files (such as cgi scripts) that do not belong under the htdocs directory. To make sure that these files go in the right place, you need to use the  <b>-h</b> switch to tell  <b>webapp-config</b> the hostname of the website.<div style="height: 1.00em;">
+&#160;</div>
+<i>host</i> must be a fully-qualified domain name.<div style="height: 1.00em;">
+&#160;</div>
+If you do not use the  <b>-h</b> switch, your virtual copy may not work correctly.</div>
+<div class="spacer">
+</div>
+<b>-D</b> <i>KEY=VALUE</i>, <b>--define</b> <i>KEY=VALUE</i><div style="margin-left: 4.00ex;">
+Define a configuration variable for  <b>webapp-config</b>.<div style="height: 1.00em;">
+&#160;</div>
+Allows to name a  <i>KEY=VALUE</i> pair that will be imported into the configuration variables of webapp-config. This allows you to provide customized variables which can be used in the configuration file. This can also be used to temporarily overwrite variables from the configuration file.</div>
+<div class="spacer">
+</div>
+<b>-E</b> <i>variable name</i>, <b>--envvar</b> <i>variable name</i><div style="margin-left: 4.00ex;">
+Define an environment variable that will be picked up by  <b>webapp-config</b>.<div style="height: 1.00em;">
+&#160;</div>
+Allows to name single environment variable that will be imported by webapp-config. This allows you to provide customized variables which can be used in the configuration file. This can also be used to temporarily overwrite variables from the configuration file.</div>
+<div class="spacer">
+</div>
+<b>--envall</b><div style="margin-left: 4.00ex;">
+Imports all environment variables into the configuration process of  <b>webapp-config</b>.</div>
+<div class="spacer">
+</div>
+<b>-V</b>, <b>--verbose</b><div style="margin-left: 4.00ex;">
+Use this option to increase the amount of output from the  <b>--list-installs</b> switch.</div>
+<div class="spacer">
+</div>
+<b>-sf</b>, <b>--soft</b><div style="margin-left: 4.00ex;">
+Use this option to create the virtual copy using symbolic links.<div style="height: 1.00em;">
+&#160;</div>
+You may find this option useful if /usr/share/webapps is on a different filesystem to your htdocs directories. However, it has been discovered that some packages do not work with this option, which is why it is no longer the default behaviour. You are always better off making /usr/share/webapps a symlink to a directory on the same filesystem as your htdocs directories.</div>
+<div class="spacer">
+</div>
+<b>-c</b>, <b>--copy</b><div style="margin-left: 4.00ex;">
+Use this option to create the virtual copy by copying the files from the /usr/share/webapps/ directories.<div style="height: 1.00em;">
+&#160;</div>
+This option is useful if you want to copy the files directly from /usr/share/webapps/ to your virtual host in /var/www without the use of softlinks, or hardlinks. Be aware that because this is a direct copying of files it will prove to take up more space on your filesystem as opposed to the other two options since you are duplicating the webapp.</div>
+<div class="spacer">
+</div>
+<b>-S</b>, <b>--secure</b><div style="margin-left: 4.00ex;">
+Use this option to install into the htdocs-secure directory rather than into the htdocs directory.<div style="height: 1.00em;">
+&#160;</div>
+This option is useful if you keep separate directories for your http: and https: sites.<div style="height: 1.00em;">
+&#160;</div>
+You can change 'htdocs-secure' by editing the config file /etc/vhosts/webapp-config.</div>
+<div class="spacer">
+</div>
+<b>-dd</b> <i>type</i>, <b>--default-dirs</b> <i>type</i><div style="margin-left: 4.00ex;">
+<i>type</i> must be one of:<div class="spacer">
+</div>
+server-owned<div style="margin-left: 4.00ex;">
+Directories are owned by the user that the web server runs as. Use the  <b>-s</b> switch to specify which web server to use.</div>
+<div class="spacer">
+</div>
+config-owned<div style="margin-left: 4.00ex;">
+Directories are owned by the user and group specified with the  <b>-u</b> and  <b>-g</b> switches.</div>
+<div class="spacer">
+</div>
+virtual<div style="margin-left: 4.00ex;">
+Directories are shared; no local copy is created.</div>
+</div>
+<div class="spacer">
+</div>
+<b>-vf</b> <i>type</i>, <b>--virtual-files</b> <i>type</i><div style="margin-left: 4.00ex;">
+<i>type</i> must be one of:<div class="spacer">
+</div>
+server-owned<div style="margin-left: 4.00ex;">
+Files are owned by the user that the web server runs as. Use the  <b>-s</b> switch to specify which web server to use.</div>
+<div class="spacer">
+</div>
+config-owned<div style="margin-left: 4.00ex;">
+Files are owned by the user and group specified with the  <b>-u</b> and  <b>-g</b> switches.</div>
+<div class="spacer">
+</div>
+virtual<div style="margin-left: 4.00ex;">
+Files are shared; no local copy is created.</div>
+</div>
+</div>
+<div class="section">
+<h1>EXAMPLES</h1> All of these examples are aimed at Gentoo Linux. If you are using  <b>webapp-config</b> on a different Linux distribution, they may not work out of the box for you.<div class="subsection">
+<h2>Installing applications</h2> To install a copy of phpmyadmin-2.5.6, so that it is available from http://www.example.com/databases/admin/, you would do this:<div class="spacer">
+</div>
+<b>webapp-config -I -h www.example.com -d /databases/admin/ phpmyadmin 2.5.6</b><div class="spacer">
+</div>
+To make sure that the shell account 'dbadmin' could edit the configuration files of phpmyadmin, you'd add the  <b>-u</b> switch like this:<div class="spacer">
+</div>
+<b>webapp-config -I -h www.example.com -d /databases/admin -u dbadmin phpmyadmin 2.5.6</b></div>
+<div class="subsection">
+<h2>Upgrading applications</h2> To upgrade the copy of phpmyadmin-2.5.6 to version 2.5.7, you would do this:<div class="spacer">
+</div>
+<b>webapp-config -U -d /databases/admin/ phpmyadmin 2.5.7</b><div class="spacer">
+</div>
+To upgrade  <i>all</i> the virtual copies of phpmyadmin-2.5.6, you would do this:<div class="spacer">
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>for x in `webapp-config --li phpmyadmin 2.5.6`;do . ${x}/.webapp &amp;&amp; webapp-config -U -h ${WEB_HOSTNAME} -d ${WEB_INSTALLDIR} phpmyadmin 2.5.7; done</b></div>
+<div class="subsection">
+<h2>Removing applications</h2> To remove the copy of phpmyadmin-2.5.7, you would do this:<div class="spacer">
+</div>
+<b>webapp-config -C -h www.example.com -d /databases/admin/</b><div class="spacer">
+</div>
+To remove  <i>all</i> the virtual copies of phpmyadmin-2.5.7, you would do this:<div class="spacer">
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>for x in `webapp-config --li phpmyadmin 2.5.7`;do . ${x}/.webapp &amp;&amp; webapp-config -C -h ${WEB_HOSTNAME} -d ${WEB_INSTALLDIR}; done</b></div>
+</div>
+<div class="section">
+<h1>FILES</h1> /etc/vhosts/webapp-config<div style="margin-left: 4.00ex;">
+Configuration file, holding the defaults for  <b>webapp-config</b></div>
+<div class="spacer">
+</div>
+/var/db/webapps<div style="margin-left: 4.00ex;">
+This directory tree holds information about the location of each virtual copy on the computer.</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1>  <b>webapp.eclass</b>(5),  <b>webapp-config</b>(5),  <b>emerge</b>(1)<div class="spacer">
+</div>
+<b>webapp-config</b> is based on the design for an installer for web-based application installers first defined in  <b>GLEP #11</b>[1] for the Gentoo Linux project.</div>
+<div class="section">
+<h1>AUTHORS</h1>  <b>Stuart Herbert</b> &lt;stuart@gentoo.org&gt;, &lt;stuart@gnqs.org&gt;<div style="margin-left: 4.00ex;">
+Author.</div>
+<div class="spacer">
+</div>
+<b>Renat Lumpau</b> &lt;rl03@gentoo.org&gt;<div style="margin-left: 4.00ex;">
+Author.</div>
+<div class="spacer">
+</div>
+<b>Gunnar Wrobel</b> &lt;php@gunnarwrobel.de&gt;<div style="margin-left: 4.00ex;">
+Author.</div>
+<div class="spacer">
+</div>
+<b>Devan Franchini</b> &lt;twitch153@gentoo.org&gt;<div style="margin-left: 4.00ex;">
+Author.</div>
+</div>
+<div class="section">
+<h1>COPYRIGHT</h1></div>
+<div class="section">
+<h1>NOTES</h1><dl>
+<dt>
+ 1.</dt>
+<dd>
+GLEP #11</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+http://www.gentoo.org/proj/en/glep/glep-0011.html</div>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+July 2015</td>
+<td class="foot-os">
+Gentoo Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

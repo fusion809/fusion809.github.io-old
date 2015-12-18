@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+metalog.conf(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+metalog.conf(5)</td>
+<td class="head-vol">
+Metalog configuration file</td>
+<td class="head-rtitle">
+metalog.conf(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> metalog.conf - configuration file for metalog</div>
+<div class="section">
+<h1>SYNTAX</h1><br/>
+[default values]<div class="spacer">
+</div>
+<br/>
+&lt;section title :&gt;<br/>
+&lt;section values&gt;<div class="spacer">
+</div>
+<br/>
+&lt;section 2 title :&gt;<br/>
+&lt;section 2 values&gt;<div class="spacer">
+</div>
+<br/>
+&lt;etc.&gt;<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> [default values] will be used if you do not redefine them in a section. You can choose &lt;section title&gt; as you wish. It doesn't mean anything, just allow you to keep an easy to read config file.<div style="height: 1.00em;">
+&#160;</div>
+Values names can be one of the following:<dl>
+<dt>
+<b>maxsize</b></dt>
+<dd>
+maxsize = &lt;value&gt;. Once a logfile has exceeded the value defined (in bytes), it will be rotated. If maxfile is equal to zero, it disables log rotation. Defining a default value is a good idea.</dd>
+</dl>
+<dl>
+<dt>
+<b>maxtime</b></dt>
+<dd>
+maxtime = &lt;value&gt;. Once a logfile is older than the value defined (in seconds), it will be rotated. Defining a default value is a good idea.<div style="height: 1.00em;">
+&#160;</div>
+NB: a logfile is rotated when either maxsize or maxtime limit is reached. If either one or both is equal 0, then log rotation is disabled.</dd>
+</dl>
+<dl>
+<dt>
+<b>maxfiles</b></dt>
+<dd>
+maxfiles = &lt;value&gt;. This value indicates the maximum number of rotated files kept. So you'll have x rotated files (log-date-string filename type), plus the file named current.</dd>
+</dl>
+<dl>
+<dt>
+<b>facility</b></dt>
+<dd>
+facility = &quot;name&quot;. Only records a message if the application that issued it uses syslog facility &lt;facility&gt;. Facility names are : &quot;auth&quot;, &quot;authpriv&quot;, &quot;cron&quot;, &quot;daemon&quot;, &quot;ftp&quot;, &quot;kern&quot;, &quot;lpr&quot;, &quot;mail&quot;, &quot;news&quot;, &quot;security&quot;, &quot;syslog&quot;, &quot;user&quot;, &quot;uucp&quot;, &quot;local0&quot;, &quot;local1&quot; ... &quot;local7&quot; . All kernel messages are logged with facility &quot;kern&quot;. A section can have several &quot;facility = ...&quot; lines to match more than one facility. If &lt;facility&gt; is &quot;*&quot;, it'll match all the facilities.</dd>
+</dl>
+<dl>
+<dt>
+<b>break</b></dt>
+<dd>
+break = &lt;value&gt;. Default is 0. If set to 1 and a section is matched, perform action, but don't consider any more possible section matches below this one in the config file. This is useful for creating a config where specific types of log messages are matched and dispatched, while a &quot;catch-all&quot; section at the bottom of the config file handles the default case.  Using break=0 would cause messages to be potentially handled by multiple sections, causing message duplication, while using break = 1 on the sections above the &quot;catch-all&quot; would avoid duplication.</dd>
+</dl>
+<dl>
+<dt>
+<b>minimum</b></dt>
+<dd>
+minimum = &lt;level&gt; : Only record a message if its urgency is inferior or equal to &lt;level&gt; . Level '0' is the most critical one, while level '7' is for debugging messages. 'minimum = 5' will strip all non-important messages. The default minimum level is 7 (ie. keep all messages).</dd>
+</dl>
+<dl>
+<dt>
+<b>maximum</b></dt>
+<dd>
+maximum = &lt;level&gt; : don't log if the message level exceeds that value. By default, maximum is the largest possible level.</dd>
+</dl>
+<dl>
+<dt>
+<b>logdir</b></dt>
+<dd>
+logdir = &quot;/path/where/logs/will/be/written&quot; : files will be written in /path/where/logs/will/be/written.</dd>
+</dl>
+<dl>
+<dt>
+<b>program</b></dt>
+<dd>
+program = &quot;name&quot;. Can be used when a facility is useless. Remember to use the executable name.</dd>
+</dl>
+<dl>
+<dt>
+<b>regex</b></dt>
+<dd>
+regex = &quot;perl compatible regular expression&quot;. Can be used when you want to log given patterns, like invalid, fail etc to get in a given directory everything that failed or was invalid. Several regex can be defined in a section.</dd>
+</dl>
+<dl>
+<dt>
+<b>neg_regex</b></dt>
+<dd>
+neg_regex = &quot;perl compatible regular expression&quot;. Can be used when you want to log the opposite of given patterns. Several neg_regex can be defined in a section.</dd>
+</dl>
+<dl>
+<dt>
+<b>postrotate_cmd</b></dt>
+<dd>
+postrotate_cmd = &quot;/path/to/a/program&quot;. Run specified program after a log file has been rotated. The program is passed the date, the program name (&quot;metalog&quot;), and the new logfile name.</dd>
+</dl>
+<dl>
+<dt>
+<b>program_regex</b></dt>
+<dd>
+program_regex = &quot;perl compatible regular expression&quot;. Can be used when you have, for example a familly of programs having the same pattern in their names, and you want to get logs centralized in a given path.</dd>
+</dl>
+<dl>
+<dt>
+<b>program_neg_regex</b></dt>
+<dd>
+program_neg_regex = &quot;perl compatible regular expression&quot;. Can be used when you want to log programs which do not match a pattern in their names. Several program_neg_regex can be defined in a section.</dd>
+</dl>
+<dl>
+<dt>
+<b>showrepeats</b></dt>
+<dd>
+showrepeats = &lt;value&gt;. Set to 0 to filter out repeat log messages.</dd>
+</dl>
+<dl>
+<dt>
+<b>command</b></dt>
+<dd>
+command = &quot;/path/to/program/to/execute&quot;. If something is logged in a given section, you can automatically launch a program. The log message is passed as the arguments to the program. The argv[1] is the date, argv[2] is the program, and argv[3] is the actual log message.</dd>
+</dl>
+<dl>
+<dt>
+<b>stamp_fmt</b></dt>
+<dd>
+stamp_fmt = &quot;%b %e %T&quot;. Format of the human readable timestamp prepended to all log messages. This format string is passed literally to the <b>strftime</b>(3) function. An empty string is used to disable timestamping (for cases where the logger already does its own timestamping).</dd>
+</dl>
+<dl>
+<dt>
+<b>flush</b></dt>
+<dd>
+flush = &lt;value&gt;. If set to 0, matching log messages will always be buffered. If set to 1, they will always be written to the file system immediately. Both settings override the global default given through command line parameters ( <b>-a</b>/<b>-s</b>) or signals.</dd>
+</dl>
+<dl>
+<dt>
+<b>ratelimit</b></dt>
+<dd>
+ratelimit = &quot;5/m&quot;. Limits the rate of logged messages to the specified number of messages per unit of time. Valid units of time are  <i>s</i>econd,  <i>m</i>inute, <i>h</i>our and <i>d</i>ay, each identified by its first letter. Fractional values are allowed such as &quot;0.5/m&quot; to make human parsing easier. A limit of zero (the default) may be used to disable any rate limit handling. In this case, the unit of time may be omitted.</dd>
+</dl>
+<dl>
+<dt>
+<b>ratelimit_burst</b></dt>
+<dd>
+ratelimit_burst = &lt;integer&gt;. Up to this number of lines will be printed at the beginning of a burst of message, if the rate of messages has been well below the limit before. The specified message rate will not be exceeded.  The default value of 1 disables special treatment for bursts. Values less than 1 are invalid and will be rejected.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>FILES</h1> Note that the exact paths depend on the build settings.  These are the standard paths.<div style="height: 1.00em;">
+&#160;</div>
+<i>/etc/metalog.conf</i><br/>
+</div>
+<div class="section">
+<h1>AUTHORS</h1><br/>
+Mike Frysinger &lt;vapier@gentoo.org&gt;<br/>
+Laurent Wandrebeck (low) &lt;wandre.l@free.fr&gt;<br/>
+Leo Lipelis &lt;aeoo@gentoo.org&gt;<br/>
+Hendrik Visage &lt;hvisage@users.sourceforge.net&gt;<br/>
+Frank DENIS (Jedi/Sector One) &lt;j@pureftpd.org&gt;<br/>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>metalog</b>(8)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+3</td>
+<td class="foot-os">
+Frank DENIS</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

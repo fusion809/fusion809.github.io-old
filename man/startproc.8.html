@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+STARTPROC(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+STARTPROC(8)</td>
+<td class="head-vol">
+The SuSE boot concept</td>
+<td class="head-rtitle">
+STARTPROC(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> Startproc - Start processes identified by path name<div style="height: 0.00em;">
+&#160;</div>
+Start_daemon - Start processes identified by path name</div>
+<div class="section">
+<h1>SYNOPSIS</h1><div style="margin-left: 5.00ex;text-indent: -5.00ex;" class="spacer">
+<b>startproc</b> [<b>-fLves</b>] [[<b>-n&#160;</b>]<b><i>+/-&lt;prio&gt;</i></b>] [<b>-</b>(<b>t</b>|<b>T</b>)&#160;<b><i>&lt;sec&gt;</i></b>] [<b>-u&#160;<i>user</i></b>] [<b>-g&#160;<i>group</i></b>] [<b>-l&#160;<i>log_file</i></b>|<b>-q</b>|<b>-d</b>] [<b>-p&#160;<i>pid_file</i></b>] [<b>-i&#160;<i>ignore_file</i></b>] [<b>-c&#160;<i>root</i></b>] <i>/path/to/executable</i> [<i>arguments for executable</i>]</div>
+<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;text-indent: -5.00ex;" class="spacer">
+<b>start_daemon</b> [<b>-fLve</b>] [<b>-n&#160;<i>+/-&lt;prio&gt;</i></b>] [<b>-u&#160;<i>user</i></b>] [<b>-g&#160;<i>group</i></b>] [<b>-l&#160;<i>log_file</i></b>|<b>-q</b>|<b>-d</b>] [<b>-p&#160;<i>pid_file</i></b>] [<b>-i&#160;<i>ignore_file</i></b>] [<b>-c&#160;<i>root</i></b>] <i>/path/to/executable</i> [<i>arguments for executable</i>]</div>
+</div>
+<div class="section">
+<h1>SYNOPSIS LSB 3.1</h1><div style="margin-left: 5.00ex;text-indent: -5.00ex;" class="spacer">
+<b>start_daemon</b> [<b>-f</b>] [<b>-n&#160;<i>+/-&lt;prio&gt;</i></b>] <i>/path/to/executable</i> [<i>arguments for executable</i>]</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>startproc</b> and the LSB variant <b>start_daemon</b> check for all processes of the specified executable and starts it if <b>no</b> processes are found. Note that <b>startproc</b> is designed to start a daemon but not a kernel thread or a program which enables a kernel thread.<div class="spacer">
+</div>
+<b>startproc</b> does not use the pid to search for a process but the full path of the corresponding program which is used to identify the executable (see<b> proc</b>(5)). Only if the inode number (/proc/<b>&lt;pid&gt;</b>/exe) and the full name are unavailable (/proc/<b>&lt;pid&gt;</b>/cmdline) or if the executable changes its zeroth argument, <b>startproc</b> uses the base name (/proc/<b>&lt;pid&gt;</b>/stat) to identify the running program.<div class="spacer">
+</div>
+Extended functionality is provided by the <b>-p</b> option (former option <b>-f</b> changed due to the LSB specification). If this option is specified, <b>startproc</b> tries to check against the pid read from this file instead of the default (/var/run/<b>&lt;basename&gt;</b>.pid). The pid read from this file is compared against the pids of possible running processes that use the specified executable. In order to avoid confusion with stale pid files, a not up-to-date pid will be ignored.<div class="spacer">
+</div>
+For the possibility of having two different sessions of one binary program, the option <b>-i</b> <i>ignore_file</i> allows to specify a pid file which pid number is used to <b>ignore</b> all processes of corresponding process <b>session</b>.<div class="spacer">
+</div>
+The option <b>-v</b> makes <b>startproc</b> print out verbose diagnostics.<div class="spacer">
+</div>
+The <b>start_daemon</b> does not support the options <b>-</b>(<b>t</b>|<b>T</b>)&#160;<b><i>&lt;sec&gt;</i></b> for waiting for success and the option <b>-s</b> for a new session as this variant does not fork to start the executable.</div>
+<div class="section">
+<h1>REQUIRED</h1><dl>
+<dt>
+<i>/path/to/executable</i></dt>
+<dd>
+Specifies the executable by its full path name. This argument is always required. Everything that follows this path is considered options for the executable to be launched. Further information can be obtained from the respective manpage(s).</dd>
+</dl>
+</div>
+<div class="section">
+<h1>OPTIONS</h1><dl>
+<dt>
+[<b>-n </b>]<b><i>+/-&lt;prio&gt;</i></b></dt>
+<dd>
+Set the nice level for the process. If used, this option should always be the first in the command line.  The nice level <i>&lt;prio&gt;</i> may be specified in the range between -20 and +20. Only root is allowed to set negative nice values.</dd>
+</dl>
+<dl>
+<dt>
+<b>-e</b></dt>
+<dd>
+Bequeath only a minimal set of environment variables to the new process: <b>HOME</b>, <b>PATH</b>, <b>SHELL</b>, <b>RUNLEVEL</b>, and <b>PREVLEVEL</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>-p</b><i> pid_file</i></dt>
+<dd>
+(Former option <b>-f</b> changed due to the LSB specification.) Use an alternate pid file instead of the default (/var/run/<b>&lt;basename&gt;</b>.pid). The pid read from this file is being matched against the pid of running processes that have an executable with specified path. of the program.  In order to avoid confusion with stale pid files, a not up-to-date pid will be ignored.</dd>
+</dl>
+<dl>
+<dt>
+<b>-i</b><i> ignore_file</i></dt>
+<dd>
+The pid found in this file is used as <b>session</b> id of the same binary program which should be ignored by <b>startproc</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>-f</b></dt>
+<dd>
+This option is required by the Linux Standard Base Specification (LSB). With this option the start of a process is forced.</dd>
+</dl>
+<dl>
+<dt>
+<b>-g</b><i> group</i></dt>
+<dd>
+Sets the group ID of the process to <i>gid</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>-l</b><i> log_file</i></dt>
+<dd>
+Redirect the process standard output and standard error to the file <i>log_file</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>-L</b></dt>
+<dd>
+This option causes symlinks to be followed, as the like-named option in <b>ls</b>(1). BR Note : for the file name the original name of the program is used instead of the name of the symbolic link.</dd>
+</dl>
+<dl>
+<dt>
+<b>-c</b><i> root</i></dt>
+<dd>
+Change root directory to <i>root</i>. Services which have been started with this option can only be checked by <b>checkproc</b>(8) and signaled by <b>killproc</b>(8) if <b>checkproc</b>(8) and <b>killproc</b>(8) are called with the same option argument for the option <b>-c</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>-q</b></dt>
+<dd>
+Equals to -l /dev/null (supresses output).</dd>
+</dl>
+<dl>
+<dt>
+<b>-d</b></dt>
+<dd>
+Let startproc expect that the started service will do a dialog by prompting for, e.g. a passphrase. This option implies a timeout of 15 seconds (-t 15).</dd>
+</dl>
+<dl>
+<dt>
+<b>-s</b></dt>
+<dd>
+Starts the process in a new session. The new task is a process group leader and has no controlling tty.</dd>
+</dl>
+<dl>
+<dt>
+<b>-t</b><i> &lt;sec&gt;</i></dt>
+<dd>
+The number of seconds to wait after the successful start of a service.  This options accepts the number of seconds to wait. You can specify some units after a given number: <b>s</b> for seconds, <b>m</b> for minutes, and <b>h</b> for hours to wait.</dd>
+</dl>
+<dl>
+<dt>
+<b>-T</b><i> &lt;sec&gt;</i></dt>
+<dd>
+The same as for option <b>-t</b> but wait only on the started process not on childs forked by the process.</dd>
+</dl>
+<dl>
+<dt>
+<b>-u</b><i> user</i></dt>
+<dd>
+Sets the user ID of the process to <i>user</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b></dt>
+<dd>
+Verbose output.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>EXAMPLE</h1><dl>
+<dt>
+<b>startproc /usr/sbin/sendmail</b></dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+starts <i>/usr/sbin/sendmail</i> if no sendmail process is found. If a pid file <i>sendmail.pid</i> exists in <i>/var/run/</i>, then the pid found in this file is used to search the process table for a process with an executable that matches the specified pathname, <i>/usr/sbin/sendmail</i>. If no matching process is found, <i>/usr/sbin/sendmail</i> is launched.</dd>
+</dl>
+<dl>
+<dt>
+<b>startproc -p /var/myrun/lpd.pid /usr/sbin/lpd</b></dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+starts <i>/usr/sbin/lpd</i> if there is no process with the pid found in <i>/var/myrun/lpd.pid</i> <b>and</b> no process in the actual process table exists that uses the specified binary.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>EXIT CODES</h1> The exit codes have the following <b>LSB</b> conform conditions:<div class="spacer">
+</div>
+<div style="margin-left: 7.00ex;">
+<dl>
+<dt>
+0</dt>
+<dd>
+Success</dd>
+</dl>
+<dl>
+<dt>
+1</dt>
+<dd>
+Generic or unspecified error</dd>
+</dl>
+<dl>
+<dt>
+2</dt>
+<dd>
+Invalid or excess argument(s)</dd>
+</dl>
+<dl>
+<dt>
+4</dt>
+<dd>
+Insufficient privilege(s)</dd>
+</dl>
+<dl>
+<dt>
+5</dt>
+<dd>
+Program is not installed</dd>
+</dl>
+<dl>
+<dt>
+7</dt>
+<dd>
+Program is not running</dd>
+</dl>
+</div>
+<div class="spacer">
+</div>
+In some error cases, diagnostic output is sent to standard error, or, if standard error is not available, <b>syslogd</b>(8) is being used<b>.</b></div>
+<div class="section">
+<h1>NOTE</h1> <b>startproc</b> is a replacement for the Bourne shell function <b>daemon</b> found in the widely used SysVinit package of Miquel van Smoorenburg, &lt;miquels@cistron.nl&gt;. <b>startproc</b> is not useful to start kernel threads. This should be done by service utilities designed for the purpose to accomplish this task.</div>
+<div class="section">
+<h1>BUGS</h1> Identifying a process based on the executable file and the corresponding inode number only works if the process stays alive during startproc's execution. Processes rewriting their zeroth argument or shell scripts (the inode number of the shell executable file is not identical to that of the script file) may not be identified by a filename path.<div class="spacer">
+</div>
+<b>Startproc</b> does not start a process if there already exists one being in the zombie state.  Zombies are processes which arn't alive but listed in the process table to have the exit status ready for the corresponding parent processes. Therefore the parent processes should be check out.<div class="spacer">
+</div>
+<b>Start_daemon</b> is not able to check for exit status of an executable daemon because after the final <b>execve</b>(3) the <b>start_daemon</b> as an own process does not exit anymore.</div>
+<div class="section">
+<h1>FILES</h1><dl>
+<dt>
+<i>/proc/</i></dt>
+<dd>
+path to the proc file system (see<b> proc</b>(5)).</dd>
+</dl>
+<dl>
+<dt>
+<i>/etc/init.d/</i></dt>
+<dd>
+path to the SuSE boot concept script base directory as required by the Linux Standard  Base  Specification (LSB) (see<b> init.d</b>(7)).</dd>
+</dl>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>checkproc</b>(8), <b>killproc</b>(8), <b>insserv</b>(8), <b>init.d</b>(7), <b>kill</b>(1), <b>skill</b>(1), <b>killall</b>(8), <b>killall5</b>(8), <b>signal</b>(7), <b>proc</b>(5).</div>
+<div class="section">
+<h1>COPYRIGHT</h1> 1994-2007 Werner Fink, 1996-2000 SuSE GmbH Nuernberg, Germany. 2007 SuSE LINUX Products GmbH, Nuernberg, Germany.</div>
+<div class="section">
+<h1>AUTHOR</h1> Werner Fink &lt;werner@suse.de&gt;</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+November 30, 2007</td>
+<td class="foot-os">
+3rd Berkeley Distribution</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

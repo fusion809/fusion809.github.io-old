@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+ROTATELOGS(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+ROTATELOGS(8)</td>
+<td class="head-vol">
+rotatelogs</td>
+<td class="head-rtitle">
+ROTATELOGS(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> rotatelogs - Piped logging program to rotate Apache logs<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <b>rotatelogs</b> [ -<b>l</b> ] [ -<b>f</b> ] <i>logfile</i> <i>rotationtime</i>|<i>filesize</i>M [ <i>offset</i> ]<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SUMMARY</h1> rotatelogs is a simple program for use in conjunction with Apache's piped logfile feature. It supports rotation based on a time interval or maximum size of the log.<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>OPTIONS</h1><dl>
+<dt>
+-l</dt>
+<dd>
+Causes the use of local time rather than GMT as the base for the interval or for strftime(3) formatting with size-based rotation. Note that using -l in an environment which changes the GMT offset (such as for BST or DST) can lead to unpredictable results!</dd>
+</dl>
+<dl>
+<dt>
+-f</dt>
+<dd>
+Causes the logfile to be opened immediately, as soon as rotatelogs starts, instead of waiting for the first logfile entry to be read (for non-busy sites, there may be a substantial delay between when the server is started and when the first request is handled, meaning that the associated logfile does not &quot;exist&quot; until then, which causes problems from some automated logging tools). <i>Available in version 2.2.9 and later.</i></dd>
+</dl>
+<dl>
+<dt>
+<i>logfile</i></dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+<i>rotationtime</i></dt>
+<dd>
+The time between log file rotations in seconds. The rotation occurs at the beginning of this interval. For example, if the rotation time is 3600, the log file will be rotated at the beginning of every hour; if the rotation time is 86400, the log file will be rotated every night at midnight. (If no data is logged during an interval, no file will be created.)</dd>
+</dl>
+<dl>
+<dt>
+<i>filesize</i>M</dt>
+<dd>
+The maximum file size in megabytes followed by the letter M to specify size rather than time.</dd>
+</dl>
+<dl>
+<dt>
+<i>offset</i></dt>
+<dd>
+The number of minutes offset from UTC. If omitted, zero is assumed and UTC is used. For example, to use local time in the zone UTC -5 hours, specify a value of -300 for this argument. In most cases, -l should be used instead of specifying an offset.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>EXAMPLES</h1><div class="spacer">
+</div>
+<br/>
+     CustomLog &quot;|bin/rotatelogs /var/logs/logfile 86400&quot; common<div class="spacer">
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+This creates the files /var/logs/logfile.nnnn where nnnn is the system time at which the log nominally starts (this time will always be a multiple of the rotation time, so you can synchronize cron scripts with it). At the end of each rotation time (here after 24 hours) a new log is started.<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+<br/>
+     CustomLog &quot;|bin/rotatelogs -l /var/logs/logfile.%Y.%m.%d 86400&quot; common<div class="spacer">
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+This creates the files /var/logs/logfile.yyyy.mm.dd where yyyy is the year, mm is the month, and dd is the day of the month. Logging will switch to a new file every day at midnight, local time.<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+<br/>
+     CustomLog &quot;|bin/rotatelogs /var/logs/logfile 5M&quot; common<div class="spacer">
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+This configuration will rotate the logfile whenever it reaches a size of 5 megabytes.<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+<br/>
+     ErrorLog &quot;|bin/rotatelogs /var/logs/errorlog.%Y-%m-%d-%H_%M_%S 5M&quot;<div class="spacer">
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+This configuration will rotate the error logfile whenever it reaches a size of 5 megabytes, and the suffix to the logfile name will be created of the form errorlog.YYYY-mm-dd-HH_MM_SS.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>PORTABILITY</h1> The following logfile format string substitutions should be supported by all strftime(3) implementations, see the strftime(3) man page for library-specific extensions.<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+<dl>
+<dt>
+&#8226; %A - full weekday name (localized)</dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+&#8226; %a - 3-character weekday name (localized)</dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+&#8226; %B - full month name (localized)</dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+&#8226; %b - 3-character month name (localized)</dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+&#8226; %c - date and time (localized)</dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+&#8226; %d - 2-digit day of month</dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+&#8226; %H - 2-digit hour (24 hour clock)</dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+&#8226; %I - 2-digit hour (12 hour clock)</dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+&#8226; %j - 3-digit day of year</dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+&#8226; %M - 2-digit minute</dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+&#8226; %m - 2-digit month</dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+&#8226; %p - am/pm of 12 hour clock (localized)</dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+&#8226; %S - 2-digit second</dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+&#8226; %U - 2-digit week of year (Sunday first day of week)</dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+&#8226; %W - 2-digit week of year (Monday first day of week)</dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+&#8226; %w - 1-digit weekday (Sunday first day of week)</dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+&#8226; %X - time (localized)</dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+&#8226; %x - date (localized)</dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+&#8226; %Y - 4-digit year</dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+&#8226; %y - 2-digit year</dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+&#8226; %Z - time zone name</dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+&#8226; %% - literal `%'</dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2010-11-06</td>
+<td class="foot-os">
+Apache HTTP Server</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

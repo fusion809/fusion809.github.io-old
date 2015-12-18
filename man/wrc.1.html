@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+WRC(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+WRC(1)</td>
+<td class="head-vol">
+Wine Developers Manual</td>
+<td class="head-rtitle">
+WRC(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> wrc - Wine Resource Compiler</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>wrc</b> [<i>options</i>]&#160;[<i>inputfile</i>...]</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>wrc</b> compiles resources from  <i>inputfile</i> into win16 and win32 compatible binary format.<div class="spacer">
+</div>
+The source file is preprocessed with a builtin ANSI-C compatible preprocessor before the resources are compiled. See  <b>PREPROCESSOR</b> below.<div class="spacer">
+</div>
+<b>wrc</b> takes a series of  <i>inputfile</i> as argument. The resources are read from standard input if no inputfile is given. If the output file is not specified with  <b>-o</b>, then <b>wrc</b> will write the output to  <i>inputfile.res</i> with <i>.rc</i> stripped, or to <i>wrc.tab.res</i> if no inputfile was given.</div>
+<div class="section">
+<h1>OPTIONS</h1><dl>
+<dt>
+<b>-b,&#160;--target=</b><i>cpu-manufacturer[<i></i><b>-</b><i>kernel</i>]<b>-</b><i>os</i></i></dt>
+<dd>
+Specify the target CPU and platform on which the generated code will be built. The target specification is in the standard autoconf format as returned by  <b>config.sub</b>.</dd>
+</dl>
+<dl>
+<dt>
+<i><b>-D</b>, <b>--define</b>=<i>id</i>[<b>=</b><i>val</i>]</i></dt>
+<dd>
+Define preprocessor identifier <i>id</i> to (optionally) value <i>val</i>. See also <b>PREPROCESSOR</b> below.</dd>
+</dl>
+<dl>
+<dt>
+<i><b>--debug</b>=<i>nn</i></i></dt>
+<dd>
+Set debug level to <i>nn</i>. The value is a bitmask consisting of 1=verbose, 2=dump internals, 4=resource parser trace, 8=preprocessor messages, 16=preprocessor scanner and 32=preprocessor parser trace.</dd>
+</dl>
+<dl>
+<dt>
+<i><b>--endianness</b>=<i>e</i></i></dt>
+<dd>
+Win32 only; set output byte-ordering, where <i>e</i> is one of n[ative], l[ittle] or b[ig].  Only resources in source-form can be reordered. Native ordering depends on the system on which  <b>wrc</b> was built. You can see the native ordering by typing  <i>wrc -h</i>.</dd>
+</dl>
+<dl>
+<dt>
+<i><b>-E</b></i></dt>
+<dd>
+Preprocess only. The output is written to standard output if no outputfile was selected. The output is compatible with what gcc would generate.</dd>
+</dl>
+<dl>
+<dt>
+<i><b>-h</b>, <b>--help</b></i></dt>
+<dd>
+Prints a summary message and exits.</dd>
+</dl>
+<dl>
+<dt>
+<i><b>-i</b>, <b>--input</b>=<i>file</i></i></dt>
+<dd>
+The name of the input file. If this option is not used, then <b>wrc</b> will use the first non-option argument as the input file name. If there are no non-option arguments, then  <b>wrc</b> will read from standard input.</dd>
+</dl>
+<dl>
+<dt>
+<i><b>-I</b>, <b>--include-dir</b>=<i>path</i></i></dt>
+<dd>
+Add <i>path</i> to include search directories. <i>path</i> may contain multiple directories, separated with ':'. It is allowed to specify  <b>-I</b> multiple times. Include files are searched in the order in which the  <b>-I</b> options were specified.<div style="height: 0.00em;">
+&#160;</div>
+The search is compatible with gcc, in which '&lt;&gt;' quoted filenames are searched exclusively via the  <b>-I</b> set path, whereas the '&quot;&quot;' quoted filenames are first tried to be opened in the current directory. Also resource statements with file references are located in the same way.</dd>
+</dl>
+<dl>
+<dt>
+<i><b>-J</b>, <b>--input-format</b>=<i>format</i></i></dt>
+<dd>
+Sets the input format. Valid options are 'rc' or 'rc16'. Setting the input to 'rc16' disables the recognition of win32 keywords.</dd>
+</dl>
+<dl>
+<dt>
+<i><b>-l</b>, <b>--language</b>=<i>lang</i></i></dt>
+<dd>
+Set default language to <i>lang</i>. Default is the neutral language 0 (i.e. &quot;LANGUAGE 0, 0&quot;).</dd>
+</dl>
+<dl>
+<dt>
+<b>-m16, -m32, -m64</b></dt>
+<dd>
+Generate resources for 16-bit, 32-bit or 64-bit platforms respectively. The only difference between 32-bit and 64-bit is whether the _WIN64 preprocessor symbol is defined.</dd>
+</dl>
+<dl>
+<dt>
+<i><b>--nostdinc</b></i></dt>
+<dd>
+Do not search the standard include path, look for include files only in the directories explicitly specified with the  <b>-I</b> option.</dd>
+</dl>
+<dl>
+<dt>
+<i><b>--no-use-temp-file</b></i></dt>
+<dd>
+Ignored for compatibility with <i>windres</i>.</dd>
+</dl>
+<dl>
+<dt>
+<i><b>-o</b>, <b>-fo</b>, <b>--output</b>=<i>file</i></i></dt>
+<dd>
+Write output to <i>file</i>. Default is <b>inputfile.res</b> with  <b>.rc</b> stripped or <b>wrc.tab.res</b> if input is read from standard input.</dd>
+</dl>
+<dl>
+<dt>
+<i><b>-O</b>, <b>--output-format</b>=<i>format</i></i></dt>
+<dd>
+Sets the output format. The supported formats are <b>po</b>, <b>pot</b>,  <b>res</b>, and <b>res16</b>.  If this option is not specified, the format defaults to  <b>res</b>.<div style="height: 0.00em;">
+&#160;</div>
+In <b>po</b> mode, if an output file name is specified it must match a known language name, like  <b>en_US.po</b>; only resources for the specified language are output. If no output file name is specified, a separate  <i>.po</i> file is created for every language encountered in the input.</dd>
+</dl>
+<dl>
+<dt>
+<i><b>--pedantic</b></i></dt>
+<dd>
+Enable pedantic warnings. Notably redefinition of #define statements can be discovered with this option.</dd>
+</dl>
+<dl>
+<dt>
+<i><b>--po-dir=</b><i>dir</i></i></dt>
+<dd>
+Enable the generation of resource translations based on mo files loaded from the specified directory. That directory must follow the gettext convention, in particular it must contain one  <i>.mo</i> file for each language, and a LINGUAS file listing the available languages.</dd>
+</dl>
+<dl>
+<dt>
+<i><b>-r</b></i></dt>
+<dd>
+Ignored for compatibility with <i>rc</i>.</dd>
+</dl>
+<dl>
+<dt>
+<i><b>--preprocessor</b>=<i>program</i></i></dt>
+<dd>
+This option may be used to specify the preprocessor to use, including any leading arguments. If not specified,  <b>wrc</b> uses its builtin processor. To disable preprocessing, use  <b>--preprocessor=cat</b>.</dd>
+</dl>
+<dl>
+<dt>
+<i><b>-U</b>, <b>--undefine</b>=<i>id</i></i></dt>
+<dd>
+Undefine preprocessor identifier <i>id</i>.  Please note that only macros defined up to this point are undefined by this command. However, these include the special macros defined automatically by  <i>wrc</i>. See also <b>PREPROCESSOR</b> below.</dd>
+</dl>
+<dl>
+<dt>
+<i><b>--use-temp-file</b></i></dt>
+<dd>
+Ignored for compatibility with <i>windres</i>.</dd>
+</dl>
+<dl>
+<dt>
+<i><b>-v</b>, <b>--verbose</b></i></dt>
+<dd>
+Turns on verbose mode (equivalent to <b>-d 1</b>).</dd>
+</dl>
+<dl>
+<dt>
+<i><b>--version</b></i></dt>
+<dd>
+Print version and exit.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>PREPROCESSOR</h1> The preprocessor is ANSI-C compatible with some of the extensions of the gcc preprocessor.<div class="spacer">
+</div>
+The preprocessor recognizes these directives: #include, #define (both simple and macro), #undef, #if, #ifdef, #ifndef, #elif, #else, #endif, #error, #warning, #line, # (both null- and line-directive), #pragma (ignored), #ident (ignored).<div class="spacer">
+</div>
+The preprocessor sets by default several defines:<div style="height: 0.00em;">
+&#160;</div>
+RC_INVOKED      set to 1<div style="height: 0.00em;">
+&#160;</div>
+__WRC__         Major version of wrc<div style="height: 0.00em;">
+&#160;</div>
+__WRC_MINOR__   Minor version of wrc<div style="height: 0.00em;">
+&#160;</div>
+__WRC_PATCHLEVEL__   Patch level<div class="spacer">
+</div>
+Win32 compilation mode also sets _WIN32 to 1.<div class="spacer">
+</div>
+Special macros __FILE__, __LINE__, __TIME__ and __DATE__ are also recognized and expand to their respective equivalent.</div>
+<div class="section">
+<h1>LANGUAGE SUPPORT</h1> Language, version and characteristics can be bound to all resource types that have inline data, such as RCDATA. This is an extension to Microsoft's resource compiler, which lacks this support completely. Only VERSIONINFO cannot have version and characteristics attached, but languages are propagated properly if you declare it correctly before the VERSIONINFO resource starts.<div class="spacer">
+</div>
+Example:<div class="spacer">
+</div>
+1 RCDATA DISCARDABLE<div style="height: 0.00em;">
+&#160;</div>
+LANGUAGE 1, 0<div style="height: 0.00em;">
+&#160;</div>
+VERSION 312<div style="height: 0.00em;">
+&#160;</div>
+CHARACTERISTICS 876<div style="height: 0.00em;">
+&#160;</div>
+{<div style="height: 0.00em;">
+&#160;</div>
+	1, 2, 3, 4, 5, &quot;and whatever more data you want&quot;<div style="height: 0.00em;">
+&#160;</div>
+	'00 01 02 03 04 05 06 07 08'<div style="height: 0.00em;">
+&#160;</div>
+}</div>
+<div class="section">
+<h1>AUTHORS</h1> <b>wrc</b> was written by Bertho A. Stultiens and is a nearly complete rewrite of the first wine resource compiler (1994) by Martin von Loewis. Additional resource-types were contributed by Ulrich Czekalla and Albert den Haan. Many cleanups by Dimitrie O. Paun in 2002-2003. Bugfixes have been contributed by many Wine developers.</div>
+<div class="section">
+<h1>BUGS</h1> - The preprocessor recognizes variable argument macros, but does not expand them correctly.<div style="height: 0.00em;">
+&#160;</div>
+- Error reporting should be more precise, as currently the column and line number reported are those of the next token.<div style="height: 0.00em;">
+&#160;</div>
+- Default memory options should differ between win16 and win32.<div class="spacer">
+</div>
+There is no support for:<div style="height: 0.00em;">
+&#160;</div>
+- RT_DLGINCLUDE, RT_VXD, RT_PLUGPLAY and RT_HTML (unknown format)<div style="height: 0.00em;">
+&#160;</div>
+- PUSHBOX control is unsupported due to lack of original functionality.<div class="spacer">
+</div>
+Fonts are parsed and generated, but there is no support for the generation of the FONTDIR yet. The user must supply the FONTDIR resource in the source to match the FONT resources.<div class="spacer">
+</div>
+Bugs can be reported on the <a class="link-ext" href="http://bugs.winehq.org"><b>Wine bug tracker</b></a></div>
+<div class="section">
+<h1>AVAILABILITY</h1> <b>wrc</b> is part of the Wine distribution, which is available through WineHQ, the <a class="link-ext" href="http://www.winehq.org/"><b>Wine development headquarters</b></a></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>wine</b>(1),<div style="height: 0.00em;">
+&#160;</div>
+<a class="link-ext" href="http://www.winehq.org/help"><b>Wine documentation and support</b></a></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+October 2005</td>
+<td class="foot-os">
+Wine 1.7.55</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

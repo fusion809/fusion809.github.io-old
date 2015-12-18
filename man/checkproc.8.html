@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+CHECKPROC(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+CHECKPROC(8)</td>
+<td class="head-vol">
+The SuSE boot concept</td>
+<td class="head-rtitle">
+CHECKPROC(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> Checkproc - Checks for a process by full path name<div style="height: 0.00em;">
+&#160;</div>
+Pidofproc - Checks for a process by exec base name</div>
+<div class="section">
+<h1>SYNOPSIS</h1><div style="margin-left: 5.00ex;text-indent: -5.00ex;" class="spacer">
+<b>checkproc</b> [<b>-vLkNz</b>] [<b>-p&#160;<i>pid_file</i></b>] [<b>-i&#160;<i>ingnore_file</i></b>] [<b>-c&#160;<i>root</i></b>] <i>/full/path/to/executable</i></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;text-indent: -5.00ex;" class="spacer">
+<b>checkproc</b> <b>-n</b> [<b>-vk</b>] <i>name_of_kernel_thread</i></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;text-indent: -5.00ex;" class="spacer">
+<b>checkproc</b> <b>&#160;&#160;</b> [<b>-vk</b>] <i>basename_of_executable</i></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;text-indent: -5.00ex;" class="spacer">
+<b>pidofproc</b> [<b>-LkNz</b>] [<b>-p&#160;<i>pid_file</i></b>] [<b>-i&#160;<i>ingnore_file</i></b>] [<b>-c&#160;<i>root</i></b>] <i>/full/path/to/executable</i></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;text-indent: -5.00ex;" class="spacer">
+<b>pidofproc</b> <b>-n</b> [<b>-k</b>] <i>name_of_kernel_thread</i></div>
+<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;text-indent: -5.00ex;" class="spacer">
+<b>pidofproc</b> <b>&#160;&#160;</b> [<b>-k</b>] <i>basename_of_executable</i></div>
+</div>
+<div class="section">
+<h1>SYNOPSIS LSB 3.1</h1><div style="margin-left: 5.00ex;text-indent: -5.00ex;" class="spacer">
+<b>pidofproc</b> [<b>-p&#160;<i>pid_file</i></b>] <i>/full/path/to/executable</i></div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>checkproc</b> checks for running processes that use the specified executable.<div class="spacer">
+</div>
+<b>checkproc</b> does not use the pid to verify a process but the full path of the corresponding program which is used to identify the executable (see<b> proc</b>(5)). Only if the inode number (/proc/<b>&lt;pid&gt;</b>/exe) and the full name are unavailable (/proc/<b>&lt;pid&gt;</b>/cmdline) or if the executable changes its zeroth argument, <b>checkproc</b> uses the base name (/proc/<b>&lt;pid&gt;</b>/stat) to identify the running program. Note that if the option <b>-n</b> for kernel thread is given only (/proc/<b>&lt;pid&gt;</b>/stat) is used.  For this case a existing symbolic link (/proc/<b>&lt;pid&gt;</b>/exe) indicates that the <b>&lt;pid&gt;</b> is not a kernel thread.<div class="spacer">
+</div>
+Extended functionality is provided by the <b>-p</b> <i>pid_file</i> option (former option <b>-f</b> changed due to the LSB specification). If this option is specified, <b>checkproc</b> tries to check the pid read from this file instead of the default (/var/run/<b>&lt;basename&gt;</b>.pid). The pid read from this file is compared against the pids of the processes that uses the specified binary. If the option <b>-k</b> is specified, <b>checkproc</b> works like <b>killproc</b> that is that if the if the <i>pid_file</i> does not exist, <b>checkproc</b> assumes that the daemon is not running. It is possible to use a process identity number instead of a pid file.<div class="spacer">
+</div>
+For the possibility of having two different sessions of one binary program, the option <b>-i</b> <i>ignore_file</i> allows to specify a pid file which pid number is used to <b>ignore</b> all processes of corresponding process <b>session</b>.<div class="spacer">
+</div>
+Note that the behaviour above is changed by the option <b>-k</b>. With this option, the pid read from the pid file is the only used pid (see <b>killproc</b>(8)) <b>and</b> with this option also exit codes like <b>startproc</b>(8) or <b>killproc</b>(8) are used. Without this option, the pid read from the pid file is used to search the process table for a process with an executable that matches the specified pathname. In order to avoid confusion with stale pid files, a not up-to-date pid will be ignored (see <b>startproc</b>(8)).<div class="spacer">
+</div>
+The option <b>-v</b> makes <b>checkproc</b> print out verbose messages. The same happens if <b>pidofproc</b> LSB variant is used.  This version also accepts also the base name only of a executable.  Note that this disables the comparision of the inodes of the executable and the information found within the proc table (see<b> proc</b>(5)).</div>
+<div class="section">
+<h1>REQUIRED</h1><dl>
+<dt>
+<i>/full/path/to/executable</i> or <i>name_of_kernel_thread</i></dt>
+<dd>
+Specifies the executable which processes should be found, or alternatively, if the option Or alternated, if option <b>-n</b> is used, the name of the kernel thread. This argument is always required.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>OPTIONS</h1><dl>
+<dt>
+<b>-k</b></dt>
+<dd>
+This option makes <b>checkproc</b> work like <b>killproc</b>(8) which changes the operation mode, e.g. the exit status of the program will be that of <b>killproc</b>(8). Without this option, <b>checkproc</b> works like <b>startproc (8)</b> and finds all processes with an executable that matches the specified pathname, even if a given pid file (see option <b>-p</b>) isn't up-to-date. Nevertheless it uses its own exit status (see section <b>EXIT CODES</b>).</dd>
+</dl>
+<dl>
+<dt>
+<b>-L</b></dt>
+<dd>
+This option causes symlinks to be followed, as the like-named option in <b>ls</b>(1). <b>Note</b>: for the file name the original name of the program is used instead of the name of the symbolic link.</dd>
+</dl>
+<dl>
+<dt>
+<b>-p</b><i> pid_file</i></dt>
+<dd>
+Former option <b>-f</b> changed due to the LSB specification.) Use an alternate pid file instead of the default <b>/var/run/&lt;basename&gt;.pid</b>. If the option is specified and the <i>pid_file</i> does not exist, <b>checkproc</b> assumes that the daemon is not running.  It is possible to use a process identity number instead of a pid file.</dd>
+</dl>
+<dl>
+<dt>
+<b>-i</b><i> ignore_file</i></dt>
+<dd>
+The pid found in this file is used as <b>session</b> id of the same binary program which should be ignored by <b>checkproc</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>-c</b><i> root</i></dt>
+<dd>
+Change root directory to <i>root</i> for services which have been started with this option by <b>startproc</b>(8).</dd>
+</dl>
+<dl>
+<dt>
+<b>-n</b></dt>
+<dd>
+This option indicates that a kernel thread should be checked. In this case not the executable with its full path name is required but the name of the kernel thread.</dd>
+</dl>
+<dl>
+<dt>
+<b>-N</b></dt>
+<dd>
+With this option the location of the executable is checked about NFS file system and if true the <b>stat</b>(2) system call is not applied on the <b>exe</b> symbolic link under <b>/proc</b>(5). Otherwise <b>checkproc</b> or <b>pidofproc</b> could be locked if the corresponding NFS server is currently not online or available. This implies that the inode number check between the exectuable on the command line and the exectuable of the <b>exec</b> symbolic link will be skipped.</dd>
+</dl>
+<dl>
+<dt>
+<b>-q</b></dt>
+<dd>
+This option is ignored.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b></dt>
+<dd>
+Verbose output.</dd>
+</dl>
+<dl>
+<dt>
+<b>-z</b></dt>
+<dd>
+This option causes checkproc to see processes even if they are in the zombie state.  Without this option zombies are handled as not existent because such a process isn't alive but listed in the process table and waits on its parent process.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>EXAMPLE</h1><dl>
+<dt>
+<b>checkproc /usr/sbin/sendmail</b></dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+returns all pids of running sendmail processes.</dd>
+</dl>
+<dl>
+<dt>
+<b>checkproc -p /var/myrun/lpd.pid /usr/sbin/lpd</b></dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+returns the command line or the basename of the process pid found in <i>/var/run/lpd.pid</i>.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>EXIT CODES</h1> The exit codes without the option <b>-k</b> have the following <b>LSB</b> conform conditions:<div class="spacer">
+</div>
+<div style="margin-left: 7.00ex;">
+<dl>
+<dt>
+0</dt>
+<dd>
+Program is running</dd>
+</dl>
+<dl>
+<dt>
+1</dt>
+<dd>
+No process but pid file found</dd>
+</dl>
+<dl>
+<dt>
+3</dt>
+<dd>
+No process and no pid file found</dd>
+</dl>
+</div>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+101</dt>
+<dd>
+Wrong syntax on command line</dd>
+</dl>
+<dl>
+<dt>
+102</dt>
+<dd>
+Other errors</dd>
+</dl>
+</div>
+<div class="spacer">
+</div>
+If the option <b>-k</b> is used checkproc uses exit codes like <b>startproc</b>(8) or <b>killproc</b>(8) do:<div class="spacer">
+</div>
+<div style="margin-left: 7.00ex;">
+<dl>
+<dt>
+0</dt>
+<dd>
+Program is running</dd>
+</dl>
+<dl>
+<dt>
+1</dt>
+<dd>
+Generic or unspecified error</dd>
+</dl>
+<dl>
+<dt>
+2</dt>
+<dd>
+Invalid or excess argument(s)</dd>
+</dl>
+<dl>
+<dt>
+4</dt>
+<dd>
+Insufficient privilege(s)</dd>
+</dl>
+<dl>
+<dt>
+5</dt>
+<dd>
+Program is not installed</dd>
+</dl>
+<dl>
+<dt>
+7</dt>
+<dd>
+Program is not running</dd>
+</dl>
+</div>
+<div class="spacer">
+</div>
+in some cases a message is send to standard error or, if no standard error available, <b>syslogd</b>(8) is used.</div>
+<div class="section">
+<h1>NOTE</h1> <b>checkproc</b> together with the option <b>-v</b> just like <b>pidof</b>(8). The only difference is the usage of an available pid file. Only if no usable pid is given with a pid file the process table will be scanned.</div>
+<div class="section">
+<h1>BUGS</h1> Identifying a process based on the executable file and the corresponding inode number only works if the process stays alive during startproc's execution. Processes rewriting their zeroth argument or shell scripts (the inode number of the shell executable file is not identical to that of the script file) may not be identified by a filename path.</div>
+<div class="section">
+<h1>FILES</h1><dl>
+<dt>
+<i>/proc/</i></dt>
+<dd>
+path to the proc file system (see<b> proc</b>(5)).</dd>
+</dl>
+<dl>
+<dt>
+<i>/etc/init.d/</i></dt>
+<dd>
+path to the SuSE boot concept script base directory as required by the Linux Standard  Base  Specification (LSB) (see<b> init.d</b>(7)).</dd>
+</dl>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>startproc</b>(8), <b>killproc</b>(8), <b>insserv</b>(8), <b>init.d</b>(7), <b>kill</b>(1), <b>skill</b>(1), <b>killall</b>(8), <b>killall5</b>(8), <b>signal</b>(7), <b>proc</b>(5).</div>
+<div class="section">
+<h1>COPYRIGHT</h1> 1994-2005 Werner Fink, 1996-2005 SuSE GmbH Nuernberg, Germany.</div>
+<div class="section">
+<h1>AUTHOR</h1> Werner Fink &lt;werner@suse.de&gt;</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+November 10, 2000</td>
+<td class="foot-os">
+3rd Berkeley Distribution</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

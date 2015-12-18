@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SUDO(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<div class="section">
+<h1 id="x4e414d45">NAME</h1> <b class="name">sudo.conf</b> &#8212; <span class="desc">configuration for sudo front end</span></div>
+<div class="section">
+<h1 id="x4445534352495054494f4e">DESCRIPTION</h1> The <b class="name">sudo.conf</b> file is used to configure the <b class="name">sudo</b> front end. It specifies the security policy and I/O logging plugins, debug flags as well as plugin-agnostic path names and settings.<div class="spacer">
+</div>
+The <b class="name">sudo.conf</b> file supports the following directives, described in detail below.<dl style="margin-top: 0.00em;margin-bottom: 0.00em;" class="list list-tag">
+<dt class="list-tag" style="margin-top: 1.00em;">
+Plugin</dt>
+<dd class="list-tag" style="margin-left: 8.00ex;">
+a security policy or I/O logging plugin</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+Path</dt>
+<dd class="list-tag" style="margin-left: 8.00ex;">
+a plugin-agnostic path</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+Set</dt>
+<dd class="list-tag" style="margin-left: 8.00ex;">
+a front end setting, such as <span class="emph">disable_coredump</span> or <span class="emph">group_source</span></dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+Debug</dt>
+<dd class="list-tag" style="margin-left: 8.00ex;">
+debug flags to aid in debugging <b class="name">sudo</b>, <b class="name">sudoreplay</b>, <b class="name">visudo</b>, and the <b class="name">sudoers</b> plugin.</dd>
+</dl>
+<div class="spacer">
+</div>
+The pound sign (&#8216;<code class="lit">#</code>&#8217;) is used to indicate a comment. Both the comment character and any text after it, up to the end of the line, are ignored.<div class="spacer">
+</div>
+Long lines can be continued with a backslash (&#8216;<code class="lit">\</code>&#8217;) as the last character on the line. Note that leading white space is removed from the beginning of lines even when the continuation character is used.<div class="spacer">
+</div>
+Non-comment lines that don't begin with <code class="lit">Plugin</code>, <code class="lit">Path</code>, <code class="lit">Debug</code>, or <code class="lit">Set</code> are silently ignored.<div class="spacer">
+</div>
+The <b class="name">sudo.conf</b> file is always parsed in the &#8220;<code class="lit">C</code>&#8221; locale.<div class="subsection">
+<h2 id="x506c7567696e20636f6e66696775726174696f6e">Plugin configuration</h2> <b class="name">sudo</b> supports a plugin architecture for security policies and input/output logging. Third parties can develop and distribute their own policy and I/O logging plugins to work seamlessly with the <b class="name">sudo</b> front end. Plugins are dynamically loaded based on the contents of <b class="name">sudo.conf</b>.<div class="spacer">
+</div>
+A <code class="lit">Plugin</code> line consists of the <code class="lit">Plugin</code> keyword, followed by the <span class="emph">symbol_name</span> and the <span class="emph">path</span> to the dynamic shared object that contains the plugin. The <span class="emph">symbol_name</span> is the name of the <code class="lit">struct policy_plugin</code> or <code class="lit">struct io_plugin</code> symbol contained in the plugin. The <span class="emph">path</span> may be fully qualified or relative. If not fully qualified, it is relative to the directory specified by the <span class="emph">plugin_dir</span> <code class="lit">Path</code> setting, which defaults to <i class="file">/usr/lib64/sudo</i>. In other words:<div class="spacer">
+</div>
+<pre style="margin-left: 5.00ex;" class="lit display">
+Plugin sudoers_policy sudoers.so</pre>
+<div class="spacer">
+</div>
+is equivalent to:<div class="spacer">
+</div>
+<pre style="margin-left: 5.00ex;" class="lit display">
+Plugin sudoers_policy /usr/lib64/sudo/sudoers.so</pre>
+<div class="spacer">
+</div>
+If the plugin was compiled statically into the <b class="name">sudo</b> binary instead of being installed as a dynamic shared object, the <span class="emph">path</span> should be specified without a leading directory, as it does not actually exist in the file system. For example:<div class="spacer">
+</div>
+<pre style="margin-left: 5.00ex;" class="lit display">
+Plugin sudoers_policy sudoers.so</pre>
+<div class="spacer">
+</div>
+Starting with <b class="name">sudo</b> 1.8.5, any additional parameters after the <span class="emph">path</span> are passed as arguments to the plugin's <span class="emph">open</span> function. For example, to override the compile-time default sudoers file mode:<div class="spacer">
+</div>
+<pre style="margin-left: 5.00ex;" class="lit display">
+Plugin sudoers_policy sudoers.so sudoers_mode=0440</pre>
+<div class="spacer">
+</div>
+The same dynamic shared object may contain multiple plugins, each with a different symbol name. The file must be owned by uid 0 and only writable by its owner. Because of ambiguities that arise from composite policies, only a single policy plugin may be specified. This limitation does not apply to I/O plugins.<div class="spacer">
+</div>
+If no <b class="name">sudo.conf</b> file is present, or if it contains no <code class="lit">Plugin</code> lines, the <b class="name">sudoers</b> plugin will be used as the default security policy and for I/O logging (if enabled by the policy). This is equivalent to the following:<div class="spacer">
+</div>
+<pre style="margin-left: 5.00ex;" class="lit display">
+Plugin sudoers_policy sudoers.so 
+Plugin sudoers_io sudoers.so</pre>
+<div class="spacer">
+</div>
+For more information on the <b class="name">sudo</b> plugin architecture, see the <a class="link-man">sudo_plugin(8)</a> manual.</div>
+<div class="subsection">
+<h2 id="x506174682073657474696e6773">Path settings</h2> A <code class="lit">Path</code> line consists of the <code class="lit">Path</code> keyword, followed by the name of the path to set and its value. For example:<div class="spacer">
+</div>
+<pre style="margin-left: 5.00ex;" class="lit display">
+Path noexec /usr/libexec/sudo/sudo_noexec.so 
+Path askpass /usr/X11R6/bin/ssh-askpass</pre>
+<div class="spacer">
+</div>
+The following plugin-agnostic paths may be set in the <i class="file">/etc/sudo.conf</i> file:<dl style="margin-top: 0.00em;margin-bottom: 0.00em;" class="list list-tag">
+<dt class="list-tag" style="margin-top: 1.00em;">
+askpass</dt>
+<dd class="list-tag" style="margin-left: 8.00ex;">
+The fully qualified path to a helper program used to read the user's password when no terminal is available. This may be the case when <b class="name">sudo</b> is executed from a graphical (as opposed to text-based) application. The program specified by <span class="emph">askpass</span> should display the argument passed to it as the prompt and write the user's password to the standard output. The value of <span class="emph">askpass</span> may be overridden by the <span class="env">SUDO_ASKPASS</span> environment variable.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+noexec</dt>
+<dd class="list-tag" style="margin-left: 8.00ex;">
+The fully-qualified path to a shared library containing dummy versions of the <b class="fname">execl</b>(), <b class="fname">execle</b>(), <b class="fname">execlp</b>(), <b class="fname">exect</b>(), <b class="fname">execv</b>(), <b class="fname">execve</b>(), <b class="fname">execvP</b>(), <b class="fname">execvp</b>(), <b class="fname">execvpe</b>(), <b class="fname">fexecve</b>(), <b class="fname">popen</b>(), <b class="fname">posix_spawn</b>(), <b class="fname">posix_spawnp</b>(), and <b class="fname">system</b>() library functions that just return an error. This is used to implement the <span class="emph">noexec</span> functionality on systems that support <span class="env">LD_PRELOAD</span> or its equivalent. The default value is: <i class="file">/usr/libexec/sudo/sudo_noexec.so</i>.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+plugin_dir</dt>
+<dd class="list-tag" style="margin-left: 8.00ex;">
+The default directory to use when searching for plugins that are specified without a fully qualified path name. The default value is <i class="file">/usr/lib64/sudo</i>.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+sesh</dt>
+<dd class="list-tag" style="margin-left: 8.00ex;">
+The fully-qualified path to the <b class="name">sesh</b> binary. This setting is only used when <b class="name">sudo</b> is built with SELinux support. The default value is <i class="file">/usr/local/libexec/sudo/sesh</i>.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2 id="x4f746865722073657474696e6773">Other settings</h2> The <b class="name">sudo.conf</b> file also supports the following front end settings:<dl style="margin-top: 0.00em;margin-bottom: 0.00em;" class="list list-tag">
+<dt class="list-tag" style="margin-top: 1.00em;">
+disable_coredump</dt>
+<dd class="list-tag" style="margin-left: 8.00ex;">
+Core dumps of <b class="name">sudo</b> itself are disabled by default to prevent the disclosure of potentially sensitive information. To aid in debugging <b class="name">sudo</b> crashes, you may wish to re-enable core dumps by setting &#8220;disable_coredump&#8221; to false in <b class="name">sudo.conf</b> as follows:<div class="spacer">
+</div>
+<pre style="margin-left: 5.00ex;" class="lit display">
+Set disable_coredump false</pre>
+<div class="spacer">
+</div>
+All modern operating systems place restrictions on core dumps from setuid processes like <b class="name">sudo</b> so this option can be enabled without compromising security. To actually get a <b class="name">sudo</b> core file you will likely need to enable core dumps for setuid processes. On BSD and Linux systems this is accomplished in the <a class="link-man">sysctl</a> command. On Solaris, the <a class="link-man">coreadm</a> command is used to configure core dump behavior.<div class="spacer">
+</div>
+This setting is only available in <b class="name">sudo</b> version 1.8.4 and higher.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+group_source</dt>
+<dd class="list-tag" style="margin-left: 8.00ex;">
+<b class="name">sudo</b> passes the invoking user's group list to the policy and I/O plugins. On most systems, there is an upper limit to the number of groups that a user may belong to simultaneously (typically 16 for compatibility with NFS). On systems with the <a class="link-man">getconf(1)</a> utility, running:<blockquote style="margin-top: 0.00em;margin-bottom: 0.00em;">
+<div class="display">
+<code class="lit">getconf NGROUPS_MAX</code></div>
+</blockquote>
+will return the maximum number of groups.<div class="spacer">
+</div>
+However, it is still possible to be a member of a larger number of groups--they simply won't be included in the group list returned by the kernel for the user. Starting with <b class="name">sudo</b> version 1.8.7, if the user's kernel group list has the maximum number of entries, <b class="name">sudo</b> will consult the group database directly to determine the group list. This makes it possible for the security policy to perform matching by group name even when the user is a member of more than the maximum number of groups.<div class="spacer">
+</div>
+The <span class="emph">group_source</span> setting allows the administrator to change this default behavior. Supported values for <span class="emph">group_source</span> are:<dl style="margin-top: 0.00em;margin-bottom: 0.00em;" class="list list-tag">
+<dt class="list-tag" style="margin-top: 1.00em;">
+static</dt>
+<dd class="list-tag" style="margin-left: 8.00ex;">
+Use the static group list that the kernel returns. Retrieving the group list this way is very fast but it is subject to an upper limit as described above. It is &#8220;static&#8221; in that it does not reflect changes to the group database made after the user logs in. This was the default behavior prior to <b class="name">sudo</b> 1.8.7.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+dynamic</dt>
+<dd class="list-tag" style="margin-left: 8.00ex;">
+Always query the group database directly. It is &#8220;dynamic&#8221; in that changes made to the group database after the user logs in will be reflected in the group list. On some systems, querying the group database for all of a user's groups can be time consuming when querying a network-based group database. Most operating systems provide an efficient method of performing such queries. Currently, <b class="name">sudo</b> supports efficient group queries on AIX, BSD, HP-UX, Linux and Solaris.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+adaptive</dt>
+<dd class="list-tag" style="margin-left: 8.00ex;">
+Only query the group database if the static group list returned by the kernel has the maximum number of entries. This is the default behavior in <b class="name">sudo</b> 1.8.7 and higher.</dd>
+</dl>
+<div class="spacer">
+</div>
+For example, to cause <b class="name">sudo</b> to only use the kernel's static list of groups for the user:<div class="spacer">
+</div>
+<pre style="margin-left: 5.00ex;" class="lit display">
+Set group_source static</pre>
+<div class="spacer">
+</div>
+This setting is only available in <b class="name">sudo</b> version 1.8.7 and higher.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+max_groups</dt>
+<dd class="list-tag" style="margin-left: 8.00ex;">
+The maximum number of user groups to retrieve from the group database. Values less than one will be ignored. This setting is only used when querying the group database directly. It is intended to be used on systems where it is not possible to detect when the array to be populated with group entries is not sufficiently large. By default, <b class="name">sudo</b> will allocate four times the system's maximum number of groups (see above) and retry with double that number if the group database query fails. However, some systems just return as many entries as will fit and do not indicate an error when there is a lack of space.<div class="spacer">
+</div>
+This setting is only available in <b class="name">sudo</b> version 1.8.7 and higher.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+probe_interfaces</dt>
+<dd class="list-tag" style="margin-left: 8.00ex;">
+By default, <b class="name">sudo</b> will probe the system's network interfaces and pass the IP address of each enabled interface to the policy plugin.  This makes it possible for the plugin to match rules based on the IP address without having to query DNS.  On Linux systems with a large number of virtual interfaces, this may take a non-negligible amount of time. If IP-based matching is not required, network interface probing can be disabled as follows:<div class="spacer">
+</div>
+<pre style="margin-left: 5.00ex;" class="lit display">
+Set probe_interfaces false</pre>
+<div class="spacer">
+</div>
+This setting is only available in <b class="name">sudo</b> version 1.8.10 and higher.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2 id="x446562756720666c616773">Debug flags</h2> <b class="name">sudo</b> versions 1.8.4 and higher support a flexible debugging framework that can help track down what <b class="name">sudo</b> is doing internally if there is a problem.<div class="spacer">
+</div>
+A <code class="lit">Debug</code> line consists of the <code class="lit">Debug</code> keyword, followed by the name of the program (or plugin) to debug (<b class="name">sudo</b>, <b class="name">visudo</b>, <b class="name">sudoreplay</b>, <b class="name">sudoers</b>), the debug file name and a comma-separated list of debug flags.  The debug flag syntax used by <b class="name">sudo</b> and the <b class="name">sudoers</b> plugin is <span class="emph">subsystem</span>@<span class="emph">priority</span> but a plugin is free to use a different format so long as it does not include a comma (&#8216;<code class="lit">,</code>&#8217;).<div class="spacer">
+</div>
+For example:<div class="spacer">
+</div>
+<pre style="margin-left: 5.00ex;" class="lit display">
+Debug sudo /var/log/sudo_debug all@warn,plugin@info</pre>
+<div class="spacer">
+</div>
+would log all debugging statements at the <span class="emph">warn</span> level and higher in addition to those at the <span class="emph">info</span> level for the plugin subsystem.<div class="spacer">
+</div>
+As of <b class="name">sudo</b> 1.8.12, multiple <code class="lit">Debug</code> entries may be specified per program. Older versions of <b class="name">sudo</b> only support a single <code class="lit">Debug</code> entry per program. Plugin-specific <code class="lit">Debug</code> entries are also supported starting with <b class="name">sudo</b> 1.8.12 and are matched by either the base name of the plugin that was loaded (for example <code class="lit">sudoers.so</code>) or by the plugin's fully-qualified path name. Previously, the <b class="name">sudoers</b> plugin shared the same <code class="lit">Debug</code> entry as the <b class="name">sudo</b> front end and could not be configured separately.<div class="spacer">
+</div>
+The following priorities are supported, in order of decreasing severity: <span class="emph">crit</span>, <span class="emph">err</span>, <span class="emph">warn</span>, <span class="emph">notice</span>, <span class="emph">diag</span>, <span class="emph">info</span>, <span class="emph">trace</span> and <span class="emph">debug</span>. Each priority, when specified, also includes all priorities higher than it.  For example, a priority of <span class="emph">notice</span> would include debug messages logged at <span class="emph">notice</span> and higher.<div class="spacer">
+</div>
+The priorities <span class="emph">trace</span> and <span class="emph">debug</span> also include function call tracing which logs when a function is entered and when it returns. For example, the following trace is for the get_user_groups() function located in src/sudo.c:<div class="spacer">
+</div>
+<pre style="margin-left: 5.00ex;" class="lit display">
+sudo[123] -&gt; get_user_groups @ src/sudo.c:385 
+sudo[123] &lt;- get_user_groups @ src/sudo.c:429 := groups=10,0,5</pre>
+<div class="spacer">
+</div>
+When the function is entered, indicated by a right arrow &#8216;<code class="lit">-&gt;</code>&#8217;, the program, process ID, function, source file and line number are logged. When the function returns, indicated by a left arrow &#8216;<code class="lit">&lt;-</code>&#8217;, the same information is logged along with the return value. In this case, the return value is a string.<div class="spacer">
+</div>
+The following subsystems are used by the <b class="name">sudo</b> front-end:<dl style="margin-top: 0.00em;margin-bottom: 0.00em;" class="list list-tag">
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="emph">all</span></dt>
+<dd class="list-tag" style="margin-left: 10.00ex;">
+matches every subsystem</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="emph">args</span></dt>
+<dd class="list-tag" style="margin-left: 10.00ex;">
+command line argument processing</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="emph">conv</span></dt>
+<dd class="list-tag" style="margin-left: 10.00ex;">
+user conversation</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="emph">edit</span></dt>
+<dd class="list-tag" style="margin-left: 10.00ex;">
+sudoedit</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="emph">event</span></dt>
+<dd class="list-tag" style="margin-left: 10.00ex;">
+event subsystem</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="emph">exec</span></dt>
+<dd class="list-tag" style="margin-left: 10.00ex;">
+command execution</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="emph">main</span></dt>
+<dd class="list-tag" style="margin-left: 10.00ex;">
+<b class="name">sudo</b> main function</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="emph">netif</span></dt>
+<dd class="list-tag" style="margin-left: 10.00ex;">
+network interface handling</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="emph">pcomm</span></dt>
+<dd class="list-tag" style="margin-left: 10.00ex;">
+communication with the plugin</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="emph">plugin</span></dt>
+<dd class="list-tag" style="margin-left: 10.00ex;">
+plugin configuration</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="emph">pty</span></dt>
+<dd class="list-tag" style="margin-left: 10.00ex;">
+pseudo-tty related code</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="emph">selinux</span></dt>
+<dd class="list-tag" style="margin-left: 10.00ex;">
+SELinux-specific handling</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="emph">util</span></dt>
+<dd class="list-tag" style="margin-left: 10.00ex;">
+utility functions</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="emph">utmp</span></dt>
+<dd class="list-tag" style="margin-left: 10.00ex;">
+utmp handling</dd>
+</dl>
+<div class="spacer">
+</div>
+The <a class="link-man">sudoers(5)</a> plugin includes support for additional subsystems.</div>
+</div>
+<div class="section">
+<h1 id="x46494c4553">FILES</h1><dl style="margin-top: 0.00em;margin-bottom: 0.00em;" class="list list-tag">
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="file">/etc/sudo.conf</i></dt>
+<dd class="list-tag" style="margin-left: 24.00ex;">
+<b class="name">sudo</b> front end configuration</dd>
+</dl>
+</div>
+<div class="section">
+<h1 id="x4558414d504c4553">EXAMPLES</h1><pre style="margin-left: 0.00ex;" class="lit display">
+# 
+# Default /etc/sudo.conf file 
+# 
+# Format: 
+#   Plugin plugin_name plugin_path plugin_options ... 
+#   Path askpass /path/to/askpass 
+#   Path noexec /path/to/sudo_noexec.so 
+#   Debug sudo /var/log/sudo_debug all@warn 
+#   Set disable_coredump true 
+# 
+# The plugin_path is relative to /usr/lib64/sudo unless 
+#   fully qualified. 
+# The plugin_name corresponds to a global symbol in the plugin 
+#   that contains the plugin interface structure. 
+# The plugin_options are optional. 
+# 
+# The sudoers plugin is used by default if no Plugin lines are 
+# present. 
+Plugin sudoers_policy sudoers.so 
+Plugin sudoers_io sudoers.so 
+ 
+# 
+# Sudo askpass: 
+# 
+# An askpass helper program may be specified to provide a graphical 
+# password prompt for &quot;sudo -A&quot; support.  Sudo does not ship with 
+# its own askpass program but can use the OpenSSH askpass. 
+# 
+# Use the OpenSSH askpass 
+#Path askpass /usr/X11R6/bin/ssh-askpass 
+# 
+# Use the Gnome OpenSSH askpass 
+#Path askpass /usr/libexec/openssh/gnome-ssh-askpass 
+ 
+# 
+# Sudo noexec: 
+# 
+# Path to a shared library containing dummy versions of the execv(), 
+# execve() and fexecve() library functions that just return an error. 
+# This is used to implement the &quot;noexec&quot; functionality on systems that 
+# support C&lt;LD_PRELOAD&gt; or its equivalent. 
+# The compiled-in value is usually sufficient and should only be 
+# changed if you rename or move the sudo_noexec.so file. 
+# 
+#Path noexec /usr/libexec/sudo/sudo_noexec.so 
+ 
+# 
+# Core dumps: 
+# 
+# By default, sudo disables core dumps while it is executing 
+# (they are re-enabled for the command that is run). 
+# To aid in debugging sudo problems, you may wish to enable core 
+# dumps by setting &quot;disable_coredump&quot; to false. 
+# 
+#Set disable_coredump false 
+ 
+# 
+# User groups: 
+# 
+# Sudo passes the user's group list to the policy plugin. 
+# If the user is a member of the maximum number of groups (usually 16), 
+# sudo will query the group database directly to be sure to include 
+# the full list of groups. 
+# 
+# On some systems, this can be expensive so the behavior is configurable. 
+# The &quot;group_source&quot; setting has three possible values: 
+#   static   - use the user's list of groups returned by the kernel. 
+#   dynamic  - query the group database to find the list of groups. 
+#   adaptive - if user is in less than the maximum number of groups. 
+#              use the kernel list, else query the group database. 
+# 
+#Set group_source static</pre>
+</div>
+<div class="section">
+<h1 id="x53454520414c534f">SEE ALSO</h1> <a class="link-man">sudoers(5)</a>, <a class="link-man">sudo(8)</a>, <a class="link-man">sudo_plugin(8)</a></div>
+<div class="section">
+<h1 id="x484953544f5259">HISTORY</h1> See the HISTORY file in the <b class="name">sudo</b> distribution (http://www.sudo.ws/history.html) for a brief history of sudo.</div>
+<div class="section">
+<h1 id="x415554484f5253">AUTHORS</h1> Many people have worked on <b class="name">sudo</b> over the years; this version consists of code written primarily by:<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;" class="display">
+<span class="author">Todd C. Miller</span></div>
+<div class="spacer">
+</div>
+See the CONTRIBUTORS file in the <b class="name">sudo</b> distribution (http://www.sudo.ws/contributors.html) for an exhaustive list of people who have contributed to <b class="name">sudo</b>.</div>
+<div class="section">
+<h1 id="x42554753">BUGS</h1> If you feel you have found a bug in <b class="name">sudo</b>, please submit a bug report at http://bugzilla.sudo.ws/</div>
+<div class="section">
+<h1 id="x535550504f5254">SUPPORT</h1> Limited free support is available via the sudo-users mailing list, see http://www.sudo.ws/mailman/listinfo/sudo-users to subscribe or search the archives.</div>
+<div class="section">
+<h1 id="x444953434c41494d4552">DISCLAIMER</h1> <b class="name">sudo</b> is provided &#8220;AS IS&#8221; and any express or implied warranties, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose are disclaimed. See the LICENSE file distributed with <b class="name">sudo</b> or http://www.sudo.ws/license.html for complete details.</div>
+</div>
+</body>
+</html>
+

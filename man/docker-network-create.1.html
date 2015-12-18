@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+DOCKER(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+DOCKER(1)</td>
+<td class="head-vol">
+OCT 2015</td>
+<td class="head-rtitle">
+DOCKER(1)</td>
+</tr>
+</tbody>
+</table>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div class="section">
+<h1>NAME</h1> docker-network-create - create a new network<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <b>docker network create</b><div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+<b>--aux-address=map[]</b><div style="height: 0.00em;">
+&#160;</div>
+<b>-d</b> | <b>--driver=DRIVER</b><div style="height: 0.00em;">
+&#160;</div>
+<b>--gateway=[]</b><div style="height: 0.00em;">
+&#160;</div>
+<b>--help=false</b><div style="height: 0.00em;">
+&#160;</div>
+<b>--ip-range=[]</b><div style="height: 0.00em;">
+&#160;</div>
+<b>--ipam-driver=default</b><div style="height: 0.00em;">
+&#160;</div>
+<b>-o</b> | <b>--opt=map[]</b><div style="height: 0.00em;">
+&#160;</div>
+<b>--subnet=[]</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> Creates a new network. The  <b></b>DRIVER accepts <b></b>bridge or <b></b>overlay which are the built-in network drivers. If you have installed a third party or your own custom network driver you can specify that  <b></b>DRIVER here also. If you don't specify the  <b></b>--driver option, the command automatically creates a <b></b>bridge network for you. When you install Docker Engine it creates a  <b></b>bridge network automatically. This network corresponds to the  <b></b>docker0 bridge that Engine has traditionally relied on. When launch a new container with   <b></b>docker run it automatically connects to this bridge network. You cannot remove this default bridge network but you can create new ones using the  <b></b>network create command.<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;">
+<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+$ docker network create -d bridge my-bridge-network<div class="spacer">
+</div>
+<br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+Bridge networks are isolated networks on a single Engine installation. If you want to create a network that spans multiple Docker hosts each running an Engine, you must create an  <b></b>overlay network. Unlike <b></b>bridge networks overlay networks require some pre-existing conditions before you can create one. These conditions are:<dl>
+<dt>
+0[step?]</dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+item Access to a key-value store. Engine supports Consul, Etcd, and Zookeeper (Distributed store) key-value stores. item A cluster of hosts with connectivity to the key-value store. item A properly configured Engine  <b></b>daemon on each host in the cluster.</dd>
+</dl>
+<div class="spacer">
+</div>
+The <b></b>docker daemon options that support the <b></b>overlay network are:<dl>
+<dt>
+0[step?]</dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+item <b></b>--cluster-store item  <b></b>--cluster-store-opt item  <b></b>--cluster-advertise</dd>
+</dl>
+<div class="spacer">
+</div>
+To read more about these options and how to configure them, see &#10216;https://www.docker.com/engine/userguide/networking/get-started-overlay.md&#10217;.<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+It is also a good idea, though not required, that you install Docker Swarm on to manage the cluster that makes up your network. Swarm provides sophisticated discovery and server management that can assist your implementation.<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+Once you have prepared the <b></b>overlay network prerequisites you simply choose a Docker host in the cluster and issue the following to create the network:<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;">
+<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+$ docker network create -d overlay my-multihost-network<div class="spacer">
+</div>
+<br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+Network names must be unique. The Docker daemon attempts to identify naming conflicts but this is not guaranteed. It is the user's responsibility to avoid name conflicts.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>Connect containers</h1> When you start a container use the  <b></b>--net flag to connect it to a network. This adds the  <b></b>busybox container to the <b></b>mynet network.<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;">
+<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+$ docker run -itd --net=mynet busybox<div class="spacer">
+</div>
+<br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+If you want to add a container to a network after the container is already running use the  <b></b>docker network connect subcommand.<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+You can connect multiple containers to the same network. Once connected, the containers can communicate using only another container's IP address or name. For  <b></b>overlay networks or custom plugins that support multi-host connectivity, containers connected to the same multi-host network but launched from different Engines can also communicate in this way.<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+You can disconnect a container from a network using the <b></b>docker network disconnect command.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>Specifying advanced options</h1> When you create a network, Engine creates a non-overlapping subnetwork for the network by default. This subnetwork is not a subdivision of an existing network. It is purely for ip-addressing purposes. You can override this default and specify subnetwork values directly using the the  <b></b>--subnet option. On a  <b></b>bridge network you can only create a single subnet:<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;">
+<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+docker network create -d --subnet=192.168.0.0/16<div class="spacer">
+</div>
+<br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+Additionally, you also specify the <b></b>--gateway <b></b>--ip-range and <b></b>--aux-address options.<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;">
+<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+network create --driver=bridge --subnet=172.28.0.0/16 --ip-range=172.28.5.0/24 --gateway=172.28.5.254 br0<div class="spacer">
+</div>
+<br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+If you omit the <b></b>--gateway flag the Engine selects one for you from inside a preferred pool. For  <b></b>overlay networks and for network driver plugins that support it you can create multiple subnetworks.<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;">
+<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+docker network create -d overlay<br/>
+  --subnet=192.168.0.0/16 --subnet=192.170.0.0/16<br/>
+  --gateway=192.168.0.100 --gateway=192.170.0.100<br/>
+  --ip-range=192.168.1.0/24<br/>
+  --aux-address a=192.168.1.5 --aux-address b=192.168.1.6<br/>
+  --aux-address a=192.170.1.5 --aux-address b=192.170.1.6<br/>
+  my-multihost-newtork<div class="spacer">
+</div>
+<br/>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+Be sure that your subnetworks do not overlap. If they do, the network create fails and Engine returns an error.<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>OPTIONS</h1>  <b>--aux-address=map[]</b><div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  Auxiliary ipv4 or ipv6 addresses used by network driver<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+<b>-d</b> | <b>--driver=DRIVER</b><div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  Driver to manage the Network bridge or overlay. The default is bridge.<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+**--gateway=[] **<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  ipv4 or ipv6 Gateway for the master subnet<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+**--help=false **<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  Print usage<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+**--ip-range=[] **<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  Allocate container ip from a sub-range<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+**--ipam-driver=default **<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  IP Address Management Driver<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+<b>-o | --opt=map[]</b><div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  Set custom network plugin options<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+<b>--subnet=[]</b><div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  Subnet in CIDR format that represents a network segment<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>HISTORY</h1> OCT 2015, created by Mary Anthony &#10216;mary@docker.com&#10217;</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+ Docker User Manuals</td>
+<td class="foot-os">
+Docker Community</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

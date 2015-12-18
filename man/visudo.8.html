@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+VISUDO(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<div class="section">
+<h1 id="x4e414d45">NAME</h1> <b class="name">visudo</b> &#8212; <span class="desc">edit the sudoers file</span></div>
+<div class="section">
+<h1 id="x53594e4f50534953">SYNOPSIS</h1><table class="synopsis">
+<col style="width: 6.00ex;"/>
+<col/>
+<tbody>
+<tr>
+<td>
+visudo</td>
+<td>
+[<span class="opt"><b class="flag">-chqsV</b></span>] [<span class="opt"><b class="flag">-f</b> <i class="arg">sudoers</i></span>] [<span class="opt"><b class="flag">-x</b> <i class="arg">output_file</i></span>]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section">
+<h1 id="x4445534352495054494f4e">DESCRIPTION</h1> <b class="name">visudo</b> edits the <span class="emph">sudoers</span> file in a safe fashion, analogous to <a class="link-man">vipw(8)</a>. <b class="name">visudo</b> locks the <span class="emph">sudoers</span> file against multiple simultaneous edits, provides basic sanity checks, and checks for parse errors. If the <span class="emph">sudoers</span> file is currently being edited you will receive a message to try again later.<div class="spacer">
+</div>
+There is a hard-coded list of one or more editors that <b class="name">visudo</b> will use set at compile-time that may be overridden via the <span class="emph">editor</span> <span class="emph">sudoers</span> <code class="lit">Default</code> variable. This list defaults to <code class="lit">/usr/libexec/editor</code>. Normally, <b class="name">visudo</b> does not honor the <span class="env">VISUAL</span> or <span class="env">EDITOR</span> environment variables unless they contain an editor in the aforementioned editors list. However, if <b class="name">visudo</b> is configured with the <code class="lit">--with-env-editor</code> option or the <span class="emph">env_editor</span> <code class="lit">Default</code> variable is set in <span class="emph">sudoers</span>, <b class="name">visudo</b> will use any the editor defines by <span class="env">VISUAL</span> or <span class="env">EDITOR</span>. Note that this can be a security hole since it allows the user to execute any program they wish simply by setting <span class="env">VISUAL</span> or <span class="env">EDITOR</span>.<div class="spacer">
+</div>
+<b class="name">visudo</b> parses the <span class="emph">sudoers</span> file after the edit and will not save the changes if there is a syntax error. Upon finding an error, <b class="name">visudo</b> will print a message stating the line number(s) where the error occurred and the user will receive the &#8220;What now?&#8221; prompt. At this point the user may enter &#8216;<code class="lit">e</code>&#8217; to re-edit the <span class="emph">sudoers</span> file, &#8216;<code class="lit">x</code>&#8217; to exit without saving the changes, or &#8216;<code class="lit">Q</code>&#8217; to quit and save changes. The &#8216;<code class="lit">Q</code>&#8217; option should be used with extreme care because if <b class="name">visudo</b> believes there to be a parse error, so will <b class="name">sudo</b> and no one will be able to run <b class="name">sudo</b> again until the error is fixed. If &#8216;<code class="lit">e</code>&#8217; is typed to edit the <span class="emph">sudoers</span> file after a parse error has been detected, the cursor will be placed on the line where the error occurred (if the editor supports this feature).<div class="spacer">
+</div>
+The options are as follows:<dl style="margin-top: 0.00em;margin-bottom: 0.00em;" class="list list-tag">
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="flag">-c</b>, <b class="flag">--check</b></dt>
+<dd class="list-tag" style="margin-left: 10.00ex;">
+Enable <span class="emph">check-only</span> mode. The existing <span class="emph">sudoers</span> file will be checked for syntax errors, owner and mode. A message will be printed to the standard output describing the status of <span class="emph">sudoers</span> unless the <b class="flag">-q</b> option was specified. If the check completes successfully, <b class="name">visudo</b> will exit with a value of 0. If an error is encountered, <b class="name">visudo</b> will exit with a value of 1.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="flag">-f</b> <i class="arg">sudoers</i>, <b class="flag">--file</b>=<i class="arg">sudoers</i></dt>
+<dd class="list-tag" style="margin-left: 10.00ex;">
+Specify an alternate <span class="emph">sudoers</span> file location. With this option, <b class="name">visudo</b> will edit (or check) the <span class="emph">sudoers</span> file of your choice, instead of the default, <i class="file">/etc/sudoers</i>. The lock file used is the specified <span class="emph">sudoers</span> file with &#8220;.tmp&#8221; appended to it. In <span class="emph">check-only</span> mode only, the argument to <b class="flag">-f</b> may be &#8216;<code class="lit">-</code>&#8217;, indicating that <span class="emph">sudoers</span> will be read from the standard input.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="flag">-h</b>, <b class="flag">--help</b></dt>
+<dd class="list-tag" style="margin-left: 10.00ex;">
+Display a short help message to the standard output and exit.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="flag">-q</b>, <b class="flag">--quiet</b></dt>
+<dd class="list-tag" style="margin-left: 10.00ex;">
+Enable <span class="emph">quiet</span> mode. In this mode details about syntax errors are not printed. This option is only useful when combined with the <b class="flag">-c</b> option.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="flag">-s</b>, <b class="flag">--strict</b></dt>
+<dd class="list-tag" style="margin-left: 10.00ex;">
+Enable <span class="emph">strict</span> checking of the <span class="emph">sudoers</span> file. If an alias is used before it is defined, <b class="name">visudo</b> will consider this a parse error. Note that it is not possible to differentiate between an alias and a host name or user name that consists solely of uppercase letters, digits, and the underscore (&#8216;<code class="lit">_</code>&#8217;) character.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="flag">-V</b>, <b class="flag">--version</b></dt>
+<dd class="list-tag" style="margin-left: 10.00ex;">
+Print the <b class="name">visudo</b> and <span class="emph">sudoers</span> grammar versions and exit.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="flag">-x</b> <i class="arg">output_file</i>, <b class="flag">--export</b>=<i class="arg">output_file</i></dt>
+<dd class="list-tag" style="margin-left: 10.00ex;">
+Export a <span class="emph">sudoers</span> in JSON format and write it to <i class="arg">output_file</i>. If <i class="arg">output_file</i> is &#8216;<code class="lit">-</code>&#8217;, the exported <span class="emph">sudoers</span> policy will be written to the standard output. By default, <i class="file">/etc/sudoers</i> (and any files it includes) will be exported. The <b class="flag">-f</b> option can be used to specify a different <span class="emph">sudoers</span> file to export. The exported format is intended to be easier for third-party applications to parse than the traditional <span class="emph">sudoers</span> format. The various values have explicit types which removes much of the ambiguity of the <span class="emph">sudoers</span> format.</dd>
+</dl>
+<div class="subsection">
+<h2 id="x446562756767696e6720616e64207375646f65727320706c7567696e20617267756d656e7473">Debugging and sudoers plugin arguments</h2> <b class="name">visudo</b> versions 1.8.4 and higher support a flexible debugging framework that is configured via <code class="lit">Debug</code> lines in the <a class="link-man">sudo.conf(5)</a> file.<div class="spacer">
+</div>
+Starting with <b class="name">sudo</b> 1.8.12, <b class="name">visudo</b> will also parse the arguments to the <span class="emph">sudoers</span> plugin to override the default <span class="emph">sudoers</span> path name, UID, GID and file mode. These arguments, if present, should be listed after the path to the plugin (i.e. after <i class="file">sudoers.so</i>). Multiple arguments may be specified, separated by white space. For example:<div class="spacer">
+</div>
+<pre style="margin-left: 5.00ex;" class="lit display">
+Plugin sudoers_policy sudoers.so sudoers_mode=0400</pre>
+<div class="spacer">
+</div>
+The following arguments are supported:<dl style="margin-top: 0.00em;margin-bottom: 0.00em;" class="list list-tag">
+<dt class="list-tag" style="margin-top: 1.00em;">
+sudoers_file=pathname</dt>
+<dd class="list-tag" style="margin-left: 8.00ex;">
+The <span class="emph">sudoers_file</span> argument can be used to override the default path to the <span class="emph">sudoers</span> file.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+sudoers_uid=uid</dt>
+<dd class="list-tag" style="margin-left: 8.00ex;">
+The <span class="emph">sudoers_uid</span> argument can be used to override the default owner of the sudoers file. It should be specified as a numeric user ID.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+sudoers_gid=gid</dt>
+<dd class="list-tag" style="margin-left: 8.00ex;">
+The <span class="emph">sudoers_gid</span> argument can be used to override the default group of the sudoers file. It must be specified as a numeric group ID (not a group name).</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+sudoers_mode=mode</dt>
+<dd class="list-tag" style="margin-left: 8.00ex;">
+The <span class="emph">sudoers_mode</span> argument can be used to override the default file mode for the sudoers file. It should be specified as an octal value.</dd>
+</dl>
+<div class="spacer">
+</div>
+For more information on configuring <a class="link-man">sudo.conf(5)</a>, please refer to its manual.</div>
+</div>
+<div class="section">
+<h1 id="x454e5649524f4e4d454e54">ENVIRONMENT</h1> The following environment variables may be consulted depending on the value of the <span class="emph">editor</span> and <span class="emph">env_editor</span> <span class="emph">sudoers</span> settings:<dl style="margin-top: 0.00em;margin-bottom: 0.00em;" class="list list-tag">
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="env">VISUAL</span></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Invoked by <b class="name">visudo</b> as the editor to use</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="env">EDITOR</span></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Used by <b class="name">visudo</b> if <span class="env">VISUAL</span> is not set</dd>
+</dl>
+</div>
+<div class="section">
+<h1 id="x46494c4553">FILES</h1><dl style="margin-top: 0.00em;margin-bottom: 0.00em;" class="list list-tag">
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="file">/etc/sudo.conf</i></dt>
+<dd class="list-tag" style="margin-left: 24.00ex;">
+Sudo front end configuration</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="file">/etc/sudoers</i></dt>
+<dd class="list-tag" style="margin-left: 24.00ex;">
+List of who can run what</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="file">/etc/sudoers.tmp</i></dt>
+<dd class="list-tag" style="margin-left: 24.00ex;">
+Lock file for visudo</dd>
+</dl>
+</div>
+<div class="section">
+<h1 id="x444941474e4f5354494353">DIAGNOSTICS</h1><dl style="margin-top: 0.00em;margin-bottom: 0.00em;" class="list list-tag">
+<dt class="list-tag" style="margin-top: 1.00em;">
+<code class="lit">sudoers file busy, try again later.</code></dt>
+<dd class="list-tag" style="margin-left: 4.00ex;">
+Someone else is currently editing the <span class="emph">sudoers</span> file.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<code class="lit">/etc/sudoers.tmp: Permission denied</code></dt>
+<dd class="list-tag" style="margin-left: 4.00ex;">
+You didn't run <b class="name">visudo</b> as root.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<code class="lit">Can't find you in the passwd database</code></dt>
+<dd class="list-tag" style="margin-left: 4.00ex;">
+Your user ID does not appear in the system passwd file.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<code class="lit">Warning: {User,Runas,Host,Cmnd}_Alias referenced but not defined</code></dt>
+<dd class="list-tag" style="margin-left: 4.00ex;">
+Either you are trying to use an undeclared {User,Runas,Host,Cmnd}_Alias or you have a user or host name listed that consists solely of uppercase letters, digits, and the underscore (&#8216;<code class="lit">_</code>&#8217;) character. In the latter case, you can ignore the warnings (<b class="name">sudo</b> will not complain). In <b class="flag">-s</b> (strict) mode these are errors, not warnings.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<code class="lit">Warning: unused {User,Runas,Host,Cmnd}_Alias</code></dt>
+<dd class="list-tag" style="margin-left: 4.00ex;">
+The specified {User,Runas,Host,Cmnd}_Alias was defined but never used. You may wish to comment out or remove the unused alias.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<code class="lit">Warning: cycle in {User,Runas,Host,Cmnd}_Alias</code></dt>
+<dd class="list-tag" style="margin-left: 4.00ex;">
+The specified {User,Runas,Host,Cmnd}_Alias includes a reference to itself, either directly or through an alias it includes. This is only a warning by default as <b class="name">sudo</b> will ignore cycles when parsing the <span class="emph">sudoers</span> file.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<code class="lit">visudo: /etc/sudoers: input and output files must be different</code></dt>
+<dd class="list-tag" style="margin-left: 4.00ex;">
+The <b class="flag">-x</b> flag was used and the specified <i class="arg">output_file</i> has the same path name as the <span class="emph">sudoers</span> file to export.</dd>
+</dl>
+</div>
+<div class="section">
+<h1 id="x53454520414c534f">SEE ALSO</h1> <a class="link-man">vi(1)</a>, <a class="link-man">sudo.conf(5)</a>, <a class="link-man">sudoers(5)</a>, <a class="link-man">sudo(8)</a>, <a class="link-man">vipw(8)</a></div>
+<div class="section">
+<h1 id="x415554484f5253">AUTHORS</h1> Many people have worked on <b class="name">sudo</b> over the years; this version consists of code written primarily by:<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;" class="display">
+<span class="author">Todd C. Miller</span></div>
+<div class="spacer">
+</div>
+See the CONTRIBUTORS file in the <b class="name">sudo</b> distribution (http://www.sudo.ws/contributors.html) for an exhaustive list of people who have contributed to <b class="name">sudo</b>.</div>
+<div class="section">
+<h1 id="x43415645415453">CAVEATS</h1> There is no easy way to prevent a user from gaining a root shell if the editor used by <b class="name">visudo</b> allows shell escapes.</div>
+<div class="section">
+<h1 id="x42554753">BUGS</h1> If you feel you have found a bug in <b class="name">visudo</b>, please submit a bug report at http://bugzilla.sudo.ws/</div>
+<div class="section">
+<h1 id="x535550504f5254">SUPPORT</h1> Limited free support is available via the sudo-users mailing list, see http://www.sudo.ws/mailman/listinfo/sudo-users to subscribe or search the archives.</div>
+<div class="section">
+<h1 id="x444953434c41494d4552">DISCLAIMER</h1> <b class="name">visudo</b> is provided &#8220;AS IS&#8221; and any express or implied warranties, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose are disclaimed. See the LICENSE file distributed with <b class="name">sudo</b> or http://www.sudo.ws/license.html for complete details.</div>
+</div>
+</body>
+</html>
+

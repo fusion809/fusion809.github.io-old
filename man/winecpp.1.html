@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+WINEGCC(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+WINEGCC(1)</td>
+<td class="head-vol">
+Wine Developers Manual</td>
+<td class="head-rtitle">
+WINEGCC(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> winegcc - Wine C and C++ MinGW Compatible Compiler</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>winegcc</b> [<i>options</i>] <i>infile...</i></div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>winegcc</b> is a gcc wrapper which tries to provide a MinGW compatible compiler under Linux. This is most useful to Win32 developers who can simply take their MinGW code from Windows, and recompile it without modifications under Winelib on Linux. wineg++ accepts mostly the same options as winegcc.<div class="spacer">
+</div>
+The goal of winegcc is to be able to simply replace gcc/g++/windres with winegcc/wineg++/wrc in a MinGW Makefile, and just recompile the application using Winelib under Wine. While typically there are small adjustments that must be made to the application source code and/or Makefile, it is quite easy to do them in a fashion that is compatible between the MinGW and Wine environments.<div class="spacer">
+</div>
+This manual will document only the differences from gcc; please consult the gcc manual for more information on those options.</div>
+<div class="section">
+<h1>OPTIONS</h1> <b>gcc options:</b> All gcc options are supported, and are passed along to the backend compiler.<dl>
+<dt>
+<b>-B</b><i>prefix</i></dt>
+<dd>
+This option specifies where to find the executables, libraries, include files, and data files of the compiler itself. This is a standard gcc option that has been extended to recognize a  <i>prefix</i> ending with '/tools/winebuild', in which case winegcc enters a special mode for building Wine itself. Developers should avoid prefixes ending with the magic suffix, or if that is not possible, simply express it differently, such as '/tools/winebuild/', to avoid the special behaviour.</dd>
+</dl>
+<dl>
+<dt>
+<b>-fno-short-wchar</b></dt>
+<dd>
+Override the underlying type for wchar_t to be the default for the target, instead of using short unsigned int, which is the default for Win32.</dd>
+</dl>
+<dl>
+<dt>
+<b>-mconsole</b></dt>
+<dd>
+This option passes '--subsystem console' to winebuild, to build console applications. It is the default.</dd>
+</dl>
+<dl>
+<dt>
+<b>-mno-cygwin</b></dt>
+<dd>
+Use Wine implementation of MSVCRT, instead of linking against the host system libc. This is necessary for the vast majority of Win32 applications, as they typically depend on various features of MSVCRT. This switch is also used by the MinGW compiler to link against MSVCRT on Windows, instead of linking against Cygwin libc. Sharing the syntax with MinGW makes it very easy to write Makefiles that work under Wine, MinGW+MSYS, or MinGW+Cygwin.</dd>
+</dl>
+<dl>
+<dt>
+<b>-municode</b></dt>
+<dd>
+Set the default entry point of the application to be the Unicode  <b>wmain()</b> instead of the standard <b>main()</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>-mwindows</b></dt>
+<dd>
+This option adds -lgdi32, -lcomdlg32, and -lshell32 to the list of default libraries, and passes '--subsystem windows' to winebuild to build graphical applications.</dd>
+</dl>
+<dl>
+<dt>
+<b>-nodefaultlibs</b></dt>
+<dd>
+Do not use the standard system libraries when linking. These include at a minimum -lkernel32, -luser32, -ladvapi32, and any default libraries used by the backend compiler. The -mwindows option augments the list of default libraries as described above.</dd>
+</dl>
+<dl>
+<dt>
+<b>-nostartfiles</b></dt>
+<dd>
+Do not add the winecrt0 library when linking.</dd>
+</dl>
+<dl>
+<dt>
+<b>-Wb,</b><i>option</i></dt>
+<dd>
+Pass an option to winebuild.  If <i>option</i> contains commas, it is split into multiple options at the commas.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>DEFINES</h1> winegcc defines __WINE__, for code that needs to know when it is being compiled under Wine. It also defines WIN32, _WIN32, __WIN32, __WIN32__, __WINNT, and __WINNT__ for compatibility with MinGW.</div>
+<div class="section">
+<h1>BUGS</h1> The dllimport/dllexport attributes are not supported at the moment, due to lack of support for these features in the ELF version of gcc.<div class="spacer">
+</div>
+Static linking is not currently supported against Wine DLLs. As a result, the -static, --static, and -Wl,-static options will generate an error.<div class="spacer">
+</div>
+Bugs can be reported on the <a class="link-ext" href="http://bugs.winehq.org"><b>Wine bug tracker</b></a></div>
+<div class="section">
+<h1>AUTHORS</h1> <b>winegcc</b> was written by Dimitrie O. Paun.</div>
+<div class="section">
+<h1>AVAILABILITY</h1> <b>winegcc</b> is part of the Wine distribution, which is available through WineHQ, the <a class="link-ext" href="http://www.winehq.org/"><b>Wine development headquarters</b></a></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>gcc</b>(1), <b>winebuild</b>(1), <b>wrc</b>(1), <b>wine</b>(1),<div style="height: 0.00em;">
+&#160;</div>
+<a class="link-ext" href="http://www.winehq.org/help"><b>Wine documentation and support</b></a></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+October 2005</td>
+<td class="foot-os">
+Wine 1.7.55</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+
