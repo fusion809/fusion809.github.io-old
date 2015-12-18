@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+LIBARCHIVE_CHANGES(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<div class="section">
+<h1 id="x4e414d45">NAME</h1> <b class="name">changes in libarchive interface</b></div>
+<div class="section">
+<h1 id="x4348414e47455320494e204c4942415243484956452033">CHANGES IN LIBARCHIVE 3</h1> This page describes user-visible changes in libarchive3, and lists public functions and other symbols changed, deprecated or removed in libarchive3, along with their replacements if any.<div class="spacer">
+</div>
+<div class="subsection">
+<h2 id="x4d756c7469706c652046696c74657273">Multiple Filters</h2> Libarchive2 permitted a single (input or output) filter active on an archive. Libarchive3 extends this into a variable-length stack. Where <b class="fname">archive_write_set_compression_XXX</b>() would replace any existing filter, <b class="fname">archive_write_add_filter_XXX</b>() extends the write pipeline with another filter.</div>
+<div class="subsection">
+<h2 id="x436861726163746572205365742048616e646c696e67">Character Set Handling</h2> Libarchive2 assumed that the local platform uses Unicode as the native wchar_t encoding, which is true on Windows, modern Linux, and a few other systems, but is certainly not universal. As a result, pax format archives were written incorrectly on some systems, since pax format requires UTF-8 and libarchive 2 incorrectly assumed that wchar_t strings can be easily converted to UTF-8.<div class="spacer">
+</div>
+Libarchive3 uses the standard iconv library to convert between character sets and is introducing the notion of a &#8220;default character set for the archive&#8221;. To support this, archive_entry objects can now be bound to a particular archive when they are created. The automatic character set conversions performed by archive_entry objects when reading and writing filenames, usernames, and other strings will now use an appropriate default character set:<div class="spacer">
+</div>
+If the archive_entry object is bound to an archive, it will use the default character set for that archive.<div class="spacer">
+</div>
+The platform default character encoding (as returned by <b class="fname">nl_langinfo</b>(<i class="farg">CHARSET</i>)) will be used if nothing else is specified.<div class="spacer">
+</div>
+Libarchive3 also introduces charset options to many of the archive readers and writers to control the character set that will be used for filenames written in those archives. When possible, this will be set automatically based on information in the archive itself. Combining this with the notion of a default character set for the archive should allow you to configure libarchive to read archives from other platforms and have the filenames and other information transparently converted to the character encoding suitable for your application.</div>
+<div class="subsection">
+<h2 id="x50726f746f74797065204368616e676573">Prototype Changes</h2> These changes break binary compatibility; libarchive3 has a new shared library version to reflect these changes. The library now uses portable wide types such as int64_t instead of less-portable types such as off_t, gid_t, uid_t, and ino_t.<div class="spacer">
+</div>
+There are a few cases where these changes will affect your source code:<ul style="margin-top: 0.00em;margin-bottom: 0.00em;" class="list list-bul">
+<li class="list-bul" style="margin-top: 1.00em;">
+In some cases, libarchive's wider types will introduce the possibility of truncation: for example, on a system with a 16-bit uid_t, you risk having uid <code class="lit">65536</code> be truncated to uid <code class="lit">0</code>, which can cause serious security problems.</li>
+<li class="list-bul" style="margin-top: 1.00em;">
+Typedef function pointer types will be incompatible. For example, if you define custom skip callbacks, you may have to use code similar to the following if you want to support building against libarchive2 and libarchive3:<div class="spacer">
+</div>
+<pre style="margin-left: 0.00ex;" class="lit display">
+#if ARCHIVE_VERSION_NUMBER &lt; 3000000 
+typedef off_t myoff_t; 
+#else 
+typedef int64_t myoff_t; 
+#endif 
+ 
+myoff_t 
+my_skip_function(struct archive *a, void *v, myoff_t o) 
+{ 
+    ... implementation ... 
+}</pre>
+</li>
+</ul>
+<div class="spacer">
+</div>
+Affected functions:<div class="spacer">
+</div>
+<ul style="margin-top: 0.00em;margin-bottom: 0.00em;" class="list list-bul">
+<li class="list-bul" style="margin-top: 0.00em;">
+<b class="fname">archive_entry_gid</b>(), <b class="fname">archive_entry_set_gid</b>()</li>
+<li class="list-bul" style="margin-top: 0.00em;">
+<b class="fname">archive_entry_uid</b>(), <b class="fname">archive_entry_set_uid</b>()</li>
+<li class="list-bul" style="margin-top: 0.00em;">
+<b class="fname">archive_entry_ino</b>(), <b class="fname">archive_entry_set_ino</b>()</li>
+<li class="list-bul" style="margin-top: 0.00em;">
+<b class="fname">archive_read_data_block</b>(), <b class="fname">archive_write_data_block</b>()</li>
+<li class="list-bul" style="margin-top: 0.00em;">
+<b class="fname">archive_read_disk_gname</b>(), <b class="fname">archive_read_disk_uname</b>()</li>
+<li class="list-bul" style="margin-top: 0.00em;">
+<b class="fname">archive_read_disk_set_gname_lookup</b>(), <b class="fname">archive_read_disk_set_group_lookup</b>(), <b class="fname">archive_read_disk_set_uname_lookup</b>(), <b class="fname">archive_read_disk_set_user_lookup</b>()</li>
+<li class="list-bul" style="margin-top: 0.00em;">
+<b class="fname">archive_skip_callback</b>()</li>
+<li class="list-bul" style="margin-top: 0.00em;">
+<b class="fname">archive_read_extract_set_skip_file</b>(), <b class="fname">archive_write_disk_set_skip_file</b>(), <b class="fname">archive_write_set_skip_file</b>()</li>
+<li class="list-bul" style="margin-top: 0.00em;">
+<b class="fname">archive_write_disk_set_group_lookup</b>(), <b class="fname">archive_write_disk_set_user_lookup</b>()</li>
+</ul>
+<div class="spacer">
+</div>
+Where these functions or their arguments took or returned gid_t, ino_t, off_t, or uid_t they now take or return int64_t or equivalent.</div>
+<div class="subsection">
+<h2 id="x446570726563617465642053796d626f6c73">Deprecated Symbols</h2> Symbols deprecated in libarchive3 will be removed in libarchive4. These symbols, along with their replacements if any, are listed below:<dl style="margin-top: 0.00em;margin-bottom: 0.00em;" class="list list-tag">
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_position_compressed</b>(), <b class="fname">archive_position_uncompressed</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_filter_bytes</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_compression</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_filter_code</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_compression_name</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_filter_name</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_read_finish</b>(), <b class="fname">archive_write_finish</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_read_free</b>(), <b class="fname">archive_write_free</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_read_open_file</b>(), <b class="fname">archive_write_open_file</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_read_open_filename</b>(), <b class="fname">archive_write_open_filename</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_read_support_compression_all</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_read_support_filter_all</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_read_support_compression_bzip2</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_read_support_filter_bzip2</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_read_support_compression_compress</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_read_support_filter_compress</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_read_support_compression_gzip</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_read_support_filter_gzip</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_read_support_compression_lzip</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_read_support_filter_lzip</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_read_support_compression_lzma</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_read_support_filter_lzma</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_read_support_compression_none</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_read_support_filter_none</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_read_support_compression_program</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_read_support_filter_program</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_read_support_compression_program_signature</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_read_support_filter_program_signature</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_read_support_compression_rpm</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_read_support_filter_rpm</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_read_support_compression_uu</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_read_support_filter_uu</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_read_support_compression_xz</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_read_support_filter_xz</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_write_set_compression_bzip2</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_write_add_filter_bzip2</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_write_set_compression_compress</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_write_add_filter_compress</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_write_set_compression_gzip</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_write_add_filter_gzip</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_write_set_compression_lzip</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_write_add_filter_lzip</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_write_set_compression_lzma</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_write_add_filter_lzma</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_write_set_compression_none</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_write_add_filter_none</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_write_set_compression_program</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_write_add_filter_program</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_write_set_compression_filter</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_write_add_filter_filter</b>()</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2 id="x52656d6f7665642053796d626f6c73">Removed Symbols</h2> These symbols, listed below along with their replacements if any, were deprecated in libarchive2, and are not part of libarchive3.<dl style="margin-top: 0.00em;margin-bottom: 0.00em;" class="list list-tag">
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_api_feature</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_version_number</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_api_version</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_version_number</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_version</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_version_string</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_version_stamp</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_version_number</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_read_set_filter_options</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_read_set_options</b>() or <b class="fname">archive_read_set_filter_option</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_read_set_format_options</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_read_set_options</b>() or <b class="fname">archive_read_set_format_option</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_write_set_filter_options</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_write_set_options</b>() or <b class="fname">archive_write_set_filter_option</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_write_set_format_options</b>()</dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<b class="fname">archive_write_set_options</b>() or <b class="fname">archive_write_set_format_option</b>()</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">ARCHIVE_API_FEATURE</span></dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<span class="define">ARCHIVE_VERSION_NUMBER</span></dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">ARCHIVE_API_VERSION</span></dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<span class="define">ARCHIVE_VERSION_NUMBER</span></dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">ARCHIVE_VERSION_STAMP</span></dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<span class="define">ARCHIVE_VERSION_NUMBER</span></dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">ARCHIVE_LIBRARY_VERSION</span></dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<span class="define">ARCHIVE_VERSION_STRING</span></dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">ARCHIVE_COMPRESSION_NONE</span></dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<span class="define">ARCHIVE_FILTER_NONE</span></dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">ARCHIVE_COMPRESSION_GZIP</span></dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<span class="define">ARCHIVE_FILTER_GZIP</span></dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">ARCHIVE_COMPRESSION_BZIP2</span></dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<span class="define">ARCHIVE_FILTER_BZIP2</span></dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">ARCHIVE_COMPRESSION_COMPRESS</span></dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<span class="define">ARCHIVE_FILTER_COMPRESS</span></dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">ARCHIVE_COMPRESSION_PROGRAM</span></dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<span class="define">ARCHIVE_FILTER_PROGRAM</span></dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">ARCHIVE_COMPRESSION_LZMA</span></dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<span class="define">ARCHIVE_FILTER_LZMA</span></dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">ARCHIVE_COMPRESSION_XZ</span></dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<span class="define">ARCHIVE_FILTER_XZ</span></dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">ARCHIVE_COMPRESSION_UU</span></dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<span class="define">ARCHIVE_FILTER_UU</span></dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">ARCHIVE_COMPRESSION_RPM</span></dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<span class="define">ARCHIVE_FILTER_RPM</span></dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">ARCHIVE_COMPRESSION_LZIP</span></dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<span class="define">ARCHIVE_FILTER_LZIP</span></dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">ARCHIVE_BYTES_PER_RECORD</span></dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<code class="lit">512</code></dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">ARCHIVE_DEFAULT_BYTES_PER_BLOCK</span></dt>
+<dd class="list-tag" style="margin-left: 3.00ex;">
+<code class="lit">10240</code></dd>
+</dl>
+</div>
+</div>
+<div class="section">
+<h1 id="x53454520414c534f">SEE ALSO</h1> <a class="link-man">libarchive(3)</a>, <a class="link-man">archive_read(3)</a>, <a class="link-man">archive_read_filter(3)</a>, <a class="link-man">archive_read_format(3)</a>, <a class="link-man">archive_read_set_options(3)</a>, <a class="link-man">archive_write(3)</a>, <a class="link-man">archive_write_filter(3)</a>, <a class="link-man">archive_write_format(3)</a>, <a class="link-man">archive_write_set_options(3)</a>, <a class="link-man">archive_util(3)</a></div>
+</div>
+</body>
+</html>
+

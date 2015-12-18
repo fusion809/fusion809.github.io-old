@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+ARCHIVE_WRITE_OPEN(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<div class="section">
+<h1 id="x4e414d45">NAME</h1> <b class="name">archive_write_open</b>, <b class="name">archive_write_open_fd</b>, <b class="name">archive_write_open_FILE</b>, <b class="name">archive_write_open_filename</b>, <b class="name">archive_write_open_memory</b> &#8212; <span class="desc">functions for creating archives</span></div>
+<div class="section">
+<h1 id="x4c494252415259">LIBRARY</h1> Streaming Archive Library (libarchive, -larchive)</div>
+<div class="section">
+<h1 id="x53594e4f50534953">SYNOPSIS</h1> <b class="includes">#include &lt;<a class="link-includes">archive.h</a>&gt;</b><div class="spacer">
+</div>
+<i class="ftype">int</i><br/>
+<b class="fname">archive_write_open</b>(<i class="farg">struct archive *</i>, <i class="farg">void *client_data</i>, <i class="farg">archive_open_callback *</i>, <i class="farg">archive_write_callback *</i>, <i class="farg">archive_close_callback *</i>);<div class="spacer">
+</div>
+<i class="ftype">int</i><br/>
+<b class="fname">archive_write_open_fd</b>(<i class="farg" style="white-space:nowrap;">struct archive *</i>, <i class="farg" style="white-space:nowrap;">int fd</i>);<div class="spacer">
+</div>
+<i class="ftype">int</i><br/>
+<b class="fname">archive_write_open_FILE</b>(<i class="farg" style="white-space:nowrap;">struct archive *</i>, <i class="farg" style="white-space:nowrap;">FILE *file</i>);<div class="spacer">
+</div>
+<i class="ftype">int</i><br/>
+<b class="fname">archive_write_open_filename</b>(<i class="farg" style="white-space:nowrap;">struct archive *</i>, <i class="farg" style="white-space:nowrap;">const char *filename</i>);<div class="spacer">
+</div>
+<i class="ftype">int</i><br/>
+<b class="fname">archive_write_open_memory</b>(<i class="farg">struct archive *</i>, <i class="farg">void *buffer</i>, <i class="farg">size_t bufferSize</i>, <i class="farg">size_t *outUsed</i>);</div>
+<div class="section">
+<h1 id="x4445534352495054494f4e">DESCRIPTION</h1><dl style="margin-top: 0.00em;margin-bottom: 0.00em;" class="list list-tag">
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_write_open</b>()</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+Freeze the settings, open the archive, and prepare for writing entries. This is the most generic form of this function, which accepts pointers to three callback functions which will be invoked by the compression layer to write the constructed archive.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_write_open_fd</b>()</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+A convenience form of <b class="fname">archive_write_open</b>() that accepts a file descriptor. The <b class="fname">archive_write_open_fd</b>() function is safe for use with tape drives or other block-oriented devices.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_write_open_FILE</b>()</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+A convenience form of <b class="fname">archive_write_open</b>() that accepts a <i class="ftype">FILE *</i> pointer. Note that <b class="fname">archive_write_open_FILE</b>() is not safe for writing to tape drives or other devices that require correct blocking.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_write_open_file</b>()</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+A deprecated synonym for <b class="fname">archive_write_open_filename</b>().</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_write_open_filename</b>()</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+A convenience form of <b class="fname">archive_write_open</b>() that accepts a filename. A NULL argument indicates that the output should be written to standard output; an argument of &#8220;-&#8221; will open a file with that name. If you have not invoked <b class="fname">archive_write_set_bytes_in_last_block</b>(), then <b class="fname">archive_write_open_filename</b>() will adjust the last-block padding depending on the file: it will enable padding when writing to standard output or to a character or block device node, it will disable padding otherwise. You can override this by manually invoking <b class="fname">archive_write_set_bytes_in_last_block</b>() before calling <b class="fname">archive_write_open</b>(). The <b class="fname">archive_write_open_filename</b>() function is safe for use with tape drives or other block-oriented devices.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="fname">archive_write_open_memory</b>()</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+A convenience form of <b class="fname">archive_write_open</b>() that accepts a pointer to a block of memory that will receive the archive. The final <i class="ftype">size_t *</i> argument points to a variable that will be updated after each write to reflect how much of the buffer is currently in use. You should be careful to ensure that this variable remains allocated until after the archive is closed.</dd>
+</dl>
+More information about the <b class="var">struct archive</b> object and the overall design of the library can be found in the <a class="link-man">libarchive(3)</a> overview.</div>
+<div class="section">
+<h1 id="x434c49454e542043414c4c4241434b53">CLIENT CALLBACKS</h1> To use this library, you will need to define and register callback functions that will be invoked to write data to the resulting archive. These functions are registered by calling <b class="fname">archive_write_open</b>():<ul style="margin-top: 0.00em;margin-bottom: 0.00em;margin-left: 6.00ex;" class="list list-item">
+<li class="list-item" style="margin-top: 1.00em;">
+<i class="ftype">typedef int</i> <b class="fname">archive_open_callback</b>(<i class="farg">struct archive *</i>, <i class="farg">void *client_data</i>)</li>
+</ul>
+<div class="spacer">
+</div>
+The open callback is invoked by <b class="fname">archive_write_open</b>(). It should return <b class="flag">ARCHIVE_OK</b> if the underlying file or data source is successfully opened. If the open fails, it should call <b class="fname">archive_set_error</b>() to register an error code and message and return <b class="flag">ARCHIVE_FATAL</b>.<ul style="margin-top: 0.00em;margin-bottom: 0.00em;margin-left: 6.00ex;" class="list list-item">
+<li class="list-item" style="margin-top: 1.00em;">
+<i class="ftype">typedef ssize_t</i> <b class="fname">archive_write_callback</b>(<i class="farg">struct archive *</i>, <i class="farg">void *client_data</i>, <i class="farg">const void *buffer</i>, <i class="farg">size_t length</i>);</li>
+</ul>
+<div class="spacer">
+</div>
+The write callback is invoked whenever the library needs to write raw bytes to the archive. For correct blocking, each call to the write callback function should translate into a single <a class="link-man">write(2)</a> system call. This is especially critical when writing archives to tape drives. On success, the write callback should return the number of bytes actually written. On error, the callback should invoke <b class="fname">archive_set_error</b>() to register an error code and message and return -1.<ul style="margin-top: 0.00em;margin-bottom: 0.00em;margin-left: 6.00ex;" class="list list-item">
+<li class="list-item" style="margin-top: 1.00em;">
+<i class="ftype">typedef int</i> <b class="fname">archive_close_callback</b>(<i class="farg">struct archive *</i>, <i class="farg">void *client_data</i>)</li>
+</ul>
+<div class="spacer">
+</div>
+The close callback is invoked by archive_close when the archive processing is complete. The callback should return <b class="flag">ARCHIVE_OK</b> on success. On failure, the callback should invoke <b class="fname">archive_set_error</b>() to register an error code and message and return <b class="flag">ARCHIVE_FATAL.</b><div class="spacer">
+</div>
+Note that if the client-provided write callback function returns a non-zero value, that error will be propagated back to the caller through whatever API function resulted in that call, which may include <b class="fname">archive_write_header</b>(), <b class="fname">archive_write_data</b>(), <b class="fname">archive_write_close</b>(), <b class="fname">archive_write_finish</b>(), or <b class="fname">archive_write_free</b>(). The client callback can call <b class="fname">archive_set_error</b>() to provide values that can then be retrieved by <b class="fname">archive_errno</b>() and <b class="fname">archive_error_string</b>().</div>
+<div class="section">
+<h1 id="x52455455524e2056414c554553">RETURN VALUES</h1> These functions return <b class="flag">ARCHIVE_OK</b> on success, or <b class="flag">ARCHIVE_FATAL</b>.</div>
+<div class="section">
+<h1 id="x4552524f5253">ERRORS</h1> Detailed error codes and textual descriptions are available from the <b class="fname">archive_errno</b>() and <b class="fname">archive_error_string</b>() functions.</div>
+<div class="section">
+<h1 id="x53454520414c534f">SEE ALSO</h1> <a class="link-man">tar(1)</a>, <a class="link-man">libarchive(3)</a>, <a class="link-man">archive_write(3)</a>, <a class="link-man">archive_write_filter(3)</a>, <a class="link-man">archive_write_format(3)</a>, <a class="link-man">archive_write_new(3)</a>, <a class="link-man">archive_write_set_options(3)</a>, <a class="link-man">cpio(5)</a>, <a class="link-man">mtree(5)</a>, <a class="link-man">tar(5)</a></div>
+</div>
+</body>
+</html>
+
