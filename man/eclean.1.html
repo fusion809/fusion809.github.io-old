@@ -1,285 +1,295 @@
-<HTML><HEAD><TITLE>Manpage of ECLEAN</TITLE>
-<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
-</HEAD><BODY>
-<H1>ECLEAN</H1>
-Section:  (1)<BR>Updated: 0.3.0.9-r2<BR><A HREF="#index">Index</A>
-<A HREF="http://localhost/cgi-bin/man/man2html">Return to Main Contents</A><HR>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+ECLEAN(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+ECLEAN(1)</td>
+<td class="head-vol">
+</td>
+<td class="head-rtitle">
+ECLEAN(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> eclean - A cleaning tool for Gentoo distfiles and binary packages.</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>eclean [<i>global-options</i>] ... &lt;<i>actions</i>&gt; [<i>action-options</i>] ...</b><div class="spacer">
+</div>
+<b>eclean-dist [<i>global-options, distfiles-options</i>] ...</b><div class="spacer">
+</div>
+<b>eclean-pkg [<i>global-options, packages-options</i>] ...</b><div class="spacer">
+</div>
+<b>eclean(-dist,-pkg) [<i>--help, --version</i>]</b></div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>eclean</b> is small tool to remove obsolete portage sources files and binary packages. Used on a regular basis, it prevents your DISTDIR and PKGDIR directories to infinitely grow, while not deleting files which may still be useful.<div class="spacer">
+</div>
+By default, eclean will protect all distfiles or binary packages corresponding to some ebuilds available in the Portage tree.  This is the safest mode, since it will protect whatever may still be useful, for instance to downgrade a package without downloading its sources for the second time, or to reinstall a package you unmerge by mistake without recompiling it.  Sure, it's also a mode in which your DISTDIR and PKGDIR will stay rather big (although still not growing infinitely).  For the 'distfiles', this mode is also quite slow because it requiries some access to the whole Portage tree.<div class="spacer">
+</div>
+If you use the --deep option, eclean will only protect files corresponding to some currently installed package (taking their exact version into account).  It will save much more space, while still preserving sources files around for minor revision bumps, and binaries for reinstallation of corrupted packages.  But it won't keep files for less usual operations like downgrading or reinstalling an unmerged package.  This is also the fastest execution mode (big difference for distfiles), and the one used by most other cleaning scripts around like yacleaner (at least in its version 0.3).<div class="spacer">
+</div>
+Somewhere in the middle, adding the --package-names option when using --deep will protect files corresponding to all existing versions of installed packages.  It will allow easy downgrading without recompilation or redownloading in case of trouble, but won't protect you against package uninstallation.<div class="spacer">
+</div>
+In addition to this main modes, some options allow to declare a few special cases file protection rules:<dl>
+<dt>
+o</dt>
+<dd>
+--time-limit is useful to protect files which are more recent than a given amount of time.</dd>
+</dl>
+<dl>
+<dt>
+o</dt>
+<dd>
+--size-limit (for distfiles only) is useful if you want to protect files bigger than  a given size.</dd>
+</dl>
+<dl>
+<dt>
+o</dt>
+<dd>
+--fetch-restricted (for distfiles only) is useful to protect manually downloaded files. But it's also very slow (again, it's a reading of the whole Portage tree data)...</dd>
+</dl>
+<dl>
+<dt>
+o</dt>
+<dd>
+Finally, you can list some categories or package names to protect in exclusion files (see  <b>EXCLUSION FILES</b> below).</dd>
+</dl>
+</div>
+<div class="section">
+<h1>PARAMETERS</h1><div class="subsection">
+<h2>Global options</h2><dl>
+<dt>
+<b>-C, --nocolor</b>				turn off colors on output</dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>-d, --deep</b>				only keep the minimum for a reinstallation</dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>-e, --exclude-file=&lt;path&gt;</b>	path to the exclusion file</dt>
+<dd>
+<b>&lt;path&gt;</b> is the absolute path to the exclusion file you want to use. When this option is not used, default paths are /etc/eclean/{packages,distfiles}.exclude (if they exist).  Use /dev/null if you have such a file at it standard location and you want to temporary ignore it.</dd>
+</dl>
+<dl>
+<dt>
+<b>-i, --interactive</b>          ask confirmation before deleting</dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>-n, --package-names</b>       protect all versions (--deep only)</dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>-p, --pretend</b>              only display what would be cleaned</dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>-q, --quiet</b>                be as quiet as possible, only display errors</dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>-t, --time-limit=&lt;time&gt;</b>    don't delete files modified since &lt;time&gt;</dt>
+<dd>
+<b>&lt;time&gt;</b> is an amount of time: &quot;1y&quot; is &quot;one year&quot;, &quot;2w&quot; is &quot;two weeks&quot;, etc.<div style="height: 0.00em;">
+&#160;</div>
+Units are: y (years), m (months), w (weeks), d (days) and h (hours).</dd>
+</dl>
+<dl>
+<dt>
+<b>-h, --help</b>                 display the help screen</dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>-v, --verbose</b>              display more verbose messages during processing</dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>-V, --version</b>              display version informations</dt>
+<dd>
+</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>Actions</h2><dl>
+<dt>
+<b>distfiles</b></dt>
+<dd>
+Clean files from /usr/portage/distfiles (or whatever else is your DISTDIR in make.conf). This action should be useful to almost any Gentoo user, we all have to big DISTDIRs sometime...<div style="height: 0.00em;">
+&#160;</div>
+<b>eclean-dist</b> is a shortcut to call eclean with the &quot;distfiles&quot; action, for simplified command-line.</dd>
+</dl>
+<dl>
+<dt>
+<b>packages</b></dt>
+<dd>
+Clean files from /usr/portage/packages (or whatever else is your PKGDIR in make.conf). This action is in particular useful for people who use the &quot;buildpkg&quot; or &quot;buildsyspkg&quot; FEATURES flags.<div style="height: 0.00em;">
+&#160;</div>
+<b>eclean-pkg</b> is a shortcut to call eclean with the &quot;packages&quot; action, for simplified command-line.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>Options for the 'distfiles' action</h2><dl>
+<dt>
+<b>-f, --fetch-restricted</b>		protect fetch-restricted files (--deep only)</dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>-s, --size-limit=&lt;size&gt;</b>	don't delete distfiles bigger than &lt;size&gt;</dt>
+<dd>
+&lt;size&gt; is a size specification: &quot;10M&quot; is &quot;ten megabytes&quot;, &quot;200K&quot; is &quot;two hundreds kilobytes&quot;, etc.<div style="height: 0.00em;">
+&#160;</div>
+Units are: G, M, K and B.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>Options for the 'packages' action</h2><dl>
+<dt>
+There is no specific option for this action.</dt>
+<dd>
+</dd>
+</dl>
+</div>
+</div>
+<div class="section">
+<h1>EXCLUSION FILES</h1> Exclusions files are lists of packages names or categories you want to protect in particular.  This may be useful to protect more binary packages for some system related packages for instance.  Syntax is the following:<dl>
+<dt>
+o</dt>
+<dd>
+blank lines and lines starting with a &quot;#&quot; (comments) are ignored.</dd>
+</dl>
+<dl>
+<dt>
+o</dt>
+<dd>
+only one entry per line is allowed.</dd>
+</dl>
+<dl>
+<dt>
+o</dt>
+<dd>
+if a line contains a category name, like &quot;sys-apps&quot;, then all packages from this category will be protected.  &quot;sys-apps/*&quot; is also allowed for aesthetic reasons, but that does NOT mean that wildcard are supported in any way for any other usage.</dd>
+</dl>
+<dl>
+<dt>
+o</dt>
+<dd>
+if a line contains a package name (&quot;app-shells/bash&quot;), then this package will be protected.  Versioned atoms like &quot;&gt;=app-shells/bash-3&quot; are NOT supported.  Also, the full package name (with category) is mandatory.</dd>
+</dl>
+<dl>
+<dt>
+o</dt>
+<dd>
+if a line contains a package name with an exclamation mark in front (&quot;!sys-apps/portage&quot;), then this package will be excluded from protection.  This is only useful if the category itself was protected.</dd>
+</dl>
+<dl>
+<dt>
+o</dt>
+<dd>
+for distfiles protection, a line can also be a filename to protect. This is useful if you have some files which are not registered by the ebuilds, like OpenOffice.org i18n files (&quot;helpcontent_33_unix.tgz&quot; for instance).  Another example are sources you want to protect that do not have an ebuild in the tree or any currently installed overlays.</dd>
+</dl>
+<dl>
+<dt>
+o</dt>
+<dd>
+eclean will also inform you of any unavailable installed packages that are on your system as well as if it was able to locate the source filename(s) in order to protect them.  If you want to protect all installed distfile sources, run elcelan in pretend mode first.  Then check which sources it was not able to find the filename(s) for and add entries for them in the distfiles.exclude file before running eclean again.</dd>
+</dl>
+<div class="spacer">
+</div>
+By default, if it exists, /etc/eclean/packages.exclude (resp. distfiles.exclude) will be use when action is &quot;packages&quot; (resp. &quot;distfiles&quot;).  This can be overide with the --exclude-file option.</div>
+<div class="section">
+<h1>EXAMPLES</h1> Clean distfiles only, with per file confirmation prompt:<div style="height: 0.00em;">
+&#160;</div>
+<b># eclean -i distfiles</b><div class="spacer">
+</div>
+Check which binary packages could be removed, with a no-color display:<div style="height: 0.00em;">
+&#160;</div>
+<b># eclean -Cp packages</b><div class="spacer">
+</div>
+Clean binary packages of uninstalled packages, but keep all versions of installed ones:<div style="height: 0.00em;">
+&#160;</div>
+<b># eclean-pkg -d -n</b><div class="spacer">
+</div>
+Clean all distfiles except for installed packages (exact version), those which are less than one month old, bigger than 50MB, or fetch-restricted:<div style="height: 0.00em;">
+&#160;</div>
+<b># eclean-dist -d -t1m -s50M -f</b><div class="spacer">
+</div>
+From a crontab, silently clean packages in the safest mode, and then distfiles in deep mode but protecting files less than a week old, every sunday at 1am:<div style="height: 0.00em;">
+&#160;</div>
+<b>0 1 * * sun &#160;&#160;eclean -C -q packages ; eclean -C -q -d -t1w distfiles</b></div>
+<div class="section">
+<h1>NOTE</h1><dl>
+<dt>
+While running and searching distfiles for cleaning, elcean will report any unavailable packages it finds installed on your system. An unavailable package is a package that is installed on the system, but there is not a corresponding ebuild available. Those sources may not be protected if the SRC_URI is not recorded in the installed package database.  The SRC_URI is no longer recorded by recent portage/pkgcore versions.</dt>
+<dd>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>BUGS</h1></div>
+<div class="section">
+<h1>SEE ALSO</h1><dl>
+<dt>
+The Gentoo forum thread that gave birth to eclean:</dt>
+<dd>
+<b>http://forums.gentoo.org/viewtopic.php?t=3011</b></dd>
+</dl>
+<dl>
+<dt>
+The bug report requesting eclean inclusion in gentoolkit:</dt>
+<dd>
+<b>http://bugs.gentoo.org/show_bug.cgi?id=33877</b></dd>
+</dl>
+</div>
+<div class="section">
+<h1>AUTHORS</h1> Thomas de Grenier de Latour (tgl) &lt;degrenier@easyconnect.fr&gt;<div style="height: 0.00em;">
+&#160;</div>
+modular re-write by:<div style="height: 0.00em;">
+&#160;</div>
+Brian Dolbec (dol-sen) &lt;brian.dolbec@gmail.com&gt;</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+0.3.0.9-r2</td>
+<td class="foot-os">
+gentoolkit</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
 
-<A NAME="lbAB">&nbsp;</A>
-<H2>NAME</H2>
-
-eclean - A cleaning tool for Gentoo distfiles and binary packages.
-<A NAME="lbAC">&nbsp;</A>
-<H2>SYNOPSIS</H2>
-
-<P>
-
-<B>eclean </B>[<I>global-options</I>] ... &lt;<I>actions</I>&gt; [<I>action-options</I>] ...
-
-<P>
-
-<B>eclean-dist </B>[<I>global-options, distfiles-options</I>] ...
-
-<P>
-
-<B>eclean-pkg </B>[<I>global-options, packages-options</I>] ...
-
-<P>
-
-<B>eclean(-dist,-pkg) </B>[<I>--help, --version</I>]
-
-<A NAME="lbAD">&nbsp;</A>
-<H2>DESCRIPTION</H2>
-
-<B>eclean</B> is small tool to remove obsolete portage sources files and binary packages.
-Used on a regular basis, it prevents your DISTDIR and PKGDIR directories to
-infinitely grow, while not deleting files which may still be useful.
-<P>
-
-By default, eclean will protect all distfiles or binary packages corresponding to some
-ebuilds available in the Portage tree.  This is the safest mode, since it will protect
-whatever may still be useful, for instance to downgrade a package without downloading
-its sources for the second time, or to reinstall a package you unmerge by mistake
-without recompiling it.  Sure, it's also a mode in which your DISTDIR and PKGDIR will
-stay rather big (although still not growing infinitely).  For the 'distfiles', this
-mode is also quite slow because it requiries some access to the whole Portage tree.
-<P>
-
-If you use the --deep option, eclean will only protect files corresponding to
-some currently installed package (taking their exact version into account).  It will
-save much more space, while still preserving sources files around for minor revision
-bumps, and binaries for reinstallation of corrupted packages.  But it won't keep files
-for less usual operations like downgrading or reinstalling an unmerged package.  This
-is also the fastest execution mode (big difference for distfiles), and the one used by
-most other cleaning scripts around like yacleaner (at least in its version 0.3).
-<P>
-
-Somewhere in the middle, adding the --package-names option when using --deep
-will protect files corresponding to all existing versions of installed packages.  It will
-allow easy downgrading without recompilation or redownloading in case of trouble, but
-won't protect you against package uninstallation.
-<P>
-
-In addition to this main modes, some options allow to declare a few special cases file
-protection rules:
-<DL COMPACT>
-<DT>o<DD>
---time-limit is useful to protect files which are more recent than a given amount of time.
-<DT>o<DD>
---size-limit (for distfiles only) is useful if you want to protect files bigger than  a given size.
-<DT>o<DD>
---fetch-restricted (for distfiles only) is useful to protect manually downloaded files.
-But it's also very slow (again, it's a reading of the whole Portage tree data)...
-<DT>o<DD>
-Finally, you can list some categories or package names to protect in exclusion files (see
-<B>EXCLUSION FILES</B> below).
-</DL>
-<A NAME="lbAE">&nbsp;</A>
-<H2>PARAMETERS</H2>
-
-<A NAME="lbAF">&nbsp;</A>
-<H3>Global options</H3>
-
-<DL COMPACT>
-<DT><B>-C, --nocolor</B><TT>&nbsp;&nbsp;</TT><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>turn off colors on output<DD>
-<DT><B>-d, --deep</B><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>only keep the minimum for a reinstallation<DD>
-<DT><B>-e, --exclude-file=&lt;path&gt;</B><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>path to the exclusion file<DD>
-<B>&lt;path&gt;</B> is the absolute path to the exclusion file you want to use.<BR>
-When this option is not used, default paths are /etc/eclean/{packages,distfiles}.exclude
-(if they exist).  Use /dev/null if you have such a file at it standard location and
-you want to temporary ignore it.
-<DT><B>-i, --interactive</B>          ask confirmation before deleting<DD>
-<DT><B>-n, --package-names</B>       protect all versions (--deep only)<DD>
-<DT><B>-p, --pretend</B>              only display what would be cleaned<DD>
-<DT><B>-q, --quiet</B>                be as quiet as possible, only display errors<DD>
-<DT><B>-t, --time-limit=&lt;time&gt;</B>    don't delete files modified since &lt;time&gt;<DD>
-<B>&lt;time&gt;</B> is an amount of time: &quot;1y&quot; is &quot;one year&quot;, &quot;2w&quot; is &quot;two weeks&quot;, etc.
-<BR>
-
-Units are: y (years), m (months), w (weeks), d (days) and h (hours).
-<DT><B>-h, --help</B>                 display the help screen<DD>
-<DT><B>-v, --verbose</B>              display more verbose messages during processing<DD>
-<DT><B>-V, --version</B>              display version informations<DD>
-</DL>
-<A NAME="lbAG">&nbsp;</A>
-<H3>Actions</H3>
-
-<DL COMPACT>
-<DT><B>distfiles</B><DD>
-Clean files from /usr/portage/distfiles (or whatever else is your DISTDIR in make.conf).
-This action should be useful to almost any Gentoo user, we all have to big DISTDIRs sometime...
-<BR>
-
-<B>eclean-dist</B> is a shortcut to call eclean with the &quot;distfiles&quot; action, for simplified
-command-line.
-<DT><B>packages</B><DD>
-Clean files from /usr/portage/packages (or whatever else is your PKGDIR in make.conf).
-This action is in particular useful for people who use the &quot;buildpkg&quot; or &quot;buildsyspkg&quot;
-FEATURES flags.
-<BR>
-
-<B>eclean-pkg</B> is a shortcut to call eclean with the &quot;packages&quot; action, for simplified
-command-line.
-</DL>
-<A NAME="lbAH">&nbsp;</A>
-<H3>Options for the 'distfiles' action</H3>
-
-<DL COMPACT>
-<DT><B>-f, --fetch-restricted</B><TT>&nbsp;</TT><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>protect fetch-restricted files (--deep only)<DD>
-<DT><B>-s, --size-limit=&lt;size&gt;</B><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TT>don't delete distfiles bigger than &lt;size&gt;<DD>
-&lt;size&gt; is a size specification: &quot;10M&quot; is &quot;ten megabytes&quot;, &quot;200K&quot; is &quot;two hundreds kilobytes&quot;,<BR>
-etc.
-<BR>
-
-Units are: G, M, K and B.
-</DL>
-<A NAME="lbAI">&nbsp;</A>
-<H3>Options for the 'packages' action</H3>
-
-<DL COMPACT>
-<DT>There is no specific option for this action.<DD>
-</DL>
-<A NAME="lbAJ">&nbsp;</A>
-<H2>EXCLUSION FILES</H2>
-
-Exclusions files are lists of packages names or categories you want to protect
-in particular.  This may be useful to protect more binary packages for some system
-related packages for instance.  Syntax is the following:
-<DL COMPACT>
-<DT>o<DD>
-blank lines and lines starting with a &quot;#&quot; (comments) are ignored.
-<DT>o<DD>
-only one entry per line is allowed.
-<DT>o<DD>
-if a line contains a category name, like &quot;sys-apps&quot;, then all packages from this
-category will be protected.  &quot;sys-apps/*&quot; is also allowed for aesthetic reasons, but
-that does NOT mean that wildcard are supported in any way for any other usage.
-<DT>o<DD>
-if a line contains a package name (&quot;app-shells/bash&quot;), then this package will be
-protected.  Versioned atoms like &quot;&gt;=app-shells/bash-3&quot; are NOT supported.  Also, the
-full package name (with category) is mandatory.
-<DT>o<DD>
-if a line contains a package name with an exclamation mark in front (&quot;!sys-apps/portage&quot;),
-then this package will be excluded from protection.  This is only useful if the category
-itself was protected.
-<DT>o<DD>
-for distfiles protection, a line can also be a filename to protect. This is useful if you have
-some files which are not registered by the ebuilds, like OpenOffice.org i18n files
-(&quot;helpcontent_33_unix.tgz&quot; for instance).  Another example are sources you want to protect
-that do not have an ebuild in the tree or any currently installed overlays.
-<DT>o<DD>
-eclean will also inform you of any unavailable installed packages that are on your system as well
-as if it was able to locate the source filename(s) in order to protect them.  If you want to protect
-all installed distfile sources, run elcelan in pretend mode first.  Then check which sources it was
-not able to find the filename(s) for and add entries for them in the distfiles.exclude file before
-running eclean again.
-</DL>
-<P>
-
-By default, if it exists, /etc/eclean/packages.exclude (resp. distfiles.exclude) will be use
-when action is &quot;packages&quot; (resp. &quot;distfiles&quot;).  This can be overide with the --exclude-file
-option.
-<A NAME="lbAK">&nbsp;</A>
-<H2>EXAMPLES</H2>
-
-<P>
-
-Clean distfiles only, with per file confirmation prompt:
-<BR>
-
-<B># eclean -i distfiles</B>
-
-<P>
-
-Check which binary packages could be removed, with a no-color display:
-<BR>
-
-<B># eclean -Cp packages</B>
-
-<P>
-
-Clean binary packages of uninstalled packages, but keep all versions of installed ones:
-<BR>
-
-<B># eclean-pkg -d -n</B>
-
-<P>
-
-Clean all distfiles except for installed packages (exact version), those which
-are less than one month old, bigger than 50MB, or fetch-restricted:
-<BR>
-
-<B># eclean-dist -d -t1m -s50M -f</B>
-
-<P>
-
-From a crontab, silently clean packages in the safest mode, and then distfiles in deep
-mode but protecting files less than a week old, every sunday at 1am:
-<BR>
-
-<B>0 1 * * sun &nbsp;&nbsp;eclean -C -q packages ; eclean -C -q -d -t1w distfiles</B>
-
-<A NAME="lbAL">&nbsp;</A>
-<H2>NOTE</H2>
-
-<DL COMPACT>
-<DT>While running and searching distfiles for cleaning, elcean will report any unavailable packages it finds installed on your system. An unavailable package is a package that is installed on the system, but there is not a corresponding ebuild available. Those sources may not be protected if the SRC_URI is not recorded in the installed package database.  The SRC_URI is no longer recorded by recent portage/pkgcore versions.<DD>
-</DL>
-<A NAME="lbAM">&nbsp;</A>
-<H2>BUGS</H2>
-
-
-
-
-
-
-<A NAME="lbAN">&nbsp;</A>
-<H2>SEE ALSO</H2>
-
-<DL COMPACT>
-<DT>The Gentoo forum thread that gave birth to eclean:<DD>
-<B><A HREF="http://forums.gentoo.org/viewtopic.php?t=3011">http://forums.gentoo.org/viewtopic.php?t=3011</A></B>
-
-<DT>The bug report requesting eclean inclusion in gentoolkit:<DD>
-<B><A HREF="http://bugs.gentoo.org/show_bug.cgi?id=33877">http://bugs.gentoo.org/show_bug.cgi?id=33877</A></B>
-
-</DL>
-<A NAME="lbAO">&nbsp;</A>
-<H2>AUTHORS</H2>
-
-Thomas de Grenier de Latour (tgl) &lt;degrenier@easyconnect.fr&gt;
-<BR>
-
-modular re-write by:
-<BR>
-
-Brian Dolbec (dol-sen) &lt;brian.dolbec@gmail.com&gt;
-<P>
-
-<HR>
-<A NAME="index">&nbsp;</A><H2>Index</H2>
-<DL>
-<DT><A HREF="#lbAB">NAME</A><DD>
-<DT><A HREF="#lbAC">SYNOPSIS</A><DD>
-<DT><A HREF="#lbAD">DESCRIPTION</A><DD>
-<DT><A HREF="#lbAE">PARAMETERS</A><DD>
-<DL>
-<DT><A HREF="#lbAF">Global options</A><DD>
-<DT><A HREF="#lbAG">Actions</A><DD>
-<DT><A HREF="#lbAH">Options for the 'distfiles' action</A><DD>
-<DT><A HREF="#lbAI">Options for the 'packages' action</A><DD>
-</DL>
-<DT><A HREF="#lbAJ">EXCLUSION FILES</A><DD>
-<DT><A HREF="#lbAK">EXAMPLES</A><DD>
-<DT><A HREF="#lbAL">NOTE</A><DD>
-<DT><A HREF="#lbAM">BUGS</A><DD>
-<DT><A HREF="#lbAN">SEE ALSO</A><DD>
-<DT><A HREF="#lbAO">AUTHORS</A><DD>
-</DL>
-<HR>
-This document was created by
-<A HREF="http://github.com/hamano/man2html/">man2html</A>,
-using the manual pages.<BR>
-Time: 17:47:23 GMT, December 02, 2015
-</BODY>
-</HTML>
