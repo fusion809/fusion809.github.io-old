@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SG_MAP26(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SG_MAP26(8)</td>
+<td class="head-vol">
+SG3_UTILS</td>
+<td class="head-rtitle">
+SG_MAP26(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sg_map26 - map SCSI generic (sg) device to corresponding device names</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>sg_map26</b> [ <i>--dev_dir=DIR</i>] [<i>--given_is=</i>0|1] [<i>--help</i>] [ <i>--result=</i>0|1|2|3] [<i>--symlink</i>] [<i>--verbose</i>] [ <i>--version</i>] <i>DEVICE</i></div>
+<div class="section">
+<h1>DESCRIPTION</h1> Maps a special file (block or char) associated with a SCSI device to the corresponding SCSI generic (sg) device, or vice versa. Can also be given a sysfs file, for example '/sys/block/sda' or '/sys/block/sda/dev'.<div class="spacer">
+</div>
+Rather than map to or from a sg device, the sysfs file name matching a given device special file (or vice versa) can be requested. This is done with '--result=2' and '--result=3'. This feature works on ATA devices (e.g. 'dev/hdc') as well as SCSI devices.<div class="spacer">
+</div>
+In this utility, &quot;mapped&quot; refers to finding the relationship between a SCSI generic (sg) node and the higher level SCSI device name; or vice versa. For example '/dev/sg0' may &quot;map&quot; to '/dev/sda'. Mappings may not exist, if a relevant module is not loaded, for example. Also there are SCSI devices that can only be accessed via a sg node (e.g. SAF-TE and some SES devices).<div class="spacer">
+</div>
+In this utility, &quot;matching&quot; refers to different representations of the same device accessed via the same driver. For example, '/dev/hdc' and '/sys/block/hdc' usually refer to the same device and thus would be considered matching. A related example is that '/dev/cdrom' and '/dev/hdc' are also considered matching if '/dev/cdrom' is a symlink to '/dev/hdc'.</div>
+<div class="section">
+<h1>OPTIONS</h1> Arguments to long options are mandatory for short options as well.<dl>
+<dt>
+<b>-d</b>, <b>--dev_dir</b>=<i>DIR</i></dt>
+<dd>
+where <i>DIR</i> is the directory to search for resultant device special files in (or symlinks to same). Only active when '--result=0' (the default) or '--result=2'. If this option is not given and  <i>DEVICE</i> is a device special file then the directory part of  <i>DEVICE</i> is assumed. If this option is not given and  <i>DEVICE</i> is a sysfs name, then if necessary '/dev' is assumed as the directory.</dd>
+</dl>
+<dl>
+<dt>
+<b>-g</b>, <b>--given_is</b>=0 | 1</dt>
+<dd>
+specifies the <i>DEVICE</i> is either a device special file (when the argument is 0), or a sysfs 'dev' file (when the argument is 1). The parent directory of a sysfs 'dev' file is also accepted (e.g. either '/sys/block/sda/dev' or '/sys/block/sda' are accepted). Usually there is no need to give this option since this utility first checks for special files (or symlinks to special files) and if not, assumes it has been given a sysfs 'dev' file (or its parent). Generates an error if given and disagrees with variety of  <i>DEVICE</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>, <b>--help</b></dt>
+<dd>
+output the usage message then exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-r</b>, <b>--result</b>=0 | 1 | 2 | 3</dt>
+<dd>
+specifies what variety of file (or files) that this utility tries to find. The default is a &quot;mapped&quot; device special file, when the argument is 0. When the argument is 1, this utility tries to find the &quot;mapped&quot; sysfs node name. When the argument is 2, this utility tries to find the &quot;matching&quot; device special file. When the argument is 3, this utility tries to find the &quot;matching&quot; sysfs node name.</dd>
+</dl>
+<dl>
+<dt>
+<b>-s</b>, <b>--symlink</b></dt>
+<dd>
+when a device special file is being sought (i.e. when '--result=0' (the default) or '--result=2') then also look for symlinks to that device special file in the same directory.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b>, <b>--verbose</b></dt>
+<dd>
+increase the level of verbosity, (i.e. debug output).</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>, <b>--version</b></dt>
+<dd>
+print the version string and then exit.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>NOTES</h1> This utility is designed for the Linux 2.6 (and later) kernel series. It uses special file major and minor numbers (and whether the special is block or character) together with sysfs to do its mapping or matching. In the absence of any other information, device special files are assumed to be in the '/dev' directory while sysfs is assumed to be mounted at '/sys'. Device names in sysfs are predictable, given the corresponding major and minor number of the device. However, due to udev rules, the name of device special files can be anything the user desires (e.g. '/dev/sda' could be named '/dev/my_boot_disk'). When trying to find a resultant device special file, this utility uses the major and minor numbers (and whether a block or char device is sought) to search the device directory.<div class="spacer">
+</div>
+This utility only shows one relationship at a time. To get an overview of all SCSI devices, with special file names and optionally the &quot;mapped&quot; sg device name, see the lsscsi utility.</div>
+<div class="section">
+<h1>EXAMPLES</h1> Assume sg2 maps to sdb while dvd, cdrom and hdc are all matching.<div class="spacer">
+</div>
+<br/>
+  # sg_map26 /dev/sg2<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  /dev/sdb<div class="spacer">
+</div>
+<br/>
+  # sg_map26 /dev/sdb<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  /dev/sg2<div class="spacer">
+</div>
+<br/>
+  # sg_map26 --result=0 /dev/sdb<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  /dev/sg2<div class="spacer">
+</div>
+<br/>
+  # sg_map26 --result=3 /dev/sdb<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  /sys/block/sda<div class="spacer">
+</div>
+<br/>
+  # sg_map26 --result=1 /dev/sdb<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  /sys/class/scsi_generic/sg0<div class="spacer">
+</div>
+Now look at '/dev/hdc' and friends<div class="spacer">
+</div>
+<br/>
+  # sg_map26 /dev/hdc<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  &lt;error: a hd device does not map to a sg device&gt;<div class="spacer">
+</div>
+<br/>
+  # sg_map26 --result=3 /dev/hdc<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  /sys/block/hdc<div class="spacer">
+</div>
+<br/>
+  # sg_map26 --result=2 /dev/hdc<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  /dev/hdc<div class="spacer">
+</div>
+<br/>
+  # sg_map26 --result=2 --symlink /dev/hdc<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  /dev/cdrom<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  /dev/dvd<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  /dev/hdc<div class="spacer">
+</div>
+<br/>
+  # sg_map26 --result=2 --symlink /sys/block/hdc<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  /dev/cdrom<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  /dev/dvd<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  /dev/hdc</div>
+<div class="section">
+<h1>EXIT STATUS</h1> The exit status of sg_map26 is 0 when it is successful. Otherwise see the sg3_utils(8) man page.</div>
+<div class="section">
+<h1>AUTHORS</h1> Written by Douglas Gilbert.</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Report bugs to &lt;dgilbert at interlog dot com&gt;.</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright &#169; 2005-2012 Douglas Gilbert<div style="height: 0.00em;">
+&#160;</div>
+This software is distributed under a FreeBSD license. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>udev(7), lsscsi(lsscsi)</b></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+November 2012</td>
+<td class="foot-os">
+sg3_utils-1.35</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

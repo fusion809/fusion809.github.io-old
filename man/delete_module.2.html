@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+DELETE_MODULE(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+DELETE_MODULE(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+DELETE_MODULE(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> delete_module - unload a kernel module</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+<b>int delete_module(const char *</b><i>name</i><b>, int </b><i>flags</i><b>);</b><br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<i>Note</i>: No declaration of this function is provided in glibc headers; see NOTES.</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The <b>delete_module</b>() system call attempts to remove the unused loadable module entry identified by <i>name</i>. If the module has an <i>exit</i> function, then that function is executed before unloading the module. The <i>flags</i> argument is used to modify the behavior of the system call, as described below. This system call requires privilege.<div style="height: 1.00em;">
+&#160;</div>
+Module removal is attempted according to the following rules:<dl>
+<dt>
+1.</dt>
+<dd>
+If there are other loaded modules that depend on (i.e., refer to symbols defined in) this module, then the call fails.</dd>
+</dl>
+<dl>
+<dt>
+2.</dt>
+<dd>
+Otherwise, if the reference count for the module (i.e., the number of processes currently using the module) is zero, then the module is immediately unloaded.</dd>
+</dl>
+<dl>
+<dt>
+3.</dt>
+<dd>
+If a module has a nonzero reference count, then the behavior depends on the bits set in <i>flags</i>. In normal usage (see NOTES), the <b>O_NONBLOCK</b> flag is always specified, and the <b>O_TRUNC</b> flag may additionally be specified.<div style="height: 1.00em;">
+&#160;</div>
+The various combinations for <i>flags</i> have the following effect:</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+<dl>
+<dt>
+<b>flags == O_NONBLOCK</b></dt>
+<dd>
+The call returns immediately, with an error.</dd>
+</dl>
+<dl>
+<dt>
+<b>flags == (O_NONBLOCK | O_TRUNC)</b></dt>
+<dd>
+The module is unloaded immediately, regardless of whether it has a nonzero reference count.</dd>
+</dl>
+<dl>
+<dt>
+<b>(flags &amp; O_NONBLOCK) == 0</b></dt>
+<dd>
+If <i>flags</i> does not specify <b>O_NONBLOCK</b>, the following steps occur:<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+*</dt>
+<dd>
+The module is marked so that no new references are permitted.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+If the module's reference count is nonzero, the caller is placed in an uninterruptible sleep state (<b>TASK_UNINTERRUPTIBLE</b>) until the reference count is zero, at which point the call unblocks.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+The module is unloaded in the usual way.</dd>
+</dl>
+</div>
+</dd>
+</dl>
+</div>
+<div class="spacer">
+</div>
+The <b>O_TRUNC</b> flag has one further effect on the rules described above. By default, if a module has an <i>init</i> function but no <i>exit</i> function, then an attempt to remove the module will fail. However, if <b>O_TRUNC</b> was specified, this requirement is bypassed.<div class="spacer">
+</div>
+Using the <b>O_TRUNC</b> flag is dangerous! If the kernel was not built with <b>CONFIG_MODULE_FORCE_UNLOAD</b>, this flag is silently ignored. (Normally, <b>CONFIG_MODULE_FORCE_UNLOAD</b> is enabled.) Using this flag taints the kernel (TAINT_FORCED_RMMOD).</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, zero is returned. On error, -1 is returned and <i>errno</i> is set appropriately.</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>EBUSY</b></dt>
+<dd>
+The module is not &quot;live&quot; (i.e., it is still being initialized or is already marked for removal); or, the module has an <i>init</i> function but has no <i>exit</i> function, and <b>O_TRUNC</b> was not specified in <i>flags</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>EFAULT</b></dt>
+<dd>
+<i>name</i> refers to a location outside the process's accessible address space.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOENT</b></dt>
+<dd>
+No module by that name exists.</dd>
+</dl>
+<dl>
+<dt>
+<b>EPERM</b></dt>
+<dd>
+The caller was not privileged (did not have the <b>CAP_SYS_MODULE</b> capability), or module unloading is disabled (see <i>/proc/sys/kernel/modules_disabled</i> in <b>proc</b>(5)).</dd>
+</dl>
+<dl>
+<dt>
+<b>EWOULDBLOCK</b></dt>
+<dd>
+Other modules depend on this module; or, <b>O_NONBLOCK</b> was specified in <i>flags</i>, but the reference count of this module is nonzero and <b>O_TRUNC</b> was not specified in <i>flags</i>.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>CONFORMING TO</h1> <b>delete_module</b>() is Linux-specific.</div>
+<div class="section">
+<h1>NOTES</h1> The <b>delete_module</b>() system call is not supported by glibc. No declaration is provided in glibc headers, but, through a quirk of history, glibc does export an ABI for this system call. Therefore, in order to employ this system call, it is sufficient to manually declare the interface in your code; alternatively, you can invoke the system call using <b>syscall</b>(2).<div style="height: 1.00em;">
+&#160;</div>
+The uninterruptible sleep that may occur if <b>O_NONBLOCK</b> is omitted from <i>flags</i> is considered undesirable, because the sleeping process is left in an unkillable state. As at Linux 3.7, specifying <b>O_NONBLOCK</b> is optional, but in future kernels it is likely to become mandatory.<div class="subsection">
+<h2>Linux 2.4 and earlier</h2> In Linux 2.4 and earlier, the system call took only one argument:<div style="height: 1.00em;">
+&#160;</div>
+<b>   int delete_module(const char *</b><i>name</i><b>);</b><div style="height: 1.00em;">
+&#160;</div>
+If <i>name</i> is NULL, all unused modules marked auto-clean are removed.<div style="height: 1.00em;">
+&#160;</div>
+Some further details of differences in the behavior of <b>delete_module</b>() in Linux 2.4 and earlier are <i>not</i> currently explained in this manual page.</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>create_module</b>(2), <b>init_module</b>(2), <b>query_module</b>(2), <b>lsmod</b>(8), <b>modprobe</b>(8), <b>rmmod</b>(8)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2014-05-10</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

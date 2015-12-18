@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+REALPATH(3P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+REALPATH(3P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+REALPATH(3P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> realpath &#8212; resolve a pathname</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;stdlib.h&gt;<div class="spacer">
+</div>
+char *realpath(const char *restrict <i>file_name</i>,<br/>
+    char *restrict <i>resolved_name</i>);<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <i>realpath</i>() function shall derive, from the pathname pointed to by <i>file_name</i>, an absolute pathname that resolves to the same directory entry, whose resolution does not involve <b>'.'</b>, <b>'..'</b>, or symbolic links. If <i>resolved_name</i> is a null pointer, the generated pathname shall be stored as a null-terminated string in a buffer allocated as if by a call to  <i>malloc</i>(). Otherwise, if {PATH_MAX} is defined as a constant in the <i>&lt;limits.h&gt;</i> header, then the generated pathname shall be stored as a null-terminated string, up to a maximum of {PATH_MAX} bytes, in the buffer pointed to by <i>resolved_name</i>.<div class="spacer">
+</div>
+If <i>resolved_name</i> is not a null pointer and {PATH_MAX} is not defined as a constant in the <i>&lt;limits.h&gt;</i> header, the behavior is undefined.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> Upon successful completion,  <i>realpath</i>() shall return a pointer to the buffer containing the resolved name. Otherwise,  <i>realpath</i>() shall return a null pointer and set <i>errno</i> to indicate the error.<div class="spacer">
+</div>
+If the <i>resolved_name</i> argument is a null pointer, the pointer returned by  <i>realpath</i>() can be passed to  <i>free</i>().<div class="spacer">
+</div>
+If the <i>resolved_name</i> argument is not a null pointer and the  <i>realpath</i>() function fails, the contents of the buffer pointed to by <i>resolved_name</i> are undefined.</div>
+<div class="section">
+<h1>ERRORS</h1> The  <i>realpath</i>() function shall fail if:<dl>
+<dt>
+<b>EACCES</b></dt>
+<dd>
+Search permission was denied for a component of the path prefix of <i>file_name</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+The <i>file_name</i> argument is a null pointer.</dd>
+</dl>
+<dl>
+<dt>
+<b>EIO</b></dt>
+<dd>
+An error occurred while reading from the file system.</dd>
+</dl>
+<dl>
+<dt>
+<b>ELOOP</b></dt>
+<dd>
+A loop exists in symbolic links encountered during resolution of the <i>file_name</i> argument.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENAMETOOLONG</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The length of a component of a pathname is longer than {NAME_MAX}.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOENT</b></dt>
+<dd>
+A component of <i>file_name</i> does not name an existing file or <i>file_name</i> points to an empty string.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+A component of the path prefix names an existing file that is neither a directory nor a symbolic link to a directory, or the <i>file_name</i> argument contains at least one non-&lt;slash&gt; character and ends with one or more trailing &lt;slash&gt; characters and the last pathname component names an existing file that is neither a directory nor a symbolic link to a directory.<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<div class="spacer">
+</div>
+The  <i>realpath</i>() function may fail if:<dl>
+<dt>
+<b>EACCES</b></dt>
+<dd>
+The <i>file_name</i> argument does not begin with a &lt;slash&gt; and none of the symbolic links (if any) processed during pathname resolution of <i>file_name</i> had contents that began with a &lt;slash&gt;, and either search permission was denied for the current directory or read or search permission was denied for a directory above the current directory in the file hierarchy.</dd>
+</dl>
+<dl>
+<dt>
+<b>ELOOP</b></dt>
+<dd>
+More than {SYMLOOP_MAX} symbolic links were encountered during resolution of the <i>file_name</i> argument.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENAMETOOLONG</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The length of a pathname exceeds {PATH_MAX}, or pathname resolution of a symbolic link produced an intermediate result with a length that exceeds {PATH_MAX}.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOMEM</b></dt>
+<dd>
+Insufficient storage space is available.</dd>
+</dl>
+<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>EXAMPLES</h1><div class="subsection">
+<h2>Generating an Absolute Pathname</h2> The following example generates an absolute pathname for the file identified by the <i>symlinkpath</i> argument. The generated pathname is stored in the buffer pointed to by <i>actualpath</i>.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>#include &lt;stdlib.h&gt;</b><br/>
+<b>...</b><br/>
+<b>char *symlinkpath = &quot;/tmp/symlink/file&quot;;</b><br/>
+<b>char *actualpath;</b><div class="spacer">
+</div>
+actualpath = realpath(symlinkpath, NULL);<br/>
+if (actualpath != NULL)<br/>
+{<br/>
+    ... use actualpath ...<div class="spacer">
+</div>
+<br/>
+    free(actualpath);<br/>
+}<br/>
+else<br/>
+{<br/>
+    ... handle error ...<br/>
+}<br/>
+</div>
+</div>
+</div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> For functions that allocate memory as if by  <i>malloc</i>(), the application should release such memory when it is no longer required by a call to  <i>free</i>(). For  <i>realpath</i>(), this is the return value.</div>
+<div class="section">
+<h1>RATIONALE</h1> Since  <i>realpath</i>() has no <i>length</i> argument, if {PATH_MAX} is not defined as a constant in <i>&lt;limits.h&gt;</i>, applications have no way of determining how large a buffer they need to allocate for it to be safe to pass to  <i>realpath</i>(). A {PATH_MAX} value obtained from a prior  <i>pathconf</i>() call is out-of-date by the time  <i>realpath</i>() is called. Hence the only reliable way to use  <i>realpath</i>() when {PATH_MAX} is not defined in <i>&lt;limits.h&gt;</i> is to pass a null pointer for <i>resolved_name</i> so that  <i>realpath</i>() will allocate a buffer of the necessary size.</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> None.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i><i>fpathconf</i>()</i>, <i><i>free</i>()</i>, <i><i>getcwd</i>()</i>, <i><i>sysconf</i>()</i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i><b>&lt;limits.h&gt;</b></i>, <i><b>&lt;stdlib.h&gt;</b></i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

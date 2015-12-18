@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+CONNECT(3P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+CONNECT(3P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+CONNECT(3P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> connect &#8212; connect a socket</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;sys/socket.h&gt;<div class="spacer">
+</div>
+int connect(int <i>socket</i>, const struct sockaddr *<i>address</i>,<br/>
+    socklen_t <i>address_len</i>);<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <i>connect</i>() function shall attempt to make a connection on a connection-mode socket or to set or reset the peer address of a connectionless-mode socket. The function takes the following arguments:<dl>
+<dt>
+<i>socket</i></dt>
+<dd>
+Specifies the file descriptor associated with the socket.</dd>
+</dl>
+<dl>
+<dt>
+<i>address</i></dt>
+<dd>
+Points to a <b>sockaddr</b> structure containing the peer address. The length and format of the address depend on the address family of the socket.</dd>
+</dl>
+<dl>
+<dt>
+<i>address_len</i></dt>
+<dd>
+Specifies the length of the <b>sockaddr</b> structure pointed to by the <i>address</i> argument.</dd>
+</dl>
+<div class="spacer">
+</div>
+If the socket has not already been bound to a local address,  <i>connect</i>() shall bind it to an address which, unless the socket's address family is AF_UNIX, is an unused local address.<div class="spacer">
+</div>
+If the initiating socket is not connection-mode, then  <i>connect</i>() shall set the socket's peer address, and no connection is made. For SOCK_DGRAM sockets, the peer address identifies where all datagrams are sent on subsequent  <i>send</i>() functions, and limits the remote sender for subsequent  <i>recv</i>() functions. If the <i>sa_family</i> member of <i>address</i> is AF_UNSPEC, the socket's peer address shall be reset. Note that despite no connection being made, the term ``connected'' is used to describe a connectionless-mode socket for which a peer address has been set.<div class="spacer">
+</div>
+If the initiating socket is connection-mode, then  <i>connect</i>() shall attempt to establish a connection to the address specified by the <i>address</i> argument. If the connection cannot be established immediately and O_NONBLOCK is not set for the file descriptor for the socket,  <i>connect</i>() shall block for up to an unspecified timeout interval until the connection is established. If the timeout interval expires before the connection is established,  <i>connect</i>() shall fail and the connection attempt shall be aborted. If  <i>connect</i>() is interrupted by a signal that is caught while blocked waiting to establish a connection,  <i>connect</i>() shall fail and set <i>errno</i> to <b>[EINTR]</b>, but the connection request shall not be aborted, and the connection shall be established asynchronously.<div class="spacer">
+</div>
+If the connection cannot be established immediately and O_NONBLOCK is set for the file descriptor for the socket,  <i>connect</i>() shall fail and set <i>errno</i> to <b>[EINPROGRESS]</b>, but the connection request shall not be aborted, and the connection shall be established asynchronously. Subsequent calls to  <i>connect</i>() for the same socket, before the connection is established, shall fail and set <i>errno</i> to <b>[EALREADY]</b>.<div class="spacer">
+</div>
+When the connection has been established asynchronously,  <i>pselect</i>(),  <i>select</i>(), and  <i>poll</i>() shall indicate that the file descriptor for the socket is ready for writing.<div class="spacer">
+</div>
+The socket in use may require the process to have appropriate privileges to use the  <i>connect</i>() function.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> Upon successful completion,  <i>connect</i>() shall return 0; otherwise, &#8722;1 shall be returned and <i>errno</i> set to indicate the error.</div>
+<div class="section">
+<h1>ERRORS</h1> The  <i>connect</i>() function shall fail if:<dl>
+<dt>
+<b>EADDRNOTAVAIL</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The specified address is not available from the local machine.</dd>
+</dl>
+<dl>
+<dt>
+<b>EAFNOSUPPORT</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The specified address is not a valid address for the address family of the specified socket.</dd>
+</dl>
+<dl>
+<dt>
+<b>EALREADY</b></dt>
+<dd>
+A connection request is already in progress for the specified socket.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+The <i>socket</i> argument is not a valid file descriptor.</dd>
+</dl>
+<dl>
+<dt>
+<b>ECONNREFUSED</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The target address was not listening for connections or refused the connection request.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINPROGRESS</b></dt>
+<dd>
+O_NONBLOCK is set for the file descriptor for the socket and the connection cannot be immediately established; the connection shall be established asynchronously.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINTR</b></dt>
+<dd>
+The attempt to establish a connection was interrupted by delivery of a signal that was caught; the connection shall be established asynchronously.</dd>
+</dl>
+<dl>
+<dt>
+<b>EISCONN</b></dt>
+<dd>
+The specified socket is connection-mode and is already connected.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENETUNREACH</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+No route to the network is present.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTSOCK</b></dt>
+<dd>
+The <i>socket</i> argument does not refer to a socket.</dd>
+</dl>
+<dl>
+<dt>
+<b>EPROTOTYPE</b></dt>
+<dd>
+The specified address has a different type than the socket bound to the specified peer address.</dd>
+</dl>
+<dl>
+<dt>
+<b>ETIMEDOUT</b></dt>
+<dd>
+The attempt to connect timed out before a connection was made.</dd>
+</dl>
+<div class="spacer">
+</div>
+If the address family of the socket is AF_UNIX, then  <i>connect</i>() shall fail if:<dl>
+<dt>
+<b>EIO</b></dt>
+<dd>
+An I/O error occurred while reading from or writing to the file system.</dd>
+</dl>
+<dl>
+<dt>
+<b>ELOOP</b></dt>
+<dd>
+A loop exists in symbolic links encountered during resolution of the pathname in <i>address</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENAMETOOLONG</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The length of a component of a pathname is longer than {NAME_MAX}.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOENT</b></dt>
+<dd>
+A component of the pathname does not name an existing file or the pathname is an empty string.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+A component of the path prefix of the pathname in <i>address</i> names an existing file that is neither a directory nor a symbolic link to a directory, or the pathname in <i>address</i> contains at least one non-&lt;slash&gt; character and ends with one or more trailing &lt;slash&gt; characters and the last pathname component names an existing file that is neither a directory nor a symbolic link to a directory.</dd>
+</dl>
+<div class="spacer">
+</div>
+The  <i>connect</i>() function may fail if:<dl>
+<dt>
+<b>EACCES</b></dt>
+<dd>
+Search permission is denied for a component of the path prefix; or write access to the named socket is denied.</dd>
+</dl>
+<dl>
+<dt>
+<b>EADDRINUSE</b></dt>
+<dd>
+Attempt to establish a connection that uses addresses that are already in use.</dd>
+</dl>
+<dl>
+<dt>
+<b>ECONNRESET</b></dt>
+<dd>
+Remote host reset the connection request.</dd>
+</dl>
+<dl>
+<dt>
+<b>EHOSTUNREACH</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The destination host cannot be reached (probably because the host is down or a remote router cannot reach it).</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+The <i>address_len</i> argument is not a valid length for the address family; or invalid address family in the <b>sockaddr</b> structure.</dd>
+</dl>
+<dl>
+<dt>
+<b>ELOOP</b></dt>
+<dd>
+More than {SYMLOOP_MAX} symbolic links were encountered during resolution of the pathname in <i>address</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENAMETOOLONG</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The length of a pathname exceeds {PATH_MAX}, or pathname resolution of a symbolic link produced an intermediate result with a length that exceeds {PATH_MAX}.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENETDOWN</b></dt>
+<dd>
+The local network interface used to reach the destination is down.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOBUFS</b></dt>
+<dd>
+No buffer space is available.</dd>
+</dl>
+<dl>
+<dt>
+<b>EOPNOTSUPP</b></dt>
+<dd>
+The socket is listening and cannot be connected.</dd>
+</dl>
+<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>EXAMPLES</h1> None.</div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> If  <i>connect</i>() fails, the state of the socket is unspecified. Conforming applications should close the file descriptor and create a new socket before attempting to reconnect.</div>
+<div class="section">
+<h1>RATIONALE</h1> None.</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> None.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i><i>accept</i>()</i>, <i><i>bind</i>()</i>, <i><i>close</i>()</i>, <i><i>getsockname</i>()</i>, <i><i>poll</i>()</i>, <i><i>pselect</i>()</i>, <i><i>send</i>()</i>, <i><i>shutdown</i>()</i>, <i><i>socket</i>()</i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i><b>&lt;sys_socket.h&gt;</b></i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

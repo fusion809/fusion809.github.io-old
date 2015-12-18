@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+PTHREAD_SETNAME_NP(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+PTHREAD_SETNAME_NP(3)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+PTHREAD_SETNAME_NP(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> pthread_setname_np, pthread_getname_np - set/get the name of a thread</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+<b>#define _GNU_SOURCE</b>             /* See feature_test_macros(7) */ <b>#include &lt;pthread.h&gt;</b><br/>
+<b>int pthread_setname_np(pthread_t </b><i>thread</i><b>, const char *</b><i>name</i><b>);</b><br/>
+<b>int pthread_getname_np(pthread_t </b><i>thread</i><b>,</b><br/>
+<b>                       char *</b><i>name</i><b>, size_t </b><i>len</i><b>);</b><br/>
+<div style="height: 1.00em;">
+&#160;</div>
+Compile and link with <i>-pthread</i>.</div>
+<div class="section">
+<h1>DESCRIPTION</h1> By default, all the threads created using <b>pthread_create</b>() inherit the program name. The <b>pthread_setname_np</b>() function can be used to set a unique name for a thread, which can be useful for debugging multithreaded applications. The thread name is a meaningful C language string, whose length is restricted to 16 characters, including the terminating null byte ('\0'). The <i>thread</i> argument specifies the thread whose name is to be changed; <i>name</i> specifies the new name.<div style="height: 1.00em;">
+&#160;</div>
+The <b>pthread_getname_np</b>() function can be used to retrieve the name of the thread. The <i>thread</i> argument specifies the thread whose name is to be retrieved. The buffer <i>name</i> is used to return the thread name; <i>len</i> specifies the number of bytes available in <i>name</i>. The buffer specified by <i>name</i> should be at least 16 characters in length. The returned thread name in the output buffer will be null terminated.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, these functions return 0; on error, they return a nonzero error number.</div>
+<div class="section">
+<h1>ERRORS</h1> The <b>pthread_setname_np</b>() function can fail with the following error:<dl>
+<dt>
+<b>ERANGE</b></dt>
+<dd>
+The length of the string specified pointed to by <i>name</i> exceeds the allowed limit.</dd>
+</dl>
+<div class="spacer">
+</div>
+The <b>pthread_getname_np</b>() function can fail with the following error:<dl>
+<dt>
+<b>ERANGE</b></dt>
+<dd>
+The buffer specified by <i>name</i> and <i>len</i> is too small to hold the thread name.</dd>
+</dl>
+<div class="spacer">
+</div>
+If either of these functions fails to open <i>/proc/self/task/[tid]/comm</i>, then the call may fail with one of the errors described in <b>open</b>(2).</div>
+<div class="section">
+<h1>VERSIONS</h1> These functions first appeared in glibc in version 2.12.</div>
+<div class="section">
+<h1>ATTRIBUTES</h1> For an explanation of the terms used in this section, see <b>attributes</b>(7).<table class="tbl">
+<col style="width: 44.00ex;"/>
+<col style="width: 13.00ex;"/>
+<col style="width: 5.00ex;"/>
+<tbody>
+<tr>
+<td>
+Interface</td>
+<td>
+Attribute</td>
+<td>
+Value</td>
+</tr>
+<tr>
+<td>
+pthread_setname_np (), pthread_getname_np ()</td>
+<td>
+Thread safety</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>CONFORMING TO</h1> These functions are nonstandard GNU extensions.</div>
+<div class="section">
+<h1>NOTES</h1> <b>pthread_setname_np</b>() internally writes to the thread-specific <i>comm</i> file under the <i>/proc</i> filesystem: <i>/proc/self/task/[tid]/comm</i>. <b>pthread_getname_np</b>() retrieves it from the same location.</div>
+<div class="section">
+<h1>EXAMPLE</h1> The program below demonstrates the use of <b>pthread_setname_np</b>() and <b>pthread_getname_np</b>().<div style="height: 1.00em;">
+&#160;</div>
+The following shell session shows a sample run of the program:<br/>
+<div class="spacer">
+</div>
+<br/>
+$<b> ./a.out</b><br/>
+Created a thread. Default name is: a.out<br/>
+The thread name after setting it is THREADFOO.<br/>
+<b>^Z</b>                           # Suspend the program<br/>
+[1]+  Stopped           ./a.out<br/>
+$ <b>ps H -C a.out -o 'pid tid cmd comm'</b><br/>
+  PID   TID CMD                         COMMAND<br/>
+ 5990  5990 ./a.out                     a.out<br/>
+ 5990  5991 ./a.out                     THREADFOO<br/>
+$ <b>cat /proc/5990/task/5990/comm</b><br/>
+a.out<br/>
+$ <b>cat /proc/5990/task/5991/comm</b><br/>
+THREADFOO<br/>
+<br/>
+<div class="subsection">
+<h2>Program source</h2> <br/>
+#define _GNU_SOURCE<br/>
+#include &lt;pthread.h&gt;<br/>
+#include &lt;stdio.h&gt;<br/>
+#include &lt;string.h&gt;<br/>
+#include &lt;unistd.h&gt;<br/>
+#include &lt;errno.h&gt;<br/>
+#include &lt;stdlib.h&gt;<div class="spacer">
+</div>
+<br/>
+#define NAMELEN 16<div class="spacer">
+</div>
+<br/>
+#define errExitEN(en, msg) \<br/>
+            do { errno = en; perror(msg); exit(EXIT_FAILURE); \<br/>
+        } while (0)<div class="spacer">
+</div>
+<br/>
+static void *<br/>
+threadfunc(void *parm)<br/>
+{<br/>
+    sleep(5);          // allow main program to set the thread name<br/>
+    return NULL;<br/>
+}<div class="spacer">
+</div>
+<br/>
+int<br/>
+main(int argc, char **argv)<br/>
+{<br/>
+    pthread_t thread;<br/>
+    int rc;<br/>
+    char thread_name[NAMELEN];<div class="spacer">
+</div>
+<br/>
+    rc = pthread_create(&amp;thread, NULL, threadfunc, NULL);<br/>
+    if (rc != 0)<br/>
+        errExitEN(rc, &quot;pthread_create&quot;);<div class="spacer">
+</div>
+<br/>
+    rc = pthread_getname_np(thread, thread_name, NAMELEN);<br/>
+    if (rc != 0)<br/>
+        errExitEN(rc, &quot;pthread_getname_np&quot;);<div class="spacer">
+</div>
+<br/>
+    printf(&quot;Created a thread. Default name is: %s\n&quot;, thread_name);<br/>
+    rc = pthread_setname_np(thread, (argc &gt; 1) ? argv[1] : &quot;THREADFOO&quot;);<br/>
+    if (rc != 0)<br/>
+        errExitEN(rc, &quot;pthread_setname_np&quot;);<div class="spacer">
+</div>
+<br/>
+    sleep(2);<div class="spacer">
+</div>
+<br/>
+    rc = pthread_getname_np(thread, thread_name,<br/>
+                            (argc &gt; 2) ? atoi(argv[1]) : NAMELEN);<br/>
+    if (rc != 0)<br/>
+        errExitEN(rc, &quot;pthread_getname_np&quot;);<br/>
+    printf(&quot;The thread name after setting it is %s.\n&quot;, thread_name);<div class="spacer">
+</div>
+<br/>
+    rc = pthread_join(thread, NULL);<br/>
+    if (rc != 0)<br/>
+        errExitEN(rc, &quot;pthread_join&quot;);<div class="spacer">
+</div>
+<br/>
+    printf(&quot;Done\n&quot;);<br/>
+    exit(EXIT_SUCCESS);<br/>
+}<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>prctl</b>(2), <b>pthread_create</b>(3), <b>pthreads</b>(7)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-07-23</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

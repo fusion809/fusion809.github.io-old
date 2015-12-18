@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+MTRACE(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+MTRACE(3)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+MTRACE(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> mtrace, muntrace - malloc tracing</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;mcheck.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<b>void mtrace(void);</b><div style="height: 1.00em;">
+&#160;</div>
+<b>void muntrace(void);</b></div>
+<div class="section">
+<h1>DESCRIPTION</h1> The <b>mtrace</b>() function installs hook functions for the memory-allocation functions (<b>malloc</b>(3), <b>realloc</b>(3) <b>memalign</b>(3), <b>free</b>(3)). These hook functions record tracing information about memory allocation and deallocation. The tracing information can be used to discover memory leaks and attempts to free nonallocated memory in a program.<div style="height: 1.00em;">
+&#160;</div>
+The <b>muntrace</b>() function disables the hook functions installed by <b>mtrace</b>(), so that tracing information is no longer recorded for the memory-allocation functions. If no hook functions were successfully installed by <b>mtrace</b>(), <b>muntrace</b>() does nothing.<div style="height: 1.00em;">
+&#160;</div>
+When <b>mtrace</b>() is called, it checks the value of the environment variable <b>MALLOC_TRACE</b>, which should contain the pathname of a file in which the tracing information is to be recorded. If the pathname is successfully opened, it is truncated to zero length.<div style="height: 1.00em;">
+&#160;</div>
+If <b>MALLOC_TRACE</b> is not set, or the pathname it specifies is invalid or not writable, then no hook functions are installed, and <b>mtrace</b>() has no effect. In set-user-ID and set-group-ID programs, <b>MALLOC_TRACE</b> is ignored, and <b>mtrace</b>() has no effect.</div>
+<div class="section">
+<h1>ATTRIBUTES</h1> For an explanation of the terms used in this section, see <b>attributes</b>(7).<table class="tbl">
+<col style="width: 36.00ex;"/>
+<col style="width: 13.00ex;"/>
+<col style="width: 5.00ex;"/>
+<tbody>
+<tr>
+<td>
+Interface</td>
+<td>
+Attribute</td>
+<td>
+Value</td>
+</tr>
+<tr>
+<td>
+mtrace (), muntrace () . . . . . . .</td>
+<td>
+Thread safety</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section">
+<h1>CONFORMING TO</h1> These functions are GNU extensions.</div>
+<div class="section">
+<h1>NOTES</h1> In normal usage, <b>mtrace</b>() is called once at the start of execution of a program, and <b>muntrace</b>() is never called.<div style="height: 1.00em;">
+&#160;</div>
+The tracing output produced after a call to <b>mtrace</b>() is textual, but not designed to be human readable. The GNU C library provides a Perl script, <b>mtrace</b>(1), that interprets the trace log and produces human-readable output. For best results, the traced program should be compiled with debugging enabled, so that line-number information is recorded in the executable.<div style="height: 1.00em;">
+&#160;</div>
+The tracing performed by <b>mtrace</b>() incurs a performance penalty (if <b>MALLOC_TRACE</b> points to a valid, writable pathname).</div>
+<div class="section">
+<h1>BUGS</h1> The line-number information produced by <b>mtrace</b>(1) is not always precise: the line number references may refer to the previous or following (nonblank) line of the source code.</div>
+<div class="section">
+<h1>EXAMPLE</h1> The shell session below demonstrates the use of the <b>mtrace</b>() function and the <b>mtrace</b>(1) command in a program that has memory leaks at two different locations. The demonstration uses the following program:<br/>
+<div class="spacer">
+</div>
+<br/>
+$ <b>cat t_mtrace.c</b><br/>
+#include &lt;mcheck.h&gt;<br/>
+#include &lt;stdlib.h&gt;<br/>
+#include &lt;stdio.h&gt;<div class="spacer">
+</div>
+<br/>
+int<br/>
+main(int argc, char *argv[])<br/>
+{<br/>
+    int j;<div class="spacer">
+</div>
+<br/>
+    mtrace();<div class="spacer">
+</div>
+<br/>
+    for (j = 0; j &lt; 2; j++)<br/>
+        malloc(100);            /* Never freed--a memory leak */<div class="spacer">
+</div>
+<br/>
+    calloc(16, 16);             /* Never freed--a memory leak */<br/>
+    exit(EXIT_SUCCESS);<br/>
+}<div class="spacer">
+</div>
+<br/>
+<br/>
+When we run the program as follows, we see that <b>mtrace</b>() diagnosed memory leaks at two different locations in the program:<br/>
+<div class="spacer">
+</div>
+<br/>
+$ <b>cc -g t_mtrace.c -o t_mtrace</b><br/>
+$ <b>export MALLOC_TRACE=/tmp/t</b><br/>
+$ <b>./t_mtrace</b><br/>
+$ <b>mtrace ./t_mtrace $MALLOC_TRACE</b><br/>
+Memory not freed:<br/>
+-----------------<br/>
+   Address     Size     Caller<br/>
+0x084c9378     0x64  at /home/cecilia/t_mtrace.c:12<br/>
+0x084c93e0     0x64  at /home/cecilia/t_mtrace.c:12<br/>
+0x084c9448    0x100  at /home/cecilia/t_mtrace.c:16<br/>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+The first two messages about unfreed memory correspond to the two <b>malloc</b>(3) calls inside the <i>for</i> loop. The final message corresponds to the call to <b>calloc</b>(3) (which in turn calls <b>malloc</b>(3)).</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>mtrace</b>(1), <b>malloc</b>(3), <b>malloc_hook</b>(3), <b>mcheck</b>(3)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-03-02</td>
+<td class="foot-os">
+GNU</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

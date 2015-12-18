@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SG_SYNC(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SG_SYNC(8)</td>
+<td class="head-vol">
+SG3_UTILS</td>
+<td class="head-rtitle">
+SG_SYNC(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sg_sync - send SCSI SYNCHRONIZE CACHE command</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>sg_sync</b> [ <i>--16</i>] [<i>--count=COUNT</i>] [<i>--group=GN</i>] [ <i>--help</i>] [<i>--immed</i>] [<i>--lba=LBA</i>] [<i>--sync-nv</i>] [ <i>--timeout=SECS</i>] [<i>--verbose</i>] [<i>--version</i>] <i>DEVICE</i></div>
+<div class="section">
+<h1>DESCRIPTION</h1> Send SYNCHRONIZE CACHE(10) or SYNCHRONIZE CACHE(16) command to  <i>DEVICE</i>. These commands are defined for SCSI block devices (see SBC-3). If successful these commands make sure that any blocks whose latest versions are held in cache are written to (also termed as &quot;synchronized with&quot;) the medium.<div class="spacer">
+</div>
+If the <i>LBA</i> and <i>COUNT</i> arguments are both zero (their defaults) then all blocks in the cache are synchronized. If  <i>LBA</i> is greater than zero while  <i>COUNT</i> is zero then blocks in the cache whose addresses are from and including  <i>LBA</i> to the highest lba on the device are synchronized. If both  <i>LBA</i> and <i>COUNT</i> are non zero then blocks in the cache whose addresses lie in the range  <i>LBA</i> to  <i>LBA</i>+<i>COUNT</i>-1 inclusive are synchronized with the medium.</div>
+<div class="section">
+<h1>OPTIONS</h1> Arguments to long options are mandatory for short options as well.<dl>
+<dt>
+<b>-S</b>, <b>--16</b></dt>
+<dd>
+performs a SYNCHRONIZE CACHE(16) command. Default is to perform a SYNCHRONIZE CACHE(10) command.</dd>
+</dl>
+<dl>
+<dt>
+<b>-c</b>, <b>--count</b>=<i>COUNT</i></dt>
+<dd>
+where <i>COUNT</i> is the number of blocks to synchronize from and including  <i>LBA</i>. Default value is 0. When 0 then all blocks in the cache from and including  <i>LBA</i> argument to the highest block address are synchronized.</dd>
+</dl>
+<dl>
+<dt>
+<b>-g</b>, <b>--group</b>=<i>GN</i></dt>
+<dd>
+where <i>GN</i> is the group number which can be between 0 and 31 inclusive. The default value is 0 . Group numbers are used to segregate data collected within the device. This is a new feature in SBC-2 and can probably be ignored for the time being.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>, <b>--help</b></dt>
+<dd>
+output the usage message then exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-i</b>, <b>--immed</b></dt>
+<dd>
+sets the IMMED bit in the SYNCHRONIZE CACHE command. This instructs the device, if the format of the command is acceptable, to return a GOOD status immediately rather than wait for the blocks in the cache to be synchronized with (i.e. written to) the medium.</dd>
+</dl>
+<dl>
+<dt>
+<b>-l</b>, <b>--lba</b>=<i>LBA</i></dt>
+<dd>
+where <i>LBA</i> is the lowest logical block address in the cache to synchronize to the medium. Default value is 0 .</dd>
+</dl>
+<dl>
+<dt>
+<b>-s</b>, <b>--sync-nv</b></dt>
+<dd>
+synchronize the (volatile) cache with the non-volatile cache. Without this option (or if there is no non-volatile cache in the device) the synchronization is with the medium. The SYNC_NV bit was made obsolete in SBC-3 revision 35d.</dd>
+</dl>
+<dl>
+<dt>
+<b>-t</b>, <b>--timeout</b>=<i>SECS</i></dt>
+<dd>
+where <i>SECS</i> is the number of seconds the OS allows the SYNCHRONIZE CACHE(16) to complete before it tries to cancel the command. Cancelling commands (typically with the task management function &quot;abort task&quot;) is best avoided. Note this option is only active together with the  <i>--16</i> option. The default timeout is 60 seconds for both SYNCHRONIZE CACHE(10) and SYNCHRONIZE CACHE(16). Note that timeout issues can be avoided with the  <i>--immed</i> option.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b>, <b>--verbose</b></dt>
+<dd>
+increase the level of verbosity, (i.e. debug output).</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>, <b>--version</b></dt>
+<dd>
+print the version string and then exit.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>NOTES</h1> With the SYNCHRONIZE CACHE(16) command  <i>LBA</i> can be up to 64 bits in size and  <i>COUNT</i> up to 32 bits in size. With the SYNCHRONIZ CACHE(10) command  <i>LBA</i> can be up to 32 bits in size and <i>COUNT</i> up to 16 bits in size.<div class="spacer">
+</div>
+Various numeric arguments (e.g. <i>LBA</i>) may include multiplicative suffixes or be given in hexadecimal. See the &quot;NUMERIC ARGUMENTS&quot; section in the sg3_utils(8) man page.</div>
+<div class="section">
+<h1>EXIT STATUS</h1> The exit status of sg_sync is 0 when it is successful. Otherwise see the sg3_utils(8) man page.</div>
+<div class="section">
+<h1>AUTHORS</h1> Written by Douglas Gilbert.</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Report bugs to &lt;dgilbert at interlog dot com&gt;.</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright &#169; 2004-2013 Douglas Gilbert<div style="height: 0.00em;">
+&#160;</div>
+This software is distributed under a FreeBSD license. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>sg_start(sg3_utils)</b></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+July 2013</td>
+<td class="foot-os">
+sg3_utils-1.37</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

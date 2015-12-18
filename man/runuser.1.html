@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+RUNUSER(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+RUNUSER(1)</td>
+<td class="head-vol">
+User Commands</td>
+<td class="head-rtitle">
+RUNUSER(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> runuser - run a command with substitute user and group ID</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>runuser</b> [options] <b>-u</b> <i>user</i> <i>command </i>[<i>argument</i>...]<div class="spacer">
+</div>
+<b>runuser</b> [options] [<b>-</b>] [<i>user</i> [<i>argument</i>...]]</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>runuser</b> allows to run commands with a substitute user and group ID. If the option  <b>-u</b> is not given, it falls back to <b>su</b>-compatible semantics and a shell is executed. The difference between the commands <b>runuser</b> and <b>su</b> is that <b>runuser</b> does not ask for a password (because it may be executed by the root user only) and it uses a different PAM configuration. The command <b>runuser</b> does not have to be installed with suid permissions.<div class="spacer">
+</div>
+When called without arguments, <b>runuser</b> defaults to running an interactive shell as <i>root</i>.<div class="spacer">
+</div>
+For backward compatibility, <b>runuser</b> defaults to not change the current directory and to only set the environment variables <b>HOME</b> and <b>SHELL</b> (plus <b>USER</b> and <b>LOGNAME</b> if the target <i>user</i> is not root). This version of <b>runuser</b> uses PAM for session management.</div>
+<div class="section">
+<h1>OPTIONS</h1><dl>
+<dt>
+<b>-c</b>,<b> --command</b>=<b><i>command</i></b></dt>
+<dd>
+Pass <i>command</i> to the shell with the <b>-c</b> option.</dd>
+</dl>
+<dl>
+<dt>
+<b>-f</b>,<b> --fast</b></dt>
+<dd>
+Pass <b>-f</b> to the shell, which may or may not be useful depending on the shell.</dd>
+</dl>
+<dl>
+<dt>
+<b>-g</b>,<b> --group</b>=<b><i>group</i></b></dt>
+<dd>
+The primary group to be used.  This option is allowed for the root user only.</dd>
+</dl>
+<dl>
+<dt>
+<b>-G</b>,<b> --supp-group</b>=<b><i>group</i></b></dt>
+<dd>
+A supplemental group to be used.  This option is allowed for the root user only.</dd>
+</dl>
+<dl>
+<dt>
+<b>-</b>,<b> -l</b>,<b> --login</b></dt>
+<dd>
+Start the shell as a login shell with an environment similar to a real login:</dd>
+</dl>
+<div style="margin-left: 10.00ex;">
+<dl>
+<dt>
+o</dt>
+<dd>
+clears all the environment variables except for <b>TERM</b></dd>
+</dl>
+<dl>
+<dt>
+o</dt>
+<dd>
+initializes the environment variables <b>HOME</b>, <b>SHELL</b>, <b>USER</b>, <b>LOGNAME</b>, <b>PATH</b></dd>
+</dl>
+<dl>
+<dt>
+o</dt>
+<dd>
+changes to the target user's home directory</dd>
+</dl>
+<dl>
+<dt>
+o</dt>
+<dd>
+sets argv[0] of the shell to '<b>-</b>' in order to make the shell a login shell</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>-m</b>,<b> -p</b>,<b> --preserve-environment</b></dt>
+<dd>
+Preserve the entire environment, i.e. it does not set <b>HOME</b>, <b>SHELL</b>, <b>USER</b> nor <b>LOGNAME</b>. The option is ignored if the option  <b>--login</b> is specified.</dd>
+</dl>
+<dl>
+<dt>
+<b>-s</b>,<b> --shell</b>=<b><i>shell</i></b></dt>
+<dd>
+Run the specified <i>shell</i> instead of the default.  The shell to run is selected according to the following rules, in order:</dd>
+</dl>
+<div style="margin-left: 10.00ex;">
+<dl>
+<dt>
+o</dt>
+<dd>
+the shell specified with <b>--shell</b></dd>
+</dl>
+<dl>
+<dt>
+o</dt>
+<dd>
+the shell specified in the environment variable <b>SHELL</b> if the <b>--preserve-environment</b> option is used</dd>
+</dl>
+<dl>
+<dt>
+o</dt>
+<dd>
+the shell listed in the passwd entry of the target user</dd>
+</dl>
+<dl>
+<dt>
+o</dt>
+<dd>
+/bin/sh</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+If the target user has a restricted shell (i.e. not listed in /etc/shells) the <b>--shell</b> option and the <b>SHELL</b> environment variables are ignored unless the calling user is root.</dd>
+</dl>
+<dl>
+<dt>
+<b>--session-command=</b><i>command</i></dt>
+<dd>
+Same as <b>-c ,</b> but do not create a new session.  (Discouraged.)</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>,<b> --version</b></dt>
+<dd>
+Display version information and exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>,<b> --help</b></dt>
+<dd>
+Display help text and exit.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>CONFIG FILES</h1> <b>runuser</b> reads the <i>/etc/default/runuser</i> and <i>/etc/login.defs</i> configuration files.  The following configuration items are relevant for <b>runuser</b>:<div class="spacer">
+</div>
+<b>ENV_PATH</b> (string)<div style="margin-left: 4.00ex;">
+Defines the PATH environment variable for a regular user.  The default value is <i>/usr/local/bin:/bin:/usr/bin</i>.</div>
+<div class="spacer">
+</div>
+<b>ENV_ROOTPATH</b> (string)<div style="height: 0.00em;">
+&#160;</div>
+<b>ENV_SUPATH</b> (string)<div style="margin-left: 4.00ex;">
+Defines the PATH environment variable for root. The default value is <i>/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin</i>.</div>
+<div class="spacer">
+</div>
+<b>ALWAYS_SET_PATH</b> (boolean)<div style="margin-left: 4.00ex;">
+If set to <i>yes</i> and --login and --preserve-environment were not specified <b>runuser</b> initializes <b>PATH</b>.</div>
+</div>
+<div class="section">
+<h1>EXIT STATUS</h1> <b>runuser</b> normally returns the exit status of the command it executed.  If the command was killed by a signal, <b>runuser</b> returns the number of the signal plus 128.<div class="spacer">
+</div>
+Exit status generated by <b>runuser</b> itself:<div style="margin-left: 10.00ex;">
+<dl>
+<dt>
+1</dt>
+<dd>
+Generic error before executing the requested command</dd>
+</dl>
+<dl>
+<dt>
+126</dt>
+<dd>
+The requested command could not be executed</dd>
+</dl>
+<dl>
+<dt>
+127</dt>
+<dd>
+The requested command was not found</dd>
+</dl>
+</div>
+</div>
+<div class="section">
+<h1>FILES</h1><dl>
+<dt>
+/etc/pam.d/runuser</dt>
+<dd>
+default PAM configuration file</dd>
+</dl>
+<dl>
+<dt>
+/etc/pam.d/runuser-l</dt>
+<dd>
+PAM configuration file if --login is specified</dd>
+</dl>
+<dl>
+<dt>
+/etc/default/runuser</dt>
+<dd>
+runuser specific logindef config file</dd>
+</dl>
+<dl>
+<dt>
+/etc/login.defs</dt>
+<dd>
+global logindef config file</dd>
+</dl>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>pam</b>(8), <b>shells</b>(5), <b>login.defs</b>(5), <b>su</b>(1)</div>
+<div class="section">
+<h1>HISTORY</h1> This  <b> runuser</b> command was derived from coreutils'  <b>su</b>, which was based on an implementation by David MacKenzie, and the Fedora  <b>runuser</b> command by Dan Walsh.</div>
+<div class="section">
+<h1>AVAILABILITY</h1> The runuser command is part of the util-linux package and is available from <a class="link-ext" href="ftp://ftp.kernel.org/pub/linux/utils/util-linux/">Linux Kernel Archive</a></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+July 2014</td>
+<td class="foot-os">
+util-linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

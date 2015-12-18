@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+NL_LANGINFO(3P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+NL_LANGINFO(3P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+NL_LANGINFO(3P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> nl_langinfo, nl_langinfo_l &#8212; language information</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;langinfo.h&gt;<div class="spacer">
+</div>
+char *nl_langinfo(nl_item <i>item</i>);<br/>
+char *nl_langinfo_l(nl_item <i>item</i>, locale_t <i>locale</i>);<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <i>nl_langinfo</i>() and  <i>nl_langinfo_l</i>() functions shall return a pointer to a string containing information relevant to the particular language or cultural area defined in the current locale, or in the locale represented by <i>locale</i>, respectively (see <i>&lt;langinfo.h&gt;</i>). The manifest constant names and values of <i>item</i> are defined in <i>&lt;langinfo.h&gt;</i>. For example:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>nl_langinfo(ABDAY_1)</b><br/>
+</div>
+<div class="spacer">
+</div>
+would return a pointer to the string <b>&quot;Dom&quot;</b> if the identified language was Portuguese, and <b>&quot;Sun&quot;</b> if the identified language was English.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>nl_langinfo_l(ABDAY_1, loc)</b><br/>
+</div>
+<div class="spacer">
+</div>
+would return a pointer to the string <b>&quot;Dom&quot;</b> if the identified language of the locale represented by <i>loc</i> was Portuguese, and <b>&quot;Sun&quot;</b> if the identified language of the locale represented by <i>loc</i> was English.<div class="spacer">
+</div>
+The  <i>nl_langinfo</i>() function need not be thread-safe.<div class="spacer">
+</div>
+The behavior is undefined if the <i>locale</i> argument to  <i>nl_langinfo_l</i>() is the special locale object LC_GLOBAL_LOCALE or is not a valid locale object handle.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> In a locale where <i>langinfo</i> data is not defined, these functions shall return a pointer to the corresponding string in the POSIX locale. In all locales, these functions shall return a pointer to an empty string if <i>item</i> contains an invalid setting.<div class="spacer">
+</div>
+The application shall not modify the string returned. The pointer returned by  <i>nl_langinfo</i>() might be invalidated or the string content might be overwritten by a subsequent call to  <i>nl_langinfo</i>() in any thread or to  <i>nl_langinfo_l</i>() in the same thread or the initial thread, by subsequent calls to  <i>setlocale</i>() with a category corresponding to the category of <i>item</i> (see <i>&lt;langinfo.h&gt;</i>) or the category LC_ALL, or by subsequent calls to  <i>uselocale</i>() which change the category corresponding to the category of <i>item</i>. The pointer returned by  <i>nl_langinfo_l</i>() might be invalidated or the string content might be overwritten by a subsequent call to  <i>nl_langinfo_l</i>() in the same thread or to  <i>nl_langinfo</i>() in any thread, or by subsequent calls to  <i>freelocale</i>() or  <i>newlocale</i>() which free or modify the locale object that was passed to  <i>nl_langinfo_l</i>().</div>
+<div class="section">
+<h1>ERRORS</h1> No errors are defined.<div style="height: 0.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>EXAMPLES</h1><div class="subsection">
+<h2>Getting Date and Time Formatting Information</h2> The following example returns a pointer to a string containing date and time formatting information, as defined in the <i>LC_TIME</i> category of the current locale.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>#include &lt;time.h&gt;</b><br/>
+<b>#include &lt;langinfo.h&gt;</b><br/>
+<b>...</b><br/>
+<b>strftime(datestring, sizeof(datestring), nl_langinfo(D_T_FMT), tm);</b><br/>
+<b>...</b><br/>
+</div>
+</div>
+</div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> The array pointed to by the return value should not be modified by the program, but may be modified by further calls to these functions.</div>
+<div class="section">
+<h1>RATIONALE</h1> The possible interactions between internal data used by  <i>nl_langinfo</i>() and  <i>nl_langinfo_l</i>() are complicated by the fact that  <i>nl_langinfo_l</i>() must be thread-safe but  <i>nl_langinfo</i>() need not be. The various implementation choices are:<dl>
+<dt>
+ 1.</dt>
+<dd>
+<i>nl_langinfo_l</i>() and  <i>nl_langinfo</i>() use separate buffers, or at least one of them does not use an internal string buffer. In this case there are no interactions.</dd>
+</dl>
+<dl>
+<dt>
+ 2.</dt>
+<dd>
+<i>nl_langinfo_l</i>() and  <i>nl_langinfo</i>() share an internal per-thread buffer. There can be interactions, but only in the same thread.</dd>
+</dl>
+<dl>
+<dt>
+ 3.</dt>
+<dd>
+<i>nl_langinfo_l</i>() uses an internal per-thread buffer, and  <i>nl_langinfo</i>() uses (in all threads) the same buffer that  <i>nl_langinfo_l</i>() uses in the initial thread. There can be interactions, but only when  <i>nl_langinfo_l</i>() is called in the initial thread.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> None.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i><i>setlocale</i>()</i>, <i><i>uselocale</i>()</i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i>Chapter 7</i>, <i>Locale</i>, <i><b>&lt;langinfo.h&gt;</b></i>, <i><b>&lt;locale.h&gt;</b></i>, <i><b>&lt;nl_types.h&gt;</b></i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

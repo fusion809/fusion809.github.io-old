@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SWAPON(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SWAPON(8)</td>
+<td class="head-vol">
+System Administration</td>
+<td class="head-rtitle">
+SWAPON(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> swapon, swapoff - enable/disable devices and files for paging and swapping</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>swapon</b> [options] [<i>specialfile</i>...]<div style="height: 0.00em;">
+&#160;</div>
+<b>swapoff</b> [<b>-va</b>] [<i>specialfile</i>...]</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>swapon</b> is used to specify devices on which paging and swapping are to take place.<div style="height: 1.00em;">
+&#160;</div>
+The device or file used is given by the <i>specialfile</i> parameter.  It may be of the form <b>-L</b><i> label</i> or <b>-U</b><i> uuid</i> to indicate a device by label or uuid.<div style="height: 1.00em;">
+&#160;</div>
+Calls to <b>swapon</b> normally occur in the system boot scripts making all swap devices available, so that the paging and swapping activity is interleaved across several devices and files.<div style="height: 1.00em;">
+&#160;</div>
+<b>swapoff</b> disables swapping on the specified devices and files. When the <b>-a</b> flag is given, swapping is disabled on all known swap devices and files (as found in <i>/proc/swaps</i> or <i>/etc/fstab</i>).<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>OPTIONS</h1><dl>
+<dt>
+<b>-a</b>,<b> --all</b></dt>
+<dd>
+All devices marked as ``swap'' in <i>/etc/fstab</i> are made available, except for those with the ``noauto'' option. Devices that are already being used as swap are silently skipped.</dd>
+</dl>
+<dl>
+<dt>
+<b>-d</b>,<b> --discard</b>[<b>=<i>policy</i>]</b></dt>
+<dd>
+Enable swap discards, if the swap backing device supports the discard or trim operation.  This may improve performance on some Solid State Devices, but often it does not.  The option allows one to select between two available swap discard policies: <b>--discard=once</b> to perform a single-time discard operation for the whole swap area at swapon; or <b>--discard=pages</b> to discard freed swap pages before they are reused, while swapping. If no policy is selected, the default behavior is to enable both discard types. The <i>/etc/fstab</i> mount options <b>discard</b>, <b>discard=once</b>, or <b>discard=pages</b> may also be used to enable discard flags.</dd>
+</dl>
+<dl>
+<dt>
+<b>-e</b>,<b> --ifexists</b></dt>
+<dd>
+Silently skip devices that do not exist. The <i>/etc/fstab</i> mount option <b>nofail</b> may also be used to skip non-existing device.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>-f</b>,<b> --fixpgsz</b></dt>
+<dd>
+Reinitialize (exec mkswap) the swap space if its page size does not match that of the current running kernel. <b>mkswap</b>(2) initializes the whole device and does not check for bad blocks.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>,<b> --help</b></dt>
+<dd>
+Display help text and exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-L</b><i> label</i></dt>
+<dd>
+Use the partition that has the specified <i>label</i>. (For this, access to <i>/proc/partitions</i> is needed.)</dd>
+</dl>
+<dl>
+<dt>
+<b>-o</b>,<b> --options </b><i>opts</i></dt>
+<dd>
+Specify swap options by an fstab-compatible comma-separated string. For example:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<div style="margin-left: 5.00ex;">
+<div style="height: 1.00em;">
+&#160;</div>
+<b>swapon -o pri=1,discard=pages,nofail /dev/sda2</b><div style="height: 1.00em;">
+&#160;</div>
+</div>
+The <i>opts</i> string is evaluated last and overrides all other options.</div>
+<dl>
+<dt>
+<b>-p</b>,<b> --priority </b><i>priority</i></dt>
+<dd>
+Specify the priority of the swap device. <i>priority</i> is a value between -1 and 32767.  Higher numbers indicate higher priority.  See <b>swapon</b>(2) for a full description of swap priorities.  Add <b>pri=</b><i>value</i> to the option field of <i>/etc/fstab</i> for use with <b>swapon -a</b>. When no priority is defined, it defaults to -1.</dd>
+</dl>
+<dl>
+<dt>
+<b>-s</b>,<b> --summary</b></dt>
+<dd>
+Display swap usage summary by device.  Equivalent to &quot;cat /proc/swaps&quot;. Not available before Linux 2.1.25.  This output format is DEPRECATED in favour of  <b>--show</b> that provides better control on output data.</dd>
+</dl>
+<dl>
+<dt>
+<b>--show</b>[<b>=<i>column</i></b>...]</dt>
+<dd>
+Display a definable table of swap areas.  See the <b>--help</b> output for a list of available columns.</dd>
+</dl>
+<dl>
+<dt>
+<b>--noheadings</b></dt>
+<dd>
+Do not print headings when displaying <b>--show</b> output.</dd>
+</dl>
+<dl>
+<dt>
+<b>--raw</b></dt>
+<dd>
+Display <b>--show</b> output without aligning table columns.</dd>
+</dl>
+<dl>
+<dt>
+<b>--bytes</b></dt>
+<dd>
+Display swap size in bytes in <b>--show</b> output instead of in user-friendly units.</dd>
+</dl>
+<dl>
+<dt>
+<b>-U</b><i> uuid</i></dt>
+<dd>
+Use the partition that has the specified <i>uuid</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b>,<b> --verbose</b></dt>
+<dd>
+Be verbose.</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>,<b> --version</b></dt>
+<dd>
+Display version information and exit.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>NOTES</h1> You should not use  <b>swapon</b> on a file with holes. This can be seen in the system log as<div style="margin-left: 5.00ex;">
+<div style="height: 1.00em;">
+&#160;</div>
+<b>swapon: swapfile has holes.</b><div style="height: 1.00em;">
+&#160;</div>
+</div>
+The swap file implementation in the kernel expects to be able to write to the file directly, without the assistance of the filesystem.  This is a problem on preallocated files (e.g. <b>fallocate</b>(1)) on filesystems like  <b>XFS</b> or <b>ext4</b>, and on copy-on-write filesystems like  <b>btrfs</b>.<div class="spacer">
+</div>
+It is recommended to use <b>dd</b>(1) and <i>/dev/zero</i> to avoid holes on XFS and ext4.<div class="spacer">
+</div>
+<b>swapon</b> may not work correctly when using a swap file with some versions of  <b>btrfs</b>.  This is due to btrfs being a copy-on-write filesystem: the file location may not be static and corruption can result.  Btrfs actively disallows the use of swap files on its filesystems by refusing to map the file.<div class="spacer">
+</div>
+One possible workaround is to map the swap file to a loopback device.  This will allow the filesystem to determine the mapping properly but may come with a performance impact.<div class="spacer">
+</div>
+Swap over <b>NFS</b> may not work.<div class="spacer">
+</div>
+<b>swapon</b> automatically detects and rewrites a swap space signature with old software suspend data (e.g S1SUSPEND, S2SUSPEND, ...). The problem is that if we don't do it, then we get data corruption the next time an attempt at unsuspending is made.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>ENVIRONMENT</h1><dl>
+<dt>
+LIBMOUNT_DEBUG=all</dt>
+<dd>
+enables libmount debug output.</dd>
+</dl>
+<dl>
+<dt>
+LIBBLKID_DEBUG=all</dt>
+<dd>
+enables libblkid debug output.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>swapon</b>(2), <b>swapoff</b>(2), <b>fstab</b>(5), <b>init</b>(8), <b>mkswap</b>(8), <b>rc</b>(8), <b>mount</b>(8)</div>
+<div class="section">
+<h1>FILES</h1> <i>/dev/sd??</i> standard paging devices<div style="height: 0.00em;">
+&#160;</div>
+<i>/etc/fstab</i> ascii filesystem description table</div>
+<div class="section">
+<h1>HISTORY</h1> The <b>swapon</b> command appeared in 4.0BSD.</div>
+<div class="section">
+<h1>AVAILABILITY</h1> The swapon command is part of the util-linux package and is available from ftp://ftp.kernel.org/pub/linux/utils/util-linux/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+October 2014</td>
+<td class="foot-os">
+util-linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+QUERY_MODULE(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+QUERY_MODULE(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+QUERY_MODULE(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> query_module - query the kernel for various bits pertaining to modules</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;linux/module.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>int query_module(const char *</b><i>name</i><b>, int </b><i>which</i><b>, void *</b><i>buf</i><b>,</b><br/>
+<b>                 size_t </b><i>bufsize</i><b>, size_t *</b><i>ret</i><b>);</b><br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<i>Note</i>: No declaration of this function is provided in glibc headers; see NOTES.</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <i>Note</i>: This system call is present only in kernels before Linux 2.6.<div style="height: 1.00em;">
+&#160;</div>
+<b>query_module</b>() requests information from the kernel about loadable modules. The returned information is placed in the buffer pointed to by <i>buf</i>. The caller must specify the size of <i>buf</i> in <i>bufsize</i>. The precise nature and format of the returned information depend on the operation specified by <i>which</i>. Some operations require <i>name</i> to identify a currently loaded module, some allow <i>name</i> to be NULL, indicating the kernel proper.<div style="height: 1.00em;">
+&#160;</div>
+The following values can be specified for <i>which</i>:<dl>
+<dt>
+<b>0</b></dt>
+<dd>
+Returns success, if the kernel supports <b>query_module</b>(). Used to probe for availability of the system call.</dd>
+</dl>
+<dl>
+<dt>
+<b>QM_MODULES</b></dt>
+<dd>
+Returns the names of all loaded modules. The returned buffer consists of a sequence of null-terminated strings; <i>ret</i> is set to the number of modules.</dd>
+</dl>
+<dl>
+<dt>
+<b>QM_DEPS</b></dt>
+<dd>
+Returns the names of all modules used by the indicated module. The returned buffer consists of a sequence of null-terminated strings; <i>ret</i> is set to the number of modules.</dd>
+</dl>
+<dl>
+<dt>
+<b>QM_REFS</b></dt>
+<dd>
+Returns the names of all modules using the indicated module. This is the inverse of <b>QM_DEPS</b>. The returned buffer consists of a sequence of null-terminated strings; <i>ret</i> is set to the number of modules.</dd>
+</dl>
+<dl>
+<dt>
+<b>QM_SYMBOLS</b></dt>
+<dd>
+Returns the symbols and values exported by the kernel or the indicated module. The returned buffer is an array of structures of the following form<br/>
+<div class="spacer">
+</div>
+<br/>
+struct module_symbol {<br/>
+    unsigned long value;<br/>
+    unsigned long name;<br/>
+};<br/>
+<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+followed by null-terminated strings. The value of <i>name</i> is the character offset of the string relative to the start of <i>buf</i>; <i>ret</i> is set to the number of symbols.</dd>
+</dl>
+<dl>
+<dt>
+<b>QM_INFO</b></dt>
+<dd>
+Returns miscellaneous information about the indicated module. The output buffer format is:<br/>
+<div class="spacer">
+</div>
+<br/>
+struct module_info {<br/>
+    unsigned long address;<br/>
+    unsigned long size;<br/>
+    unsigned long flags;<br/>
+};<br/>
+<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+where <i>address</i> is the kernel address at which the module resides, <i>size</i> is the size of the module in bytes, and <i>flags</i> is a mask of <b>MOD_RUNNING</b>, <b>MOD_AUTOCLEAN</b>, and so on, that indicates the current status of the module (see the Linux kernel source file <i>include/linux/module.h</i>). <i>ret</i> is set to the size of the <i>module_info</i> structure.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, zero is returned. On error, -1 is returned and <i>errno</i> is set appropriately.</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>EFAULT</b></dt>
+<dd>
+At least one of <i>name</i>, <i>buf</i>, or <i>ret</i> was outside the program's accessible address space.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+Invalid <i>which</i>; or <i>name</i> is NULL (indicating &quot;the kernel&quot;), but this is not permitted with the specified value of <i>which</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOENT</b></dt>
+<dd>
+No module by that <i>name</i> exists.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOSPC</b></dt>
+<dd>
+The buffer size provided was too small. <i>ret</i> is set to the minimum size needed.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOSYS</b></dt>
+<dd>
+<b>query_module</b>() is not supported in this version of the kernel (e.g., the kernel is version 2.6 or later).</dd>
+</dl>
+</div>
+<div class="section">
+<h1>VERSIONS</h1> This system call is present on Linux only up until kernel 2.4; it was removed in Linux 2.6.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> <b>query_module</b>() is Linux-specific.</div>
+<div class="section">
+<h1>NOTES</h1> Some of the information that was formerly available via <b>query_module</b>() can be obtained from <i>/proc/modules</i>, <i>/proc/kallsyms</i>, and the files under the directory <i>/sys/module</i>.<div style="height: 1.00em;">
+&#160;</div>
+The <b>query_module</b>() system call is not supported by glibc. No declaration is provided in glibc headers, but, through a quirk of history, glibc does export an ABI for this system call. Therefore, in order to employ this system call, it is sufficient to manually declare the interface in your code; alternatively, you can invoke the system call using <b>syscall</b>(2).</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>create_module</b>(2), <b>delete_module</b>(2), <b>get_kernel_syms</b>(2), <b>init_module</b>(2), <b>lsmod</b>(8), <b>modinfo</b>(8)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2014-05-10</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

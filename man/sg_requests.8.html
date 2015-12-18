@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SG_REQUESTS(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SG_REQUESTS(8)</td>
+<td class="head-vol">
+SG3_UTILS</td>
+<td class="head-rtitle">
+SG_REQUESTS(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sg_requests - send one or more SCSI REQUEST SENSE commands</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>sg_requests</b> [ <i>--desc</i>] [<i>--help</i>] [<i>--hex</i>] [<i>--maxlen=LEN</i>] [ <i>--num=NUM</i>] [<i>--progress</i>] [<i>--raw</i>] [<i>--status</i>] [ <i>--time</i>] [<i>--verbose</i>] [<i>--version</i>] <i>DEVICE</i></div>
+<div class="section">
+<h1>DESCRIPTION</h1> Send SCSI REQUEST SENSE command to  <i>DEVICE</i> and output the parameter data response which is expected to be in sense data format. Both fixed and descriptor sense data formats are supported.<div class="spacer">
+</div>
+Multiple REQUEST SENSE commands can be sent with the <i>--num=NUM</i> option. This can be used for timing purposes or monitoring the progress indication.</div>
+<div class="section">
+<h1>OPTIONS</h1> Arguments to long options are mandatory for short options as well.<dl>
+<dt>
+<b>-d</b>, <b>--desc</b></dt>
+<dd>
+sets the DESC bit in the REQUEST SENSE SCSI cdb. The <i>DEVICE</i> should return sense data in descriptor (rather than fixed) format. This will only occur if the  <i>DEVICE</i> recognizes descriptor format (SPC-3 and later). If the device is pre SPC-3 then setting a bit in a reserved field may cause a check condition status with an illegal request sense key, but will most likely be ignored.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>, <b>--help</b></dt>
+<dd>
+output the usage message then exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-H</b>, <b>--hex</b></dt>
+<dd>
+output response in ASCII hexadecimal.</dd>
+</dl>
+<dl>
+<dt>
+<b>-m</b>, <b>--maxlen</b>=<i>LEN</i></dt>
+<dd>
+where <i>LEN</i> is the (maximum) response length in bytes. It is placed in the cdb's &quot;allocation length&quot; field. If not given (or  <i>LEN</i> is zero) then 252 is used. The maximum value of  <i>LEN</i> is 255 (but SPC-4 recommends 252).</dd>
+</dl>
+<dl>
+<dt>
+<b>-n</b>, <b>--num</b>=<i>NUM</i></dt>
+<dd>
+perform <i>NUM</i> SCSI REQUEST SENSE commands, stopping when either <i>NUM</i> is reached or an error occurs. The default value for  <i>NUM</i> is 1 .</dd>
+</dl>
+<dl>
+<dt>
+<b>-p</b>, <b>--progress</b></dt>
+<dd>
+show progress indication (a percentage) if available. If <i>--number=NUM</i> is given,  <i>NUM</i> is greater than 1 and an initial progress indication was detected then this utility waits 30 seconds before subsequent checks. Exits when  <i>NUM</i> is reached or there are no more progress indications. Ignores  <i>--hex</i>, <i>--raw</i> and <i>--time</i> options. See NOTES section below.</dd>
+</dl>
+<dl>
+<dt>
+<b>-r</b>, <b>--raw</b></dt>
+<dd>
+output response in binary (to stdout).</dd>
+</dl>
+<dl>
+<dt>
+<b>-s</b>, <b>--status</b></dt>
+<dd>
+if the REQUEST SENSE command finished without error (as indicated by its SCSI status) then the contents of the parameter data are analysed as sense data and the exit status is set accordingly. The default action (i.e. when this option is not given) is to ignore the contents of the parameter data for the purposes of setting the exit status. Some types of error set a sense key of &quot;NO SENSE&quot; with non-zero information in the additional sense code (e.g. the FAILURE PREDICTION THRESHOLD EXCEEDED group of codes); this results in an exit status value of 10. If the sense key is &quot;NO SENSE&quot; and both asc and ascq are zero then the exit status is set to 0 . See the sg3_utils(8) man page for exit status values.</dd>
+</dl>
+<dl>
+<dt>
+<b>-t</b>, <b>--time</b></dt>
+<dd>
+time the SCSI REQUEST SENSE command(s) and calculate the average number of operations per second.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b>, <b>--verbose</b></dt>
+<dd>
+increase the level of verbosity, (i.e. debug output). Additionally the response (if received) is output in ASCII-HEX. Use this option multiple times for greater verbosity.</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>, <b>--version</b></dt>
+<dd>
+print the version string and then exit.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>NOTES</h1> In SCSI 1 and 2 the REQUEST SENSE command was very important for error and warning processing in SCSI. The autosense capability rendered this command almost superfluous.<div class="spacer">
+</div>
+However recent SCSI drafts (e.g. SPC-4 rev 14 and SBC-3 rev 14) increase the utility of the REQUEST SENSE command. Idle and standby (low) power conditions can be detected with this command.<div class="spacer">
+</div>
+The REQUEST SENSE command is not marked as mandatory in SPC-3 (i.e. for all SCSI devices) but is marked as mandatory in SBC-2 (i.e. for disks), SSC-3 (i.e. for tapes) and MMC-4 (i.e. for CD/DVD/HD-DVD/BD drives).<div class="spacer">
+</div>
+The progress indication is optionally part of the sense data. When a prior command that takes a long time to complete (and typically precludes other media access commands) is still underway, the progress indication can be used to determine how long before the device returns to its normal state.<div class="spacer">
+</div>
+The SCSI FORMAT command for disks used with the IMMED bit set is an example of an operation that takes a significant amount of time and precludes other media access during that time. The IMMED bit set instructs the FORMAT command to return control to the application client once the format has commenced (see SBC-3). Several long duration SCSI commands associated with tape drives also use the progress indication (see SSC-3).<div class="spacer">
+</div>
+Early standards suggested that the SCSI TEST UNIT READY command be used for polling the progress indication. More recent standards seem to suggest the SCSI REQUEST SENSE command should be used instead.<div class="spacer">
+</div>
+The <i>DEVICE</i> is opened with a read-only flag (e.g. in Unix with the O_RDONLY flag).</div>
+<div class="section">
+<h1>EXIT STATUS</h1> The exit status of sg_requests is 0 when it is successful. Otherwise see the sg3_utils(8) man page.</div>
+<div class="section">
+<h1>AUTHORS</h1> Written by Douglas Gilbert.</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Report bugs to &lt;dgilbert at interlog dot com&gt;.</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright &#169; 2004-2014 Douglas Gilbert<div style="height: 0.00em;">
+&#160;</div>
+This software is distributed under a FreeBSD license. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>sg3_utils</b></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+May 2014</td>
+<td class="foot-os">
+sg3_utils-1.39</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+FCNTL(3P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+FCNTL(3P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+FCNTL(3P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> fcntl &#8212; file control</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;fcntl.h&gt;<div class="spacer">
+</div>
+int fcntl(int <i>fildes</i>, int <i>cmd</i>, ...);<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <i>fcntl</i>() function shall perform the operations described below on open files. The <i>fildes</i> argument is a file descriptor.<div class="spacer">
+</div>
+The available values for <i>cmd</i> are defined in <i>&lt;fcntl.h&gt;</i> and are as follows:<dl>
+<dt>
+F_DUPFD</dt>
+<dd>
+Return a new file descriptor which shall be the lowest numbered available (that is, not already open) file descriptor greater than or equal to the third argument, <i>arg</i>, taken as an integer of type <b>int</b>. The new file descriptor shall refer to the same open file description as the original file descriptor, and shall share any locks. The FD_CLOEXEC flag associated with the new file descriptor shall be cleared to keep the file open across calls to one of the <i>exec</i> functions.</dd>
+</dl>
+<dl>
+<dt>
+F_DUPFD_CLOEXEC</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+Like F_DUPFD, but the FD_CLOEXEC flag associated with the new file descriptor shall be set.</dd>
+</dl>
+<dl>
+<dt>
+F_GETFD</dt>
+<dd>
+Get the file descriptor flags defined in <i>&lt;fcntl.h&gt;</i> that are associated with the file descriptor <i>fildes</i>. File descriptor flags are associated with a single file descriptor and do not affect other file descriptors that refer to the same file.</dd>
+</dl>
+<dl>
+<dt>
+F_SETFD</dt>
+<dd>
+Set the file descriptor flags defined in <i>&lt;fcntl.h&gt;</i>, that are associated with <i>fildes</i>, to the third argument, <i>arg</i>, taken as type <b>int</b>. If the FD_CLOEXEC flag in the third argument is 0, the file descriptor shall remain open across the <i>exec</i> functions; otherwise, the file descriptor shall be closed upon successful execution of one of the <i>exec</i> functions.</dd>
+</dl>
+<dl>
+<dt>
+F_GETFL</dt>
+<dd>
+Get the file status flags and file access modes, defined in <i>&lt;fcntl.h&gt;</i>, for the file description associated with <i>fildes</i>. The file access modes can be extracted from the return value using the mask O_ACCMODE, which is defined in <i>&lt;fcntl.h&gt;</i>. File status flags and file access modes are associated with the file description and do not affect other file descriptors that refer to the same file with different open file descriptions. The flags returned may include non-standard file status flags which the application did not set, provided that these additional flags do not alter the behavior of a conforming application.</dd>
+</dl>
+<dl>
+<dt>
+F_SETFL</dt>
+<dd>
+Set the file status flags, defined in <i>&lt;fcntl.h&gt;</i>, for the file description associated with <i>fildes</i> from the corresponding bits in the third argument, <i>arg</i>, taken as type <b>int</b>. Bits corresponding to the file access mode and the file creation flags, as defined in <i>&lt;fcntl.h&gt;</i>, that are set in <i>arg</i> shall be ignored. If any bits in <i>arg</i> other than those mentioned here are changed by the application, the result is unspecified. If <i>fildes</i> does not support non-blocking operations, it is unspecified whether the O_NONBLOCK flag will be ignored.</dd>
+</dl>
+<dl>
+<dt>
+F_GETOWN</dt>
+<dd>
+If <i>fildes</i> refers to a socket, get the process or process group ID specified to receive SIGURG signals when out-of-band data is available. Positive values indicate a process ID; negative values, other than &#8722;1, indicate a process group ID. If <i>fildes</i> does not refer to a socket, the results are unspecified.</dd>
+</dl>
+<dl>
+<dt>
+F_SETOWN</dt>
+<dd>
+If <i>fildes</i> refers to a socket, set the process or process group ID specified to receive SIGURG signals when out-of-band data is available, using the value of the third argument, <i>arg</i>, taken as type <b>int</b>. Positive values indicate a process ID; negative values, other than &#8722;1, indicate a process group ID. If <i>fildes</i> does not refer to a socket, the results are unspecified.</dd>
+</dl>
+<div class="spacer">
+</div>
+The following values for <i>cmd</i> are available for advisory record locking. Record locking shall be supported for regular files, and may be supported for other files.<dl>
+<dt>
+F_GETLK</dt>
+<dd>
+Get the first lock which blocks the lock description pointed to by the third argument, <i>arg</i>, taken as a pointer to type <b>struct flock</b>, defined in <i>&lt;fcntl.h&gt;</i>. The information retrieved shall overwrite the information passed to  <i>fcntl</i>() in the structure <b>flock</b>. If no lock is found that would prevent this lock from being created, then the structure shall be left unchanged except for the lock type which shall be set to F_UNLCK.</dd>
+</dl>
+<dl>
+<dt>
+F_SETLK</dt>
+<dd>
+Set or clear a file segment lock according to the lock description pointed to by the third argument, <i>arg</i>, taken as a pointer to type <b>struct flock</b>, defined in <i>&lt;fcntl.h&gt;</i>. F_SETLK can establish shared (or read) locks (F_RDLCK) or exclusive (or write) locks (F_WRLCK), as well as to remove either type of lock (F_UNLCK). F_RDLCK, F_WRLCK, and F_UNLCK are defined in <i>&lt;fcntl.h&gt;</i>. If a shared or exclusive lock cannot be set,  <i>fcntl</i>() shall return immediately with a return value of &#8722;1.</dd>
+</dl>
+<dl>
+<dt>
+F_SETLKW</dt>
+<dd>
+This command shall be equivalent to F_SETLK except that if a shared or exclusive lock is blocked by other locks, the thread shall wait until the request can be satisfied. If a signal that is to be caught is received while  <i>fcntl</i>() is waiting for a region,  <i>fcntl</i>() shall be interrupted. Upon return from the signal handler,  <i>fcntl</i>() shall return &#8722;1 with <i>errno</i> set to <b>[EINTR]</b>, and the lock operation shall not be done.</dd>
+</dl>
+<div class="spacer">
+</div>
+Additional implementation-defined values for <i>cmd</i> may be defined in <i>&lt;fcntl.h&gt;</i>. Their names shall start with F_.<div class="spacer">
+</div>
+When a shared lock is set on a segment of a file, other processes shall be able to set shared locks on that segment or a portion of it. A shared lock prevents any other process from setting an exclusive lock on any portion of the protected area. A request for a shared lock shall fail if the file descriptor was not opened with read access.<div class="spacer">
+</div>
+An exclusive lock shall prevent any other process from setting a shared lock or an exclusive lock on any portion of the protected area. A request for an exclusive lock shall fail if the file descriptor was not opened with write access.<div class="spacer">
+</div>
+The structure <b>flock</b> describes the type (<i>l_type</i>), starting offset (<i>l_whence</i>), relative offset (<i>l_start</i>), size (<i>l_len</i>), and process ID (<i>l_pid</i>) of the segment of the file to be affected.<div class="spacer">
+</div>
+The value of <i>l_whence</i> is SEEK_SET, SEEK_CUR, or SEEK_END, to indicate that the relative offset <i>l_start</i> bytes shall be measured from the start of the file, current position, or end of the file, respectively. The value of <i>l_len</i> is the number of consecutive bytes to be locked. The value of <i>l_len</i> may be negative (where the definition of <b>off_t</b> permits negative values of <i>l_len</i>). The <i>l_pid</i> field is only used with F_GETLK to return the process ID of the process holding a blocking lock. After a successful F_GETLK request, when a blocking lock is found, the values returned in the <b>flock</b> structure shall be as follows:<dl>
+<dt>
+<i>l_type</i></dt>
+<dd>
+Type of blocking lock found.</dd>
+</dl>
+<dl>
+<dt>
+<i>l_whence</i></dt>
+<dd>
+SEEK_SET.</dd>
+</dl>
+<dl>
+<dt>
+<i>l_start</i></dt>
+<dd>
+Start of the blocking lock.</dd>
+</dl>
+<dl>
+<dt>
+<i>l_len</i></dt>
+<dd>
+Length of the blocking lock.</dd>
+</dl>
+<dl>
+<dt>
+<i>l_pid</i></dt>
+<dd>
+Process ID of the process that holds the blocking lock.</dd>
+</dl>
+<div class="spacer">
+</div>
+If the command is F_SETLKW and the process must wait for another process to release a lock, then the range of bytes to be locked shall be determined before the  <i>fcntl</i>() function blocks. If the file size or file descriptor seek offset change while  <i>fcntl</i>() is blocked, this shall not affect the range of bytes locked.<div class="spacer">
+</div>
+If <i>l_len</i> is positive, the area affected shall start at <i>l_start</i> and end at <i>l_start</i>+<i>l_len</i>&#8722;1. If <i>l_len</i> is negative, the area affected shall start at <i>l_start</i>+<i>l_len</i> and end at <i>l_start</i>&#8722;1. Locks may start and extend beyond the current end of a file, but shall not extend before the beginning of the file. A lock shall be set to extend to the largest possible value of the file offset for that file by setting <i>l_len</i> to 0. If such a lock also has <i>l_start</i> set to 0 and <i>l_whence</i> is set to SEEK_SET, the whole file shall be locked.<div class="spacer">
+</div>
+There shall be at most one type of lock set for each byte in the file. Before a successful return from an F_SETLK or an F_SETLKW request when the calling process has previously existing locks on bytes in the region specified by the request, the previous lock type for each byte in the specified region shall be replaced by the new lock type. As specified above under the descriptions of shared locks and exclusive locks, an F_SETLK or an F_SETLKW request (respectively) shall fail or block when another process has existing locks on bytes in the specified region and the type of any of those locks conflicts with the type specified in the request.<div class="spacer">
+</div>
+All locks associated with a file for a given process shall be removed when a file descriptor for that file is closed by that process or the process holding that file descriptor terminates. Locks are not inherited by a child process.<div class="spacer">
+</div>
+A potential for deadlock occurs if a process controlling a locked region is put to sleep by attempting to lock the locked region of another process. If the system detects that sleeping until a locked region is unlocked would cause a deadlock,  <i>fcntl</i>() shall fail with an <b>[EDEADLK]</b> error.<div class="spacer">
+</div>
+An unlock (F_UNLCK) request in which <i>l_len</i> is non-zero and the offset of the last byte of the requested segment is the maximum value for an object of type <b>off_t</b>, when the process has an existing lock in which <i>l_len</i> is 0 and which includes the last byte of the requested segment, shall be treated as a request to unlock from the start of the requested segment with an <i>l_len</i> equal to 0. Otherwise, an unlock (F_UNLCK) request shall attempt to unlock only the requested segment.<div class="spacer">
+</div>
+When the file descriptor <i>fildes</i> refers to a shared memory object, the behavior of  <i>fcntl</i>() shall be the same as for a regular file except the effect of the following values for the argument <i>cmd</i> shall be unspecified: F_SETFL, F_GETLK, F_SETLK, and F_SETLKW.<div class="spacer">
+</div>
+If <i>fildes</i> refers to a typed memory object, the result of the  <i>fcntl</i>() function is unspecified.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> Upon successful completion, the value returned shall depend on <i>cmd</i> as follows:<dl>
+<dt>
+F_DUPFD</dt>
+<dd>
+A new file descriptor.</dd>
+</dl>
+<dl>
+<dt>
+F_DUPFD_CLOEXEC</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+A new file descriptor.</dd>
+</dl>
+<dl>
+<dt>
+F_GETFD</dt>
+<dd>
+Value of flags defined in <i>&lt;fcntl.h&gt;</i>. The return value shall not be negative.</dd>
+</dl>
+<dl>
+<dt>
+F_SETFD</dt>
+<dd>
+Value other than &#8722;1.</dd>
+</dl>
+<dl>
+<dt>
+F_GETFL</dt>
+<dd>
+Value of file status flags and access modes. The return value is not negative.</dd>
+</dl>
+<dl>
+<dt>
+F_SETFL</dt>
+<dd>
+Value other than &#8722;1.</dd>
+</dl>
+<dl>
+<dt>
+F_GETLK</dt>
+<dd>
+Value other than &#8722;1.</dd>
+</dl>
+<dl>
+<dt>
+F_SETLK</dt>
+<dd>
+Value other than &#8722;1.</dd>
+</dl>
+<dl>
+<dt>
+F_SETLKW</dt>
+<dd>
+Value other than &#8722;1.</dd>
+</dl>
+<dl>
+<dt>
+F_GETOWN</dt>
+<dd>
+Value of the socket owner process or process group; this will not be &#8722;1.</dd>
+</dl>
+<dl>
+<dt>
+F_SETOWN</dt>
+<dd>
+Value other than &#8722;1.</dd>
+</dl>
+<div class="spacer">
+</div>
+Otherwise, &#8722;1 shall be returned and <i>errno</i> set to indicate the error.</div>
+<div class="section">
+<h1>ERRORS</h1> The  <i>fcntl</i>() function shall fail if:<dl>
+<dt>
+<b>EACCES</b> or <b>EAGAIN</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The <i>cmd</i> argument is F_SETLK; the type of lock (<i>l_type</i>) is a shared (F_RDLCK) or exclusive (F_WRLCK) lock and the segment of a file to be locked is already exclusive-locked by another process, or the type is an exclusive lock and some portion of the segment of a file to be locked is already shared-locked or exclusive-locked by another process.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+The <i>fildes</i> argument is not a valid open file descriptor, or the argument <i>cmd</i> is F_SETLK or F_SETLKW, the type of lock, <i>l_type</i>, is a shared lock (F_RDLCK), and <i>fildes</i> is not a valid file descriptor open for reading, or the type of lock, <i>l_type</i>, is an exclusive lock (F_WRLCK), and <i>fildes</i> is not a valid file descriptor open for writing.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINTR</b></dt>
+<dd>
+The <i>cmd</i> argument is F_SETLKW and the function was interrupted by a signal.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+The <i>cmd</i> argument is invalid, or the <i>cmd</i> argument is F_DUPFD or F_DUPFD_CLOEXEC and <i>arg</i> is negative or greater than or equal to {OPEN_MAX}, or the <i>cmd</i> argument is F_GETLK, F_SETLK, or F_SETLKW and the data pointed to by <i>arg</i> is not valid, or <i>fildes</i> refers to a file that does not support locking.</dd>
+</dl>
+<dl>
+<dt>
+<b>EMFILE</b></dt>
+<dd>
+The argument <i>cmd</i> is F_DUPFD or F_DUPFD_CLOEXEC and all file descriptors available to the process are currently open, or no file descriptors greater than or equal to <i>arg</i> are available.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOLCK</b></dt>
+<dd>
+The argument <i>cmd</i> is F_SETLK or F_SETLKW and satisfying the lock or unlock request would result in the number of locked regions in the system exceeding a system-imposed limit.</dd>
+</dl>
+<dl>
+<dt>
+<b>EOVERFLOW</b></dt>
+<dd>
+One of the values to be returned cannot be represented correctly.</dd>
+</dl>
+<dl>
+<dt>
+<b>EOVERFLOW</b></dt>
+<dd>
+The <i>cmd</i> argument is F_GETLK, F_SETLK, or F_SETLKW and the smallest or, if <i>l_len</i> is non-zero, the largest offset of any byte in the requested segment cannot be represented correctly in an object of type <b>off_t</b>.<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<div class="spacer">
+</div>
+The  <i>fcntl</i>() function may fail if:<dl>
+<dt>
+<b>EDEADLK</b></dt>
+<dd>
+The <i>cmd</i> argument is F_SETLKW, the lock is blocked by a lock from another process, and putting the calling process to sleep to wait for that lock to become free would cause a deadlock.</dd>
+</dl>
+<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>EXAMPLES</h1><div class="subsection">
+<h2>Locking and Unlocking a File</h2> The following example demonstrates how to place a lock on bytes 100 to 109 of a file and then later remove it. F_SETLK is used to perform a non-blocking lock request so that the process does not have to wait if an incompatible lock is held by another process; instead the process can take some other action.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>#include &lt;stdlib.h&gt;</b><br/>
+<b>#include &lt;unistd.h&gt;</b><br/>
+<b>#include &lt;fcntl.h&gt;</b><br/>
+<b>#include &lt;errno.h&gt;</b><br/>
+<b>#include &lt;stdio.h&gt;</b><div class="spacer">
+</div>
+int<br/>
+main(int argc, char *argv[])<br/>
+{<br/>
+    int fd;<br/>
+    struct flock fl;<div class="spacer">
+</div>
+<br/>
+    fd = open(&quot;testfile&quot;, O_RDWR);<br/>
+    if (fd == -1)<br/>
+        /* Handle error */;<div class="spacer">
+</div>
+<br/>
+    /* Make a non-blocking request to place a write lock<br/>
+       on bytes 100-109 of testfile */<div class="spacer">
+</div>
+<br/>
+    fl.l_type = F_WRLCK;<br/>
+    fl.l_whence = SEEK_SET;<br/>
+    fl.l_start = 100;<br/>
+    fl.l_len = 10;<div class="spacer">
+</div>
+<br/>
+    if (fcntl(fd, F_SETLK, &amp;fl) == &#8722;1) {<br/>
+        if (errno == EACCES || errno == EAGAIN) {<br/>
+            printf(&quot;Already locked by another process\n&quot;);<div class="spacer">
+</div>
+<br/>
+            /* We can't get the lock at the moment */<div class="spacer">
+</div>
+<br/>
+        } else {<br/>
+            /* Handle unexpected error */;<br/>
+        }<br/>
+    } else { /* Lock was granted... */<div class="spacer">
+</div>
+<br/>
+        /* Perform I/O on bytes 100 to 109 of file */<div class="spacer">
+</div>
+<br/>
+        /* Unlock the locked bytes */<div class="spacer">
+</div>
+<br/>
+        fl.l_type = F_UNLCK;<br/>
+        fl.l_whence = SEEK_SET;<br/>
+        fl.l_start = 100;<br/>
+        fl.l_len = 10;<br/>
+        if (fcntl(fd, F_SETLK, &amp;fl) == &#8722;1)<br/>
+            /* Handle error */;<br/>
+    }<br/>
+    exit(EXIT_SUCCESS);<br/>
+} /* main */<br/>
+</div>
+</div>
+<div class="subsection">
+<h2>Setting the Close-on-Exec Flag</h2> The following example demonstrates how to set the close-on-exec flag for the file descriptor <i>fd</i>.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>#include &lt;unistd.h&gt;</b><br/>
+<b>#include &lt;fcntl.h&gt;</b><br/>
+<b>...</b><br/>
+<b>    int flags;</b><div class="spacer">
+</div>
+<br/>
+    flags = fcntl(fd, F_GETFD);<br/>
+    if (flags == &#8722;1)<br/>
+        /* Handle error */;<br/>
+    flags |= FD_CLOEXEC;<br/>
+    if (fcntl(fd, F_SETFD, flags) == &#8722;1)<br/>
+        /* Handle error */;&quot;<br/>
+</div>
+</div>
+</div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> The <i>arg</i> values to F_GETFD, F_SETFD, F_GETFL, and F_SETFL all represent flag values to allow for future growth. Applications using these functions should do a read-modify-write operation on them, rather than assuming that only the values defined by this volume of POSIX.1&#8208;2008 are valid. It is a common error to forget this, particularly in the case of F_SETFD. Some implementations set additional file status flags to advise the application of default behavior, even though the application did not request these flags.</div>
+<div class="section">
+<h1>RATIONALE</h1> The ellipsis in the SYNOPSIS is the syntax specified by the ISO&#160;C standard for a variable number of arguments. It is used because System V uses pointers for the implementation of file locking functions.<div class="spacer">
+</div>
+This volume of POSIX.1&#8208;2008 permits concurrent read and write access to file data using the  <i>fcntl</i>() function; this is a change from the 1984 /usr/group standard and early proposals. Without concurrency controls, this feature may not be fully utilized without occasional loss of data.<div class="spacer">
+</div>
+Data losses occur in several ways. One case occurs when several processes try to update the same record, without sequencing controls; several updates may occur in parallel and the last writer ``wins''. Another case is a bit-tree or other internal list-based database that is undergoing reorganization. Without exclusive use to the tree segment by the updating process, other reading processes chance getting lost in the database when the index blocks are split, condensed, inserted, or deleted. While  <i>fcntl</i>() is useful for many applications, it is not intended to be overly general and does not handle the bit-tree example well.<div class="spacer">
+</div>
+This facility is only required for regular files because it is not appropriate for many devices such as terminals and network connections.<div class="spacer">
+</div>
+Since  <i>fcntl</i>() works with ``any file descriptor associated with that file, however it is obtained'', the file descriptor may have been inherited through a  <i>fork</i>() or <i>exec</i> operation and thus may affect a file that another process also has open.<div class="spacer">
+</div>
+The use of the open file description to identify what to lock requires extra calls and presents problems if several processes are sharing an open file description, but there are too many implementations of the existing mechanism for this volume of POSIX.1&#8208;2008 to use different specifications.<div class="spacer">
+</div>
+Another consequence of this model is that closing any file descriptor for a given file (whether or not it is the same open file description that created the lock) causes the locks on that file to be relinquished for that process. Equivalently, any close for any file/process pair relinquishes the locks owned on that file for that process. But note that while an open file description may be shared through  <i>fork</i>(), locks are not inherited through  <i>fork</i>(). Yet locks may be inherited through one of the <i>exec</i> functions.<div class="spacer">
+</div>
+The identification of a machine in a network environment is outside the scope of this volume of POSIX.1&#8208;2008. Thus, an <i>l_sysid</i> member, such as found in System V, is not included in the locking structure.<div class="spacer">
+</div>
+Changing of lock types can result in a previously locked region being split into smaller regions.<div class="spacer">
+</div>
+Mandatory locking was a major feature of the 1984 /usr/group standard.<div class="spacer">
+</div>
+For advisory file record locking to be effective, all processes that have access to a file must cooperate and use the advisory mechanism before doing I/O on the file. Enforcement-mode record locking is important when it cannot be assumed that all processes are cooperating. For example, if one user uses an editor to update a file at the same time that a second user executes another process that updates the same file and if only one of the two processes is using advisory locking, the processes are not cooperating. Enforcement-mode record locking would protect against accidental collisions.<div class="spacer">
+</div>
+Secondly, advisory record locking requires a process using locking to bracket each I/O operation with lock (or test) and unlock operations. With enforcement-mode file and record locking, a process can lock the file once and unlock when all I/O operations have been completed. Enforcement-mode record locking provides a base that can be enhanced; for example, with sharable locks. That is, the mechanism could be enhanced to allow a process to lock a file so other processes could read it, but none of them could write it.<div class="spacer">
+</div>
+Mandatory locks were omitted for several reasons:<dl>
+<dt>
+ 1.</dt>
+<dd>
+Mandatory lock setting was done by multiplexing the set-group-ID bit in most implementations; this was confusing, at best.</dd>
+</dl>
+<dl>
+<dt>
+ 2.</dt>
+<dd>
+The relationship to file truncation as supported in 4.2 BSD was not well specified.</dd>
+</dl>
+<dl>
+<dt>
+ 3.</dt>
+<dd>
+Any publicly readable file could be locked by anyone. Many historical implementations keep the password database in a publicly readable file. A malicious user could thus prohibit logins. Another possibility would be to hold open a long-distance telephone line.</dd>
+</dl>
+<dl>
+<dt>
+ 4.</dt>
+<dd>
+Some demand-paged historical implementations offer memory mapped files, and enforcement cannot be done on that type of file.</dd>
+</dl>
+<div class="spacer">
+</div>
+Since sleeping on a region is interrupted with any signal,  <i>alarm</i>() may be used to provide a timeout facility in applications requiring it. This is useful in deadlock detection. Since implementation of full deadlock detection is not always feasible, the <b>[EDEADLK]</b> error was made optional.</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> None.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i><i>alarm</i>()</i>, <i><i>close</i>()</i>, <i><i>exec</i></i>, <i><i>open</i>()</i>, <i><i>sigaction</i>()</i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i><b>&lt;fcntl.h&gt;</b></i>, <i><b>&lt;signal.h&gt;</b></i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SET_MEMPOLICY(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SET_MEMPOLICY(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+SET_MEMPOLICY(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> set_mempolicy - set default NUMA memory policy for a thread and its children</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;numaif.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>long set_mempolicy(int </b><i>mode</i><b>, const unsigned long *</b><i>nodemask</i><b>,</b><br/>
+<b>                   unsigned long </b><i>maxnode</i><b>);</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Link with <i>-lnuma</i>.<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>set_mempolicy</b>() sets the NUMA memory policy of the calling thread, which consists of a policy mode and zero or more nodes, to the values specified by the <i>mode</i>, <i>nodemask</i> and <i>maxnode</i> arguments.<div style="height: 1.00em;">
+&#160;</div>
+A NUMA machine has different memory controllers with different distances to specific CPUs. The memory policy defines from which node memory is allocated for the thread.<div style="height: 1.00em;">
+&#160;</div>
+This system call defines the default policy for the thread. The thread policy governs allocation of pages in the process's address space outside of memory ranges controlled by a more specific policy set by <b>mbind</b>(2). The thread default policy also controls allocation of any pages for memory-mapped files mapped using the <b>mmap</b>(2) call with the <b>MAP_PRIVATE</b> flag and that are only read [loaded] from by the thread and of memory-mapped files mapped using the <b>mmap</b>(2) call with the <b>MAP_SHARED</b> flag, regardless of the access type. The policy is applied only when a new page is allocated for the thread. For anonymous memory this is when the page is first touched by the thread.<div style="height: 1.00em;">
+&#160;</div>
+The <i>mode</i> argument must specify one of <b>MPOL_DEFAULT</b>, <b>MPOL_BIND</b>, <b>MPOL_INTERLEAVE</b>, or <b>MPOL_PREFERRED</b>. All modes except <b>MPOL_DEFAULT</b> require the caller to specify via the <i>nodemask</i> argument one or more nodes.<div style="height: 1.00em;">
+&#160;</div>
+The <i>mode</i> argument may also include an optional <i>mode flag</i>. The supported <i>mode flags</i> are:<dl>
+<dt>
+<b>MPOL_F_STATIC_NODES</b> (since Linux 2.6.26)</dt>
+<dd>
+A nonempty <i>nodemask</i> specifies physical node ids. Linux will not remap the <i>nodemask</i> when the process moves to a different cpuset context, nor when the set of nodes allowed by the process's current cpuset context changes.</dd>
+</dl>
+<dl>
+<dt>
+<b>MPOL_F_RELATIVE_NODES</b> (since Linux 2.6.26)</dt>
+<dd>
+A nonempty <i>nodemask</i> specifies node ids that are relative to the set of node ids allowed by the process's current cpuset.</dd>
+</dl>
+<div class="spacer">
+</div>
+<i>nodemask</i> points to a bit mask of node IDs that contains up to <i>maxnode</i> bits. The bit mask size is rounded to the next multiple of <i>sizeof(unsigned long)</i>, but the kernel will use bits only up to <i>maxnode</i>. A NULL value of <i>nodemask</i> or a <i>maxnode</i> value of zero specifies the empty set of nodes. If the value of <i>maxnode</i> is zero, the <i>nodemask</i> argument is ignored.<div style="height: 1.00em;">
+&#160;</div>
+Where a <i>nodemask</i> is required, it must contain at least one node that is on-line, allowed by the process's current cpuset context, [unless the <b>MPOL_F_STATIC_NODES</b> mode flag is specified], and contains memory. If the <b>MPOL_F_STATIC_NODES</b> is set in <i>mode</i> and a required <i>nodemask</i> contains no nodes that are allowed by the process's current cpuset context, the memory policy reverts to <i>local allocation</i>. This effectively overrides the specified policy until the process's cpuset context includes one or more of the nodes specified by <i>nodemask</i>.<div style="height: 1.00em;">
+&#160;</div>
+The <b>MPOL_DEFAULT</b> mode specifies that any nondefault thread memory policy be removed, so that the memory policy &quot;falls back&quot; to the system default policy. The system default policy is &quot;local allocation&quot;&#8212;that is, allocate memory on the node of the CPU that triggered the allocation. <i>nodemask</i> must be specified as NULL. If the &quot;local node&quot; contains no free memory, the system will attempt to allocate memory from a &quot;near by&quot; node.<div style="height: 1.00em;">
+&#160;</div>
+The <b>MPOL_BIND</b> mode defines a strict policy that restricts memory allocation to the nodes specified in <i>nodemask</i>. If <i>nodemask</i> specifies more than one node, page allocations will come from the node with the lowest numeric node ID first, until that node contains no free memory. Allocations will then come from the node with the next highest node ID specified in <i>nodemask</i> and so forth, until none of the specified nodes contain free memory. Pages will not be allocated from any node not specified in the <i>nodemask</i>.<div style="height: 1.00em;">
+&#160;</div>
+<b>MPOL_INTERLEAVE</b> interleaves page allocations across the nodes specified in <i>nodemask</i> in numeric node ID order. This optimizes for bandwidth instead of latency by spreading out pages and memory accesses to those pages across multiple nodes. However, accesses to a single page will still be limited to the memory bandwidth of a single node.<div style="height: 1.00em;">
+&#160;</div>
+<b>MPOL_PREFERRED</b> sets the preferred node for allocation. The kernel will try to allocate pages from this node first and fall back to &quot;near by&quot; nodes if the preferred node is low on free memory. If <i>nodemask</i> specifies more than one node ID, the first node in the mask will be selected as the preferred node. If the <i>nodemask</i> and <i>maxnode</i> arguments specify the empty set, then the policy specifies &quot;local allocation&quot; (like the system default policy discussed above).<div style="height: 1.00em;">
+&#160;</div>
+The thread memory policy is preserved across an <b>execve</b>(2), and is inherited by child threads created using <b>fork</b>(2) or <b>clone</b>(2).</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, <b>set_mempolicy</b>() returns 0; on error, -1 is returned and <i>errno</i> is set to indicate the error.</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>EFAULT</b></dt>
+<dd>
+Part of all of the memory range specified by <i>nodemask</i> and <i>maxnode</i> points outside your accessible address space.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>mode</i> is invalid. Or, <i>mode</i> is <b>MPOL_DEFAULT</b> and <i>nodemask</i> is nonempty, or <i>mode</i> is <b>MPOL_BIND</b> or <b>MPOL_INTERLEAVE</b> and <i>nodemask</i> is empty. Or, <i>maxnode</i> specifies more than a page worth of bits. Or, <i>nodemask</i> specifies one or more node IDs that are greater than the maximum supported node ID. Or, none of the node IDs specified by <i>nodemask</i> are on-line and allowed by the process's current cpuset context, or none of the specified nodes contain memory. Or, the <i>mode</i> argument specified both <b>MPOL_F_STATIC_NODES</b> and <b>MPOL_F_RELATIVE_NODES</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOMEM</b></dt>
+<dd>
+Insufficient kernel memory was available.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>VERSIONS</h1> The <b>set_mempolicy</b>(), system call was added to the Linux kernel in version 2.6.7.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> This system call is Linux-specific.</div>
+<div class="section">
+<h1>NOTES</h1> Memory policy is not remembered if the page is swapped out. When such a page is paged back in, it will use the policy of the thread or memory range that is in effect at the time the page is allocated.<div style="height: 1.00em;">
+&#160;</div>
+For information on library support, see <b>numa</b>(7).</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>get_mempolicy</b>(2), <b>getcpu</b>(2), <b>mbind</b>(2), <b>mmap</b>(2), <b>numa</b>(3), <b>cpuset</b>(7), <b>numa</b>(7), <b>numactl</b>(8)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-05-07</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

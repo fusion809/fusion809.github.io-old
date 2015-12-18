@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SETLOCALE(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SETLOCALE(3)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+SETLOCALE(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> setlocale - set the current locale</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;locale.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>char *setlocale(int </b><i>category</i><b>, const char *</b><i>locale</i><b>);</b><br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The <b>setlocale</b>() function is used to set or query the program's current locale.<div class="spacer">
+</div>
+If <i>locale</i> is not NULL, the program's current locale is modified according to the arguments. The argument <i>category</i> determines which parts of the program's current locale should be modified.<table class="tbl">
+<col style="width: 17.00ex;"/>
+<col style="width: 66.00ex;"/>
+<tbody>
+<tr>
+<td>
+Category</td>
+<td>
+Governs</td>
+</tr>
+<tr>
+<td>
+LC_ALL</td>
+<td>
+All of the locale</td>
+</tr>
+<tr>
+<td>
+LC_ADDRESS</td>
+<td>
+Formatting of addresses and  geography-related items (*)</td>
+</tr>
+<tr>
+<td>
+LC_COLLATE</td>
+<td>
+String collation</td>
+</tr>
+<tr>
+<td>
+LC_CTYPE</td>
+<td>
+Character classification</td>
+</tr>
+<tr>
+<td>
+LC_IDENTIFICATION</td>
+<td>
+Metadata describing the locale (*)</td>
+</tr>
+<tr>
+<td>
+LC_MEASUREMENT</td>
+<td>
+Settings related to measurements  (metric versus US customary) (*)</td>
+</tr>
+<tr>
+<td>
+LC_MESSAGES</td>
+<td>
+Localizable natural-language messages</td>
+</tr>
+<tr>
+<td>
+LC_MONETARY</td>
+<td>
+Formatting of monetary values</td>
+</tr>
+<tr>
+<td>
+LC_NAME</td>
+<td>
+Formatting of salutations for persons (*)</td>
+</tr>
+<tr>
+<td>
+LC_NUMERIC</td>
+<td>
+Formatting of nonmonetary numeric values</td>
+</tr>
+<tr>
+<td>
+LC_PAPER</td>
+<td>
+Settings related to the standard paper size (*)</td>
+</tr>
+<tr>
+<td>
+LC_TELEPHONE</td>
+<td>
+Formats to be used with telephone services (*)</td>
+</tr>
+<tr>
+<td>
+LC_TIME</td>
+<td>
+Formatting of date and time values</td>
+</tr>
+</tbody>
+</table>
+<div class="spacer">
+</div>
+The categories marked with an asterisk in the above table are GNU extensions. For further information on these locale categories, see <b>locale</b>(7).<div class="spacer">
+</div>
+The argument <i>locale</i> is a pointer to a character string containing the required setting of <i>category</i>. Such a string is either a well-known constant like &quot;C&quot; or &quot;da_DK&quot; (see below), or an opaque string that was returned by another call of <b>setlocale</b>().<div class="spacer">
+</div>
+If <i>locale</i> is an empty string, <b>&quot;&quot;</b>, each part of the locale that should be modified is set according to the environment variables. The details are implementation-dependent. For glibc, first (regardless of <i>category</i>), the environment variable <b>LC_ALL</b> is inspected, next the environment variable with the same name as the category (see the table above), and finally the environment variable <b>LANG</b>. The first existing environment variable is used. If its value is not a valid locale specification, the locale is unchanged, and <b>setlocale</b>() returns NULL.<div class="spacer">
+</div>
+The locale <b>&quot;C&quot;</b> or <b>&quot;POSIX&quot;</b> is a portable locale; it exists on all conforming systems.<div class="spacer">
+</div>
+A locale name is typically of the form <i>language</i>[_<i>territory</i>][.<i>codeset</i>][@<i>modifier</i>], where <i>language</i> is an ISO 639 language code, <i>territory</i> is an ISO 3166 country code, and <i>codeset</i> is a character set or encoding identifier like <b>ISO-8859-1</b> or <b>UTF-8</b>. For a list of all supported locales, try &quot;locale -a&quot;, cf. <b>locale</b>(1).<div class="spacer">
+</div>
+If <i>locale</i> is NULL, the current locale is only queried, not modified.<div class="spacer">
+</div>
+On startup of the main program, the portable <b>&quot;C&quot;</b> locale is selected as default. A program may be made portable to all locales by calling:<div class="spacer">
+</div>
+<br/>
+    setlocale(LC_ALL, &quot;&quot;);<div class="spacer">
+</div>
+<br/>
+after program initialization, by using the values returned from a <b>localeconv</b>(3) call for locale-dependent information, by using the multibyte and wide character functions for text processing if <b>MB_CUR_MAX &gt; 1</b>, and by using <b>strcoll</b>(3), <b>wcscoll</b>(3) or <b>strxfrm</b>(3), <b>wcsxfrm</b>(3) to compare strings.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> A successful call to <b>setlocale</b>() returns an opaque string that corresponds to the locale set. This string may be allocated in static storage. The string returned is such that a subsequent call with that string and its associated category will restore that part of the process's locale. The return value is NULL if the request cannot be honored.</div>
+<div class="section">
+<h1>ATTRIBUTES</h1> For an explanation of the terms used in this section, see <b>attributes</b>(7).<table class="tbl">
+<col style="width: 12.00ex;"/>
+<col style="width: 13.00ex;"/>
+<col style="width: 5.00ex;"/>
+<tbody>
+<tr>
+<td>
+Interface</td>
+<td>
+Attribute</td>
+<td>
+Value</td>
+</tr>
+<tr>
+<td>
+setlocale ()</td>
+<td>
+Thread safety</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>CONFORMING TO</h1> POSIX.1-2001, POSIX.1-2008, C89, C99.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>locale</b>(1), <b>localedef</b>(1), <b>isalpha</b>(3), <b>localeconv</b>(3), <b>nl_langinfo</b>(3), <b>rpmatch</b>(3), <b>strcoll</b>(3), <b>strftime</b>(3), <b>charsets</b>(7), <b>locale</b>(7)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-08-08</td>
+<td class="foot-os">
+GNU</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+STATVFS(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+STATVFS(3)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+STATVFS(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> statvfs, fstatvfs - get filesystem statistics</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;sys/statvfs.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<b>int statvfs(const char *</b><i>path</i><b>, struct statvfs *</b><i>buf</i><b>);</b><div style="height: 0.00em;">
+&#160;</div>
+<b>int fstatvfs(int </b><i>fd</i><b>, struct statvfs *</b><i>buf</i><b>);</b></div>
+<div class="section">
+<h1>DESCRIPTION</h1> The function <b>statvfs</b>() returns information about a mounted filesystem. <i>path</i> is the pathname of any file within the mounted filesystem. <i>buf</i> is a pointer to a <i>statvfs</i> structure defined approximately as follows:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<br/>
+struct statvfs {<br/>
+    unsigned long  f_bsize;    /* Filesystem block size */<br/>
+    unsigned long  f_frsize;   /* Fragment size */<br/>
+    fsblkcnt_t     f_blocks;   /* Size of fs in f_frsize units */<br/>
+    fsblkcnt_t     f_bfree;    /* Number of free blocks */<br/>
+    fsblkcnt_t     f_bavail;   /* Number of free blocks for<br/>
+                                  unprivileged users */<br/>
+    fsfilcnt_t     f_files;    /* Number of inodes */<br/>
+    fsfilcnt_t     f_ffree;    /* Number of free inodes */<br/>
+    fsfilcnt_t     f_favail;   /* Number of free inodes for<br/>
+                                  unprivileged users */<br/>
+    unsigned long  f_fsid;     /* Filesystem ID */<br/>
+    unsigned long  f_flag;     /* Mount flags */<br/>
+    unsigned long  f_namemax;  /* Maximum filename length */<br/>
+};<br/>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+Here the types <i>fsblkcnt_t</i> and <i>fsfilcnt_t</i> are defined in <i>&lt;sys/types.h&gt;</i>. Both used to be <i>unsigned long</i>.<div style="height: 1.00em;">
+&#160;</div>
+The field <i>f_flag</i> is a bit mask indicating various options that were employed when mounting this filesystem. It contains zero or more of the following flags:<dl>
+<dt>
+<b>ST_MANDLOCK</b></dt>
+<dd>
+Mandatory locking is permitted on the filesystem (see <b>fcntl</b>(2)).</dd>
+</dl>
+<dl>
+<dt>
+<b>ST_NOATIME</b></dt>
+<dd>
+Do not update access times; see <b>mount</b>(2).</dd>
+</dl>
+<dl>
+<dt>
+<b>ST_NODEV</b></dt>
+<dd>
+Disallow access to device special files on this filesystem.</dd>
+</dl>
+<dl>
+<dt>
+<b>ST_NODIRATIME</b></dt>
+<dd>
+Do not update directory access times; see <b>mount</b>(2).</dd>
+</dl>
+<dl>
+<dt>
+<b>ST_NOEXEC</b></dt>
+<dd>
+Execution of programs is disallowed on this filesystem.</dd>
+</dl>
+<dl>
+<dt>
+<b>ST_NOSUID</b></dt>
+<dd>
+The set-user-ID and set-group-ID bits are ignored by <b>exec</b>(3) for executable files on this filesystem</dd>
+</dl>
+<dl>
+<dt>
+<b>ST_RDONLY</b></dt>
+<dd>
+This filesystem is mounted read-only.</dd>
+</dl>
+<dl>
+<dt>
+<b>ST_RELATIME</b></dt>
+<dd>
+Update atime relative to mtime/ctime; see <b>mount</b>(2).</dd>
+</dl>
+<dl>
+<dt>
+<b>ST_SYNCHRONOUS</b></dt>
+<dd>
+Writes are synched to the filesystem immediately (see the description of <b>O_SYNC</b> in <b>open</b>(2)).</dd>
+</dl>
+<div class="spacer">
+</div>
+It is unspecified whether all members of the returned struct have meaningful values on all filesystems.<div style="height: 1.00em;">
+&#160;</div>
+<b>fstatvfs</b>() returns the same information about an open file referenced by descriptor <i>fd</i>.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, zero is returned. On error, -1 is returned, and <i>errno</i> is set appropriately.</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>EACCES</b></dt>
+<dd>
+(<b>statvfs</b>()) Search permission is denied for a component of the path prefix of <i>path</i>. (See also <b>path_resolution</b>(7).)</dd>
+</dl>
+<dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+(<b>fstatvfs</b>()) <i>fd</i> is not a valid open file descriptor.</dd>
+</dl>
+<dl>
+<dt>
+<b>EFAULT</b></dt>
+<dd>
+<i>Buf</i> or <i>path</i> points to an invalid address.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINTR</b></dt>
+<dd>
+This call was interrupted by a signal.</dd>
+</dl>
+<dl>
+<dt>
+<b>EIO</b></dt>
+<dd>
+An I/O error occurred while reading from the filesystem.</dd>
+</dl>
+<dl>
+<dt>
+<b>ELOOP</b></dt>
+<dd>
+(<b>statvfs</b>()) Too many symbolic links were encountered in translating <i>path</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENAMETOOLONG</b></dt>
+<dd>
+(<b>statvfs</b>()) <i>path</i> is too long.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOENT</b></dt>
+<dd>
+(<b>statvfs</b>()) The file referred to by <i>path</i> does not exist.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOMEM</b></dt>
+<dd>
+Insufficient kernel memory was available.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOSYS</b></dt>
+<dd>
+The filesystem does not support this call.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+(<b>statvfs</b>()) A component of the path prefix of <i>path</i> is not a directory.</dd>
+</dl>
+<dl>
+<dt>
+<b>EOVERFLOW</b></dt>
+<dd>
+Some values were too large to be represented in the returned struct.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ATTRIBUTES</h1> For an explanation of the terms used in this section, see <b>attributes</b>(7).<table class="tbl">
+<col style="width: 23.00ex;"/>
+<col style="width: 13.00ex;"/>
+<col style="width: 5.00ex;"/>
+<tbody>
+<tr>
+<td>
+Interface</td>
+<td>
+Attribute</td>
+<td>
+Value</td>
+</tr>
+<tr>
+<td>
+statvfs (), fstatvfs ()</td>
+<td>
+Thread safety</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section">
+<h1>CONFORMING TO</h1> POSIX.1-2001, POSIX.1-2008.<div style="height: 1.00em;">
+&#160;</div>
+Only the <b>ST_NOSUID</b> and <b>ST_RDONLY</b> flags of the <i>f_flag</i> field are specified in POSIX.1. To obtain definitions of the remaining flags, one must define <b>_GNU_SOURCE</b>.</div>
+<div class="section">
+<h1>NOTES</h1> The Linux kernel has system calls <b>statfs</b>(2) and <b>fstatfs</b>(2) to support this library call.<div style="height: 1.00em;">
+&#160;</div>
+In glibc versions before 2.13, <b>statvfs</b>() populated the bits of the <i>f_flag</i> field by scanning the mount options shown in <i>/proc/mounts</i>. However, starting with Linux 2.6.36, the underlying <b>statfs</b>(2) system call provides the necessary information via the <i>f_flags</i> field, and since glibc version 2.13, the <b>statvfs</b>() function will use information from that field rather than scanning <i>/proc/mounts</i>.<div style="height: 1.00em;">
+&#160;</div>
+The glibc implementations of<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+   pathconf(path, _PC_REC_XFER_ALIGN);<br/>
+   pathconf(path, _PC_ALLOC_SIZE_MIN);<br/>
+   pathconf(path, _PC_REC_MIN_XFER_SIZE);<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+respectively use the <i>f_frsize</i>, <i>f_frsize</i>, and <i>f_bsize</i> fields returned by a call to <b>statvfs</b>() with the argument <i>path</i>.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>statfs</b>(2)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-08-08</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+INIT_MODULE(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+INIT_MODULE(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+INIT_MODULE(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> init_module, finit_module - load a kernel module</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+<b>int init_module(void *</b><i>module_image</i><b>, unsigned long </b><i>len</i><b>,</b><br/>
+<b>                const char *</b><i>param_values</i><b>);</b><div class="spacer">
+</div>
+<br/>
+<b>int finit_module(int </b><i>fd</i><b>, const char *</b><i>param_values</i><b>,</b><br/>
+<b>                 int </b><i>flags</i><b>);</b><br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<i>Note</i>: glibc provides no header file declaration of <b>init_module</b>() and no wrapper function for <b>finit_module</b>(); see NOTES.</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>init_module</b>() loads an ELF image into kernel space, performs any necessary symbol relocations, initializes module parameters to values provided by the caller, and then runs the module's <i>init</i> function. This system call requires privilege.<div style="height: 1.00em;">
+&#160;</div>
+The <i>module_image</i> argument points to a buffer containing the binary image to be loaded; <i>len</i> specifies the size of that buffer. The module image should be a valid ELF image, built for the running kernel.<div style="height: 1.00em;">
+&#160;</div>
+The <i>param_values</i> argument is a string containing space-delimited specifications of the values for module parameters (defined inside the module using <b>module_param</b>() and <b>module_param_array</b>()). The kernel parses this string and initializes the specified parameters. Each of the parameter specifications has the form:<div style="height: 1.00em;">
+&#160;</div>
+        <i>name</i>[<b>=</b><i>value</i>[<b>,</b><i>value</i>...]]<div style="height: 1.00em;">
+&#160;</div>
+The parameter <i>name</i> is one of those defined within the module using <i>module_param</i>() (see the Linux kernel source file <i>include/linux/moduleparam.h</i>). The parameter <i>value</i> is optional in the case of <i>bool</i> and <i>invbool</i> parameters. Values for array parameters are specified as a comma-separated list.<div class="subsection">
+<h2>finit_module()</h2> The <b>finit_module</b>() system call is like <b>init_module</b>(), but reads the module to be loaded from the file descriptor <i>fd</i>. It is useful when the authenticity of a kernel module can be determined from its location in the filesystem; in cases where that is possible, the overhead of using cryptographically signed modules to determine the authenticity of a module can be avoided. The <i>param_values</i> argument is as for <b>init_module</b>().<div style="height: 1.00em;">
+&#160;</div>
+The <i>flags</i> argument modifies the operation of <b>finit_module</b>(). It is a bit mask value created by ORing together zero or more of the following flags:<dl>
+<dt>
+<b>MODULE_INIT_IGNORE_MODVERSIONS</b></dt>
+<dd>
+Ignore symbol version hashes.</dd>
+</dl>
+<dl>
+<dt>
+<b>MODULE_INIT_IGNORE_VERMAGIC</b></dt>
+<dd>
+Ignore kernel version magic.</dd>
+</dl>
+<div class="spacer">
+</div>
+There are some safety checks built into a module to ensure that it matches the kernel against which it is loaded. These checks are recorded when the module is built and verified when the module is loaded. First, the module records a &quot;vermagic&quot; string containing the kernel version number and prominent features (such as the CPU type). Second, if the module was built with the <b>CONFIG_MODVERSIONS</b> configuration option enabled, a version hash is recorded for each symbol the module uses. This hash is based on the types of the arguments and return value for the function named by the symbol. In this case, the kernel version number within the &quot;vermagic&quot; string is ignored, as the symbol version hashes are assumed to be sufficiently reliable.<div style="height: 1.00em;">
+&#160;</div>
+Using the <b>MODULE_INIT_IGNORE_VERMAGIC</b> flag indicates that the &quot;vermagic&quot; string is to be ignored, and the <b>MODULE_INIT_IGNORE_MODVERSIONS</b> flag indicates that the symbol version hashes are to be ignored. If the kernel is built to permit forced loading (i.e., configured with <b>CONFIG_MODULE_FORCE_LOAD</b>), then loading will continue, otherwise it will fail with <b>ENOEXEC</b> as expected for malformed modules.</div>
+</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, these system calls return 0. On error, -1 is returned and <i>errno</i> is set appropriately.</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>EBADMSG</b> (since Linux 3.7)</dt>
+<dd>
+Module signature is misformatted.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBUSY</b></dt>
+<dd>
+Timeout while trying to resolve a symbol reference by this module.</dd>
+</dl>
+<dl>
+<dt>
+<b>EFAULT</b></dt>
+<dd>
+An address argument referred to a location that is outside the process's accessible address space.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOKEY</b> (since Linux 3.7)</dt>
+<dd>
+Module signature is invalid or the kernel does not have a key for this module. This error is returned only if the kernel was configured with <b>CONFIG_MODULE_SIG_FORCE</b>; if the kernel was not configured with this option, then an invalid or unsigned module simply taints the kernel.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOMEM</b></dt>
+<dd>
+Out of memory.</dd>
+</dl>
+<dl>
+<dt>
+<b>EPERM</b></dt>
+<dd>
+The caller was not privileged (did not have the <b>CAP_SYS_MODULE</b> capability), or module loading is disabled (see <i>/proc/sys/kernel/modules_disabled</i> in <b>proc</b>(5)).</dd>
+</dl>
+<div class="spacer">
+</div>
+The following errors may additionally occur for <b>init_module</b>():<dl>
+<dt>
+<b>EEXIST</b></dt>
+<dd>
+A module with this name is already loaded.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>param_values</i> is invalid, or some part of the ELF image in <i>module_image</i> contains inconsistencies.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOEXEC</b></dt>
+<dd>
+The binary image supplied in <i>module_image</i> is not an ELF image, or is an ELF image that is invalid or for a different architecture.</dd>
+</dl>
+<div class="spacer">
+</div>
+The following errors may additionally occur for <b>finit_module</b>():<dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+The file referred to by <i>fd</i> is not opened for reading.</dd>
+</dl>
+<dl>
+<dt>
+<b>EFBIG</b></dt>
+<dd>
+The file referred to by <i>fd</i> is too large.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>flags</i> is invalid.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOEXEC</b></dt>
+<dd>
+<i>fd</i> does not refer to an open file.</dd>
+</dl>
+<div class="spacer">
+</div>
+In addition to the above errors, if the module's <i>init</i> function is executed and returns an error, then <b>init_module</b>() or <b>finit_module</b>() fails and <i>errno</i> is set to the value returned by the <i>init</i> function.</div>
+<div class="section">
+<h1>VERSIONS</h1> <b>finit_module</b>() is available since Linux 3.8.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> <b>init_module</b>() and <b>finit_module</b>() are Linux-specific.</div>
+<div class="section">
+<h1>NOTES</h1> The <b>init_module</b>() system call is not supported by glibc. No declaration is provided in glibc headers, but, through a quirk of history, glibc does export an ABI for this system call. Therefore, in order to employ this system call, it is sufficient to manually declare the interface in your code; alternatively, you can invoke the system call using <b>syscall</b>(2).<div style="height: 1.00em;">
+&#160;</div>
+Glibc does not provide a wrapper for <b>finit_module</b>(); call it using <b>syscall</b>(2).<div style="height: 1.00em;">
+&#160;</div>
+Information about currently loaded modules can be found in <i>/proc/modules</i> and in the file trees under the per-module subdirectories under <i>/sys/module</i>.<div style="height: 1.00em;">
+&#160;</div>
+See the Linux kernel source file <i>include/linux/module.h</i> for some useful background information.<div class="subsection">
+<h2>Linux 2.4 and earlier</h2> In Linux 2.4 and earlier, the <b>init_module</b>() system call was rather different:<div style="height: 1.00em;">
+&#160;</div>
+<b>    #include &lt;linux/module.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<b>    int init_module(const char *</b><i>name</i><b>, struct module *</b><i>image</i><b>);</b><div style="height: 1.00em;">
+&#160;</div>
+(User-space applications can detect which version of <b>init_module</b>() is available by calling <b>query_module</b>(); the latter call fails with the error <b>ENOSYS</b> on Linux 2.6 and later.)<div style="height: 1.00em;">
+&#160;</div>
+The older version of the system call loads the relocated module image pointed to by <i>image</i> into kernel space and runs the module's <i>init</i> function. The caller is responsible for providing the relocated image (since Linux 2.6, the <b>init_module</b>() system call does the relocation).<div class="spacer">
+</div>
+The module image begins with a module structure and is followed by code and data as appropriate. Since Linux 2.2, the module structure is defined as follows:<div class="spacer">
+</div>
+<br/>
+<br/>
+struct module {<br/>
+    unsigned long         size_of_struct;<br/>
+    struct module        *next;<br/>
+    const char           *name;<br/>
+    unsigned long         size;<br/>
+    long                  usecount;<br/>
+    unsigned long         flags;<br/>
+    unsigned int          nsyms;<br/>
+    unsigned int          ndeps;<br/>
+    struct module_symbol *syms;<br/>
+    struct module_ref    *deps;<br/>
+    struct module_ref    *refs;<br/>
+    int                 (*init)(void);<br/>
+    void                (*cleanup)(void);<br/>
+    const struct exception_table_entry *ex_table_start;<br/>
+    const struct exception_table_entry *ex_table_end;<br/>
+#ifdef __alpha__<br/>
+    unsigned long gp;<br/>
+#endif<br/>
+};<br/>
+<br/>
+<div class="spacer">
+</div>
+All of the pointer fields, with the exception of <i>next</i> and <i>refs</i>, are expected to point within the module body and be initialized as appropriate for kernel space, that is, relocated with the rest of the module.</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>create_module</b>(2), <b>delete_module</b>(2), <b>query_module</b>(2), <b>lsmod</b>(8), <b>modprobe</b>(8)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2014-05-10</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

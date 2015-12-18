@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+NEWLOCALE(3P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+NEWLOCALE(3P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+NEWLOCALE(3P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> newlocale &#8212; create or modify a locale object</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;locale.h&gt;<div class="spacer">
+</div>
+locale_t newlocale(int <i>category_mask</i>, const char *<i>locale</i>,<br/>
+    locale_t <i>base</i>);<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <i>newlocale</i>() function shall create a new locale object or modify an existing one. If the <i>base</i> argument is (<b>locale_t</b>)0, a new locale object shall be created. It is unspecified whether the locale object pointed to by <i>base</i> shall be modified, or freed and a new locale object created.<div class="spacer">
+</div>
+The <i>category_mask</i> argument specifies the locale categories to be set or modified. Values for <i>category_mask</i> shall be constructed by a bitwise-inclusive OR of the symbolic constants <i>LC_CTYPE_MASK</i>, <i>LC_NUMERIC_MASK</i>, <i>LC_TIME_MASK</i>, <i>LC_COLLATE_MASK</i>, <i>LC_MONETARY_MASK</i>, and <i>LC_MESSAGES_MASK</i>, or any of the other implementation-defined <i>LC_*_MASK</i> values defined in <i>&lt;locale.h&gt;</i>.<div class="spacer">
+</div>
+For each category with the corresponding bit set in <i>category_mask</i> the data from the locale named by <i>locale</i> shall be used. In the case of modifying an existing locale object, the data from the locale named by <i>locale</i> shall replace the existing data within the locale object. If a completely new locale object is created, the data for all sections not requested by <i>category_mask</i> shall be taken from the default locale.<div class="spacer">
+</div>
+The following preset values of <i>locale</i> are defined for all settings of <i>category_mask</i>:<dl>
+<dt>
+&quot;POSIX&quot;</dt>
+<dd>
+Specifies the minimal environment for C-language translation called the POSIX locale.</dd>
+</dl>
+<dl>
+<dt>
+&quot;C&quot;</dt>
+<dd>
+Equivalent to <b>&quot;POSIX&quot;</b>.</dd>
+</dl>
+<dl>
+<dt>
+&quot;&quot;</dt>
+<dd>
+Specifies an implementation-defined native environment. This corresponds to the value of the associated environment variables, <i>LC_*</i> and <i>LANG</i>; see the Base Definitions volume of POSIX.1&#8208;2008, <i>Chapter 7</i>, <i>Locale</i> and <i>Chapter 8</i>, <i>Environment Variables</i>.</dd>
+</dl>
+<div class="spacer">
+</div>
+If the <i>base</i> argument is not (<b>locale_t</b>)0 and the  <i>newlocale</i>() function call succeeds, the contents of <i>base</i> are unspecified. Applications shall ensure that they stop using <i>base</i> as a locale object before calling  <i>newlocale</i>(). If the function call fails and the <i>base</i> argument is not (<b>locale_t</b>)0, the contents of <i>base</i> shall remain valid and unchanged.<div class="spacer">
+</div>
+The behavior is undefined if the <i>base</i> argument is the special locale object LC_GLOBAL_LOCALE, or is not a valid locale object handle and is not (<b>locale_t</b>)0.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> Upon successful completion, the  <i>newlocale</i>() function shall return a handle which the caller may use on subsequent calls to  <i>duplocale</i>(),  <i>freelocale</i>(), and other functions taking a <b>locale_t</b> argument.<div class="spacer">
+</div>
+Upon failure, the  <i>newlocale</i>() function shall return (<b>locale_t</b>)0 and set <i>errno</i> to indicate the error.</div>
+<div class="section">
+<h1>ERRORS</h1> The  <i>newlocale</i>() function shall fail if:<dl>
+<dt>
+<b>ENOMEM</b></dt>
+<dd>
+There is not enough memory available to create the locale object or load the locale data.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+The <i>category_mask</i> contains a bit that does not correspond to a valid category.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOENT</b></dt>
+<dd>
+For any of the categories in <i>category_mask</i>, the locale data is not available.</dd>
+</dl>
+<div class="spacer">
+</div>
+The  <i>newlocale</i>() function may fail if:<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+The <i>locale</i> argument is not a valid string pointer.</dd>
+</dl>
+<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>EXAMPLES</h1><div class="subsection">
+<h2>Constructing a Locale Object from Different Locales</h2> The following example shows the construction of a locale where the <i>LC_CTYPE</i> category data comes from a locale <i>loc1</i> and the <i>LC_TIME</i> category data from a locale <i>tok2</i>:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>#include &lt;locale.h&gt;</b><br/>
+<b>...</b><br/>
+<b>locale_t loc, new_loc;</b><div class="spacer">
+</div>
+/* Get the &quot;loc1&quot; data. */<div class="spacer">
+</div>
+loc = newlocale (LC_CTYPE_MASK, &quot;loc1&quot;, (locale_t)0);<br/>
+if (loc == (locale_t) 0)<br/>
+    abort ();<div class="spacer">
+</div>
+/* Get the &quot;loc2&quot; data. */<div class="spacer">
+</div>
+new_loc = newlocale (LC_TIME_MASK, &quot;loc2&quot;, loc);<br/>
+if (new_loc != (locale_t) 0)<br/>
+    /* We don t abort if this fails. In this case this<br/>
+       simply used to unchanged locale object. */<br/>
+    loc = new_loc;<div class="spacer">
+</div>
+...<br/>
+</div>
+</div>
+<div class="subsection">
+<h2>Freeing up a Locale Object</h2> The following example shows a code fragment to free a locale object created by  <i>newlocale</i>():<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>#include &lt;locale.h&gt;</b><br/>
+<b>...</b><div class="spacer">
+</div>
+/* Every locale object allocated with newlocale() should be<br/>
+ * freed using freelocale():<br/>
+ */<div class="spacer">
+</div>
+locale_t loc;<div class="spacer">
+</div>
+/* Get the locale. */<div class="spacer">
+</div>
+loc = newlocale (LC_CTYPE_MASK | LC_TIME_MASK, &quot;locname&quot;, (locale_t)0);<div class="spacer">
+</div>
+/* ... Use the locale object ... */<br/>
+...<div class="spacer">
+</div>
+/* Free the locale object resources. */<br/>
+freelocale (loc);<br/>
+</div>
+</div>
+</div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> Handles for locale objects created by the  <i>newlocale</i>() function should either be released by a corresponding call to  <i>freelocale</i>(), or be used as a base locale to another  <i>newlocale</i>() call.<div class="spacer">
+</div>
+The special locale object LC_GLOBAL_LOCALE must not be passed for the <i>base</i> argument, even when returned by the  <i>uselocale</i>() function.</div>
+<div class="section">
+<h1>RATIONALE</h1> None.</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> None.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i><i>duplocale</i>()</i>, <i><i>freelocale</i>()</i>, <i><i>uselocale</i>()</i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i>Chapter 7</i>, <i>Locale</i>, <i>Chapter 8</i>, <i>Environment Variables</i>, <i><b>&lt;locale.h&gt;</b></i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

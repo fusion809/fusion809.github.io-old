@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+CHMOD(3P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+CHMOD(3P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+CHMOD(3P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> chmod, fchmodat &#8212; change mode of a file relative to directory file descriptor</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;sys/stat.h&gt;<div class="spacer">
+</div>
+int chmod(const char *<i>path</i>, mode_t <i>mode</i>);<br/>
+int fchmodat(int <i>fd</i>, const char *<i>path</i>, mode_t <i>mode</i>, int <i>flag</i>);<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <i>chmod</i>() function shall change S_ISUID, S_ISGID, S_ISVTX, and the file permission bits of the file named by the pathname pointed to by the <i>path</i> argument to the corresponding bits in the <i>mode</i> argument. The application shall ensure that the effective user ID of the process matches the owner of the file or the process has appropriate privileges in order to do this.<div class="spacer">
+</div>
+S_ISUID, S_ISGID, S_ISVTX, and the file permission bits are described in <i>&lt;sys/stat.h&gt;</i>.<div class="spacer">
+</div>
+If the calling process does not have appropriate privileges, and if the group ID of the file does not match the effective group ID or one of the supplementary group IDs and if the file is a regular file, bit S_ISGID (set-group-ID on execution) in the file's mode shall be cleared upon successful return from  <i>chmod</i>().<div class="spacer">
+</div>
+Additional implementation-defined restrictions may cause the S_ISUID and S_ISGID bits in <i>mode</i> to be ignored.<div class="spacer">
+</div>
+Upon successful completion,  <i>chmod</i>() shall mark for update the last file status change timestamp of the file.<div class="spacer">
+</div>
+The  <i>fchmodat</i>() function shall be equivalent to the  <i>chmod</i>() function except in the case where <i>path</i> specifies a relative path. In this case the file to be changed is determined relative to the directory associated with the file descriptor <i>fd</i> instead of the current working directory. If the file descriptor was opened without O_SEARCH, the function shall check whether directory searches are permitted using the current permissions of the directory underlying the file descriptor. If the file descriptor was opened with O_SEARCH, the function shall not perform the check.<div class="spacer">
+</div>
+Values for <i>flag</i> are constructed by a bitwise-inclusive OR of flags from the following list, defined in <i>&lt;fcntl.h&gt;</i>:<dl>
+<dt>
+AT_SYMLINK_NOFOLLOW</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+If <i>path</i> names a symbolic link, then the mode of the symbolic link is changed.</dd>
+</dl>
+<div class="spacer">
+</div>
+If  <i>fchmodat</i>() is passed the special value AT_FDCWD in the <i>fd</i> parameter, the current working directory shall be used. If also <i>flag</i> is zero, the behavior shall be identical to a call to  <i>chmod</i>().</div>
+<div class="section">
+<h1>RETURN VALUE</h1> Upon successful completion, these functions shall return 0. Otherwise, these functions shall return &#8722;1 and set <i>errno</i> to indicate the error. If &#8722;1 is returned, no change to the file mode occurs.</div>
+<div class="section">
+<h1>ERRORS</h1> These functions shall fail if:<dl>
+<dt>
+<b>EACCES</b></dt>
+<dd>
+Search permission is denied on a component of the path prefix.</dd>
+</dl>
+<dl>
+<dt>
+<b>ELOOP</b></dt>
+<dd>
+A loop exists in symbolic links encountered during resolution of the <i>path</i> argument.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENAMETOOLONG</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The length of a component of a pathname is longer than {NAME_MAX}.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOENT</b></dt>
+<dd>
+A component of <i>path</i> does not name an existing file or <i>path</i> is an empty string.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+A component of the path prefix names an existing file that is neither a directory nor a symbolic link to a directory, or the <i>path</i> argument contains at least one non-&lt;slash&gt; character and ends with one or more trailing &lt;slash&gt; characters and the last pathname component names an existing file that is neither a directory nor a symbolic link to a directory.</dd>
+</dl>
+<dl>
+<dt>
+<b>EPERM</b></dt>
+<dd>
+The effective user ID does not match the owner of the file and the process does not have appropriate privileges.</dd>
+</dl>
+<dl>
+<dt>
+<b>EROFS</b></dt>
+<dd>
+The named file resides on a read-only file system.</dd>
+</dl>
+<div class="spacer">
+</div>
+The  <i>fchmodat</i>() function shall fail if:<dl>
+<dt>
+<b>EACCES</b></dt>
+<dd>
+<i>fd</i> was not opened with O_SEARCH and the permissions of the directory underlying <i>fd</i> do not permit directory searches.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+The <i>path</i> argument does not specify an absolute path and the <i>fd</i> argument is neither AT_FDCWD nor a valid file descriptor open for reading or searching.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+The <i>path</i> argument is not an absolute path and <i>fd</i> is a file descriptor associated with a non-directory file.</dd>
+</dl>
+<div class="spacer">
+</div>
+These functions may fail if:<dl>
+<dt>
+<b>EINTR</b></dt>
+<dd>
+A signal was caught during execution of the function.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+The value of the <i>mode</i> argument is invalid.</dd>
+</dl>
+<dl>
+<dt>
+<b>ELOOP</b></dt>
+<dd>
+More than {SYMLOOP_MAX} symbolic links were encountered during resolution of the <i>path</i> argument.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENAMETOOLONG</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The length of a pathname exceeds {PATH_MAX}, or pathname resolution of a symbolic link produced an intermediate result with a length that exceeds {PATH_MAX}.</dd>
+</dl>
+<div class="spacer">
+</div>
+The  <i>fchmodat</i>() function may fail if:<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+The value of the <i>flag</i> argument is invalid.</dd>
+</dl>
+<dl>
+<dt>
+<b>EOPNOTSUPP</b></dt>
+<dd>
+The AT_SYMLINK_NOFOLLOW bit is set in the <i>flag</i> argument, <i>path</i> names a symbolic link, and the system does not support changing the mode of a symbolic link.</dd>
+</dl>
+<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>EXAMPLES</h1><div class="subsection">
+<h2>Setting Read Permissions for User, Group, and Others</h2> The following example sets read permissions for the owner, group, and others.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>#include &lt;sys/stat.h&gt;</b><div class="spacer">
+</div>
+const char *path;<br/>
+...<br/>
+chmod(path, S_IRUSR|S_IRGRP|S_IROTH);<br/>
+</div>
+</div>
+<div class="subsection">
+<h2>Setting Read, Write, and Execute Permissions for the Owner Only</h2> The following example sets read, write, and execute permissions for the owner, and no permissions for group and others.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>#include &lt;sys/stat.h&gt;</b><div class="spacer">
+</div>
+const char *path;<br/>
+...<br/>
+chmod(path, S_IRWXU);<br/>
+</div>
+</div>
+<div class="subsection">
+<h2>Setting Different Permissions for Owner, Group, and Other</h2> The following example sets owner permissions for CHANGEFILE to read, write, and execute, group permissions to read and execute, and other permissions to read.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>#include &lt;sys/stat.h&gt;</b><div class="spacer">
+</div>
+#define CHANGEFILE &quot;/etc/myfile&quot;<br/>
+...<br/>
+chmod(CHANGEFILE, S_IRWXU|S_IRGRP|S_IXGRP|S_IROTH);<br/>
+</div>
+</div>
+<div class="subsection">
+<h2>Setting and Checking File Permissions</h2> The following example sets the file permission bits for a file named <b>/home/cnd/mod1</b>, then calls the  <i>stat</i>() function to verify the permissions.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>#include &lt;sys/types.h&gt;</b><br/>
+<b>#include &lt;sys/stat.h&gt;</b><div class="spacer">
+</div>
+int status;<br/>
+struct stat buffer<br/>
+...<br/>
+chmod(&quot;home/cnd/mod1&quot;, S_IRWXU|S_IRWXG|S_IROTH|S_IWOTH);<br/>
+status = stat(&quot;home/cnd/mod1&quot;, &amp;buffer;);<br/>
+</div>
+</div>
+</div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> In order to ensure that the S_ISUID and S_ISGID bits are set, an application requiring this should use  <i>stat</i>() after a successful  <i>chmod</i>() to verify this.<div class="spacer">
+</div>
+Any file descriptors currently open by any process on the file could possibly become invalid if the mode of the file is changed to a value which would deny access to that process. One situation where this could occur is on a stateless file system. This behavior will not occur in a conforming environment.</div>
+<div class="section">
+<h1>RATIONALE</h1> This volume of POSIX.1&#8208;2008 specifies that the S_ISGID bit is cleared by  <i>chmod</i>() on a regular file under certain conditions. This is specified on the assumption that regular files may be executed, and the system should prevent users from making executable  <i>setgid</i>() files perform with privileges that the caller does not have. On implementations that support execution of other file types, the S_ISGID bit should be cleared for those file types under the same circumstances.<div class="spacer">
+</div>
+Implementations that use the S_ISUID bit to indicate some other function (for example, mandatory record locking) on non-executable files need not clear this bit on writing. They should clear the bit for executable files and any other cases where the bit grants special powers to processes that change the file contents. Similar comments apply to the S_ISGID bit.<div class="spacer">
+</div>
+The purpose of the  <i>fchmodat</i>() function is to enable changing the mode of files in directories other than the current working directory without exposure to race conditions. Any part of the path of a file could be changed in parallel to a call to  <i>chmod</i>(), resulting in unspecified behavior. By opening a file descriptor for the target directory and using the  <i>fchmodat</i>() function it can be guaranteed that the changed file is located relative to the desired directory. Some implementations might allow changing the mode of symbolic links. This is not supported by the interfaces in the POSIX specification. Systems with such support provide an interface named <i>lchmod</i>(). To support such implementations  <i>fchmodat</i>() has a <i>flag</i> parameter.</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> None.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i><i>access</i>()</i>, <i><i>chown</i>()</i>, <i><i>exec</i></i>, <i><i>fstatat</i>()</i>, <i><i>fstatvfs</i>()</i>, <i><i>mkdir</i>()</i>, <i><i>mkfifo</i>()</i>, <i><i>mknod</i>()</i>, <i><i>open</i>()</i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i><b>&lt;fcntl.h&gt;</b></i>, <i><b>&lt;sys_stat.h&gt;</b></i>, <i><b>&lt;sys_types.h&gt;</b></i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SG_LUNS(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SG_LUNS(8)</td>
+<td class="head-vol">
+SG3_UTILS</td>
+<td class="head-rtitle">
+SG_LUNS(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sg_luns - send SCSI REPORT LUNS command or decode given LUN</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>sg_luns</b> [ <i>--decode</i>] [<i>--help</i>] [<i>--hex</i>] [<i>--linux</i>] [ <i>--lu_cong</i>] [<i>--maxlen=LEN</i>] [<i>--quiet</i>] [<i>--raw</i>] [ <i>--readonly</i>] [<i>--select=SR</i>] [<i>--verbose</i>] [ <i>--version</i>] <i>DEVICE</i><div class="spacer">
+</div>
+<b>sg_luns</b>  <i>--test=ALUN</i> [<i>--hex</i>] [<i>--lu_cong</i>] [<i>--verbose</i>]</div>
+<div class="section">
+<h1>DESCRIPTION</h1> In the first form shown in the SYNOPSIS this utility sends the SCSI REPORT LUNS command to the  <i>DEVICE</i> and outputs the response. The response should be a list of LUNs (&quot;a LUN inventory&quot;) for the I_T nexus associated with the  <i>DEVICE</i>. Roughly speaking that is all LUNs that share the target device that the REPORT LUNS command is sent through. In the SPC-3 and SPC-4 SCSI standards support for the REPORT LUNS command is mandatory.<div class="spacer">
+</div>
+When the <i>--test=ALUN</i> option is given (the second form in the SYNOPSIS), then the  <i>ALUN</i> value is decoded as outlined in SAM-3, SAM-4 and SAM-5 (revision 13, section 4.7) .<div class="spacer">
+</div>
+Where required below the first form shown in the SYNOPSIS is called &quot;device mode&quot; and the second form is called &quot;test mode&quot;.</div>
+<div class="section">
+<h1>OPTIONS</h1> Arguments to long options are mandatory for short options as well.<dl>
+<dt>
+<b>-d</b>, <b>--decode</b></dt>
+<dd>
+decode LUNs into their component parts, as described in the LUN section of SAM-3, SAM-4 and SAM-5.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>, <b>--help</b></dt>
+<dd>
+output the usage message then exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-H</b>, <b>--hex</b></dt>
+<dd>
+[device mode] when given once this utility will output the SCSI response (i.e. the data-out buffer) to the REPORT LUNS command in ASCII hex then exit. When given twice it causes  <i>--decode</i> to output component fields in hex rather than decimal.<div style="height: 0.00em;">
+&#160;</div>
+[test mode] when this option is given, then decoded component fields of  <i>ALUN</i> are output in hex.</dd>
+</dl>
+<dl>
+<dt>
+<b>-l</b>, <b>--linux</b></dt>
+<dd>
+this option is only available in Linux. After the T10 representation of each 64 bit LUN (in 16 hexadecimal digits), if this option is given then to the right, in square brackets, is the Linux LUN integer in decimal. If the  <i>--hex</i> option is given twice (e.g. -HH) as well then the Linux LUN integer is output in hexadecimal.</dd>
+</dl>
+<dl>
+<dt>
+<b>-L</b>, <b>--lu_cong</b></dt>
+<dd>
+this option is only considered with <i>--decode</i>. When given once then the list of LUNs is decoded as if the LU_CONG bit was set in each LU's coresponding INQUIRY response. When given twice the list of LUNs is decoded as if the LU_CONG bit was clear in each LU's coresponding INQUIRY response. When this option is not given and  <i>--decode</i> is given then an INQUIRY is sent to the  <i>DEVICE</i> and the setting of its LU_CONG bit is used to decode the list of LUNs.<div style="height: 0.00em;">
+&#160;</div>
+[test mode] decode <i>ALUN</i> as if the LU_CONG bit is set in its corresponding standard INQUIRY response. In other words treat  <i>ALUN</i> as if it is a conglomerate LUN. If not given (or given twice) then decode  <i>ALUN</i> as if the LU_CONG bit is clear.</dd>
+</dl>
+<dl>
+<dt>
+<b>-m</b>, <b>--maxlen</b>=<i>LEN</i></dt>
+<dd>
+where <i>LEN</i> is the (maximum) response length in bytes. It is placed in the cdb's &quot;allocation length&quot; field. If not given (or  <i>LEN</i> is zero) then 8192 is used. The maximum allowed value of  <i>LEN</i> is 1048576.</dd>
+</dl>
+<dl>
+<dt>
+<b>-q</b>, <b>--quiet</b></dt>
+<dd>
+output only the ASCII hex rendering of each report LUN, one per line. Without the  <i>--quiet</i> option, there is header information printed before the LUN listing.</dd>
+</dl>
+<dl>
+<dt>
+<b>-r</b>, <b>--raw</b></dt>
+<dd>
+output the SCSI response (i.e. the data-out buffer) in binary (to stdout).</dd>
+</dl>
+<dl>
+<dt>
+<b>-R</b>, <b>--readonly</b></dt>
+<dd>
+open the <i>DEVICE</i> read-only (e.g. in Unix with the O_RDONLY flag). The default is to open it read-write.</dd>
+</dl>
+<dl>
+<dt>
+<b>-s</b>, <b>--select</b>=<i>SR</i></dt>
+<dd>
+<i>SR</i> is placed in the SELECT REPORT field of the SCSI REPORT LUNS command. The default value is 0. Hexadecimal values may be given with a leading &quot;0x&quot; or a trailing &quot;h&quot;. For detailed information see the REPORT LUNS command in SPC (most recent is SPC-4 revision 37 in section 6.33). To simplify, for the I_T nexus associated with the  <i>DEVICE</i>, the meanings of the  <i>SR</i> values defined to date for SPC-4 are:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  <b>0</b> : most luns excluding well known logical unit numbers<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  <b>1</b> : well known logical unit numbers<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  <b>2</b> : all luns accessible to this I_T nexus<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  <b>0x10</b> : only accessible administrative luns<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  <b>0x11</b> : administrative luns plus non-conglomerate luns (see SPC-4)<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  <b>0x12</b> : if <i>DEVICE</i> is an administrative LU, then report its<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+         lun plus its subsidiary luns</dd>
+</dl>
+<div class="spacer">
+</div>
+For <i>SR</i> values 0x10 and 0x11, the <i>DEVICE</i> must be either LUN 0 or the REPORT LUNS well known logical unit. Values between 0xf8 and 0xff (inclusive) are vendor specific, other values are reserved. This utility will accept any value between 0 and 255 (0xff) for  <i>SR</i> .<dl>
+<dt>
+<b>-t</b>, <b>--test</b>=<i>ALUN</i></dt>
+<dd>
+<i>ALUN</i> is assumed to be a hexadecimal number in ASCII hex or the letter 'L' followed by a decimal number (see below). The hexadecimal number can be up to 64 bits in size (i.e. 16 hexadecimal digits) and is padded to the right if less than 16 hexadecimal digits are given (e.g.  <i>--test=0122003a</i> represents T10 LUN 0122003a00000000). <i>ALUN</i> may be prefixed by '0x' or '0X' (e.g. the previous example could have been  <i>--test=0x0122003a</i>). <i>ALUN</i> may also be given with spaces or tabs between each byte (or other grouping) but then  <i>ALUN</i> would need to be surrounded by single or double quotes. In the decimal number case (i.e. following a 'L') that number is assumed to be a Linux &quot;word flipped&quot; LUN which is converted into a T10 LUN representation and printed. In both cases the number is interpreted as a LUN and decoded as if the  <i>--decode</i> option had been given. Also when  <i>ALUN</i> is a hexadecimal number it can have a trailing 'L' in which case the corresponding Linux &quot;word flipped&quot; LUN value is output. The LUN is decoded in all cases.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b>, <b>--verbose</b></dt>
+<dd>
+increase the level of verbosity, (i.e. debug output).</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>, <b>--version</b></dt>
+<dd>
+print the version string and then exit.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>NOTES</h1> The SCSI REPORT LUNS command is important for Logical Unit (LU) discovery. After a target device is discovered (usually via some transport specific mechanism), a REPORT LUNS command should either be sent to LUN 0 (which is Peripheral device addressing method with bus_id=0 and target/lun=0) or to the REPORT LUNS well known LUN (i.e. 0xc101000000000000). SAM-5 requires that one of these responds with an inventory of LUNS that are contained in this target device.<div class="spacer">
+</div>
+In test mode, if the <i>--hex</i> option is given once then in the decoded output, some of the component fields are printed in hex with leading zeros. The leading zeros are to indicate the size of the component field. For example: in the Peripheral device addressing method (16 bits overall), the bus ID is 6 bits wide and the target/LUN field is 8 bits wide; so both are shown with two hex digits (e.g. bus_id=0x02, target=0x3a).</div>
+<div class="section">
+<h1>EXAMPLES</h1> Typically by the time user space programs get to run, SCSI LUs have been discovered. In Linux the lsscsi utility lists the LUs that are currently present. The LUN of a device (LU) is the fourth element in the tuple at the beginning of each line. Below we see a target (or &quot;I_T Nexus&quot;: &quot;6:0:0&quot;) has two LUNS: 1 and 49409. If 49409 is converted into T10 LUN format it is 0xc101000000000000 which is the REPORT LUNS well known LUN.<div class="spacer">
+</div>
+<br/>
+  # lsscsi -g<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  [6:0:0:1]    disk    Linux    scsi_debug       0004  /dev/sdb   /dev/sg1<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  [6:0:0:2]    disk    Linux    scsi_debug       0004  /dev/sdc   /dev/sg2<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  [6:0:0:49409]wlun    Linux    scsi_debug       0004  -          /dev/sg3<div class="spacer">
+</div>
+We could send a REPORT LUNS command (with <i>SR</i> 0x0, 0x1 or 0x2) to any of those file device nodes and get the same result. Below we use /dev/sg1 :<div class="spacer">
+</div>
+<br/>
+  # sg_luns /dev/sg1<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  Lun list length = 16 which imples 2 lun entry<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  Report luns [select_report=0x0]:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+      0001000000000000<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+      0002000000000000<div class="spacer">
+</div>
+That is a bit noisy so cut down the clutter with <i>--quiet</i>:<div class="spacer">
+</div>
+<br/>
+  # sg_luns -q /dev/sg1<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  0001000000000000<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  0002000000000000<div class="spacer">
+</div>
+Now decode that LUN into its component parts:<div class="spacer">
+</div>
+<br/>
+  # sg_luns -d -q /dev/sg1<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  0001000000000000<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+        Peripheral device addressing: lun=1<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  0002000000000000<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+        Peripheral device addressing: lun=2<div class="spacer">
+</div>
+Now use <i>--select=1</i> to find out if there are any well known LUNs:<div class="spacer">
+</div>
+<br/>
+  # sg_luns -q -s 1 /dev/sg1<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  c101000000000000<div class="spacer">
+</div>
+So how many LUNs do we have all together (associated with the current I_T Nexus):<div class="spacer">
+</div>
+<br/>
+  # sg_luns -q -s 2 /dev/sg1<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  0001000000000000<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  0002000000000000<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  c101000000000000<div class="spacer">
+</div>
+<br/>
+  # sg_luns -q -s 2 -d /dev/sg1<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  0001000000000000<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+        Peripheral device addressing: lun=1<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  0002000000000000<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+        Peripheral device addressing: lun=1<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  c101000000000000<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+        REPORT LUNS well known logical unit<div class="spacer">
+</div>
+The following example uses the <i>--linux</i> option and is not available in other operating systems. The extra number in square brackets is the Linux version of T10 LUN shown at the start of the line.<div class="spacer">
+</div>
+<br/>
+  # sg_luns -q -s 2 -l /dev/sg1<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  0001000000000000    [1]<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  0002000000000000    [2]<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  c101000000000000    [49409]<div class="spacer">
+</div>
+Now we use the <i>--test=</i> option to decode LUNS input on the command line (rather than send a REPORT LUNS command and act on the response):<div class="spacer">
+</div>
+<br/>
+  # sg_luns --test=0002000000000000<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  Decoded LUN:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+    Peripheral device addressing: lun=2<div class="spacer">
+</div>
+<br/>
+  # sg_luns --test=&quot;c1 01&quot;<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  Decoded LUN:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+    REPORT LUNS well known logical unit<div class="spacer">
+</div>
+<br/>
+  # sg_luns -t 0x023a004b -H<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  Decoded LUN:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+    Peripheral device addressing: bus_id=0x02, target=0x3a<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+    &gt;&gt;Second level addressing:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+      Peripheral device addressing: lun=0x4b<div class="spacer">
+</div>
+The next example is Linux specific as we try to find out what the Linux LUN 49409 translates to in the T10 world:<div class="spacer">
+</div>
+<br/>
+  # sg_luns --test=L49409<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  64 bit LUN in T10 preferred (hex) format:  c1 01 00 00 00 00 00 00<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  Decoded LUN:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+    REPORT LUNS well known logical unit<div class="spacer">
+</div>
+And the mapping between T10 and Linux LUN representations can be done the other way:<div class="spacer">
+</div>
+<br/>
+  # sg_luns -t c101L<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  Linux 'word flipped' integer LUN representation: 49409<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  Decoded LUN:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+    REPORT LUNS well known logical unit<div style="height: 0.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>EXIT STATUS</h1> The exit status of sg_luns is 0 when it is successful. Otherwise see the sg3_utils(8) man page.</div>
+<div class="section">
+<h1>AUTHORS</h1> Written by Douglas Gilbert.</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Report bugs to &lt;dgilbert at interlog dot com&gt;.</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright &#169; 2004-2014 Douglas Gilbert<div style="height: 0.00em;">
+&#160;</div>
+This software is distributed under a FreeBSD license. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>sg_inq(8)</b></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+June</td>
+<td class="foot-os">
+sg3_utils-1.39</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

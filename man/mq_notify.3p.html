@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+MQ_NOTIFY(3P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+MQ_NOTIFY(3P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+MQ_NOTIFY(3P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> mq_notify &#8212; notify process that a message is available ( <b>REALTIME</b>)</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;mqueue.h&gt;<div class="spacer">
+</div>
+int mq_notify(mqd_t <i>mqdes</i>, const struct sigevent *<i>notification</i>);<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> If the argument <i>notification</i> is not NULL, this function shall register the calling process to be notified of message arrival at an empty message queue associated with the specified message queue descriptor, <i>mqdes</i>. The notification specified by the <i>notification</i> argument shall be sent to the process when the message queue transitions from empty to non-empty. At any time, only one process may be registered for notification by a message queue. If the calling process or any other process has already registered for notification of message arrival at the specified message queue, subsequent attempts to register for that message queue shall fail.<div class="spacer">
+</div>
+If <i>notification</i> is NULL and the process is currently registered for notification by the specified message queue, the existing registration shall be removed.<div class="spacer">
+</div>
+When the notification is sent to the registered process, its registration shall be removed. The message queue shall then be available for registration.<div class="spacer">
+</div>
+If a process has registered for notification of message arrival at a message queue and some thread is blocked in  <i>mq_receive</i>() or  <i>mq_timedreceive</i>() waiting to receive a message when a message arrives at the queue, the arriving message shall satisfy the appropriate  <i>mq_receive</i>() or  <i>mq_timedreceive</i>(), respectively. The resulting behavior is as if the message queue remains empty, and no notification shall be sent.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> Upon successful completion, the  <i>mq_notify</i>() function shall return a value of zero; otherwise, the function shall return a value of &#8722;1 and set <i>errno</i> to indicate the error.</div>
+<div class="section">
+<h1>ERRORS</h1> The  <i>mq_notify</i>() function shall fail if:<dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+The <i>mqdes</i> argument is not a valid message queue descriptor.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBUSY</b></dt>
+<dd>
+A process is already registered for notification by the message queue.</dd>
+</dl>
+<div class="spacer">
+</div>
+The  <i>mq_notify</i>() function may fail if:<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+The <i>notification</i> argument is NULL and the process is currently not registered.</dd>
+</dl>
+<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>EXAMPLES</h1> The following program registers a notification request for the message queue named in its command-line argument. Notification is performed by creating a thread. The thread executes a function which reads one message from the queue and then terminates the process.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>#include &lt;pthread.h&gt;</b><br/>
+<b>#include &lt;mqueue.h&gt;</b><br/>
+<b>#include &lt;assert.h&gt;</b><br/>
+<b>#include &lt;stdio.h&gt;</b><br/>
+<b>#include &lt;stdlib.h&gt;</b><br/>
+<b>#include &lt;unistd.h&gt;</b><div class="spacer">
+</div>
+static void                     /* Thread start function */<br/>
+tfunc(union sigval sv)<br/>
+{<br/>
+    struct mq_attr attr;<br/>
+    ssize_t nr;<br/>
+    void *buf;<br/>
+    mqd_t mqdes = *((mqd_t *) sv.sival_ptr);<div class="spacer">
+</div>
+<br/>
+    /* Determine maximum msg size; allocate buffer to receive msg */<div class="spacer">
+</div>
+<br/>
+    if (mq_getattr(mqdes, &amp;attr) == -1) {<br/>
+        perror(&quot;mq_getattr&quot;);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<br/>
+    buf = malloc(attr.mq_msgsize);<div class="spacer">
+</div>
+<br/>
+    if (buf == NULL) {<br/>
+        perror(&quot;malloc&quot;);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    nr = mq_receive(mqdes, buf, attr.mq_msgsize, NULL);<br/>
+    if (nr == -1) {<br/>
+        perror(&quot;mq_receive&quot;);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    printf(&quot;Read %ld bytes from message queue\n&quot;, (long) nr);<br/>
+    free(buf);<br/>
+    exit(EXIT_SUCCESS);         /* Terminate the process */<br/>
+}<div class="spacer">
+</div>
+int<br/>
+main(int argc, char *argv[])<br/>
+{<br/>
+    mqd_t mqdes;<br/>
+    struct sigevent not;<div class="spacer">
+</div>
+<br/>
+    assert(argc == 2);<div class="spacer">
+</div>
+<br/>
+    mqdes = mq_open(argv[1], O_RDONLY);<br/>
+    if (mqdes == (mqd_t) -1) {<br/>
+        perror(&quot;mq_open&quot;);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    not.sigev_notify = SIGEV_THREAD;<br/>
+    not.sigev_notify_function = tfunc;<br/>
+    not.sigev_notify_attributes = NULL;<br/>
+    not.sigev_value.sival_ptr = &amp;mqdes;   /* Arg. to thread func. */<br/>
+    if (mq_notify(mqdes, &amp;not) == -1) {<br/>
+        perror(&quot;mq_notify&quot;);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    pause();    /* Process will be terminated by thread function */<br/>
+}<br/>
+</div>
+</div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> None.</div>
+<div class="section">
+<h1>RATIONALE</h1> None.</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> None.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i><i>mq_open</i>()</i>, <i><i>mq_send</i>()</i>, <i><i>mq_receive</i>()</i>, <i><i>msgctl</i>()</i>, <i><i>msgget</i>()</i>, <i><i>msgrcv</i>()</i>, <i><i>msgsnd</i>()</i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i><b>&lt;mqueue.h&gt;</b></i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

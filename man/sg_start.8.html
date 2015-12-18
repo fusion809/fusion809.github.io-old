@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SG_START(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SG_START(8)</td>
+<td class="head-vol">
+SG3_UTILS</td>
+<td class="head-rtitle">
+SG_START(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sg_start - send SCSI START STOP UNIT command: start, stop, load or eject medium</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>sg_start</b> [ <i>0</i>] [<i>1</i>] [<i>--eject</i>] [<i>--help</i>] [<i>--fl=FL</i>] [ <i>--immed</i>] [<i>--load</i>] [<i>--loej</i>] [<i>--mod=PC_MOD</i>] [ <i>--noflush</i>] [<i>--pc=PC</i>] [<i>--readonly</i>] [<i>--start</i>] [ <i>--stop</i>] [<i>--verbose</i>] [<i>--version</i>] <i>DEVICE</i><div class="spacer">
+</div>
+<b>sg_start</b> [ <i>--eject</i>] [<i>--fl=FL</i>] [<i>-i</i>] [<i>--imm=0|1</i>] [ <i>--load</i>] [<i>--loej</i>] [<i>--mod=PC_MOD</i>] [<i>--noflush</i>] [ <i>--pc=PC</i>] [<i>-r</i>] [<i>--start</i>] [<i>--stop</i>] [<i>-v</i>] [ <i>-V</i>] [<i>0|1</i>] <i>DEVICE</i></div>
+<div class="section">
+<h1>DESCRIPTION</h1> sg_start sends a SCSI START STOP UNIT command to the  <i>DEVICE</i> with the selected options. The most used options are  <i>--stop</i> to spin down a disk and  <i>--start</i> to spin up a disk. Using <i>--start</i> on a disk that is already spinning is harmless. There is also finer grain control with &quot;power condition&quot;: active, idle or standby. This is set with the  <i>--pc=PC</i> option. In some contexts the &quot;stop&quot; state can be considered an additional power condition.<div class="spacer">
+</div>
+Devices that contain removable media such as cd/dvds can use the  <i>--loej</i> option to load the medium when used in conjunction with  <i>--start</i> (i.e. load medium then spin up). Alternatively  <i>--loej</i> may be used to eject the medium when used in conjunction with  <i>--stop</i> (i.e. spin down then eject medium). More simply, the loading or ejecting of a removable medium can be requested with the  <i>--load</i> or <i>--eject</i>' option.<div class="spacer">
+</div>
+If no option or argument is given then a <i>--start</i> is assumed; as the utility's name suggests.<div class="spacer">
+</div>
+This utility supports two command line syntaxes, the preferred one is shown first in the synopsis and explained in this section. A later section on the old command line syntax outlines the second group of options.</div>
+<div class="section">
+<h1>OPTIONS</h1> Arguments to long options are mandatory for short options as well.<dl>
+<dt>
+<b>0</b></dt>
+<dd>
+same action as <i>--stop</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>1</b></dt>
+<dd>
+same action as <i>--start</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>-e</b>, <b>--eject</b></dt>
+<dd>
+stop the medium and eject it from the drive. Only appropriate for a device with removable medium. Might be ignored (prevented), see below.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>, <b>--help</b></dt>
+<dd>
+print out the usage message then exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-f</b>, <b>--fl</b>=<i>FL</i></dt>
+<dd>
+sets the format layer number for the disc to &quot;jump&quot; to (defined in MMC-5). Values of  <i>FL</i> can be 0 to 3. When this option is chosen, the FL, LoEj and Start bits are set in the cdb as required by MMC-5; thus the user does not need to set the  <i>--start</i> and/or <i>--load</i> options.</dd>
+</dl>
+<dl>
+<dt>
+<b>-i</b>, <b>--immed</b></dt>
+<dd>
+sets the IMM bit on the START STOP UNIT command so this utility will return immediately and not wait for the media to complete the requested action. The default is to wait until the media to complete the requested action before returning.</dd>
+</dl>
+<dl>
+<dt>
+<b>-l</b>, <b>--load</b></dt>
+<dd>
+load the medium in the drive and start it. Only appropriate for a removable medium.</dd>
+</dl>
+<dl>
+<dt>
+<b>-L</b>, <b>--loej</b></dt>
+<dd>
+sets the LOEJ bit on the START STOP UNIT command. This loads the media when the unit is started or eject it when the unit is stopped (i.e.  works in conjunction with START bit in cdb). This option is ignored if 'pc &gt; 0'. Default is off (i.e. don't attempt to load or eject media). If a start/start indication is not given (i.e. neither  <i>--start</i> nor <i>--stop</i>) and this option is given then a load and start action is assumed.</dd>
+</dl>
+<dl>
+<dt>
+<b>-m</b>, <b>--mod</b>=<i>PC_MOD</i></dt>
+<dd>
+where <i>PC_MOD</i> is the 'power condition modifier' value. 0 to 15 (inclusive) are valid and 0 is the default. This  'power condition modifier' field in the cdb was added after sbc3r13.</dd>
+</dl>
+<dl>
+<dt>
+<b>-n</b>, <b>--noflush</b></dt>
+<dd>
+do not perform a flush to media (e.g. like SYNCHRONIZE CACHE does) before a variant of this utility that limits access to the media. Using the  <b>--stop</b> option is an example of something that limits access to the media. This 'noflush' field in the cdb was added after sbc3r13.</dd>
+</dl>
+<dl>
+<dt>
+<b>-O</b>, <b>--old</b></dt>
+<dd>
+switch to older style options.</dd>
+</dl>
+<dl>
+<dt>
+<b>-p</b>, <b>--pc</b>=<i>PC</i></dt>
+<dd>
+where <i>PC</i> is the 'power conditions' value. 0 to 15 (inclusive) are valid. Default value is 0. When '--pc=0' then  <b>--eject</b>, <b>--load</b>,  <b>--loej</b>, <b>--start</b> and <b>--stop</b> are active. Some common values are 1 for the &quot;active&quot; power condition (SBC); 2 for the idle power condition; 3 for the standby power condition; 5 for sleep power condition (MMC); 7 for LU_CONTROL (SBC), 0xa (decimal 10) for FORCE_IDLE_0 (SBC) and 0xb (decimal 11) for FORCE_STANDBY_0 (SBC). See recent SBC-3, MMC-5 and SAS drafts at www.t10.org for more information.</dd>
+</dl>
+<dl>
+<dt>
+<b>-r</b>, <b>--readonly</b></dt>
+<dd>
+open the <i>DEVICE</i> in read-only mode. Maybe required in Linux to stop a nuisance spin-up if the  <i>DEVICE</i> is an ATA disk. The nuisance spin-up may occur at the end of this command negating the effect of the  <i>--stop</i> option.</dd>
+</dl>
+<dl>
+<dt>
+<b>-s</b>, <b>--start</b></dt>
+<dd>
+start (spin-up) the <i>DEVICE</i>. This sets the START bit in the cdb. Using this option on an already started device is harmless. In the absence of other options, this option defaults (i.e. set the START cdb bit).</dd>
+</dl>
+<dl>
+<dt>
+<b>-S</b>, <b>--stop</b></dt>
+<dd>
+stop (spin-down) the <i>DEVICE</i>. This clears the START bit in the cdb.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b>, <b>--verbose</b></dt>
+<dd>
+increase the level of verbosity. Can be used multiple times.</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>, <b>--version</b></dt>
+<dd>
+print out version string then exit.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>NOTES</h1> To avoid confusion, only one of  <i>0</i>, <i>1</i> <i>--eject</i>,  <i>--load</i>, <i>--start</i> and <i>--stop</i> should be given.<div class="spacer">
+</div>
+There is an associated &quot;power condition&quot; mode page (0x1a) in which timer values can be set for transitioning to either idle or standby state after a period of inactivity. The sdparm utility can be used to view the power condition mode page and if required change it. If a  <i>DEVICE</i> is in either idle or standby power condition state then a REQUEST SENSE command (see the sg_requests utility) should yield a sense key of &quot;no sense&quot; and an additional sense code of &quot;Low power condition on&quot; on recent SCSI devices.<div class="spacer">
+</div>
+Ejection of removable media (e.g. 'sg_start --eject /dev/hdd' where the  <i>DEVICE</i> is an ATAPI cd/dvd drive) may be prevented by a prior SCSI PREVENT ALLOW MEDIUM REMOVAL command (see sg_prevent). In this case this utility should fail with an error generated by the device: illegal request / medium removal prevented. This can be overridden using sg_prevent or, for example, 'sdparm --command=unlock /dev/hdd'.<div class="spacer">
+</div>
+The SCSI TEST UNIT READY command can be used to find out whether a  <i>DEVICE</i> is ready to transfer data. If rotating media is stopped or still coming up to speed, then the TEST UNIT READY command will yield a &quot;not ready&quot; sense key and an more informative additional sense code. See the sg_turs utility.<div class="spacer">
+</div>
+In the 2.4 series of Linux kernels the <i>DEVICE</i> must be a SCSI generic (sg) device. In the 2.6 series block devices (e.g. SCSI disks and DVD drives) can also be specified. For example &quot;sg_start 0 /dev/sda&quot; will work in the 2.6 series kernels.<div class="spacer">
+</div>
+In the Linux 2.6 series, especially with ATA disks, using this utility to stop (spin down) a disk may not be sufficient and other mechanisms will start the disk again some time later. The user might additionally mark the disk as &quot;offline&quot; with 'echo offline &gt; /sys/block/sda/device/state' where sda is the block name of the disk. To restart the disk &quot;offline&quot; can be replaced with &quot;running&quot;. Note that once the 'state' is set to offline, no SCSI commands can be sent to the device until it is set back to running. Also stopping a disk via a pass-through interface (e.g. /dev/sg1 or /dev/bsg/1:0:0:0) may reduce unwanted side effects (such as restarting it again when this utility completes).</div>
+<div class="section">
+<h1>EXIT STATUS</h1> The exit status of sg_start is 0 when it is successful. Otherwise see the sg3_utils(8) man page.</div>
+<div class="section">
+<h1>OLDER COMMAND LINE OPTIONS</h1> The options in this section were the only ones available prior to sg3_utils version 1.23 . In sg3_utils version 1.23 and later these older options can be selected by either setting the SG3_UTILS_OLD_OPTS environment variable or using '--old' (or '-O) as the first option.<div class="spacer">
+</div>
+Note that the action of <i>--loej</i> is slightly different in the older interface: when neither  <i>--start</i> nor <i>--stop</i> (nor proxies for them) are given,  <i>--loej</i> performs an eject operation. In the same situation the newer interface will perform a load operation.<div class="spacer">
+</div>
+Earlier versions of sg_start had a '-s' option to perform a SYNCHRONIZE CACHE command before the START STOP UNIT command was issued. According to recent SBC-2 drafts this is done implicitly if required. Hence the '-s' option has been dropped.<div class="spacer">
+</div>
+All options, other than '-v' and '-V', can be given with a single &quot;-&quot;. For example: &quot;sg_start -stop /dev/sda&quot; and &quot;sg_start --stop /dev/sda&quot; are equivalent. The single &quot;-&quot; form is for backward compatibility.<dl>
+<dt>
+<b>0</b></dt>
+<dd>
+stop (spin-down) <i>DEVICE</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>1</b></dt>
+<dd>
+start (spin-up) <i>DEVICE</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>--eject</b></dt>
+<dd>
+stop the medium and eject it from the drive.</dd>
+</dl>
+<dl>
+<dt>
+<b>--fl</b>=<i>FL</i></dt>
+<dd>
+sets the format layer number for the disc to &quot;jump&quot; to (defined in MMC-5).</dd>
+</dl>
+<dl>
+<dt>
+<b>-i</b></dt>
+<dd>
+sets the IMM bit on the START STOP UNIT command so this utility will return immediately and not wait for the media to spin down. Same effect as '--imm=1'. The default action (without this option or a '--imm=1' option) is to wait until the media spins down before returning.</dd>
+</dl>
+<dl>
+<dt>
+<b>--imm</b>=<i>0|1</i></dt>
+<dd>
+when the immediate bit is 1 then this utility returns immediately after the  <i>DEVICE</i> has received the command. When this option is 0 (the default) then the utility returns once the command has completed its action (i.e. it waits until the device is started or stopped).</dd>
+</dl>
+<dl>
+<dt>
+<b>--load</b></dt>
+<dd>
+load the medium in the drive and start it.</dd>
+</dl>
+<dl>
+<dt>
+<b>--loej</b></dt>
+<dd>
+sets the LOEJ bit in the START STOP UNIT cdb. When a &quot;start&quot; operation is indicated, then a load and start is performed. When a &quot;stop&quot; operation is indicated, then a stop and eject is performed. When neither a &quot;start&quot; or &quot;stop&quot; operation is indicated does a stop and eject. [Note that the last action differs from the new interface in which the option of this name defaults to load and start.]</dd>
+</dl>
+<dl>
+<dt>
+<b>-N</b></dt>
+<dd>
+switch to the newer style options.</dd>
+</dl>
+<dl>
+<dt>
+<b>--mod</b>=<i>PC_MOD</i></dt>
+<dd>
+where <i>PC_MOD</i> is the 'power condition modifier' value. 0 to 15 (inclusive) are valid and 0 is the default. This field was added after sbc3r13.</dd>
+</dl>
+<dl>
+<dt>
+<b>--noflush</b></dt>
+<dd>
+do not perform a flush to media (e.g. like SYNCHRONIZE CACHE does) before a variant of this utility that limits access to the media. Using the  <b>--stop</b> option is an example of something that limits access to the media. This field was added after sbc3r13.</dd>
+</dl>
+<dl>
+<dt>
+<b>--pc</b>=<i>PC</i></dt>
+<dd>
+where <i>PC</i> is the 'power condition' value (in hex). 0 to f (inclusive) are valid. Default value is 0.</dd>
+</dl>
+<dl>
+<dt>
+<b>-r</b></dt>
+<dd>
+see the <i>--readonly</i> option above. May be useful for ATA disks.</dd>
+</dl>
+<dl>
+<dt>
+<b>--start</b></dt>
+<dd>
+start (spin-up) <i>DEVICE</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>--stop</b></dt>
+<dd>
+stop (spin-down) <i>DEVICE</i>. Same meaning as &quot;0&quot; argument.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b></dt>
+<dd>
+verbose: outputs SCSI command in hex to console before with executing it. '-vv' and '-vvv' are also accepted yielding greater verbosity.</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b></dt>
+<dd>
+print out version string then exit.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>AUTHOR</h1> Written by K. Garloff and D. Gilbert</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Report bugs to &lt;dgilbert at interlog dot com&gt;.</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright &#169; 2002-2012 Kurt Garloff, Douglas Gilbert<div style="height: 0.00em;">
+&#160;</div>
+This software is distributed under the GPL version 2. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>sg_prevent(sg3_utils), sg_requests(sg3_utils), sg_turs(sg3_utils)</b> <b>sdparm(sdparm)</b></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+November 2012</td>
+<td class="foot-os">
+sg3_utils-1.35</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

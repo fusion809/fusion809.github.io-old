@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+READLINK(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+READLINK(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+READLINK(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> readlink, readlinkat - read value of a symbolic link</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;unistd.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>ssize_t readlink(const char *</b><i>pathname</i><b>, char *</b><i>buf</i><b>, size_t </b><i>bufsiz</i><b>);</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>#include &lt;fcntl.h&gt;           </b>/* Definition of AT_* constants */ <b>#include &lt;unistd.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>ssize_t readlinkat(int </b><i>dirfd</i><b>, const char *</b><i>pathname</i><b>,</b><br/>
+<b>                   char *</b><i>buf</i><b>, size_t </b><i>bufsiz</i><b>);</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<br/>
+Feature Test Macro Requirements for glibc (see <b>feature_test_macros</b>(7)):<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>readlink</b>():<div style="margin-left: 4.00ex;">
+_BSD_SOURCE || _XOPEN_SOURCE&#160;&gt;=&#160;500 || _XOPEN_SOURCE&#160;&amp;&amp;&#160;_XOPEN_SOURCE_EXTENDED || _POSIX_C_SOURCE&#160;&gt;=&#160;200112L</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>readlinkat</b>():<div style="margin-left: 4.00ex;">
+<dl>
+<dt>
+Since glibc 2.10:</dt>
+<dd>
+_XOPEN_SOURCE&#160;&gt;=&#160;700 || _POSIX_C_SOURCE&#160;&gt;=&#160;200809L</dd>
+</dl>
+<dl>
+<dt>
+Before glibc 2.10:</dt>
+<dd>
+_ATFILE_SOURCE</dd>
+</dl>
+</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>readlink</b>() places the contents of the symbolic link <i>pathname</i> in the buffer <i>buf</i>, which has size <i>bufsiz</i>. <b>readlink</b>() does not append a null byte to <i>buf</i>. It will truncate the contents (to a length of <i>bufsiz</i> characters), in case the buffer is too small to hold all of the contents.<div class="subsection">
+<h2>readlinkat()</h2> The <b>readlinkat</b>() system call operates in exactly the same way as <b>readlink</b>(), except for the differences described here.<div style="height: 1.00em;">
+&#160;</div>
+If the pathname given in <i>pathname</i> is relative, then it is interpreted relative to the directory referred to by the file descriptor <i>dirfd</i> (rather than relative to the current working directory of the calling process, as is done by <b>readlink</b>() for a relative pathname).<div style="height: 1.00em;">
+&#160;</div>
+If <i>pathname</i> is relative and <i>dirfd</i> is the special value <b>AT_FDCWD</b>, then <i>pathname</i> is interpreted relative to the current working directory of the calling process (like <b>readlink</b>()).<div style="height: 1.00em;">
+&#160;</div>
+If <i>pathname</i> is absolute, then <i>dirfd</i> is ignored.<div style="height: 1.00em;">
+&#160;</div>
+Since Linux 2.6.39, <i>pathname</i> can be an empty string, in which case the call operates on the symbolic link referred to by <i>dirfd</i> (which should have been obtained using <b>open</b>(2) with the <b>O_PATH</b> and <b>O_NOFOLLOW</b> flags).<div class="spacer">
+</div>
+See <b>openat</b>(2) for an explanation of the need for <b>readlinkat</b>().</div>
+</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, these calls return the number of bytes placed in <i>buf</i>. On error, -1 is returned and <i>errno</i> is set to indicate the error.</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>EACCES</b></dt>
+<dd>
+Search permission is denied for a component of the path prefix. (See also <b>path_resolution</b>(7).)</dd>
+</dl>
+<dl>
+<dt>
+<b>EFAULT</b></dt>
+<dd>
+<i>buf</i> extends outside the process's allocated address space.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>bufsiz</i> is not positive.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+The named file is not a symbolic link.</dd>
+</dl>
+<dl>
+<dt>
+<b>EIO</b></dt>
+<dd>
+An I/O error occurred while reading from the filesystem.</dd>
+</dl>
+<dl>
+<dt>
+<b>ELOOP</b></dt>
+<dd>
+Too many symbolic links were encountered in translating the pathname.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENAMETOOLONG</b></dt>
+<dd>
+A pathname, or a component of a pathname, was too long.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOENT</b></dt>
+<dd>
+The named file does not exist.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOMEM</b></dt>
+<dd>
+Insufficient kernel memory was available.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+A component of the path prefix is not a directory.</dd>
+</dl>
+<div class="spacer">
+</div>
+The following additional errors can occur for <b>readlinkat</b>():<dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+<i>dirfd</i> is not a valid file descriptor.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+<i>pathname</i> is relative and <i>dirfd</i> is a file descriptor referring to a file other than a directory.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>VERSIONS</h1> <b>readlinkat</b>() was added to Linux in kernel 2.6.16; library support was added to glibc in version 2.4.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> <b>readlink</b>(): 4.4BSD (<b>readlink</b>() first appeared in 4.2BSD), POSIX.1-2001, POSIX.1-2008.<div style="height: 1.00em;">
+&#160;</div>
+<b>readlinkat</b>(): POSIX.1-2008.</div>
+<div class="section">
+<h1>NOTES</h1> In versions of glibc up to and including glibc 2.4, the return type of <b>readlink</b>() was declared as <i>int</i>. Nowadays, the return type is declared as <i>ssize_t</i>, as (newly) required in POSIX.1-2001.<div style="height: 1.00em;">
+&#160;</div>
+Using a statically sized buffer might not provide enough room for the symbolic link contents. The required size for the buffer can be obtained from the <i>stat.st_size</i> value returned by a call to <b>lstat</b>(2) on the link. However, the number of bytes written by <b>readlink</b>() and <b>readlinkat</b>() should be checked to make sure that the size of the symbolic link did not increase between the calls. Dynamically allocating the buffer for <b>readlink</b>() and <b>readlinkat</b>() also addresses a common portability problem when using <i>PATH_MAX</i> for the buffer size, as this constant is not guaranteed to be defined per POSIX if the system does not have such limit.<div class="subsection">
+<h2>Glibc notes</h2> On older kernels where <b>readlinkat</b>() is unavailable, the glibc wrapper function falls back to the use of <b>readlink</b>(). When <i>pathname</i> is a relative pathname, glibc constructs a pathname based on the symbolic link in <i>/proc/self/fd</i> that corresponds to the <i>dirfd</i> argument.</div>
+</div>
+<div class="section">
+<h1>EXAMPLE</h1> The following program allocates the buffer needed by <b>readlink</b>() dynamically from the information provided by <b>lstat</b>(), making sure there's no race condition between the calls.<div class="spacer">
+</div>
+<br/>
+#include &lt;sys/types.h&gt;<br/>
+#include &lt;sys/stat.h&gt;<br/>
+#include &lt;stdio.h&gt;<br/>
+#include &lt;stdlib.h&gt;<br/>
+#include &lt;unistd.h&gt;<div class="spacer">
+</div>
+<br/>
+int<br/>
+main(int argc, char *argv[])<br/>
+{<br/>
+    struct stat sb;<br/>
+    char *linkname;<br/>
+    ssize_t r;<div class="spacer">
+</div>
+<br/>
+    if (argc != 2) {<br/>
+        fprintf(stderr, &quot;Usage: %s &lt;pathname&gt;\n&quot;, argv[0]);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    if (lstat(argv[1], &amp;sb) == -1) {<br/>
+        perror(&quot;lstat&quot;);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    linkname = malloc(sb.st_size + 1);<br/>
+    if (linkname == NULL) {<br/>
+        fprintf(stderr, &quot;insufficient memory\n&quot;);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    r = readlink(argv[1], linkname, sb.st_size + 1);<div class="spacer">
+</div>
+<br/>
+    if (r == -1) {<br/>
+        perror(&quot;readlink&quot;);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    if (r &gt; sb.st_size) {<br/>
+        fprintf(stderr, &quot;symlink increased in size &quot;<br/>
+                        &quot;between lstat() and readlink()\n&quot;);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    linkname[r] = '\0';<div class="spacer">
+</div>
+<br/>
+    printf(&quot;'%s' points to '%s'\n&quot;, argv[1], linkname);<div class="spacer">
+</div>
+<br/>
+    free(linkname);<div class="spacer">
+</div>
+<br/>
+    exit(EXIT_SUCCESS);<br/>
+}<br/>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>readlink</b>(1), <b>lstat</b>(2), <b>stat</b>(2), <b>symlink</b>(2), <b>realpath</b>(3), <b>path_resolution</b>(7), <b>symlink</b>(7)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2014-10-15</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

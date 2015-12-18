@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+IP-L2TP(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+IP-L2TP(8)</td>
+<td class="head-vol">
+Linux</td>
+<td class="head-rtitle">
+IP-L2TP(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> ip-l2tp - L2TPv3 static unmanaged tunnel configuration</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+<b>ip</b> [ <i>OPTIONS</i> ] <b>l2tp</b>  { <i>COMMAND</i> |  <b>help</b> }<div style="height: 1.00em;">
+&#160;</div>
+<b>ip l2tp add tunnel</b><div style="height: 0.00em;">
+&#160;</div>
+<b>remote</b> [ <i>ADDR</i> ] <b>local</b> [ <i>ADDR</i> ]<div style="height: 0.00em;">
+&#160;</div>
+<b>tunnel_id</b> <i>ID</i> <b>peer_tunnel_id</b> <i>ID</i><div style="height: 0.00em;">
+&#160;</div>
+[ <b>encap</b> { <b>ip</b> | <b>udp</b> } ]<div style="height: 0.00em;">
+&#160;</div>
+[ <b>udp_sport</b> <i>PORT</i>  ] [ <b>udp_dport</b> <i>PORT</i>  ]<div style="height: 0.00em;">
+&#160;</div>
+<b>ip l2tp add session</b> [ <b>name</b> <i>NAME</i>  ]<div style="height: 0.00em;">
+&#160;</div>
+<b>tunnel_id</b> <i>ID</i> <b>session_id</b> <i>ID</i> <b>peer_session_id</b> <i>ID</i><div style="height: 0.00em;">
+&#160;</div>
+[ <b>cookie</b> <i>HEXSTR</i>  ] [ <b>peer_cookie</b> <i>HEXSTR</i>  ]<div style="height: 0.00em;">
+&#160;</div>
+[ <b>l2spec_type</b> { <b>none</b> | <b>default</b> } ]<div style="height: 0.00em;">
+&#160;</div>
+[ <b>offset</b> <i>OFFSET</i>  ] [ <b>peer_offset</b> <i>OFFSET</i>  ]<div style="height: 0.00em;">
+&#160;</div>
+<b>ip l2tp del tunnel</b> <b>tunnel_id</b> <i>ID</i><div style="height: 0.00em;">
+&#160;</div>
+<b>ip l2tp del session</b> <b>tunnel_id</b> <i>ID</i> <b>session_id</b> <i>ID</i><div style="height: 0.00em;">
+&#160;</div>
+<b>ip l2tp show tunnel</b> <b>[ tunnel_id</b> <i>ID</i> <b>]</b><div style="height: 0.00em;">
+&#160;</div>
+<b>ip l2tp show session</b> <b>[ tunnel_id</b> <i>ID</i> <b>] [ session_id</b> <i>ID</i> <b>]</b><div style="height: 0.00em;">
+&#160;</div>
+<i>NAME</i> :=  <i>STRING</i> <i>ADDR</i> := { <i>IP_ADDRESS</i> } <i>PORT</i> := { <i>NUMBER</i> } <i>ID</i> := { <i>NUMBER</i> } <i>HEXSTR</i> := { 8 or 16 hex digits (4 / 8 bytes) }</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The <b>ip l2tp</b> commands are used to establish static, or so-called <i>unmanaged</i> L2TPv3 ethernet tunnels. For unmanaged tunnels, there is no L2TP control protocol so no userspace daemon is required - tunnels are manually created by issuing commands at a local system and at a remote peer.<div class="spacer">
+</div>
+L2TPv3 is suitable for Layer-2 tunneling. Static tunnels are useful to establish network links across IP networks when the tunnels are fixed. L2TPv3 tunnels can carry data of more than one session. Each session is identified by a session_id and its parent tunnel's tunnel_id. A tunnel must be created before a session can be created in the tunnel.<div class="spacer">
+</div>
+When creating an L2TP tunnel, the IP address of the remote peer is specified, which can be either an IPv4 or IPv6 address. The local IP address to be used to reach the peer must also be specified. This is the address on which the local system will listen for and accept received L2TP data packets from the peer.<div class="spacer">
+</div>
+L2TPv3 defines two packet encapsulation formats: UDP or IP. UDP encapsulation is most common. IP encapsulation uses a dedicated IP protocol value to carry L2TP data without the overhead of UDP. Use IP encapsulation only when there are no NAT devices or firewalls in the network path.<div class="spacer">
+</div>
+When an L2TPv3 ethernet session is created, a virtual network interface is created for the session, which must then be configured and brought up, just like any other network interface. When data is passed through the interface, it is carried over the L2TP tunnel to the peer. By configuring the system's routing tables or adding the interface to a bridge, the L2TP interface is like a virtual wire (pseudowire) connected to the peer.<div class="spacer">
+</div>
+Establishing an unmanaged L2TPv3 ethernet pseudowire involves manually creating L2TP contexts on the local system and at the peer. Parameters used at each site must correspond or no data will be passed. No consistency checks are possible since there is no control protocol used to establish unmanaged L2TP tunnels. Once the virtual network interface of a given L2TP session is configured and enabled, data can be transmitted, even if the peer isn't yet configured. If the peer isn't configured, the L2TP data packets will be discarded by the peer.<div class="spacer">
+</div>
+To establish an unmanaged L2TP tunnel, use <b>l2tp add tunnel</b> and <b>l2tp add session</b> commands described in this document. Then configure and enable the tunnel's virtual network interface, as required.<div class="spacer">
+</div>
+Note that unmanaged tunnels carry only ethernet frames. If you need to carry PPP traffic (L2TPv2) or your peer doesn't support unmanaged L2TPv3 tunnels, you will need an L2TP server which implements the L2TP control protocol. The L2TP control protocol allows dynamic L2TP tunnels and sessions to be established and provides for detecting and acting upon network failures.<div class="subsection">
+<h2>ip l2tp add tunnel - add a new tunnel</h2><dl>
+<dt>
+<b>name</b><i> NAME </i></dt>
+<dd>
+sets the session network interface name. Default is l2tpethN.</dd>
+</dl>
+<dl>
+<dt>
+<b>tunnel_id</b><i> ID</i></dt>
+<dd>
+set the tunnel id, which is a 32-bit integer value. Uniquely identifies the tunnel. The value used must match the peer_tunnel_id value being used at the peer.</dd>
+</dl>
+<dl>
+<dt>
+<b>peer_tunnel_id</b><i> ID</i></dt>
+<dd>
+set the peer tunnel id, which is a 32-bit integer value assigned to the tunnel by the peer. The value used must match the tunnel_id value being used at the peer.</dd>
+</dl>
+<dl>
+<dt>
+<b>remote</b><i> ADDR</i></dt>
+<dd>
+set the IP address of the remote peer. May be specified as an IPv4 address or an IPv6 address.</dd>
+</dl>
+<dl>
+<dt>
+<b>local</b><i> ADDR</i></dt>
+<dd>
+set the IP address of the local interface to be used for the tunnel. This address must be the address of a local interface. May be specified as an IPv4 address or an IPv6 address.</dd>
+</dl>
+<dl>
+<dt>
+<b>encap</b><i> ENCAP</i></dt>
+<dd>
+set the encapsulation type of the tunnel.<div style="height: 0.00em;">
+&#160;</div>
+Valid values for encapsulation are: <b>udp</b>, <b>ip</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>udp_sport</b><i> PORT</i></dt>
+<dd>
+set the UDP source port to be used for the tunnel. Must be present when udp encapsulation is selected. Ignored when ip encapsulation is selected.</dd>
+</dl>
+<dl>
+<dt>
+<b>udp_dport</b><i> PORT</i></dt>
+<dd>
+set the UDP destination port to be used for the tunnel. Must be present when udp encapsulation is selected. Ignored when ip encapsulation is selected.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>ip l2tp del tunnel - destroy a tunnel</h2><dl>
+<dt>
+<b>tunnel_id</b><i> ID</i></dt>
+<dd>
+set the tunnel id of the tunnel to be deleted. All sessions within the tunnel must be deleted first.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>ip l2tp show tunnel - show information about tunnels</h2><dl>
+<dt>
+<b>tunnel_id</b><i> ID</i></dt>
+<dd>
+set the tunnel id of the tunnel to be shown. If not specified, information about all tunnels is printed.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>ip l2tp add session - add a new session to a tunnel</h2><dl>
+<dt>
+<b>name</b><i> NAME </i></dt>
+<dd>
+sets the session network interface name. Default is l2tpethN.</dd>
+</dl>
+<dl>
+<dt>
+<b>tunnel_id</b><i> ID</i></dt>
+<dd>
+set the tunnel id, which is a 32-bit integer value. Uniquely identifies the tunnel into which the session will be created. The tunnel must already exist.</dd>
+</dl>
+<dl>
+<dt>
+<b>session_id</b><i> ID</i></dt>
+<dd>
+set the session id, which is a 32-bit integer value. Uniquely identifies the session being created. The value used must match the peer_session_id value being used at the peer.</dd>
+</dl>
+<dl>
+<dt>
+<b>peer_session_id</b><i> ID</i></dt>
+<dd>
+set the peer session id, which is a 32-bit integer value assigned to the session by the peer. The value used must match the session_id value being used at the peer.</dd>
+</dl>
+<dl>
+<dt>
+<b>cookie</b><i> HEXSTR</i></dt>
+<dd>
+sets an optional cookie value to be assigned to the session. This is a 4 or 8 byte value, specified as 8 or 16 hex digits, e.g. 014d3636deadbeef. The value must match the peer_cookie value set at the peer. The cookie value is carried in L2TP data packets and is checked for expected value at the peer. Default is to use no cookie.</dd>
+</dl>
+<dl>
+<dt>
+<b>peer_cookie</b><i> HEXSTR</i></dt>
+<dd>
+sets an optional peer cookie value to be assigned to the session. This is a 4 or 8 byte value, specified as 8 or 16 hex digits, e.g. 014d3636deadbeef. The value must match the cookie value set at the peer. It tells the local system what cookie value to expect to find in received L2TP packets. Default is to use no cookie.</dd>
+</dl>
+<dl>
+<dt>
+<b>l2spec_type</b><i> L2SPECTYPE</i></dt>
+<dd>
+set the layer2specific header type of the session.<div style="height: 0.00em;">
+&#160;</div>
+Valid values are: <b>none</b>, <b>udp</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>offset</b><i> OFFSET</i></dt>
+<dd>
+sets the byte offset from the L2TP header where user data starts in transmitted L2TP data packets. This is hardly ever used. If set, the value must match the peer_offset value used at the peer. Default is 0.</dd>
+</dl>
+<dl>
+<dt>
+<b>peer_offset</b><i> OFFSET</i></dt>
+<dd>
+sets the byte offset from the L2TP header where user data starts in received L2TP data packets. This is hardly ever used. If set, the value must match the offset value used at the peer. Default is 0.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>ip l2tp del session - destroy a session</h2><dl>
+<dt>
+<b>tunnel_id</b><i> ID</i></dt>
+<dd>
+set the tunnel id in which the session to be deleted is located.</dd>
+</dl>
+<dl>
+<dt>
+<b>session_id</b><i> ID</i></dt>
+<dd>
+set the session id of the session to be deleted.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>ip l2tp show session - show information about sessions</h2><dl>
+<dt>
+<b>tunnel_id</b><i> ID</i></dt>
+<dd>
+set the tunnel id of the session(s) to be shown. If not specified, information about sessions in all tunnels is printed.</dd>
+</dl>
+<dl>
+<dt>
+<b>session_id</b><i> ID</i></dt>
+<dd>
+set the session id of the session to be shown. If not specified, information about all sessions is printed.</dd>
+</dl>
+</div>
+</div>
+<div class="section">
+<h1>EXAMPLES</h1><div class="subsection">
+<h2>Setup L2TP tunnels and sessions</h2><br/>
+site-A:# ip l2tp add tunnel tunnel_id 3000 peer_tunnel_id 4000 \<br/>
+           encap udp local 1.2.3.4 remote 5.6.7.8 \<br/>
+           udp_sport 5000 udp_dport 6000<br/>
+site-A:# ip l2tp add session tunnel_id 3000 session_id 1000 \<br/>
+           peer_session_id 2000<div class="spacer">
+</div>
+<br/>
+site-B:# ip l2tp add tunnel tunnel_id 4000 peer_tunnel_id 3000 \<br/>
+           encap udp local 5.6.7.8 remote 1.2.3.4 \<br/>
+           udp_sport 6000 udp_dport 5000<br/>
+site-B:# ip l2tp add session tunnel_id 4000 session_id 2000 \<br/>
+           peer_session_id 1000<div class="spacer">
+</div>
+<br/>
+site-A:# ip link set l2tpeth0 up mtu 1488<div class="spacer">
+</div>
+<br/>
+site-B:# ip link set l2tpeth0 up mtu 1488<br/>
+<div class="spacer">
+</div>
+Notice that the IP addresses, UDP ports and tunnel / session ids are matched and reversed at each site.</div>
+<div class="subsection">
+<h2>Configure as IP interfaces</h2> The two interfaces can be configured with IP addresses if only IP data is to be carried. This is perhaps the simplest configuration.<div class="spacer">
+</div>
+<br/>
+site-A:# ip addr add 10.42.1.1 peer 10.42.1.2 dev l2tpeth0<div class="spacer">
+</div>
+<br/>
+site-B:# ip addr add 10.42.1.2 peer 10.42.1.1 dev l2tpeth0<div class="spacer">
+</div>
+<br/>
+site-A:# ping 10.42.1.2<br/>
+<div class="spacer">
+</div>
+Now the link should be usable. Add static routes as needed to have data sent over the new link.</div>
+<div class="subsection">
+<h2>Configure as bridged interfaces</h2> To carry non-IP data, the L2TP network interface is added to a bridge instead of being assigned its own IP address, using standard Linux utilities. Since raw ethernet frames are then carried inside the tunnel, the MTU of the L2TP interfaces must be set to allow space for those headers.<div class="spacer">
+</div>
+<br/>
+site-A:# ip link set l2tpeth0 up mtu 1446<br/>
+site-A:# ip link add br0 type bridge<br/>
+site-A:# ip link set l2tpeth0 master br0<br/>
+site-A:# ip link set eth0 master br0<br/>
+site-A:# ip link set br0 up<br/>
+<div class="spacer">
+</div>
+If you are using VLANs, setup a bridge per VLAN and bridge each VLAN over a separate L2TP session. For example, to bridge VLAN ID 5 on eth1 over an L2TP pseudowire:<div class="spacer">
+</div>
+<br/>
+site-A:# ip link set l2tpeth0 up mtu 1446<br/>
+site-A:# ip link add brvlan5 type bridge<br/>
+site-A:# ip link set l2tpeth0.5 master brvlan5<br/>
+site-A:# ip link set eth1.5 master brvlan5<br/>
+site-A:# ip link set brvlan5 up<br/>
+<div class="spacer">
+</div>
+Adding the L2TP interface to a bridge causes the bridge to forward traffic over the L2TP pseudowire just like it forwards over any other interface. The bridge learns MAC addresses of hosts attached to each interface and intelligently forwards frames from one bridge port to another. IP addresses are not assigned to the l2tpethN interfaces. If the bridge is correctly configured at both sides of the L2TP pseudowire, it should be possible to reach hosts in the peer's bridged network.<div class="spacer">
+</div>
+When raw ethernet frames are bridged across an L2TP tunnel, large frames may be fragmented and forwarded as individual IP fragments to the recipient, depending on the MTU of the physical interface used by the tunnel. When the ethernet frames carry protocols which are reassembled by the recipient, like IP, this isn't a problem. However, such fragmentation can cause problems for protocols like PPPoE where the recipient expects to receive ethernet frames exactly as transmitted. In such cases, it is important that frames leaving the tunnel are reassembled back into a single frame before being forwarded on. To do so, enable netfilter connection tracking (conntrack) or manually load the Linux netfilter degrag modules at each tunnel endpoint.<div class="spacer">
+</div>
+<br/>
+site-A:# modprobe nf_degrag_ipv4<div class="spacer">
+</div>
+<br/>
+site-B:# modprobe nf_degrag_ipv4<br/>
+<div class="spacer">
+</div>
+If L2TP is being used over IPv6, use the IPv6 degrag module.</div>
+</div>
+<div class="section">
+<h1>INTEROPERABILITY</h1> Unmanaged (static) L2TPv3 tunnels are supported by some network equipment equipment vendors such as Cisco.<div class="spacer">
+</div>
+In Linux, L2TP Hello messages are not supported in unmanaged tunnels. Hello messages are used by L2TP clients and servers to detect link failures in order to automate tearing down and reestablishing dynamic tunnels. If a non-Linux peer supports Hello messages in unmanaged tunnels, it must be turned off to interoperate with Linux.<div class="spacer">
+</div>
+Linux defaults to use the Default Layer2SpecificHeader type as defined in the L2TPv3 protocol specification, RFC3931. This setting must be consistent with that configured at the peer. Some vendor implementations (e.g. Cisco) default to use a Layer2SpecificHeader type of None.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ip</b>(8)</div>
+<div class="section">
+<h1>AUTHOR</h1> James Chapman &lt;jchapman@katalix.com&gt;</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+19 Apr 2012</td>
+<td class="foot-os">
+iproute2</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

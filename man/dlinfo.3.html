@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+DLINFO(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+DLINFO(3)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+DLINFO(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> dlinfo - obtain information about a dynamically loaded object</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#define _GNU_SOURCE</b> <b>#include &lt;link.h&gt;</b> <b>#include &lt;dlfcn.h&gt;</b><div class="spacer">
+</div>
+<br/>
+<b>int dlinfo(void *</b>handle<b>, int </b>request<b>, void *</b>info<b>);</b><div class="spacer">
+</div>
+<br/>
+Link with <i>-ldl</i>.<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The <b>dlinfo</b>() function obtains information about the dynamically loaded object referred to by <i>handle</i> (typically obtained by an earlier call to <b>dlopen</b>(3) or <b>dlmopen</b>(3)). The <i>request</i> argument specifies which information is to be returned. The <i>info</i> argument is a pointer to a buffer used to store information returned by the call; the type of this argument depends on <i>request</i>.<div style="height: 1.00em;">
+&#160;</div>
+The following values are supported for <i>request</i> (with the corresponding type for <i>info</i> shown in parentheses):<dl>
+<dt>
+<b>RTLD_DI_LMID</b> (<i>Lmid_t *</i>)</dt>
+<dd>
+Obtain the ID of the link-map list (namespace) in which <i>handle</i> is loaded.</dd>
+</dl>
+<dl>
+<dt>
+<b>RTLD_DI_LINKMAP</b> (<i>struct link_map **</i>)</dt>
+<dd>
+Obtain a pointer to the <i>link_map</i> structure corresponding to <i>handle</i>. The <i>info</i> argument points to a pointer to a <i>link_map</i> structure, defined in <i>&lt;link.h&gt;</i> as:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<br/>
+struct link_map {<br/>
+    ElfW(Addr) l_addr;  /* Difference between the<br/>
+                           address in the ELF file and<br/>
+                           the address in memory */<br/>
+    char      *l_name;  /* Absolute pathname where<br/>
+                           object was found */<br/>
+    ElfW(Dyn) *l_ld;    /* Dynamic section of the<br/>
+                           shared object */<br/>
+    struct link_map *l_next, *l_prev;<br/>
+                        /* Chain of loaded objects */<div class="spacer">
+</div>
+<br/>
+    /* Plus additional fields private to the<br/>
+       implementation */<br/>
+};<br/>
+<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>RTLD_DI_ORIGIN</b> (<i>char *</i>)</dt>
+<dd>
+Copy the pathname of the origin of the shared object corresponding to <i>handle</i> to the location pointed to by <i>info</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>RTLD_DI_SERINFO</b> (<i>Dl_serinfo *</i>)</dt>
+<dd>
+Obtain the library search paths for the shared object referred to by <i>handle</i>. The <i>info</i> argument is a pointer to a <i>Dl_serinfo</i> that contains the search paths. Because the number of search paths may vary, the size of the structure pointed to by <i>info</i> can vary. The <b>RTLD_DI_SERINFOSIZE</b> request described below allows applications to size the buffer suitably. The caller must perform the following steps:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+1.</dt>
+<dd>
+Use a <b>RTLD_DI_SERINFOSIZE</b> request to populate a <i>Dl_serinfo</i> structure with the size (<i>dls_size</i>) of the structure needed for the subsequent <b>RTLD_DI_SERINFO</b> request.</dd>
+</dl>
+<dl>
+<dt>
+2.</dt>
+<dd>
+Allocate a <i>Dl_serinfo</i> buffer of the correct size (<i>dls_size</i>).</dd>
+</dl>
+<dl>
+<dt>
+3.</dt>
+<dd>
+Use a further <b>RTLD_DI_SERINFOSIZE</b> request to populate the <i>dls_size</i> and <i>dls_cnt</i> fields of the buffer allocated in the previous step.</dd>
+</dl>
+<dl>
+<dt>
+4.</dt>
+<dd>
+Use a <b>RTLD_DI_SERINFO</b> to obtain the library search paths.</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+The <i>Dl_serinfo</i> structure is defined as follows:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<br/>
+typedef struct {<br/>
+    size_t dls_size;           /* Size in bytes of<br/>
+                                  the whole buffer */<br/>
+    unsigned int dls_cnt;      /* Number of elements<br/>
+                                  in 'dls_serpath' */<br/>
+    Dl_serpath dls_serpath[1]; /* Actually longer,<br/>
+                                  'dls_cnt' elements */<br/>
+} Dl_serinfo;<div class="spacer">
+</div>
+<br/>
+<br/>
+Each of the <i>dls_serpath</i> elements in the above structure is a structure of the following form:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<br/>
+typedef struct {<br/>
+    char *dls_name;            /* Name of library search<br/>
+                                  path directory */<br/>
+    unsigned int dls_flags;    /* Indicates where this<br/>
+                                  directory came from */<br/>
+} Dl_serpath;<br/>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+The <i>dls_flags</i> field is currently unused, and always contains zero.</dd>
+</dl>
+<dl>
+<dt>
+<b>RTLD_DI_SERINFOSIZE</b> (<i>Dl_serinfo *</i>)</dt>
+<dd>
+Populate the <i>dls_size</i> and <i>dls_cnt</i> fields of the <i>Dl_serinfo</i> structure pointed to by <i>info</i> with values suitable for allocating a buffer for use in a subsequent <b>RTLD_DI_SERINFO</b> request.</dd>
+</dl>
+<dl>
+<dt>
+<b>RTLD_DI_TLS_MODID</b> (<i>size_t *</i>, since glibc 2.4)</dt>
+<dd>
+Obtain the module ID of this shared object's TLS (thread-local storage) segment, as used in TLS relocations. If this object does not define a TLS segment, zero is placed in <i>*info</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>RTLD_DI_TLS_DATA</b> (<i>void **</i>, since glibc 2.4)</dt>
+<dd>
+Obtain a pointer to the calling thread's TLS block corresponding to this shared object's TLS segment. If this object does not define a PT_TLS segment, or if the calling thread has not allocated a block for it, NULL is placed in <i>*info</i>.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, <b>dlinfo</b>() returns 0. On failure, it returns -1; the cause of the error can be diagnosed using <b>dlerror</b>(3).</div>
+<div class="section">
+<h1>VERSIONS</h1> <b>dlinfo</b>() first appeared in glibc 2.3.3.</div>
+<div class="section">
+<h1>ATTRIBUTES</h1> For an explanation of the terms used in this section, see <b>attributes</b>(7).<table class="tbl">
+<col style="width: 9.00ex;"/>
+<col style="width: 13.00ex;"/>
+<col style="width: 5.00ex;"/>
+<tbody>
+<tr>
+<td>
+Interface</td>
+<td>
+Attribute</td>
+<td>
+Value</td>
+</tr>
+<tr>
+<td>
+dlinfo ()</td>
+<td>
+Thread safety</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section">
+<h1>CONFORMING TO</h1> This function is a nonstandard GNU extension.</div>
+<div class="section">
+<h1>NOTES</h1> This function derives from the Solaris function of the same name and also appears on some other systems. The sets of requests supported by the various implementations overlaps only partially.</div>
+<div class="section">
+<h1>EXAMPLE</h1> The program below opens a shared objects using <b>dlopen</b>() and then uses the <b>RTLD_DI_SERINFOSIZE</b> and <b>RTLD_DI_SERINFO</b> requests to obtain the library search path list for the library. Here is an example of what we might see when running the program:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<br/>
+$ <b>./a.out /lib64/libm.so.6</b><br/>
+dls_serpath[0].dls_name = /lib64<br/>
+dls_serpath[1].dls_name = /usr/lib64<br/>
+<br/>
+<div class="subsection">
+<h2>Program source</h2> <br/>
+#define _GNU_SOURCE<br/>
+#include &lt;dlfcn.h&gt;<br/>
+#include &lt;link.h&gt;<br/>
+#include &lt;stdio.h&gt;<br/>
+#include &lt;stdlib.h&gt;<div class="spacer">
+</div>
+<br/>
+int<br/>
+main(int argc, char *argv[])<br/>
+{<br/>
+    void *handle;<br/>
+    Dl_serinfo serinfo;<br/>
+    Dl_serinfo *sip;<br/>
+    int j;<div class="spacer">
+</div>
+<br/>
+    if (argc != 2) {<br/>
+        fprintf(stderr, &quot;Usage: %s &lt;libpath&gt;\n&quot;, argv[0]);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    /* Obtain a handle for shared objects specified on command line */<div class="spacer">
+</div>
+<br/>
+    handle = dlopen(argv[1], RTLD_NOW);<br/>
+    if (handle == NULL) {<br/>
+        fprintf(stderr, &quot;dlopen() failed: %s\n&quot;, dlerror());<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    /* Discover the size of the buffer that we must pass to<br/>
+       RTLD_DI_SERINFO */<div class="spacer">
+</div>
+<br/>
+    if (dlinfo(handle, RTLD_DI_SERINFOSIZE, &amp;serinfo) == -1) {<br/>
+        fprintf(stderr, &quot;RTLD_DI_SERINFOSIZE failed: %s\n&quot;, dlerror());<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    /* Allocate the buffer for use with RTLD_DI_SERINFO */<div class="spacer">
+</div>
+<br/>
+    sip = malloc(serinfo.dls_size);<br/>
+    if (sip == NULL) {<br/>
+        perror(&quot;malloc&quot;);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    /* Initialize the 'dls_size' and 'dls_cnt' fields in the newly<br/>
+       allocated buffer */<div class="spacer">
+</div>
+<br/>
+    if (dlinfo(handle, RTLD_DI_SERINFOSIZE, sip) == -1) {<br/>
+        fprintf(stderr, &quot;RTLD_DI_SERINFOSIZE failed: %s\n&quot;, dlerror());<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    /* Fetch and print library search list */<div class="spacer">
+</div>
+<br/>
+    if (dlinfo(handle, RTLD_DI_SERINFO, sip) == -1) {<br/>
+        fprintf(stderr, &quot;RTLD_DI_SERINFO failed: %s\n&quot;, dlerror());<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    for (j = 0; j &lt; serinfo.dls_cnt; j++)<br/>
+        printf(&quot;dls_serpath[%d].dls_name = %s\n&quot;,<br/>
+                j, sip-&gt;dls_serpath[j].dls_name);<div class="spacer">
+</div>
+<br/>
+    exit(EXIT_SUCCESS);<br/>
+}<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>dl_iterate_phdr</b>(3), <b>dladdr</b>(3), <b>dlerror</b>(3), <b>dlopen</b>(3), <b>dlsym</b>(3), <b>ld.so</b>(8)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-08-08</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

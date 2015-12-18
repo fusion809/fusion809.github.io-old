@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SG_VERIFY(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SG_VERIFY(8)</td>
+<td class="head-vol">
+SG3_UTILS</td>
+<td class="head-rtitle">
+SG_VERIFY(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sg_verify - invoke SCSI VERIFY command(s) on a block device</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>sg_verify</b> [ <i>--16</i>] [<i>--bpc=BPC</i>] [<i>--count=COUNT</i>] [<i>--dpo</i>] [ <i>--ebytchk=BCH</i>] [<i>--group=GN</i>] [<i>--help</i>] [ <i>--in=IF</i>] [<i>--lba=LBA</i>] [<i>--ndo=NDO</i>] [<i>--quiet</i>] [ <i>--readonly</i>] [<i>--verbose</i>] [<i>--version</i>] [ <i>--vrprotect=VRP</i>] <i>DEVICE</i></div>
+<div class="section">
+<h1>DESCRIPTION</h1> Sends one or more SCSI VERIFY (10 or 16) commands to  <i>DEVICE</i>. These SCSI commands are defined in the SBC-2 (draft) standard at http://www.t10.org and SBC-3 drafts.<div class="spacer">
+</div>
+When <i>--ndo=NDO</i> is not given then the verify starts at the logical block address given by the  <i>--lba=LBA</i> option and continues for  <i>--count=COUNT</i> blocks. No more than <i>--bpc=BPC</i> blocks are verified by each VERIFY command so if necessary multiple VERIFY commands are sent. Medium verification operations are performed by the  <i>DEVICE</i> (e.g. assuming each block has additional EEC data, check this against the logical block contents). No news is good news (i.e. if there are no verify errors detected then no messages are sent to stderr and the Unix exit status is 0).<div class="spacer">
+</div>
+When <i>--ndo=NDO</i> is given then the <i>--bpc=BPC</i> option is ignored. A single VERIFY command is issued and a comparison starts at the logical block address given by the  <i>--lba=LBA</i> option and continues for  <i>--count=COUNT</i> blocks. The VERIFY command has an associated data-out buffer that is  <i>NDO</i> bytes long. The contents of the data-out buffer are obtained from the  <i>FN</i> file (if <i>--in=FN</i> is given) or from stdin. A comparison takes place between data-out buffer and the logical blocks on the  <i>DEVICE</i>. If the comparison is good then no messages are sent to stderr and the Unix exit status is 0. If the comparison fails then a sense buffer with a sense key of MISCOMPARE is returned; in this case the Unix exit status will be 14. Messages will be sent to stderr associated with MISCOMPARE sense buffer unless the  <i>--quiet</i> option is given.<div class="spacer">
+</div>
+In SBC-3 revision 34 the BYTCHK field in all SCSI VERIFY commands was expanded from one to two bits. That required some changes in the options of this utility, see the section below on OPTION CHANGES.</div>
+<div class="section">
+<h1>OPTIONS</h1> Arguments to long options are mandatory for short options as well. The options are arranged in alphabetical order based on the long option name.<dl>
+<dt>
+<b>-S</b>, <b>--16</b></dt>
+<dd>
+uses a VERIFY(16) command (default VERIFY(10)). Even without this option, using an  <i>--lba=LBA</i> which is too large, will cause the utility to issue a VERIFY(16) command.</dd>
+</dl>
+<dl>
+<dt>
+<b>-b</b>, <b>--bpc</b>=<i>BPC</i></dt>
+<dd>
+this option is ignored if <i>--ndo=NDO</i> is given. Otherwise <i>BPC</i> specifies the maximum number of blocks that will be verified by a single SCSI VERIFY command. The default value is 128 blocks which equates to 64 KB for a disk with 512 byte blocks. If  <i>BPC</i> is less than <i>COUNT</i> then multiple SCSI VERIFY commands are sent to the  <i>DEVICE</i>. For the default VERIFY(10)  <i>BPC</i> cannot exceed 0xffff (65,535) while for VERIFY(16)  <i>BPC</i> cannot exceed 0x7fffffff (2,147,483,647). For recent block devices (disks) this value may be constrained by the maximum transfer length field in the block limits VPD page.</dd>
+</dl>
+<dl>
+<dt>
+<b>-c</b>, <b>--count</b>=<i>COUNT</i></dt>
+<dd>
+where <i>COUNT</i> specifies the number of blocks to verify. The default value is 1 . If  <i>COUNT</i> is greater than <i>BPC</i> (or its default value of 128) and  <i>NDO</i> is not given, 0 or less then multiple SCSI VERIFY commands are sent to the device. Otherwise  <i>COUNT</i> becomes the contents of the verification length field of the SCSI VERIFY command issued. The <b>sg_readcap</b> utility can be used to find the maximum number of blocks that a block device (e.g. a disk) has.</dd>
+</dl>
+<dl>
+<dt>
+<b>-d</b>, <b>--dpo</b></dt>
+<dd>
+disable page out changes the cache retention priority of blocks read on the device's cache to the lowest priority. This means that blocks read by other commands are more likely to remain in the device's cache.</dd>
+</dl>
+<dl>
+<dt>
+<b>-E</b>, <b>--ebytchk</b>=<i>BCH</i></dt>
+<dd>
+sets the BYTCHK field to <i>BCH</i> overriding the value (1) set by the  <i>--ndo=NDO</i> option. Values of 1, 2 or 3 are accepted for <i>BCH</i> however sbc3r34 reserves the value 2. If this option is given then  <i>--ndo=NDO</i> must also be given. If <i>BCH</i> is 3 then <i>COUNT</i> must be 1 and  <i>NDO</i> should be the size of one logical block (plus the size of some or all of the protection infomation if  <i>VRP</i> is greater than 0).</dd>
+</dl>
+<dl>
+<dt>
+<b>-g</b>, <b>--group</b>=<i>GN</i></dt>
+<dd>
+where <i>GN</i> becomes the contents of the group number field in the SCSI VERIFY(16) command. The default value for  <i>GN</i> is 0. Note that this option is ignored for the SCSI VERIFY(10) command.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>, <b>--help</b></dt>
+<dd>
+output the usage message then exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-i</b>, <b>--in</b>=<i>IF</i></dt>
+<dd>
+where <i>IF</i> is the name of a file from which <i>NDO</i> bytes will be read and placed in the data-out buffer. This is only done when the  <i>--ndo=NDO</i> option is given. If this option is not given then stdin is read. If  <i>IF</i> is &quot;-&quot; then stdin is also used.</dd>
+</dl>
+<dl>
+<dt>
+<b>-l</b>, <b>--lba</b>=<i>LBA</i></dt>
+<dd>
+where <i>LBA</i> specifies the logical block address of the first block to start the verify operation.  <i>LBA</i> is assumed to be decimal unless prefixed by '0x' or a trailing 'h' (see below). The default value is 0 (i.e. the start of the device).</dd>
+</dl>
+<dl>
+<dt>
+<b>-n</b>, <b>--ndo</b>=<i>NDO</i></dt>
+<dd>
+<i>NDO</i> is the number of bytes to obtain from the <i>FN</i> file (if  <i>--in=FN</i> is given) or from stdin. Those bytes are placed in the data-out buffer associated with the SCSI VERIFY command and  <i>NDO</i> is placed in the verification length field in the cdb. The default value for  <i>NDO</i> is 0 and the maximum value is dependant on the OS. If the  <i>--ebytchk=BCH</i> option is not given then the BYTCHK field in the cdb is set to 1.</dd>
+</dl>
+<dl>
+<dt>
+<b>-q</b>, <b>--quiet</b></dt>
+<dd>
+suppress the sense buffer messages associated with a MISCOMPARE sense key that would otherwise be sent to stderr. Still set the exit status to 14 which is the sense key value indicating a MISCOMPARE .</dd>
+</dl>
+<dl>
+<dt>
+<b>-r</b>, <b>--readonly</b></dt>
+<dd>
+opens the DEVICE read-only rather than read-write which is the default. The Linux sg driver needs read-write access for the SCSI VERIFY command but other access methods may require read-only access.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b>, <b>--verbose</b></dt>
+<dd>
+increase the level of verbosity, (i.e. debug output).</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>, <b>--version</b></dt>
+<dd>
+print the version string and then exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-P</b>, <b>--vrprotect</b>=<i>VRP</i></dt>
+<dd>
+where <i>VRP</i> is the value in the vrprotect field in the VERIFY command cdb. It must be a value between 0 and 7 inclusive. The default value is zero.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>BYTCHK</h1> BYTCHK is the name of a field (two bits wide) in the VERIFY(10) and VERIFY(16) commands. When set to 1 or 3 (sbc3r34 reserves the value 2) it indicates that associated with the SCSI VERIFY command, a data-out buffer will be sent for the device (disk) to check. Using the  <i>--ndo=NDO</i> option sets the BYTCHK field to 1 and  <i>NDO</i> is the number of bytes placed in the data-out buffer. Those bytes are obtained from stdin or  <i>IF</i> (from the <i>--in=FN</i> option). The <i>--ebytchk=BCH</i> option may be used to override the BYTCHK field value of 1 with  <i>BCH</i>.<div class="spacer">
+</div>
+The calculation of <i>NDO</i> is left up to the user. Its value depends on the logical block size (which can be found with the sg_readcap utility), the  <i>COUNT</i> and the <i>VRP</i> values. If the <i>VRP</i> is greater than 0 then each logical block will contain an extra 8 bytes (at least) of protection information.<div class="spacer">
+</div>
+When the BYTCHK field is 0 then the verification process done by the device (disk) is vendor specific. It typically involves checking each block on the disk against its error correction codes (ECC) which is additional data also held on the disk.<div class="spacer">
+</div>
+Many Operating Systems put limits on the maximum size of the data-out (and data-in) buffer. For Linux at one time the limit was less than 1 MB but has been increased somewhat.</div>
+<div class="section">
+<h1>OPTION CHANGES</h1> Earlier versions of this utility had a  <i>--bytchk=NDO</i> option which set the BYTCHK bit and set the cdb verification length field to  <i>NDO</i>. The shorter form of that option was  <i>-B NDO</i>. For backward compatibility that option is still present but not documented. In its place is the  <i>--ndo=NDO</i> whose shorter form of <i>-n NDO</i>.  <i>--ndo=NDO</i> sets the BYTCHK field to 1 unless that is overridden by the  <i>--ebytchk=BCH</i>.</div>
+<div class="section">
+<h1>NOTES</h1> Various numeric arguments (e.g.  <i>LBA</i>) may include multiplicative suffixes or be given in hexadecimal. See the &quot;NUMERIC ARGUMENTS&quot; section in the sg3_utils(8) man page.<div class="spacer">
+</div>
+The amount of error correction and the number of retries attempted before a block is considered defective are controlled in part by the Verify Error Recovery mode page. A note in the SBC-3 draft (rev 29 section 6.4.9 on the Verify Error Recovery mode page) advises that to minimize the number of checks (and hence have the most &quot;sensitive&quot; verify check) do the following in that mode page: set the EER bit to 0, the PER bit to 1, the DTE bit to 1, the DCR bit to 1, the verify retry count to 0 and the verify recovery time limit to 0. Mode pages can be modified with the <b>sdparm</b> utility.<div class="spacer">
+</div>
+The SCSI VERIFY(6) command defined in the SSC-2 standard and later (i.e. for tape drive systems) is not supported by this utility.</div>
+<div class="section">
+<h1>EXIT STATUS</h1> The exit status of sg_verify is 0 when it is successful. When  <i>BCH</i> is other than 0 then a comparison takes place and if it fails then the exit status is 14 which happens to be the sense key value of MISCOMPARE. Otherwise see the EXIT STATUS section in the sg3_utils(8) man page.<div class="spacer">
+</div>
+Earlier versions of this utility set an exit status of 98 when there was a MISCOMPARE.</div>
+<div class="section">
+<h1>AUTHORS</h1> Written by Douglas Gilbert.</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Report bugs to &lt;dgilbert at interlog dot com&gt;.</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright &#169; 2004-2013 Douglas Gilbert<div style="height: 0.00em;">
+&#160;</div>
+This software is distributed under a FreeBSD license. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>sdparm(sdparm), sg_modes(sg3_utils), sg_readcap(sg3_utils),</b> <b>sg_inq(sg3_utils)</b></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+August 2013</td>
+<td class="foot-os">
+sg3_utils-1.37</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

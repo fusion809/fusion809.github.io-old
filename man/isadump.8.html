@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+ISADUMP(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+ISADUMP(8)</td>
+<td class="head-vol">
+System Manager's Manual</td>
+<td class="head-rtitle">
+ISADUMP(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> isadump - examine ISA registers<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>isadump</b> [<b>-y</b>] [<b>-W</b>|<b>-L</b>] [<b>-k V1,V2...</b>] <i>addrreg</i> <i>datareg</i> [<i>bank </i>[<i>bankreg</i>]] #for I2C-like access<div style="height: 0.00em;">
+&#160;</div>
+<b>isadump</b> <b>-f</b> [<b>-y</b>] [<b>-W</b>|<b>-L</b>] <i>address</i> [<i>range </i>[<i>bank </i>[<i>bankreg</i>]]] #for flat address space<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> isadump is a small helper program to examine registers visible through the ISA bus. It is intended to probe any chip that lives on the ISA bus working with an address register and a data register (I2C-like access) or a flat range (of up to 256 bytes).<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>OPTIONS</h1><dl>
+<dt>
+<b>-f</b></dt>
+<dd>
+Enable flat address space mode.</dd>
+</dl>
+<dl>
+<dt>
+<b>-y</b></dt>
+<dd>
+Disable interactive mode. By default, isadump will wait for a confirmation from the user before messing with the ISA bus. When this flag is used, it will perform the operation directly. This is mainly meant to be used in scripts.</dd>
+</dl>
+<dl>
+<dt>
+<b>-k V1,V2...</b></dt>
+<dd>
+Specify a comma-separated list of bytes to send as the key sequence to enter the chip configuration mode. Most Super-I/O chips need this. Known key sequences are: 0x87,0x01,0x55,0x55 for ITE, 0x55 for SMSC, 0x87,0x87 for Winbond and VIA, none needed for National Semiconductor.</dd>
+</dl>
+<dl>
+<dt>
+<b>-W</b></dt>
+<dd>
+Perform 16-bit reads.</dd>
+</dl>
+<dl>
+<dt>
+<b>-L</b></dt>
+<dd>
+Perform 32-bit reads.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>OPTIONS (I2C-like access mode)</h1> At least two options must be provided to isadump.  <i>addrreg</i> contains the ISA address of the address register for the chip to probe;  <i>datareg</i> contains the address of the data register. Both addresses are integers between 0x0000 and 0x3FFF. Usually, if the chip's base address is 0x0nn0, the address register is at 0x0nn5 and the data register is at 0x0nn6. The most common base address for hardware monitoring chips is 0x0290.<div class="spacer">
+</div>
+For Super-I/O chips, address register is typically at 0x2E with data register at 0x2F.<div class="spacer">
+</div>
+The <i>bank</i> and <i>bankreg</i> parameters are useful on the Winbond chips as well as on Super-I/O chips.  <i>bank</i> is an integer between 0 and 31, and <i>bankreg</i> is an integer between 0x00 and 0xFF (default value: 0x4E for Winbond chips, 0x07 for Super-I/O chips). The W83781D datasheet has more information on bank selection.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>OPTIONS (flat address space mode)</h1> In flat mode, only one parameter is mandatory.  <i>address</i> contains the ISA address of the chip to probe; it is an integer between 0x0000 and 0xFFFF. If provided,  <i>range</i> is how many bytes should be read (must be a multiple of 16). If the range isn't provided, it defaults to 256 bytes and the address is forcibly aligned on a 256-byte boundary.<div class="spacer">
+</div>
+The <i>bank</i> and <i>bankreg</i> parameters are useful on the National Semiconductor PC87365 and PC87366 Super-I/O chips.  <i>bank</i> is an integer between 0 and 31, and <i>bankreg</i> is an integer between 0x00 and 0xFF (default value: 0x09; must fit in the specified range). See the PC87365 datasheet for more information on bank selection.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NOTES</h1> If no bank is specified, no bank change operation is performed.<div class="spacer">
+</div>
+If a bank is specified, the original value is restored before isadump exits.<div class="spacer">
+</div>
+Dumping Super-I/O chips is typically a two-step process. First, you will have to access the main Super-I/O address using a command like: isadump 0x2e 0x2f 0x09. This will select logical device 9 (correct value depend on the chip). At 0x60 you will find the logical device address word, for example &quot;ec c0&quot;. Then you can use a command like: isadump -f 0xecc0 16. This will dump the logical device registers. The correct range depends on the chip.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>WARNING</h1> Poking around in ISA data space is extremely dangerous. Running isadump with random parameters can cause system crashes, data loss, and worse!  Be extremely careful when using this program.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> i2cdump(8), isaset(8)<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>AUTHOR</h1> Frodo Looijaard, Mark D. Studebaker, and the lm_sensors group (http://www.lm-sensors.org/)<div class="spacer">
+</div>
+This manual page was originally written by David Z Maze &lt;dmaze@debian.org&gt; for the Debian GNU/Linux system. It was then reviewed and augmented by the lm_sensors team and is now part of the lm_sensors source distribution.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+April 2011</td>
+<td class="foot-os">
+</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

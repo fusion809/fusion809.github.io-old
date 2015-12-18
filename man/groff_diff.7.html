@@ -1,0 +1,2204 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+GROFF_DIFF(7)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+GROFF_DIFF(7)</td>
+<td class="head-vol">
+Miscellaneous Information Manual</td>
+<td class="head-rtitle">
+GROFF_DIFF(7)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> groff_diff - differences between GNU troff and classical troff</div>
+<div class="section">
+<h1>DESCRIPTION</h1> This manual page describes the language differences between <i>groff</i>, the GNU <i>roff</i> text processing system, and the classical <i>roff</i> formatter of the freely available Unix&#160;7 of the 1970s, documented in the <i>Troff User's Manual</i> by <i>Ossanna</i> and <i>Kernighan</i>. This includes the roff language as well as the intermediate output format (troff output).<div class="spacer">
+</div>
+The section <i>SEE ALSO</i> gives pointers to both the classical <i>roff</i> and the modern <i>groff</i> documentation.</div>
+<div class="section">
+<h1>GROFF LANGUAGE</h1> In this section, all additional features of <i>groff</i> compared to the classical Unix&#160;7 <i>troff</i> are described in detail.<div class="subsection">
+<h2>Long names</h2> The names of number registers, fonts, strings/macros/diversions, special characters (glyphs), and colors can be of any length. In escape sequences, additionally to the classical &#8216; <b>(</b><i>xx</i>&#8217; construction for a two-character glyph name, you can use &#8216; <b>[</b>,<i>xxx/</i><b>]</b>&#8217; for a name of arbitrary length.<dl>
+<dt>
+<b>\[</b><i>xxx</i><b>]</b></dt>
+<dd>
+Print the special character (glyph) called <i>xxx</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>\[</b><i>comp1 comp2 ...</i><b>]</b></dt>
+<dd>
+Print composite glyph consisting of multiple components. Example: &#8216;\[A&#160;ho]&#8217; is capital letter A with ogonek which finally maps to glyph name &#8216;u0041_0328&#8217;. See the <i>groff info file</i> for details how a glyph name for a composite glyph is constructed, and <b>groff_char</b>(7) for a list of glyph name components used in composite glyph names.</dd>
+</dl>
+<dl>
+<dt>
+<b>\f[</b><i>xxx</i><b>]</b></dt>
+<dd>
+Set font <i>xxx</i>. Additionally, <b>\f[]</b> is a new syntax form equal to <b>\fP</b>, i.e., to return to the previous font.</dd>
+</dl>
+<dl>
+<dt>
+<b>\*[</b><i>xxx arg1 arg2 ...</i><b>]</b></dt>
+<dd>
+Interpolate string <i>xxx</i>, taking <i>arg1</i>, <i>arg2</i>, <i>...</i>, as arguments.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[</b><i>xxx</i><b>]</b></dt>
+<dd>
+Interpolate number register <i>xxx</i>.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>Fractional point sizes</h2> A <i>scaled point</i> is equal to <b>1/sizescale</b> points, where <b>sizescale</b> is specified in the <b>DESC</b> file (1 by default). There is a new scale indicator&#160;<b>z</b> that has the effect of multiplying by sizescale. Requests and escape sequences in troff interpret arguments that represent a point size as being in units of scaled points, but they evaluate each such argument using a default scale indicator of&#160;<b>z</b>. Arguments treated in this way are the argument to the <b>ps</b> request, the third argument to the <b>cs</b> request, the second and fourth arguments to the <b>tkf</b> request, the argument to the <b>\H</b> escape sequence, and those variants of the <b>\s</b> escape sequence that take a numeric expression as their argument.<div class="spacer">
+</div>
+For example, suppose sizescale is 1000; then a scaled point is equivalent to a millipoint; the call <b>.ps&#160;10.25</b> is equivalent to <b>.ps&#160;10.25z</b> and so sets the point size to 10250 scaled points, which is equal to 10.25 points.<div class="spacer">
+</div>
+The number register <b>\n[.s]</b> returns the point size in points as decimal fraction. There is also a new number register <b>\n[.ps]</b> that returns the point size in scaled points.<div class="spacer">
+</div>
+It would make no sense to use the <b>z</b>&#160;scale indicator in a numeric expression whose default scale indicator was neither <b>u</b> nor&#160;<b>z</b>, and so <b>troff</b> disallows this. Similarly it would make no sense to use a scaling indicator other than <b>z</b> or&#160;<b>u</b> in a numeric expression whose default scale indicator was&#160;<b>z</b>, and so <b>troff</b> disallows this as well.<div class="spacer">
+</div>
+There is also new scale indicator&#160;<b>s</b> which multiplies by the number of units in a scaled point. So, for example, <b>\n[.ps]s</b> is equal to <b>1m</b>. Be sure not to confuse the <b>s</b> and <b>z</b>&#160;scale indicators.</div>
+<div class="subsection">
+<h2>Numeric expressions</h2> Spaces are permitted in a number expression within parentheses.<div class="spacer">
+</div>
+<b>M</b> indicates a scale of 100ths of an em. <b>f</b> indicates a scale of 65536 units, providing fractions for color definitions with the <b>defcolor</b> request. For example, 0.5f = 32768u.<dl>
+<dt>
+<i>e1</i><b>&gt;?</b><i>e2</i></dt>
+<dd>
+The maximum of <i>e1</i> and <i>e2</i>.</dd>
+</dl>
+<dl>
+<dt>
+<i>e1</i><b>&lt;?</b><i>e2</i></dt>
+<dd>
+The minimum of <i>e1</i> and <i>e2</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>(</b><i>c</i><b>;</b><i>e</i><b>)</b></dt>
+<dd>
+Evaluate <i>e</i> using <i>c</i> as the default scaling indicator. If <i>c</i> is missing, ignore scaling indicators in the evaluation of&#160;<i>e</i>.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>New escape sequences</h2><dl>
+<dt>
+<b>\A'</b><i>anything</i><b>'</b></dt>
+<dd>
+This expands to <b>1</b> or&#160;<b>0</b>, depending on whether <i>anything</i> is or is not acceptable as the name of a string, macro, diversion, number register, environment, font, or color. It returns&#160;<b>0</b> if <i>anything</i> is empty. This is useful if you want to look up user input in some sort of associative table.</dd>
+</dl>
+<dl>
+<dt>
+<b>\B'</b><i>anything</i><b>'</b></dt>
+<dd>
+This expands to <b>1</b> or&#160;<b>0</b>, depending on whether <i>anything</i> is or is not a valid numeric expression. It returns&#160;<b>0</b> if <i>anything</i> is empty.</dd>
+</dl>
+<dl>
+<dt>
+<b>\C'</b><i>xxx</i><b>'</b></dt>
+<dd>
+Typeset glyph named <i>xxx</i>. Normally it is more convenient to use <b>\[</b><i>xxx</i><b>].</b> But <b>\C</b> has the advantage that it is compatible with recent versions of <small>UNIX</small> and is available in compatibility mode.</dd>
+</dl>
+<dl>
+<dt>
+<b>\E</b></dt>
+<dd>
+This is equivalent to an escape character, but it is not interpreted in copy mode. For example, strings to start and end superscripting could be defined like this</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+.ds { \v'-.3m'\s'\En[.s]*6u/10u'<br/>
+.ds } \s0\v'.3m'<br/>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+The use of <b>\E</b> ensures that these definitions work even if <b>\*{</b> gets interpreted in copy mode (for example, by being used in a macro argument).</dd>
+</dl>
+<dl>
+<dt>
+<b>\F</b><i>f</i></dt>
+<dd>
+<b>\F(</b><i>fm</i> <b>\F[</b><i>fam</i><b>]</b> Change font family. This is the same as the <b>fam</b> request. <b>\F[]</b> switches back to the previous font family (note that <b>\FP</b> won't work; it selects font family &#8216;P&#8217; instead).</dd>
+</dl>
+<dl>
+<dt>
+<b>\m</b><i>x</i></dt>
+<dd>
+<b>\m(</b><i>xx</i> <b>\m[</b><i>xxx</i><b>]</b> Set drawing color. <b>\m[]</b> switches back to the previous color.</dd>
+</dl>
+<dl>
+<dt>
+<b>\M</b><i>x</i></dt>
+<dd>
+<b>\M(</b><i>xx</i> <b>\M[</b><i>xxx</i><b>]</b> Set background color for filled objects drawn with the <b>\D'</b><i>...</i><b>'</b> commands. <b>\M[]</b> switches back to the previous color.</dd>
+</dl>
+<dl>
+<dt>
+<b>\N'</b><i>n</i><b>'</b></dt>
+<dd>
+Typeset the glyph with index&#160;<i>n</i> in the current font. <i>n</i>&#160;can be any integer. Most devices only have glyphs with indices between 0 and 255. If the current font does not contain a glyph with that code, special fonts are <i>not</i> searched. The <b>\N</b> escape sequence can be conveniently used in conjunction with the <b>char</b> request, for example</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+.char \[phone] \f(ZD\N'37'<br/>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+The index of each glyph is given in the fourth column in the font description file after the <b>charset</b> command. It is possible to include unnamed glyphs in the font description file by using a name of <b>---</b>; the <b>\N</b> escape sequence is the only way to use these.</dd>
+</dl>
+<dl>
+<dt>
+<b>\O</b><i>n</i></dt>
+<dd>
+<b>\O[</b><i>n</i><b>]</b> Suppress troff output. The escapes <b>\O2</b>, <b>\O3</b>, <b>\O4</b>, and <b>\O5</b> are intended for internal use by <b>grohtml</b>.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+<b>\O0</b></dt>
+<dd>
+Disable any ditroff glyphs from being emitted to the device driver, provided that the escape occurs at the outer level (see <b>\O3</b> and <b>\O4</b>).</dd>
+</dl>
+<dl>
+<dt>
+<b>\O1</b></dt>
+<dd>
+Enable output of glyphs, provided that the escape occurs at the outer level.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>\O0</b> and <b>\O1</b> also reset the registers <b>\n[opminx]</b>, <b>\n[opminy]</b>, <b>\n[opmaxx]</b>, and <b>\n[opmaxy]</b> to&#160;-1. These four registers mark the top left and bottom right hand corners of a box which encompasses all written glyphs.</dd>
+</dl>
+<dl>
+<dt>
+<b>\O2</b></dt>
+<dd>
+Provided that the escape occurs at the outer level, enable output of glyphs and also write out to stderr the page number and four registers encompassing the glyphs previously written since the last call to <b>\O</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>\O3</b></dt>
+<dd>
+Begin a nesting level. At start-up, <b>troff</b> is at outer level. This is really an internal mechanism for <b>grohtml</b> while producing images. They are generated by running the troff source through <b>troff</b> to the postscript device and <b>ghostscript</b> to produce images in PNG format. The <b>\O3</b> escape starts a new page if the device is not html (to reduce the possibility of images crossing a page boundary).</dd>
+</dl>
+<dl>
+<dt>
+<b>\O4</b></dt>
+<dd>
+End a nesting level.</dd>
+</dl>
+<dl>
+<dt>
+<b>\O5[</b><i>Pfilename</i><b>]</b></dt>
+<dd>
+This escape is <b>grohtml</b> specific. Provided that this escape occurs at the outer nesting level, write <i>filename</i> to stderr. The position of the image, <i>P</i>, must be specified and must be one of <b>l</b>, <b>r</b>, <b>c</b>, or <b>i</b> (left, right, centered, inline). <i>filename</i> is associated with the production of the next inline image.</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>\R'</b><i>name&#160;&#177;n</i><b>'</b></dt>
+<dd>
+This has the same effect as</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<b>.nr&#160;</b><i>name&#160;&#177;n</i></dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>\s(</b><i>nn</i></dt>
+<dd>
+<b>\s&#177;(</b><i>nn</i> Set the point size to <i>nn</i> points; <i>nn</i> must be exactly two digits.</dd>
+</dl>
+<dl>
+<dt>
+<b>\s[&#177;</b><i>n</i><b>]</b></dt>
+<dd>
+<b>\s&#177;[</b><i>n</i><b>]</b> <b>\s'&#177;</b><i>n</i><b>'</b> <b>\s&#177;'</b><i>n</i><b>'</b> Set the point size to <i>n</i> scaled points; <i>n</i> is a numeric expression with a default scale indicator of&#160;<b>z</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>\V</b><i>x</i></dt>
+<dd>
+<b>\V(</b><i>xx</i> <b>\V[</b><i>xxx</i><b>]</b> Interpolate the contents of the environment variable <i>xxx</i>, as returned by <b>getenv</b>(3). <b>\V</b> is interpreted in copy mode.</dd>
+</dl>
+<dl>
+<dt>
+<b>\Y</b><i>x</i></dt>
+<dd>
+<b>\Y(</b><i>xx</i> <b>\Y[</b><i>xxx</i><b>]</b> This is approximately equivalent to <b>\X'\*[</b><i>xxx</i><b>]'.</b> However the contents of the string or macro <i>xxx</i> are not interpreted; also it is permitted for <i>xxx</i> to have been defined as a macro and thus contain newlines (it is not permitted for the argument to <b>\X</b> to contain newlines). The inclusion of newlines requires an extension to the UNIX troff output format, and confuses drivers that do not know about this extension.</dd>
+</dl>
+<dl>
+<dt>
+<b>\Z'</b><i>anything</i><b>'</b></dt>
+<dd>
+Print anything and then restore the horizontal and vertical position; <i>anything</i> may not contain tabs or leaders.</dd>
+</dl>
+<dl>
+<dt>
+<b>\$0</b></dt>
+<dd>
+The name by which the current macro was invoked. The <b>als</b> request can make a macro have more than one name.</dd>
+</dl>
+<dl>
+<dt>
+<b>\$*</b></dt>
+<dd>
+In a macro or string, the concatenation of all the arguments separated by spaces.</dd>
+</dl>
+<dl>
+<dt>
+<b>\$@</b></dt>
+<dd>
+In a macro or string, the concatenation of all the arguments with each surrounded by double quotes, and separated by spaces.</dd>
+</dl>
+<dl>
+<dt>
+<b>\$^</b></dt>
+<dd>
+In a macro, the representation of all parameters as if they were an argument to the <b>ds</b> request.</dd>
+</dl>
+<dl>
+<dt>
+<b>\$(</b><i>nn</i></dt>
+<dd>
+<b>\$[</b><i>nnn</i><b>]</b> In a macro or string, this gives the <i>nn</i>-th or <i>nnn</i>-th argument. Macros and strings can have an unlimited number of arguments.</dd>
+</dl>
+<dl>
+<dt>
+<b>\?</b><i>anything</i><b>\?</b></dt>
+<dd>
+When used in a diversion, this transparently embeds <i>anything</i> in the diversion. <i>anything</i> is read in copy mode. When the diversion is reread, <i>anything</i> is interpreted. <i>anything</i> may not contain newlines; use <b>\!</b> if you want to embed newlines in a diversion. The escape sequence <b>\?</b> is also recognized in copy mode and turned into a single internal code; it is this code that terminates <i>anything</i>. Thus</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+.nr x 1<br/>
+.nf<br/>
+.di d<br/>
+\?\\?\\\\?\\\\\\\\nx\\\\?\\?\?<br/>
+.di<br/>
+.nr x 2<br/>
+.di e<br/>
+.d<br/>
+.di<br/>
+.nr x 3<br/>
+.di f<br/>
+.e<br/>
+.di<br/>
+.nr x 4<br/>
+.f<br/>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+prints&#160;<b>4</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>\/</b></dt>
+<dd>
+This increases the width of the preceding glyph so that the spacing between that glyph and the following glyph is correct if the following glyph is a roman glyph. It is a good idea to use this escape sequence whenever an italic glyph is immediately followed by a roman glyph without any intervening space.</dd>
+</dl>
+<dl>
+<dt>
+<b>\,</b></dt>
+<dd>
+This modifies the spacing of the following glyph so that the spacing between that glyph and the preceding glyph is correct if the preceding glyph is a roman glyph. It is a good idea to use this escape sequence whenever a roman glyph is immediately followed by an italic glyph without any intervening space.</dd>
+</dl>
+<dl>
+<dt>
+<b>\)</b></dt>
+<dd>
+Like <b>\&amp;</b> except that it behaves like a character declared with the <b>cflags</b> request to be transparent for the purposes of end-of-sentence recognition.</dd>
+</dl>
+<dl>
+<dt>
+<b>\~</b></dt>
+<dd>
+This produces an unbreakable space that stretches like a normal inter-word space when a line is adjusted.</dd>
+</dl>
+<dl>
+<dt>
+<b>\:</b></dt>
+<dd>
+This causes the insertion of a zero-width break point. It is equal to <b>\%</b> within a word but without insertion of a soft hyphen glyph.</dd>
+</dl>
+<dl>
+<dt>
+<b>\#</b></dt>
+<dd>
+Everything up to and including the next newline is ignored. This is interpreted in copy mode. It is like <b>\&quot;</b> except that <b>\&quot;</b> does not ignore the terminating newline.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>New requests</h2><dl>
+<dt>
+<b>.aln&#160;</b><i>xx&#160;yy</i></dt>
+<dd>
+Create an alias <i>xx</i> for number register object named <i>yy</i>. The new name and the old name are exactly equivalent. If <i>yy</i> is undefined, a warning of type <b>reg</b> is generated, and the request is ignored.</dd>
+</dl>
+<dl>
+<dt>
+<b>.als&#160;</b><i>xx&#160;yy</i></dt>
+<dd>
+Create an alias <i>xx</i> for request, string, macro, or diversion object named <i>yy</i>. The new name and the old name are exactly equivalent (it is similar to a hard rather than a soft link). If <i>yy</i> is undefined, a warning of type <b>mac</b> is generated, and the request is ignored. The <b>de</b>, <b>am</b>, <b>di</b>, <b>da</b>, <b>ds</b>, and <b>as</b> requests only create a new object if the name of the macro, diversion or string is currently undefined or if it is defined to be a request; normally they modify the value of an existing object.</dd>
+</dl>
+<dl>
+<dt>
+<b>.am1&#160;</b><i>xx&#160;yy</i></dt>
+<dd>
+Similar to <b>.am</b>, but compatibility mode is switched off during execution. To be more precise, a &#8216;compatibility save&#8217; token is inserted at the beginning of the macro addition, and a &#8216;compatibility restore&#8217; token at the end. As a consequence, the requests <b>am</b>, <b>am1</b>, <b>de</b>, and <b>de1</b> can be intermixed freely since the compatibility save/restore tokens only affect the macro parts defined by <b>.am1</b> and <b>.ds1</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>.ami&#160;</b><i>xx&#160;yy</i></dt>
+<dd>
+Append to macro indirectly. See the <b>dei</b> request below for more information.</dd>
+</dl>
+<dl>
+<dt>
+<b>.ami1&#160;</b><i>xx&#160;yy</i></dt>
+<dd>
+Same as the <b>ami</b> request but compatibility mode is switched off during execution.</dd>
+</dl>
+<dl>
+<dt>
+<b>.as1&#160;</b><i>xx&#160;yy</i></dt>
+<dd>
+Similar to <b>.as</b>, but compatibility mode is switched off during expansion. To be more precise, a &#8216;compatibility save&#8217; token is inserted at the beginning of the string, and a &#8216;compatibility restore&#8217; token at the end. As a consequence, the requests <b>as</b>, <b>as1</b>, <b>ds</b>, and <b>ds1</b> can be intermixed freely since the compatibility save/restore tokens only affect the (sub)strings defined by <b>as1</b> and <b>ds1</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>.asciify&#160;</b><i>xx</i></dt>
+<dd>
+This request &#8216;unformats&#8217; the diversion <i>xx</i> in such a way that <small>ASCII</small> and space characters (and some escape sequences) that were formatted and diverted into <i>xx</i> are treated like ordinary input characters when <i>xx</i> is reread. Useful for diversions in conjunction with the <b>writem</b> request. It can be also used for gross hacks; for example, this</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+.tr @.<br/>
+.di x<br/>
+@nr n 1<br/>
+.br<br/>
+.di<br/>
+.tr @@<br/>
+.asciify x<br/>
+.x<br/>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+sets register&#160;<b>n</b> to&#160;1. Note that glyph information (font, font size, etc.) is not preserved; use <b>.unformat</b> instead.</dd>
+</dl>
+<dl>
+<dt>
+<b>.backtrace</b></dt>
+<dd>
+Print a backtrace of the input stack on stderr.</dd>
+</dl>
+<dl>
+<dt>
+<b>.blm&#160;</b><i>xx</i></dt>
+<dd>
+Set the blank line macro to <i>xx</i>. If there is a blank line macro, it is invoked when a blank line is encountered instead of the usual troff behaviour.</dd>
+</dl>
+<dl>
+<dt>
+<b>.box&#160;</b><i>xx</i></dt>
+<dd>
+<b>.boxa&#160;</b><i>xx</i> These requests are similar to the <b>di</b> and <b>da</b> requests with the exception that a partially filled line does not become part of the diversion (i.e., the diversion always starts with a new line) but is restored after ending the diversion, discarding the partially filled line which possibly comes from the diversion.</dd>
+</dl>
+<dl>
+<dt>
+<b>.break</b></dt>
+<dd>
+Break out of a while loop. See also the <b>while</b> and <b>continue</b> requests. Be sure not to confuse this with the <b>br</b> request.</dd>
+</dl>
+<dl>
+<dt>
+<b>.brp</b></dt>
+<dd>
+This is the same as <b>\p</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>.cflags&#160;</b><i>n c1 c2 ...</i></dt>
+<dd>
+Characters <i>c1</i>, <i>c2</i>, <i>...</i>, have properties determined by <i>n</i>, which is ORed from the following:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+1</dt>
+<dd>
+The character ends sentences (initially characters <b>.?!</b> have this property).</dd>
+</dl>
+<dl>
+<dt>
+2</dt>
+<dd>
+Lines can be broken before the character (initially no characters have this property); a line is not broken at a character with this property unless the characters on each side both have non-zero hyphenation codes. This can be overridden with value 64.</dd>
+</dl>
+<dl>
+<dt>
+4</dt>
+<dd>
+Lines can be broken after the character (initially characters <b>-\[hy]\[em]</b> have this property); a line is not broken at a character with this property unless the characters on each side both have non-zero hyphenation codes. This can be overridden with value 64.</dd>
+</dl>
+<dl>
+<dt>
+8</dt>
+<dd>
+The glyph associated with this character overlaps horizontally (initially characters <b>\[ul]\[rn]\[ru]\[radicalex]\[sqrtex]</b> have this property).</dd>
+</dl>
+<dl>
+<dt>
+16</dt>
+<dd>
+The glyph associated with this character overlaps vertically (initially glyph <b>\[br]</b> has this property).</dd>
+</dl>
+<dl>
+<dt>
+32</dt>
+<dd>
+An end-of-sentence character followed by any number of characters with this property is treated as the end of a sentence if followed by a newline or two spaces; in other words the character is transparent for the purposes of end-of-sentence recognition; this is the same as having a zero space factor in TeX (initially characters <b>&quot;')]*\[dg]\[rq]\[cq]</b> have this property).</dd>
+</dl>
+<dl>
+<dt>
+64</dt>
+<dd>
+Ignore hyphenation code values of the surrounding characters. Use this in combination with values 2 and&#160;4 (initially no characters have this property).</dd>
+</dl>
+<dl>
+<dt>
+128</dt>
+<dd>
+Prohibit a line break before the character, but allow a line break after the character. This works only in combination with flags 256 and 512 and has no effect otherwise.</dd>
+</dl>
+<dl>
+<dt>
+256</dt>
+<dd>
+Prohibit a line break after the character, but allow a line break before the character. This works only in combination with flags 128 and 512 and has no effect otherwise.</dd>
+</dl>
+<dl>
+<dt>
+512</dt>
+<dd>
+Allow line break before or after the character. This works only in combination with flags 128 and 256 and has no effect otherwise.</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+Contrary to flag values 2 and&#160;4, the flags 128, 256, and 512 work pairwise. If, for example, the left character has value 512, and the right character 128, no line break gets inserted.  If we use value&#160;6 instead for the left character, a line break after the character can't be suppressed since the right neighbour character doesn't get examined.</dd>
+</dl>
+<dl>
+<dt>
+<b>.char&#160;</b><i>c&#160;string</i></dt>
+<dd>
+[This request can both define characters and glyphs.]</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+Define entity&#160;<i>c</i> to be <i>string</i>. To be more precise, define (or even override) a groff entity which can be accessed with name&#160;<i>c</i> on the input side, and which uses <i>string</i> on the output side. Every time glyph&#160;<i>c</i> needs to be printed, <i>string</i> is processed in a temporary environment and the result is wrapped up into a single object. Compatibility mode is turned off and the escape character is set to&#160;<b>\</b> while <i>string</i> is being processed. Any emboldening, constant spacing or track kerning is applied to this object rather than to individual glyphs in <i>string</i>.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+A groff object defined by this request can be used just like a normal glyph provided by the output device. In particular other characters can be translated to it with the <b>tr</b> request; it can be made the leader glyph by the <b>lc</b> request; repeated patterns can be drawn with the glyph using the <b>\l</b> and <b>\L</b> escape sequences; words containing&#160;<i>c</i> can be hyphenated correctly, if the <b>hcode</b> request is used to give the object a hyphenation code.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+There is a special anti-recursion feature: Use of glyph within the glyph's definition is handled like normal glyphs not defined with <b>char</b>.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+A glyph definition can be removed with the <b>rchar</b> request.</dd>
+</dl>
+<dl>
+<dt>
+<b>.chop&#160;</b><i>xx</i></dt>
+<dd>
+Chop the last element off macro, string, or diversion <i>xx</i>. This is useful for removing the newline from the end of diversions that are to be interpolated as strings.</dd>
+</dl>
+<dl>
+<dt>
+<b>.class&#160;</b><i>name c1 c2 ...</i></dt>
+<dd>
+Assign <i>name</i> to a set of characters <i>c1</i>, <i>c2</i>, <i>...</i>, so that they can be referred to from other requests easily (currently <b>.cflags</b> only). Character ranges (indicated by an intermediate &#8216;-&#8217;) and nested classes are possible also. This is useful to assign properties to a large set of characters.</dd>
+</dl>
+<dl>
+<dt>
+<b>.close&#160;</b><i>stream</i></dt>
+<dd>
+Close the stream named <i>stream</i>; <i>stream</i> will no longer be an acceptable argument to the <b>write</b> request. See the <b>open</b> request.</dd>
+</dl>
+<dl>
+<dt>
+<b>.composite&#160;</b><i>glyph1&#160;glyph2</i></dt>
+<dd>
+Map glyph name <i>glyph1</i> to glyph name <i>glyph2</i> if it is used in <b>\[</b><i>...</i><b>]</b> with more than one component.</dd>
+</dl>
+<dl>
+<dt>
+<b>.continue</b></dt>
+<dd>
+Finish the current iteration of a while loop. See also the <b>while</b> and <b>break</b> requests.</dd>
+</dl>
+<dl>
+<dt>
+<b>.color&#160;</b><i>n</i></dt>
+<dd>
+If <i>n</i> is non-zero or missing, enable colors (this is the default), otherwise disable them.</dd>
+</dl>
+<dl>
+<dt>
+<b>.cp&#160;</b><i>n</i></dt>
+<dd>
+If <i>n</i> is non-zero or missing, enable compatibility mode, otherwise disable it. In compatibility mode, long names are not recognized, and the incompatibilities caused by long names do not arise.</dd>
+</dl>
+<dl>
+<dt>
+<b>.defcolor&#160;</b><i>xxx&#160;scheme&#160;color_components</i></dt>
+<dd>
+Define color <i>xxx</i>. <i>scheme</i> can be one of the following values: <b>rgb</b> (three components), <b>cmy</b> (three components), <b>cmyk</b> (four components), and <b>gray</b> or <b>grey</b> (one component). Color components can be given either as a hexadecimal string or as positive decimal integers in the range 0&#8211;65535. A hexadecimal string contains all color components concatenated; it must start with either <b>#</b> or <b>##</b>. The former specifies hex values in the range 0&#8211;255 (which are internally multiplied by&#160;257), the latter in the range 0&#8211;65535. Examples: #FFC0CB (pink), ##ffff0000ffff (magenta). A new scaling indicator&#160;<b>f</b> has been introduced which multiplies its value by&#160;65536; this makes it convenient to specify color components as fractions in the range 0 to&#160;1. Example:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+.defcolor darkgreen rgb 0.1f 0.5f 0.2f<br/>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+Note that <b>f</b> is the default scaling indicator for the <b>defcolor</b> request, thus the above statement is equivalent to</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+.defcolor darkgreen rgb 0.1 0.5 0.2<br/>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+The color named <b>default</b> (which is device-specific) can't be redefined. It is possible that the default color for <b>\M</b> and <b>\m</b> is not the same.</dd>
+</dl>
+<dl>
+<dt>
+<b>.de1&#160;</b><i>xx&#160;yy</i></dt>
+<dd>
+Similar to <b>.de</b>, but compatibility mode is switched off during execution. On entry, the current compatibility mode is saved and restored at exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>.dei&#160;</b><i>xx&#160;yy</i></dt>
+<dd>
+Define macro indirectly. The following example</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+.ds xx aa<br/>
+.ds yy bb<br/>
+.dei xx yy<br/>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+is equivalent to</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+.de aa bb<br/>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>.dei1&#160;</b><i>xx&#160;yy</i></dt>
+<dd>
+Similar to the <b>dei</b> request but compatibility mode is switched off during execution.</dd>
+</dl>
+<dl>
+<dt>
+<b>.device&#160;</b><i>anything</i></dt>
+<dd>
+This is (almost) the same as the <b>\X</b> escape. <i>anything</i> is read in copy mode; a leading&#160;<b>&quot;</b> is stripped.</dd>
+</dl>
+<dl>
+<dt>
+<b>.devicem&#160;</b><i>xx</i></dt>
+<dd>
+This is the same as the <b>\Y</b> escape (to embed the contents of a macro into the intermediate output preceded with &#8216;x&#160;X&#8217;).</dd>
+</dl>
+<dl>
+<dt>
+<b>.do&#160;</b><i>xxx</i></dt>
+<dd>
+Interpret <i>.xxx</i> with compatibility mode disabled. For example,</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+.do fam T<br/>
+</dd>
+</dl>
+<div class="spacer">
+</div>
+would have the same effect as<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+.fam T<br/>
+</dd>
+</dl>
+<div class="spacer">
+</div>
+except that it would work even if compatibility mode had been enabled. Note that the previous compatibility mode is restored before any files sourced by <i>xxx</i> are interpreted.</div>
+<dl>
+<dt>
+<b>.ds1&#160;</b><i>xx&#160;yy</i></dt>
+<dd>
+Similar to <b>.ds</b>, but compatibility mode is switched off during expansion. To be more precise, a &#8216;compatibility save&#8217; token is inserted at the beginning of the string, and a &#8216;compatibility restore&#8217; token at the end.</dd>
+</dl>
+<dl>
+<dt>
+<b>.ecs</b></dt>
+<dd>
+Save current escape character.</dd>
+</dl>
+<dl>
+<dt>
+<b>.ecr</b></dt>
+<dd>
+Restore escape character saved with <b>ecs</b>. Without a previous call to <b>ecs</b>, &#8216;<b>\</b>&#8217; will be the new escape character.</dd>
+</dl>
+<dl>
+<dt>
+<b>.evc&#160;</b><i>xx</i></dt>
+<dd>
+Copy the contents of environment <i>xx</i> to the current environment. No pushing or popping of environments is done.</dd>
+</dl>
+<dl>
+<dt>
+<b>.fam&#160;</b><i>xx</i></dt>
+<dd>
+Set the current font family to <i>xx</i>. The current font family is part of the current environment. If <i>xx</i> is missing, switch back to previous font family. The value at start-up is &#8216;T&#8217;. See the description of the <b>sty</b> request for more information on font families.</dd>
+</dl>
+<dl>
+<dt>
+<b>.fchar&#160;</b><i>c&#160;string</i></dt>
+<dd>
+Define fallback character (or glyph)&#160;<i>c</i> to be <i>string</i>. The syntax of this request is the same as the <b>char</b> request; the only difference is that a glyph defined with <b>char</b> hides the glyph with the same name in the current font, whereas a glyph defined with <b>fchar</b> is checked only if the particular glyph isn't found in the current font. This test happens before checking special fonts.</dd>
+</dl>
+<dl>
+<dt>
+<b>.fcolor&#160;</b><i>c</i></dt>
+<dd>
+Set the fill color to&#160;<i>c</i>. If <i>c</i> is missing, switch to the previous fill color.</dd>
+</dl>
+<dl>
+<dt>
+<b>.fschar&#160;</b><i>f&#160;c&#160;string</i></dt>
+<dd>
+Define fallback character (or glyph)&#160;<i>c</i> for font&#160;<i>f</i> to be <i>string</i>. The syntax of this request is the same as the <b>char</b> request (with an additional argument to specify the font); a glyph defined with <b>fschar</b> is searched after the list of fonts declared with the <b>fspecial</b> request but before the list of fonts declared with <b>.special</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>.fspecial&#160;</b><i>f s1 s2 ...</i></dt>
+<dd>
+When the current font is&#160;<i>f</i>, fonts <i>s1</i>, <i>s2</i>, <i>...</i>, are special, that is, they are searched for glyphs not in the current font. Any fonts specified in the <b>special</b> request are searched after fonts specified in the <b>fspecial</b> request. Without argument, reset the list of global special fonts to be empty.</dd>
+</dl>
+<dl>
+<dt>
+<b>.ftr&#160;</b><i>f&#160;g</i></dt>
+<dd>
+Translate font&#160;<i>f</i> to&#160;<i>g</i>. Whenever a font named&#160;<i>f</i> is referred to in an <b>\f</b> escape sequence, in the <b>F</b> and <b>S</b> conditional operators, or in the <b>ft</b>, <b>ul</b>, <b>bd</b>, <b>cs</b>, <b>tkf</b>, <b>special</b>, <b>fspecial</b>, <b>fp</b>, or <b>sty</b> requests, font&#160;<i>g</i> is used. If <i>g</i> is missing, or equal to&#160;<i>f</i> then font&#160;<i>f</i> is not translated.</dd>
+</dl>
+<dl>
+<dt>
+<b>.fzoom&#160;</b><i>f&#160;zoom</i></dt>
+<dd>
+Set zoom factor <i>zoom</i> for font&#160;<i>f</i>. <i>zoom</i> must a non-negative integer multiple of 1/1000th. If it is missing or is equal to zero, it means the same as 1000, namely no magnification. <i>f</i>&#160;must be a real font name, not a style.</dd>
+</dl>
+<dl>
+<dt>
+<b>.gcolor&#160;</b><i>c</i></dt>
+<dd>
+Set the glyph color to&#160;<i>c</i>. If <i>c</i> is missing, switch to the previous glyph color.</dd>
+</dl>
+<dl>
+<dt>
+<b>.hcode&#160;</b><i>c1 code1 c2 code2 ...</i></dt>
+<dd>
+Set the hyphenation code of character <i>c1</i> to <i>code1</i> and that of <i>c2</i> to <i>code2</i>, and so on. A hyphenation code must be a single input character (not a special character) other than a digit or a space. Initially each lower-case letter a&#8211;z has a hyphenation code, which is itself, and each upper-case letter A&#8211;Z has a hyphenation code which is the lower-case version of itself. See also the <b>hpf</b> request.</dd>
+</dl>
+<dl>
+<dt>
+<b>.hla&#160;</b><i>lang</i></dt>
+<dd>
+Set the current hyphenation language to <i>lang</i>. Hyphenation exceptions specified with the <b>hw</b> request and hyphenation patterns specified with the <b>hpf</b> request are both associated with the current hyphenation language. The <b>hla</b> request is usually invoked by the <b>troffrc</b> file to set up a default language.</dd>
+</dl>
+<dl>
+<dt>
+<b>.hlm&#160;</b><i>n</i></dt>
+<dd>
+Set the maximum number of consecutive hyphenated lines to&#160;<i>n</i>. If <i>n</i> is negative, there is no maximum. The default value is&#160;-1. This value is associated with the current environment. Only lines output from an environment count towards the maximum associated with that environment. Hyphens resulting from <b>\%</b> are counted; explicit hyphens are not.</dd>
+</dl>
+<dl>
+<dt>
+<b>.hpf&#160;</b><i>file</i></dt>
+<dd>
+Read hyphenation patterns from <i>file</i>; this is searched for in the same way that <i>name</i><b>.tmac</b> is searched for when the <b>-m</b><i>name</i> option is specified. It should have the same format as (simple) TeX patterns files. More specifically, the following scanning rules are implemented.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+&#8226;</dt>
+<dd>
+A percent sign starts a comment (up to the end of the line) even if preceded by a backslash.</dd>
+</dl>
+<dl>
+<dt>
+&#8226;</dt>
+<dd>
+No support for &#8216;digraphs&#8217; like <b>\$</b>.</dd>
+</dl>
+<dl>
+<dt>
+&#8226;</dt>
+<dd>
+<b>^^</b><i>xx</i> (<i>x</i> is 0&#8211;9 or a&#8211;f) and <b>^^</b><i>x</i> (character code of&#160;<i>x</i> in the range 0&#8211;127) are recognized; other use of&#160;<b>^</b> causes an error.</dd>
+</dl>
+<dl>
+<dt>
+&#8226;</dt>
+<dd>
+No macro expansion.</dd>
+</dl>
+<dl>
+<dt>
+&#8226;</dt>
+<dd>
+<b>hpf</b> checks for the expression <b>\patterns{</b>...<b>}</b> (possibly with whitespace before and after the braces). Everything between the braces is taken as hyphenation patterns. Consequently, <b>{</b>&#160;and&#160;<b>}</b> are not allowed in patterns.</dd>
+</dl>
+<dl>
+<dt>
+&#8226;</dt>
+<dd>
+Similarly, <b>\hyphenation{</b>...<b>}</b> gives a list of hyphenation exceptions.</dd>
+</dl>
+<dl>
+<dt>
+&#8226;</dt>
+<dd>
+<b>\endinput</b> is recognized also.</dd>
+</dl>
+<dl>
+<dt>
+&#8226;</dt>
+<dd>
+For backwards compatibility, if <b>\patterns</b> is missing, the whole file is treated as a list of hyphenation patterns (only recognizing the <b>%</b>&#160;character as the start of a comment).</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+Use the <b>hpfcode</b> request to map the encoding used in hyphenation patterns files to <b>groff</b>'s input encoding. By default, everything maps to itself except letters &#8216;A&#8217; to &#8216;Z&#8217; which map to &#8216;a&#8217; to &#8216;z&#8217;.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+The set of hyphenation patterns is associated with the current language set by the <b>hla</b> request. The <b>hpf</b> request is usually invoked by the <b>troffrc</b> file; a second call replaces the old patterns with the new ones.</dd>
+</dl>
+<dl>
+<dt>
+<b>.hpfa&#160;</b><i>file</i></dt>
+<dd>
+The same as <b>hpf</b> except that the hyphenation patterns from <i>file</i> are appended to the patterns already loaded in the current language.</dd>
+</dl>
+<dl>
+<dt>
+<b>.hpfcode&#160;</b><i>a b c d ...</i></dt>
+<dd>
+After reading a hyphenation patterns file with the <b>hpf</b> or <b>hpfa</b> request, convert all characters with character code&#160;<i>a</i> in the recently read patterns to character code&#160;<i>b</i>, character code&#160;<i>c</i> to&#160;<i>d</i>, etc. Initially, all character codes map to themselves. The arguments of <b>hpfcode</b> must be integers in the range 0 to&#160;255. Note that it is even possible to use character codes which are invalid in <b>groff</b> otherwise.</dd>
+</dl>
+<dl>
+<dt>
+<b>.hym&#160;</b><i>n</i></dt>
+<dd>
+Set the <i>hyphenation margin</i> to&#160;<i>n</i>: when the current adjustment mode is not&#160;<b>b</b>, the line is not hyphenated if the line is no more than <i>n</i> short. The default hyphenation margin is&#160;0. The default scaling indicator for this request is&#160;<b>m</b>. The hyphenation margin is associated with the current environment. The current hyphenation margin is available in the <b>\n[.hym]</b> register.</dd>
+</dl>
+<dl>
+<dt>
+<b>.hys&#160;</b><i>n</i></dt>
+<dd>
+Set the <i>hyphenation space</i> to&#160;<i>n</i>: When the current adjustment mode is&#160;<b>b</b> don't hyphenate the line if the line can be justified by adding no more than <i>n</i> extra space to each word space. The default hyphenation space is&#160;0. The default scaling indicator for this request is&#160;<b>m</b>. The hyphenation space is associated with the current environment. The current hyphenation space is available in the <b>\n[.hys]</b> register.</dd>
+</dl>
+<dl>
+<dt>
+<b>.itc&#160;</b><i>n&#160;macro</i></dt>
+<dd>
+Variant of <b>.it</b> for which a line interrupted with <b>\c</b> counts as one input line.</dd>
+</dl>
+<dl>
+<dt>
+<b>.kern&#160;</b><i>n</i></dt>
+<dd>
+If <i>n</i> is non-zero or missing, enable pairwise kerning, otherwise disable it.</dd>
+</dl>
+<dl>
+<dt>
+<b>.length&#160;</b><i>xx&#160;string</i></dt>
+<dd>
+Compute the length of <i>string</i> and return it in the number register <i>xx</i> (which is not necessarily defined before).</dd>
+</dl>
+<dl>
+<dt>
+<b>.linetabs&#160;</b><i>n</i></dt>
+<dd>
+If <i>n</i> is non-zero or missing, enable line-tabs mode, otherwise disable it (which is the default). In line-tabs mode, tab distances are computed relative to the (current) output line. Otherwise they are taken relative to the input line. For example, the following</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+.ds x a\t\c<br/>
+.ds y b\t\c<br/>
+.ds z c<br/>
+.ta 1i 3i<br/>
+\*x<br/>
+\*y<br/>
+\*z<br/>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+yields</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+a         b         c<br/>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+In line-tabs mode, the same code gives</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+a         b                   c<br/>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+Line-tabs mode is associated with the current environment; the read-only number register <b>\n[.linetabs]</b> is set to&#160;1 if in line-tabs mode, and 0 otherwise.</dd>
+</dl>
+<dl>
+<dt>
+<b>.lsm&#160;</b><i>xx</i></dt>
+<dd>
+Set the leading spaces macro to <i>xx</i>. If there are leading spaces in an input line, it is invoked instead of the usual troff behaviour; the leading spaces are removed. Registers <b>\n[lsn]</b> and <b>\n[lss]</b> hold the number of removed leading spaces and the corresponding horizontal space, respectively.</dd>
+</dl>
+<dl>
+<dt>
+<b>.mso&#160;</b><i>file</i></dt>
+<dd>
+The same as the <b>so</b> request except that <i>file</i> is searched for in the same directories as macro files for the the <b>-m</b> command line option. If the file name to be included has the form <i>name</i><b>.tmac</b> and it isn't found, <b>mso</b> tries to include <b>tmac.</b><i>name</i> instead and vice versa. A warning of type <b>file</b> is generated if <i>file</i> can't be loaded, and the request is ignored.</dd>
+</dl>
+<dl>
+<dt>
+<b>.nop</b><i>&#160;anything</i></dt>
+<dd>
+Execute <i>anything</i>. This is similar to &#8216;.if&#160;1&#8217;.</dd>
+</dl>
+<dl>
+<dt>
+<b>.nroff</b></dt>
+<dd>
+Make the <b>n</b> built-in condition true and the <b>t</b> built-in condition false. This can be reversed using the <b>troff</b> request.</dd>
+</dl>
+<dl>
+<dt>
+<b>.open&#160;</b><i>stream&#160;filename</i></dt>
+<dd>
+Open <i>filename</i> for writing and associate the stream named <i>stream</i> with it. See also the <b>close</b> and <b>write</b> requests.</dd>
+</dl>
+<dl>
+<dt>
+<b>.opena&#160;</b><i>stream&#160;filename</i></dt>
+<dd>
+Like <b>open</b>, but if <i>filename</i> exists, append to it instead of truncating it.</dd>
+</dl>
+<dl>
+<dt>
+<b>.output&#160;</b><i>string</i></dt>
+<dd>
+Emit <i>string</i> directly to the intermediate output (subject to copy-mode interpretation); this is similar to <b>\!</b> used at the top level. An initial double quote in <i>string</i> is stripped off to allow initial blanks.</dd>
+</dl>
+<dl>
+<dt>
+<b>.pev</b></dt>
+<dd>
+Print the current environment and each defined environment state on stderr.</dd>
+</dl>
+<dl>
+<dt>
+<b>.pnr</b></dt>
+<dd>
+Print the names and contents of all currently defined number registers on stderr.</dd>
+</dl>
+<dl>
+<dt>
+<b>.psbb</b><i>&#160;filename</i></dt>
+<dd>
+Get the bounding box of a PostScript image <i>filename</i>. This file must conform to Adobe's Document Structuring Conventions; the command looks for a <b>%%BoundingBox</b> comment to extract the bounding box values. After a successful call, the coordinates (in PostScript units) of the lower left and upper right corner can be found in the registers <b>\n[llx]</b>, <b>\n[lly]</b>, <b>\n[urx]</b>, and <b>\n[ury]</b>, respectively. If some error has occurred, the four registers are set to zero.</dd>
+</dl>
+<dl>
+<dt>
+<b>.pso</b><i>&#160;command</i></dt>
+<dd>
+This behaves like the <b>so</b> request except that input comes from the standard output of <i>command</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>.ptr</b></dt>
+<dd>
+Print the names and positions of all traps (not including input line traps and diversion traps) on stderr. Empty slots in the page trap list are printed as well, because they can affect the priority of subsequently planted traps.</dd>
+</dl>
+<dl>
+<dt>
+<b>.pvs</b><i>&#160;&#177;n</i></dt>
+<dd>
+Set the post-vertical line space to&#160;<i>n</i>; default scale indicator is&#160;<b>p</b>. This value is added to each line after it has been output. With no argument, the post-vertical line space is set to its previous value.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+The total vertical line spacing consists of four components: <b>.vs</b> and <b>\x</b> with a negative value which are applied before the line is output, and <b>.pvs</b> and <b>\x</b> with a positive value which are applied after the line is output.</dd>
+</dl>
+<dl>
+<dt>
+<b>.rchar&#160;</b><i>c1 c2 ...</i></dt>
+<dd>
+Remove the definitions of glyphs <i>c1</i>, <i>c2</i>, <i>...</i> This undoes the effect of a <b>char</b> request.</dd>
+</dl>
+<dl>
+<dt>
+<b>.return</b></dt>
+<dd>
+Within a macro, return immediately. If called with an argument, return twice, namely from the current macro and from the macro one level higher. No effect otherwise.</dd>
+</dl>
+<dl>
+<dt>
+<b>.rfschar&#160;</b><i>c1 c2 ...</i></dt>
+<dd>
+Remove the font-specific definitions of glyphs <i>c1</i>, <i>c2</i>, <i>...</i> This undoes the effect of a <b>fschar</b> request.</dd>
+</dl>
+<dl>
+<dt>
+<b>.rj</b></dt>
+<dd>
+<b>.rj</b><i>&#160;n</i> Right justify the next <i>n</i>&#160;input lines. Without an argument right justify the next input line. The number of lines to be right justified is available in the <b>\n[.rj]</b> register. This implicitly does <b>.ce&#160;0</b>. The <b>ce</b> request implicitly does <b>.rj&#160;0</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>.rnn</b><i>&#160;xx&#160;yy</i></dt>
+<dd>
+Rename number register <i>xx</i> to <i>yy</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>.schar&#160;</b><i>c&#160;string</i></dt>
+<dd>
+Define global fallback character (or glyph)&#160;<i>c</i> to be <i>string</i>. The syntax of this request is the same as the <b>char</b> request; a glyph defined with <b>schar</b> is searched after the list of fonts declared with the <b>special</b> request but before the mounted special fonts.</dd>
+</dl>
+<dl>
+<dt>
+<b>.shc&#160;</b><i>c</i></dt>
+<dd>
+Set the soft hyphen character to&#160;<i>c</i>. If <i>c</i> is omitted, the soft hyphen character is set to the default <b>\[hy]</b>. The soft hyphen character is the glyph which is inserted when a word is hyphenated at a line break. If the soft hyphen character does not exist in the font of the glyph immediately preceding a potential break point, then the line is not broken at that point. Neither definitions (specified with the <b>char</b> request) nor translations (specified with the <b>tr</b> request) are considered when finding the soft hyphen character.</dd>
+</dl>
+<dl>
+<dt>
+<b>.shift&#160;</b><i>n</i></dt>
+<dd>
+In a macro, shift the arguments by <i>n</i> positions: argument&#160;<i>i</i> becomes argument <i>i</i>-<i>n</i>; arguments 1 to&#160;<i>n</i> are no longer available. If <i>n</i> is missing, arguments are shifted by&#160;1. Shifting by negative amounts is currently undefined.</dd>
+</dl>
+<dl>
+<dt>
+<b>.sizes&#160;</b><i>s1&#160;s2&#160;...&#160;sn&#160;</i><b>[0]</b></dt>
+<dd>
+This command is similar to the <b>sizes</b> command of a <b>DESC</b> file. It sets the available font sizes for the current font to <i>s1</i>, <i>s2</i>, <i>...</i>,&#160;<i>sn</i> scaled points. The list of sizes can be terminated by an optional&#160;<b>0</b>. Each <i>si</i> can also be a range of sizes <i>m</i>&#8211;<i>n</i>. Contrary to the font file command, the list can't extend over more than a single line.</dd>
+</dl>
+<dl>
+<dt>
+<b>.special&#160;</b><i>s1 s2 ...</i></dt>
+<dd>
+Fonts <i>s1</i>, <i>s2</i>, <i>...</i>, are special and are searched for glyphs not in the current font. Without arguments, reset the list of special fonts to be empty.</dd>
+</dl>
+<dl>
+<dt>
+<b>.spreadwarn&#160;</b><i>limit</i></dt>
+<dd>
+Make <b>troff</b> emit a warning if the additional space inserted for each space between words in an output line is larger or equal to <i>limit</i>. A negative value is changed to zero; no argument toggles the warning on and off without changing <i>limit</i>. The default scaling indicator is&#160;<b>m</b>. At startup, <b>spreadwarn</b> is deactivated, and <i>limit</i> is set to 3m. For example, <b>.spreadwarn&#160;0.2m</b> causes a warning if <b>troff</b> must add 0.2m or more for each interword space in a line. This request is active only if text is justified to both margins (using <b>.ad&#160;b</b>).</dd>
+</dl>
+<dl>
+<dt>
+<b>.sty&#160;</b><i>n&#160;f</i></dt>
+<dd>
+Associate style&#160;<i>f</i> with font position&#160;<i>n</i>. A font position can be associated either with a font or with a style. The current font is the index of a font position and so is also either a font or a style. When it is a style, the font that is actually used is the font the name of which is the concatenation of the name of the current family and the name of the current style. For example, if the current font is&#160;1 and font position&#160;1 is associated with style&#160;<b>R</b> and the current font family is&#160;<b>T</b>, then font <b>TR</b> is used. If the current font is not a style, then the current family is ignored. When the requests <b>cs</b>, <b>bd</b>, <b>tkf</b>, <b>uf</b>, or <b>fspecial</b> are applied to a style, then they are applied instead to the member of the current family corresponding to that style. The default family can be set with the <b>-f</b> command line option. The <b>styles</b> command in the <small>DESC</small> file controls which font positions (if any) are initially associated with styles rather than fonts.</dd>
+</dl>
+<dl>
+<dt>
+<b>.substring&#160;</b><i>xx&#160;n1&#160;</i><b>[</b><i>n2</i><b>]</b></dt>
+<dd>
+Replace the string named <i>xx</i> with the substring defined by the indices <i>n1</i> and <i>n2</i>. The first character in the string has index&#160;0. If <i>n2</i> is omitted, it is taken to be equal to the string's length. If the index value <i>n1</i> or <i>n2</i> is negative, it is counted from the end of the string, going backwards: The last character has index&#160;-1, the character before the last character has index&#160;-2, etc.</dd>
+</dl>
+<dl>
+<dt>
+<b>.tkf&#160;</b><i>f&#160;s1&#160;n1&#160;s2&#160;n2</i></dt>
+<dd>
+Enable track kerning for font&#160;<i>f</i>. When the current font is&#160;<i>f</i> the width of every glyph is increased by an amount between <i>n1</i> and <i>n2</i>; when the current point size is less than or equal to <i>s1</i> the width is increased by <i>n1</i>; when it is greater than or equal to <i>s2</i> the width is increased by <i>n2</i>; when the point size is greater than or equal to <i>s1</i> and less than or equal to <i>s2</i> the increase in width is a linear function of the point size.</dd>
+</dl>
+<dl>
+<dt>
+<b>.tm1&#160;</b><i>string</i></dt>
+<dd>
+Similar to the <b>tm</b> request, <i>string</i> is read in copy mode and written on the standard error, but an initial double quote in <i>string</i> is stripped off to allow initial blanks.</dd>
+</dl>
+<dl>
+<dt>
+<b>.tmc&#160;</b><i>string</i></dt>
+<dd>
+Similar to <b>tm1</b> but without writing a final newline.</dd>
+</dl>
+<dl>
+<dt>
+<b>.trf&#160;</b><i>filename</i></dt>
+<dd>
+Transparently output the contents of file <i>filename</i>. Each line is output as if preceded by <b>\!</b>; however, the lines are not subject to copy-mode interpretation. If the file does not end with a newline, then a newline is added. For example, you can define a macro&#160;<i>x</i> containing the contents of file&#160;<i>f</i>, using</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+.di x<br/>
+.trf f<br/>
+.di<br/>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+Unlike with the <b>cf</b> request, the file cannot contain characters such as <small>NUL</small> that are not valid troff input characters.</dd>
+</dl>
+<dl>
+<dt>
+<b>.trin&#160;</b><i>abcd</i></dt>
+<dd>
+This is the same as the <b>tr</b> request except that the <b>asciify</b> request uses the character code (if any) before the character translation. Example:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+.trin ax<br/>
+.di xxx<br/>
+a<br/>
+.br<br/>
+.di<br/>
+.xxx<br/>
+.trin aa<br/>
+.asciify xxx<br/>
+.xxx<br/>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+The result is <b>x&#160;a</b>. Using <b>tr</b>, the result would be <b>x&#160;x</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>.trnt&#160;</b><i>abcd</i></dt>
+<dd>
+This is the same as the <b>tr</b> request except that the translations do not apply to text that is transparently throughput into a diversion with <b>\!</b>. For example,</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+.tr ab<br/>
+.di x<br/>
+\!.tm a<br/>
+.di<br/>
+.x<br/>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+prints&#160;<b>b</b>; if <b>trnt</b> is used instead of <b>tr</b> it prints&#160;<b>a</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>.troff</b></dt>
+<dd>
+Make the <b>n</b> built-in condition false, and the <b>t</b> built-in condition true. This undoes the effect of the <b>nroff</b> request.</dd>
+</dl>
+<dl>
+<dt>
+<b>.unformat&#160;</b><i>xx</i></dt>
+<dd>
+This request &#8216;unformats&#8217; the diversion <i>xx</i>. Contrary to the <b>asciify</b> request, which tries to convert formatted elements of the diversion back to input tokens as much as possible, <b>.unformat</b> only handles tabs and spaces between words (usually caused by spaces or newlines in the input) specially. The former are treated as if they were input tokens, and the latter are stretchable again. Note that the vertical size of lines is not preserved. Glyph information (font, font size, space width, etc.) is retained. Useful in conjunction with the <b>box</b> and <b>boxa</b> requests.</dd>
+</dl>
+<dl>
+<dt>
+<b>.vpt&#160;</b><i>n</i></dt>
+<dd>
+Enable vertical position traps if <i>n</i> is non-zero, disable them otherwise. Vertical position traps are traps set by the <b>wh</b> or <b>dt</b> requests. Traps set by the <b>it</b> request are not vertical position traps. The parameter that controls whether vertical position traps are enabled is global. Initially vertical position traps are enabled.</dd>
+</dl>
+<dl>
+<dt>
+<b>.warn&#160;</b><i>n</i></dt>
+<dd>
+Control warnings. <i>n</i>&#160;is the sum of the numbers associated with each warning that is to be enabled; all other warnings are disabled. The number associated with each warning is listed in <b>troff</b>(1). For example, <b>.warn&#160;0</b> disables all warnings, and <b>.warn&#160;1</b> disables all warnings except that about missing glyphs. If <i>n</i> is not given, all warnings are enabled.</dd>
+</dl>
+<dl>
+<dt>
+<b>.warnscale&#160;</b><i>si</i></dt>
+<dd>
+Set the scaling indicator used in warnings to <i>si</i>. Valid values for <i>si</i> are <b>u</b>, <b>i</b>, <b>c</b>, <b>p</b>, and&#160;<b>P</b>. At startup, it is set to&#160;<b>i</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>.while</b><i>&#160;c&#160;anything</i></dt>
+<dd>
+While condition&#160;<i>c</i> is true, accept <i>anything</i> as input; <i>c</i>&#160;can be any condition acceptable to an <b>if</b> request; <i>anything</i> can comprise multiple lines if the first line starts with <b>\{</b> and the last line ends with <b>\}</b>. See also the <b>break</b> and <b>continue</b> requests.</dd>
+</dl>
+<dl>
+<dt>
+<b>.write&#160;</b><i>stream&#160;anything</i></dt>
+<dd>
+Write <i>anything</i> to the stream named <i>stream</i>. <i>stream</i> must previously have been the subject of an <b>open</b> request. <i>anything</i> is read in copy mode; a leading&#160;<b>&quot;</b> is stripped.</dd>
+</dl>
+<dl>
+<dt>
+<b>.writec&#160;</b><i>stream&#160;anything</i></dt>
+<dd>
+Similar to <b>write</b> but without writing a final newline.</dd>
+</dl>
+<dl>
+<dt>
+<b>.writem&#160;</b><i>stream&#160;xx</i></dt>
+<dd>
+Write the contents of the macro or string <i>xx</i> to the stream named <i>stream</i>. <i>stream</i> must previously have been the subject of an <b>open</b> request. <i>xx</i> is read in copy mode.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>Extended escape sequences</h2><dl>
+<dt>
+<b>\D'</b>...<b>'</b></dt>
+<dd>
+All drawing commands of groff's intermediate output are accepted. See subsection <b>Drawing Commands</b> below for more information.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>Extended requests</h2><dl>
+<dt>
+<b>.cf&#160;</b><i>filename</i></dt>
+<dd>
+When used in a diversion, this embeds in the diversion an object which, when reread, will cause the contents of <i>filename</i> to be transparently copied through to the output. In UNIX troff, the contents of <i>filename</i> is immediately copied through to the output regardless of whether there is a current diversion; this behaviour is so anomalous that it must be considered a bug.</dd>
+</dl>
+<dl>
+<dt>
+<b>.de&#160;</b><i>xx&#160;yy</i></dt>
+<dd>
+<b>.am&#160;</b><i>xx&#160;yy</i> <b>.ds&#160;</b><i>xx&#160;yy</i> <b>.as&#160;</b><i>xx&#160;yy</i> In compatibility mode, these requests behaves similar to <b>.de1</b>, <b>.am1</b>, <b>.ds1</b>, and <b>.as1</b>, respectively: A &#8216;compatibility save&#8217; token is inserted at the beginning, and a &#8216;compatibility restore&#8217; token at the end, with compatibility mode switched on during execution.</dd>
+</dl>
+<dl>
+<dt>
+<b>.ev&#160;</b><i>xx</i></dt>
+<dd>
+If <i>xx</i> is not a number, this switches to a named environment called <i>xx</i>. The environment should be popped with a matching <b>ev</b> request without any arguments, just as for numbered environments. There is no limit on the number of named environments; they are created the first time that they are referenced.</dd>
+</dl>
+<dl>
+<dt>
+<b>.ss&#160;</b><i>m&#160;n</i></dt>
+<dd>
+When two arguments are given to the <b>ss</b> request, the second argument gives the <i>sentence space size</i>. If the second argument is not given, the sentence space size is the same as the word space size. Like the word space size, the sentence space is in units of one twelfth of the spacewidth parameter for the current font. Initially both the word space size and the sentence space size are&#160;12. Contrary to UNIX troff, GNU troff handles this request in nroff mode also; a given value is then rounded down to the nearest multiple of&#160;12. The sentence space size is used in two circumstances. If the end of a sentence occurs at the end of a line in fill mode, then both an inter-word space and a sentence space are added; if two spaces follow the end of a sentence in the middle of a line, then the second space is a sentence space. Note that the behaviour of UNIX troff are exactly that exhibited by GNU troff if a second argument is never given to the <b>ss</b> request. In GNU troff, as in UNIX troff, you should always follow a sentence with either a newline or two spaces.</dd>
+</dl>
+<dl>
+<dt>
+<b>.ta&#160;</b><i>n1 n2 ... nn </i><b>T </b><i>r1 r2 ... rn</i></dt>
+<dd>
+Set tabs at positions <i>n1</i>, <i>n2</i>, <i>...</i>, <i>nn</i> and then set tabs at <i>nn</i>+<i>r1</i>, <i>nn</i>+<i>r2</i>, <i>...</i>, <i>nn</i>+<i>rn</i> and then at <i>nn</i>+<i>rn</i>+<i>r1</i>, <i>nn</i>+<i>rn</i>+<i>r2</i>, <i>...</i>, <i>nn</i>+<i>rn</i>+<i>rn</i>, and so on. For example,</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+.ta T .5i<br/>
+</dd>
+</dl>
+<div class="spacer">
+</div>
+sets tabs every half an inch.</div>
+</div>
+<div class="subsection">
+<h2>New number registers</h2> The following read-only registers are available:<dl>
+<dt>
+<b>\n[.br]</b></dt>
+<dd>
+Within a macro call, it is set to&#160;1 if the macro is called with the &#8216;normal&#8217; control character (&#8216;.&#8217; by default), and set to&#160;0 otherwise. This allows to reliably modify requests.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+.als bp*orig bp<br/>
+.de bp<br/>
+.tm before bp<br/>
+.ie \\n[.br] .bp*orig<br/>
+.el 'bp*orig<br/>
+.tm after bp<br/>
+..<br/>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+Using this register outside of a macro makes no sense (it always returns zero in such cases).</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.C]</b></dt>
+<dd>
+1&#160;if compatibility mode is in effect, 0&#160;otherwise.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.cdp]</b></dt>
+<dd>
+The depth of the last glyph added to the current environment. It is positive if the glyph extends below the baseline.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.ce]</b></dt>
+<dd>
+The number of lines remaining to be centered, as set by the <b>ce</b> request.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.cht]</b></dt>
+<dd>
+The height of the last glyph added to the current environment. It is positive if the glyph extends above the baseline.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.color]</b></dt>
+<dd>
+1&#160;if colors are enabled, 0&#160;otherwise.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.csk]</b></dt>
+<dd>
+The skew of the last glyph added to the current environment. The <i>skew</i> of a glyph is how far to the right of the center of a glyph the center of an accent over that glyph should be placed.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.ev]</b></dt>
+<dd>
+The name or number of the current environment. This is a string-valued register.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.fam]</b></dt>
+<dd>
+The current font family. This is a string-valued register.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.fn]</b></dt>
+<dd>
+The current (internal) real font name. This is a string-valued register. If the current font is a style, the value of <b>\n[.fn]</b> is the proper concatenation of family and style name.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.fp]</b></dt>
+<dd>
+The number of the next free font position.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.g]</b></dt>
+<dd>
+Always&#160;1. Macros should use this to determine whether they are running under GNU troff.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.height]</b></dt>
+<dd>
+The current height of the font as set with <b>\H</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.hla]</b></dt>
+<dd>
+The current hyphenation language as set by the <b>hla</b> request.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.hlc]</b></dt>
+<dd>
+The number of immediately preceding consecutive hyphenated lines.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.hlm]</b></dt>
+<dd>
+The maximum allowed number of consecutive hyphenated lines, as set by the <b>hlm</b> request.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.hy]</b></dt>
+<dd>
+The current hyphenation flags (as set by the <b>hy</b> request).</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.hym]</b></dt>
+<dd>
+The current hyphenation margin (as set by the <b>hym</b> request).</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.hys]</b></dt>
+<dd>
+The current hyphenation space (as set by the <b>hys</b> request).</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.in]</b></dt>
+<dd>
+The indentation that applies to the current output line.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.int]</b></dt>
+<dd>
+Set to a positive value if last output line is interrupted (i.e., if it contains <b>\c</b>).</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.kern]</b></dt>
+<dd>
+1&#160;if pairwise kerning is enabled, 0&#160;otherwise.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.lg]</b></dt>
+<dd>
+The current ligature mode (as set by the <b>lg</b> request).</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.linetabs]</b></dt>
+<dd>
+The current line-tabs mode (as set by the <b>linetabs</b> request).</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.ll]</b></dt>
+<dd>
+The line length that applies to the current output line.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.lt]</b></dt>
+<dd>
+The title length as set by the <b>lt</b> request.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.m]</b></dt>
+<dd>
+The name of the current drawing color. This is a string-valued register.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.M]</b></dt>
+<dd>
+The name of the current background color. This is a string-valued register.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.ne]</b></dt>
+<dd>
+The amount of space that was needed in the last <b>ne</b> request that caused a trap to be sprung. Useful in conjunction with the <b>\n[.trunc]</b> register.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.ns]</b></dt>
+<dd>
+1&#160;if no-space mode is active, 0&#160;otherwise.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.O]</b></dt>
+<dd>
+The current output level as set with <b>\O</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.P]</b></dt>
+<dd>
+1&#160;if the current page is in the output list set with <b>-o</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.pe]</b></dt>
+<dd>
+1&#160;during a page ejection caused by the <b>bp</b> request, 0&#160;otherwise.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.pn]</b></dt>
+<dd>
+The number of the next page, either the value set by a <b>pn</b> request, or the number of the current page plus&#160;1.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.ps]</b></dt>
+<dd>
+The current point size in scaled points.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.psr]</b></dt>
+<dd>
+The last-requested point size in scaled points.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.pvs]</b></dt>
+<dd>
+The current post-vertical line space as set with the <b>pvs</b> request.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.rj]</b></dt>
+<dd>
+The number of lines to be right-justified as set by the <b>rj</b> request.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.slant]</b></dt>
+<dd>
+The slant of the current font as set with <b>\S</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.sr]</b></dt>
+<dd>
+The last requested point size in points as a decimal fraction. This is a string-valued register.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.ss]</b></dt>
+<dd>
+<b>\n[.sss]</b> These give the values of the parameters set by the first and second arguments of the <b>ss</b> request.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.sty]</b></dt>
+<dd>
+The current font style. This is a string-valued register.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.tabs]</b></dt>
+<dd>
+A string representation of the current tab settings suitable for use as an argument to the <b>ta</b> request.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.trunc]</b></dt>
+<dd>
+The amount of vertical space truncated by the most recently sprung vertical position trap, or, if the trap was sprung by a <b>ne</b> request, minus the amount of vertical motion produced by the <b>ne</b> request. In other words, at the point a trap is sprung, it represents the difference of what the vertical position would have been but for the trap, and what the vertical position actually is. Useful in conjunction with the <b>\n[.ne]</b> register.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.U]</b></dt>
+<dd>
+Set to&#160;1 if in safer mode and to&#160;0 if in unsafe mode (as given with the <b>-U</b> command line option).</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.vpt]</b></dt>
+<dd>
+1&#160;if vertical position traps are enabled, 0&#160;otherwise.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.warn]</b></dt>
+<dd>
+The sum of the numbers associated with each of the currently enabled warnings. The number associated with each warning is listed in <b>troff</b>(1).</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.x]</b></dt>
+<dd>
+The major version number. For example, if the version number is 1.03, then <b>\n[.x]</b> contains&#160;1.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.y]</b></dt>
+<dd>
+The minor version number. For example, if the version number is 1.03, then <b>\n[.y]</b> contains&#160;03.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.Y]</b></dt>
+<dd>
+The revision number of groff.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[.zoom]</b></dt>
+<dd>
+The zoom value of the current font, in multiples of 1/1000th. Zero if no magnification.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[llx]</b></dt>
+<dd>
+<b>\n[lly]</b> <b>\n[urx]</b> <b>\n[ury]</b> These four read/write registers are set by the <b>psbb</b> request and contain the bounding box values (in PostScript units) of a given PostScript image.</dd>
+</dl>
+<div class="spacer">
+</div>
+The following read/write registers are set by the <b>\w</b> escape sequence:<dl>
+<dt>
+<b>\n[rst]</b></dt>
+<dd>
+<b>\n[rsb]</b> Like the <b>st</b> and <b>sb</b> registers, but take account of the heights and depths of glyphs.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[ssc]</b></dt>
+<dd>
+The amount of horizontal space (possibly negative) that should be added to the last glyph before a subscript.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[skw]</b></dt>
+<dd>
+How far to right of the center of the last glyph in the <b>\w</b> argument, the center of an accent from a roman font should be placed over that glyph.</dd>
+</dl>
+<div class="spacer">
+</div>
+Other available read/write number registers are:<dl>
+<dt>
+<b>\n[c.]</b></dt>
+<dd>
+The current input line number. <b>\n[.c]</b> is a read-only alias to this register.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[hours]</b></dt>
+<dd>
+The number of hours past midnight. Initialized at start-up.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[hp]</b></dt>
+<dd>
+The current horizontal position at input line.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[lsn]</b></dt>
+<dd>
+<b>\n[lss]</b> If there are leading spaces in an input line, these registers hold the number of leading spaces and the corresponding horizontal space, respectively.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[minutes]</b></dt>
+<dd>
+The number of minutes after the hour. Initialized at start-up.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[seconds]</b></dt>
+<dd>
+The number of seconds after the minute. Initialized at start-up.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[systat]</b></dt>
+<dd>
+The return value of the system() function executed by the last <b>sy</b> request.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[slimit]</b></dt>
+<dd>
+If greater than&#160;0, the maximum number of objects on the input stack. If less than or equal to&#160;0, there is no limit on the number of objects on the input stack. With no limit, recursion can continue until virtual memory is exhausted.</dd>
+</dl>
+<dl>
+<dt>
+<b>\n[year]</b></dt>
+<dd>
+The current year. Note that the traditional <b>troff</b> number register <b>\n[yr]</b> is the current year minus 1900.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>Miscellaneous</h2> <b>troff</b> predefines a single (read/write) string-based register, <b>\*[.T]</b>, which contains the argument given to the <b>-T</b> command line option, namely the current output device (for example, <i>latin1</i> or <i>ascii</i>). Note that this is not the same as the (read-only) number register <b>\n[.T]</b> which is defined to be&#160;1 if <b>troff</b> is called with the <b>-T</b> command line option, and zero otherwise. This behaviour is different to UNIX troff.<div class="spacer">
+</div>
+Fonts not listed in the <small>DESC</small> file are automatically mounted on the next available font position when they are referenced. If a font is to be mounted explicitly with the <b>fp</b> request on an unused font position, it should be mounted on the first unused font position, which can be found in the <b>\n[.fp]</b> register; although <b>troff</b> does not enforce this strictly, it does not allow a font to be mounted at a position whose number is much greater than that of any currently used position.<div class="spacer">
+</div>
+Interpolating a string does not hide existing macro arguments. Thus in a macro, a more efficient way of doing<dl>
+<dt>
+</dt>
+<dd>
+<b>.</b><i>xx&#160;</i><b>\\$@</b></dd>
+</dl>
+<div class="spacer">
+</div>
+is<dl>
+<dt>
+</dt>
+<dd>
+<b>\\*[</b><i>xx</i><b>]\\</b></dd>
+</dl>
+<div class="spacer">
+</div>
+If the font description file contains pairwise kerning information, glyphs from that font are kerned. Kerning between two glyphs can be inhibited by placing a <b>\&amp;</b> between them.<div class="spacer">
+</div>
+In a string comparison in a condition, characters that appear at different input levels to the first delimiter character are not recognized as the second or third delimiters. This applies also to the <b>tl</b> request. In a <b>\w</b> escape sequence, a character that appears at a different input level to the starting delimiter character is not recognized as the closing delimiter character. The same is true for <b>\A</b>, <b>\b</b>, <b>\B</b>, <b>\C</b>, <b>\l</b>, <b>\L</b>, <b>\o</b>, <b>\X</b>, and <b>\Z</b>. When decoding a macro or string argument that is delimited by double quotes, a character that appears at a different input level to the starting delimiter character is not recognized as the closing delimiter character. The implementation of <b>\$@</b> ensures that the double quotes surrounding an argument appear at the same input level, which is different to the input level of the argument itself. In a long escape name <b>]</b> is not recognized as a closing delimiter except when it occurs at the same input level as the opening&#160;<b>[</b>. In compatibility mode, no attention is paid to the input-level.<div class="spacer">
+</div>
+There are some new types of condition:<dl>
+<dt>
+<b>.if&#160;r</b><i>xxx</i></dt>
+<dd>
+True if there is a number register named <i>xxx</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>.if&#160;d</b><i>xxx</i></dt>
+<dd>
+True if there is a string, macro, diversion, or request named <i>xxx</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>.if&#160;m</b><i>xxx</i></dt>
+<dd>
+True if there is a color named <i>xxx</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>.if&#160;c</b><i>ch</i></dt>
+<dd>
+True if there is a character (or glyph) <i>ch</i> available; <i>ch</i> is either an <small>ASCII</small> character or a glyph (special character) <b>\N'</b><i>xxx</i><b>',</b> <b>\(</b><i>xx</i> or <b>\[</b><i>xxx</i><b>];</b> the condition is also true if <i>ch</i> has been defined by the <b>char</b> request.</dd>
+</dl>
+<dl>
+<dt>
+<b>.if&#160;F</b><i>f</i></dt>
+<dd>
+True if font&#160;<i>f</i> exists. <b>f</b>&#160;is handled as if it was opened with the <b>ft</b> request (this is, font translation and styles are applied), without actually mounting it.</dd>
+</dl>
+<dl>
+<dt>
+<b>.if&#160;S</b><i>s</i></dt>
+<dd>
+True if style&#160;<i>s</i> has been registered. Font translation is applied.</dd>
+</dl>
+<div class="spacer">
+</div>
+The <b>tr</b> request can now map characters onto <b>\~</b>.<div class="spacer">
+</div>
+The space width emitted by the <b>\|</b> and <b>\^</b> escape sequences can be controlled on a per-font basis. If there is a glyph named <b>\|</b> or <b>\^</b>, respectively (note the leading backslash), defined in the current font file, use this glyph's width instead of the default value.<div class="spacer">
+</div>
+It is now possible to have whitespace between the first and second dot (or the name of the ending macro) to end a macro definition. Example:<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+.if t \{\<br/>
+.  de bar<br/>
+.    nop Hello, I'm &#8216;bar&#8217;.<br/>
+.  .<br/>
+.\}<br/>
+</dd>
+</dl>
+</div>
+</div>
+<div class="section">
+<h1>INTERMEDIATE OUTPUT FORMAT</h1> This section describes the format output by GNU troff. The output format used by GNU troff is very similar to that used by Unix device-independent troff. Only the differences are documented here.<div class="subsection">
+<h2>Units</h2> The argument to the <b>s</b>&#160;command is in scaled points (units of points/<i>n</i>, where <i>n</i> is the argument to the <b>sizescale</b> command  in the DESC file). The argument to the <b>x&#160;Height</b> command is also in scaled points.</div>
+<div class="subsection">
+<h2>Text Commands</h2><dl>
+<dt>
+<b>N</b><i>n</i></dt>
+<dd>
+Print glyph with index&#160;<i>n</i> (a non-negative integer) of the current font.</dd>
+</dl>
+<div class="spacer">
+</div>
+If the <b>tcommand</b> line is present in the DESC file, troff uses the following two commands.<dl>
+<dt>
+<b>t</b><i>xxx</i></dt>
+<dd>
+<i>xxx</i> is any sequence of characters terminated by a space or a newline (to be more precise, it is a sequence of glyphs which are accessed with the corresponding characters); the first character should be printed at the current position, the current horizontal position should be increased by the width of the first character, and so on for each character. The width of the glyph is that given in the font file, appropriately scaled for the current point size, and rounded so that it is a multiple of the horizontal resolution. Special characters cannot be printed using this command.</dd>
+</dl>
+<dl>
+<dt>
+<b>u</b><i>n&#160;xxx</i></dt>
+<dd>
+This is same as the <b>t</b>&#160;command except that after printing each character, the current horizontal position is increased by the sum of the width of that character and&#160;<i>n</i>.</dd>
+</dl>
+<div class="spacer">
+</div>
+Note that single characters can have the eighth bit set, as can the names of fonts and special characters.<div class="spacer">
+</div>
+The names of glyphs and fonts can be of arbitrary length; drivers should not assume that they are only two characters long.<div class="spacer">
+</div>
+When a glyph is to be printed, that glyph is always in the current font. Unlike device-independent troff, it is not necessary for drivers to search special fonts to find a glyph.<div class="spacer">
+</div>
+For color support, some new commands have been added:<dl>
+<dt>
+<b>mc </b><i>cyan magenta yellow</i></dt>
+<dd>
+<b>md</b>  <b>mg </b><i>gray</i>  <b>mk </b><i>cyan magenta yellow black</i>  <b>mr </b><i>red green blue</i> Set the color components of the current drawing color, using various color schemes. <b>md</b> resets the drawing color to the default value. The arguments are integers in the range 0 to 65536.</dd>
+</dl>
+<div class="spacer">
+</div>
+The <b>x</b>&#160;device control command has been extended.<dl>
+<dt>
+<b>x u </b><i>n</i></dt>
+<dd>
+If <i>n</i> is&#160;1, start underlining of spaces. If <i>n</i> is&#160;0, stop underlining of spaces. This is needed for the <b>cu</b> request in nroff mode and is ignored otherwise.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>Drawing Commands</h2> The <b>D</b> drawing command has been extended. These extensions are not used by GNU pic if the <b>-n</b> option is given.<dl>
+<dt>
+<b>Df </b><i>n/</i>/\n</dt>
+<dd>
+Set the shade of gray to be used for filling solid objects to <i>n</i>; <i>n</i> must be an integer between 0 and 1000, where 0 corresponds solid white and 1000 to solid black, and values in between correspond to intermediate shades of gray. This applies only to solid circles, solid ellipses and solid polygons. By default, a level of 1000 is used. Whatever color a solid object has, it should completely obscure everything beneath it. A value greater than 1000 or less than&#160;0 can also be used: this means fill with the shade of gray that is currently being used for lines and text. Normally this is black, but some drivers may provide a way of changing this.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+The corresponding <b>\D'f</b><i>...</i><b>'</b> command shouldn't be used since its argument is always rounded to an integer multiple of the horizontal resolution which can lead to surprising results.</dd>
+</dl>
+<dl>
+<dt>
+<b>DC </b><i>/d</i>/\n</dt>
+<dd>
+Draw a solid circle with a diameter of <i>d</i> with the leftmost point at the current position.</dd>
+</dl>
+<dl>
+<dt>
+<b>DE </b><i>dx dy/</i>/\n</dt>
+<dd>
+Draw a solid ellipse with a horizontal diameter of <i>dx</i> and a vertical diameter of <i>dy</i> with the leftmost point at the current position.
+<math class="eqn">
+<mrow></mrow></math>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>Dp</b> </dt>
+<dd>
+<math class="eqn">
+<mrow><msub><mi>dx</mi><mi>1</mi></msub></mrow></math>
+ <math class="eqn">
+<mrow><msub><mi>dy</mi><mi>1</mi></msub></mrow></math>
+ <math class="eqn">
+<mrow><msub><mi>dx</mi><mi>2</mi></msub></mrow></math>
+ <math class="eqn">
+<mrow><msub><mi>dy</mi><mi>2</mi></msub></mrow></math>
+ <math class="eqn">
+<mrow><mi>...</mi></mrow></math>
+ <math class="eqn">
+<mrow><msub><mi>dx</mi><mi>n</mi></msub></mrow></math>
+ <math class="eqn">
+<mrow><msub><mi>dy</mi><mi>n</mi></msub></mrow></math>
+\n Draw a polygon with, for <math class="eqn">
+<mrow><mi>i</mi><mi>=</mi><mi>1</mi><mi>,...,</mi><mi>n+1</mi></mrow></math>
+, the <i>i</i>-th vertex at the current position
+<math class="eqn">
+<mrow><mi>+</mi><munderover><mi>&#8721;</mi><mi>j=1</mi><mi>i-1</mi></munderover><mi>(</mi><msub><mi>dx</mi><mi>j</mi></msub><mi>,</mi><msub><mi>dy</mi><mi>j</mi></msub><mi>)</mi></mrow></math>
+. At the moment, GNU pic only uses this command to generate triangles and rectangles.</dd>
+</dl>
+<dl>
+<dt>
+<b>DP</b> </dt>
+<dd>
+<math class="eqn">
+<mrow><msub><mi>dx</mi><mi>1</mi></msub></mrow></math>
+ <math class="eqn">
+<mrow><msub><mi>dy</mi><mi>1</mi></msub></mrow></math>
+ <math class="eqn">
+<mrow><msub><mi>dx</mi><mi>2</mi></msub></mrow></math>
+ <math class="eqn">
+<mrow><msub><mi>dy</mi><mi>2</mi></msub></mrow></math>
+ <math class="eqn">
+<mrow><mi>...</mi></mrow></math>
+ <math class="eqn">
+<mrow><msub><mi>dx</mi><mi>n</mi></msub></mrow></math>
+ <math class="eqn">
+<mrow><msub><mi>dy</mi><mi>n</mi></msub></mrow></math>
+\n Like <b>Dp</b> but draw a solid rather than outlined polygon.</dd>
+</dl>
+<dl>
+<dt>
+<b>Dt </b><i>n/</i>/\n</dt>
+<dd>
+Set the current line thickness to <i>n</i>&#160;machine units. Traditionally Unix troff drivers use a line thickness proportional to the current point size; drivers should continue to do this if no <b>Dt</b> command has been given, or if a <b>Dt</b> command has been given with a negative value of&#160;<i>n</i>. A zero value of&#160;<i>n</i> selects the smallest available line thickness.</dd>
+</dl>
+<div class="spacer">
+</div>
+A difficulty arises in how the current position should be changed after the execution of these commands. This is not of great importance since the code generated by GNU pic does not depend on this. Given a drawing command of the form<dl>
+<dt>
+</dt>
+<dd>
+<b>\D'</b><i>c</i> <math class="eqn">
+<mrow><msub><mi>x</mi><mi>1</mi></msub></mrow></math>
+ <math class="eqn">
+<mrow><msub><mi>y</mi><mi>1</mi></msub></mrow></math>
+ <math class="eqn">
+<mrow><msub><mi>x</mi><mi>2</mi></msub></mrow></math>
+ <math class="eqn">
+<mrow><msub><mi>y</mi><mi>2</mi></msub></mrow></math>
+ <math class="eqn">
+<mrow><mi>...</mi></mrow></math>
+ <math class="eqn">
+<mrow><msub><mi>x</mi><mi>n</mi></msub></mrow></math>
+ <math class="eqn">
+<mrow><msub><mi>y</mi><mi>n</mi></msub></mrow></math>
+<b>'</b></dd>
+</dl>
+<div class="spacer">
+</div>
+where <i>c</i> is not one of <b>c</b>, <b>e</b>, <b>l</b>, <b>a</b>, or&#160;<b>~</b>, Unix troff treats each of the <math class="eqn">
+<mrow><msub><mi>x</mi><mi>i</mi></msub></mrow></math>
+ as a horizontal quantity, and each of the <math class="eqn">
+<mrow><msub><mi>y</mi><mi>i</mi></msub></mrow></math>
+ as a vertical quantity and assumes that the width of the drawn object is <math class="eqn">
+<mrow><munderover><mi>&#8721;</mi><mi>i=1</mi><mi>n</mi></munderover><msub><mi>x</mi><mi>i</mi></msub></mrow></math>
+, and that the height is <math class="eqn">
+<mrow><munderover><mi>&#8721;</mi><mi>i=1</mi><mi>n</mi></munderover><msub><mi>y</mi><mi>i</mi></msub></mrow></math>
+. (The assumption about the height can be seen by examining the <b>st</b> and <b>sb</b> registers after using such a <b>D</b>&#160;command in a <b>\w</b> escape sequence). This rule also holds for all the original drawing commands with the exception of <b>De</b>. For the sake of compatibility GNU troff also follows this rule, even though it produces an ugly result in the case of the <b>Dt</b> and <b>Df</b>, and, to a lesser extent, <b>DE</b> commands. Thus after executing a <b>D</b>&#160;command of the form<dl>
+<dt>
+</dt>
+<dd>
+<b>D</b><i>c</i> <math class="eqn">
+<mrow><msub><mi>x</mi><mi>1</mi></msub></mrow></math>
+ <math class="eqn">
+<mrow><msub><mi>y</mi><mi>1</mi></msub></mrow></math>
+ <math class="eqn">
+<mrow><msub><mi>x</mi><mi>2</mi></msub></mrow></math>
+ <math class="eqn">
+<mrow><msub><mi>y</mi><mi>2</mi></msub></mrow></math>
+ <math class="eqn">
+<mrow><mi>...</mi></mrow></math>
+ <math class="eqn">
+<mrow><msub><mi>x</mi><mi>n</mi></msub></mrow></math>
+ <math class="eqn">
+<mrow><msub><mi>y</mi><mi>n</mi></msub></mrow></math>
+\n</dd>
+</dl>
+<div class="spacer">
+</div>
+the current position should be increased by
+<math class="eqn">
+<mrow><mi>(</mi><munderover><mi>&#8721;</mi><mi>i=1</mi><mi>n</mi></munderover><msub><mi>x</mi><mi>i</mi></msub><mi>,</mi><munderover><mi>&#8721;</mi><mi>i=1</mi><mi>n</mi></munderover><msub><mi>y</mi><mi>i</mi></msub><mi>)</mi></mrow></math>
+.<div class="spacer">
+</div>
+Another set of extensions is<dl>
+<dt>
+<b>DFc </b><i>cyan magenta yellow</i>/\n</dt>
+<dd>
+<b>DFd</b>/\n  <b>DFg </b><i>gray/</i>/\n  <b>DFk </b><i>cyan magenta yellow black</i>/\n  <b>DFr </b><i>red green blue</i>/\n Set the color components of the filling color similar to the <b>m</b>&#160;commands above.</dd>
+</dl>
+<div class="spacer">
+</div>
+The current position isn't changed by those colour commands (contrary to <b>Df</b>).</div>
+<div class="subsection">
+<h2>Device Control Commands</h2> There is a continuation convention which permits the argument to the <b>x&#160;X</b> command to contain newlines: when outputting the argument to the <b>x&#160;X</b> command, GNU troff follows each newline in the argument with a <b>+</b> character (as usual, it terminates the entire argument with a newline); thus if the line after the line containing the <b>x&#160;X</b> command starts with <b>+</b>, then the newline ending the line containing the <b>x&#160;X</b> command should be treated as part of the argument to the <b>x&#160;X</b> command, the <b>+</b> should be ignored, and the part of the line following the <b>+</b> should be treated like the part of the line following the <b>x&#160;X</b> command.<div class="spacer">
+</div>
+The first three output commands are guaranteed to be:<dl>
+<dt>
+</dt>
+<dd>
+<b>x&#160;T&#160;</b><i>device</i><div style="height: 0.00em;">
+&#160;</div>
+<b>x&#160;res&#160;</b><i>n&#160;h&#160;v</i><div style="height: 0.00em;">
+&#160;</div>
+<b>x init</b></dd>
+</dl>
+</div>
+</div>
+<div class="section">
+<h1>INCOMPATIBILITIES</h1> In spite of the many extensions, groff has retained compatibility to classical troff to a large degree. For the cases where the extensions lead to collisions, a special compatibility mode with the restricted, old functionality was created for groff.<div class="subsection">
+<h2>Groff Language</h2> <i>groff</i> provides a <b>compatibility mode</b> that allows to process roff code written for classical <b>troff</b> or for other implementations of roff in a consistent way.<div class="spacer">
+</div>
+Compatibility mode can be turned on with the <b>-C</b> command line option, and turned on or off with the <b>.cp</b> request. The number register <b>\n(.C</b> is&#160;1 if compatibility mode is on, 0&#160;otherwise.<div class="spacer">
+</div>
+This became necessary because the GNU concept for long names causes some incompatibilities. <i>Classical troff</i> interprets<dl>
+<dt>
+</dt>
+<dd>
+<b>.dsabcd</b></dd>
+</dl>
+<div class="spacer">
+</div>
+as defining a string <b>ab</b> with contents <b>cd</b>. In <i>groff</i> mode, this is considered as a call of a macro named <b>dsabcd</b>.<div class="spacer">
+</div>
+Also <i>classical troff</i> interprets <b>\*[</b> or <b>\n[</b> as references to a string or number register called&#160;<b>[</b> while <i>groff</i> takes this as the start of a long name.<div class="spacer">
+</div>
+In <i>compatibility mode</i>, groff interprets these things in the traditional way; so long names are not recognized.<div class="spacer">
+</div>
+On the other hand, groff in <i>GNU native mode</i> does not allow to use the single-character escapes <b>\\</b> (backslash), <b>\|</b> (vertical bar), <b>\^</b> (caret), <b>\&amp;</b> (ampersand), <b>\{</b> (opening brace), <b>\}</b> (closing brace), &#8216;<b>\&#160;</b>&#8217; (space), <b>\'</b> (single quote), <b>\`</b> (backquote), <b>\-</b> (minus), <b>\_</b> (underline), <b>\!</b> (bang), <b>\%</b> (percent), and <b>\c</b> (character&#160;c) in names of strings, macros, diversions, number registers, fonts or environments, whereas <i>classical troff</i> does.<div class="spacer">
+</div>
+The <b>\A</b> escape sequence can be helpful in avoiding these escape sequences in names.<div class="spacer">
+</div>
+Fractional point sizes cause one noteworthy incompatibility. In <i>classical</i> <i>troff</i>, the <b>ps</b> request ignores scale indicators and so<div style="margin-left: 5.00ex;">
+<div class="spacer">
+</div>
+<b>.ps&#160;10u</b></div>
+<div class="spacer">
+</div>
+sets the point size to 10&#160;points, whereas in groff native mode the point size is set to 10&#160;scaled points.<div class="spacer">
+</div>
+In <i>groff</i>, there is a fundamental difference between unformatted input characters, and formatted output characters (glyphs). Everything that affects how a glyph is output is stored with the glyph; once a glyph has been constructed it is unaffected by any subsequent requests that are executed, including the <b>bd</b>, <b>cs</b>, <b>tkf</b>, <b>tr</b>, or <b>fp</b> requests.<div class="spacer">
+</div>
+Normally glyphs are constructed from input characters at the moment immediately before the glyph is added to the current output line. Macros, diversions and strings are all, in fact, the same type of object; they contain lists of input characters and glyphs in any combination.<div class="spacer">
+</div>
+Special characters can be both; before being added to the output, they act as input entities, afterwards they denote glyphs.<div class="spacer">
+</div>
+A glyph does not behave like an input character for the purposes of macro processing; it does not inherit any of the special properties that the input character from which it was constructed might have had. The following example makes things clearer.<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;">
+<br/>
+.di x<br/>
+\\\\<br/>
+.br<br/>
+.di<br/>
+.x<br/>
+</div>
+<div class="spacer">
+</div>
+With <i>GNU troff</i> this is printed as <b>\\</b>. So each pair of input backslashes &#8216;\\&#8217; is turned into a single output backslash glyph &#8216;\&#8217; and the resulting output backslashes are not interpreted as escape characters when they are reread.<div class="spacer">
+</div>
+<i>Classical troff</i> would interpret them as escape characters when they were reread and would end up printing a single backslash &#8216;\&#8217;.<div class="spacer">
+</div>
+In GNU, the correct way to get a printable version of the backslash character &#8217;\&#8217; is the <b>\(rs</b> escape sequence, but classical troff does not provide a clean feature for getting a non-syntactical backslash. A close method is the printable version of the current escape character using the <b>\e</b> escape sequence; this works if the current escape character is not redefined. It works in both GNU mode and compatibility mode, while dirty tricks like specifying a sequence of multiple backslashes do not work reliably; for the different handling in diversions, macro definitions, or text mode quickly leads to a confusion about the necessary number of backslashes.<div class="spacer">
+</div>
+To store an escape sequence in a diversion that is interpreted when the diversion is reread, either the traditional <b>\!</b> transparent output facility or the new <b>\?</b> escape sequence can be used.</div>
+<div class="subsection">
+<h2>Intermediate Output</h2> The groff intermediate output format is in a state of evolution. So far it has some incompatibilities, but it is intended to establish a full compatibility to the classical troff output format. Actually the following incompatibilities exist:<dl>
+<dt>
+&#8226;</dt>
+<dd>
+The positioning after the drawing of the polygons conflicts with the classical definition.</dd>
+</dl>
+<dl>
+<dt>
+&#8226;</dt>
+<dd>
+The intermediate output cannot be rescaled to other devices as classical &#8216;device-independent&#8217; troff did.</dd>
+</dl>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> The <i>groff info</i> <i>file</i>, cf. <b>info</b>(1) presents all groff documentation within a single document.<dl>
+<dt>
+<b>groff</b>(1)</dt>
+<dd>
+A list of all documentation around <i>groff</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>groff</b>(7)</dt>
+<dd>
+A description of the <i>groff</i> language, including a short, but complete reference of all predefined requests, registers, and escapes of plain <i>groff</i>. From the command line, this is called using</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+man 7 groff<br/>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>roff</b>(7)</dt>
+<dd>
+A survey of <i>roff</i> systems, including pointers to further historical documentation.</dd>
+</dl>
+<dl>
+<dt>
+[<i>CSTR&#160;#54/</i>]</dt>
+<dd>
+The <i>Nroff/Troff User's Manual</i> by <i>J. F. Ossanna</i> of 1976 in the revision of <i>Brian Kernighan</i> of 1992, being the</dd>
+</dl>
+<a class="link-ext" href="http://cm.bell-labs.com/cm/cs/cstr/54.ps.gz">classical troff documentation</a></div>
+<div class="section">
+<h1>COPYING</h1> Copyright &#169; 1989-2014 Free Software Foundation, Inc.<div class="spacer">
+</div>
+This file is part of groff, the GNU roff type-setting system. It is the source of the man-page groff_diff(7).<div class="spacer">
+</div>
+Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Front-Cover Texts, and with no Back-Cover Texts.<div class="spacer">
+</div>
+A copy of the Free Documentation License is included as a file called FDL in the main directory of the groff source package, it is also available in the internet at <a class="link-ext" href="http://www.gnu.org/copyleft/fdl.html">GNU FDL license</a></div>
+<div class="section">
+<h1>AUTHORS</h1> This document was written by James Clark was modified by Werner Lemberg and Bernd Warken</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+4 November 2014</td>
+<td class="foot-os">
+Groff Version 1.22.3</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

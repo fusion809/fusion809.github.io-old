@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SG_MODES(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SG_MODES(8)</td>
+<td class="head-vol">
+SG3_UTILS</td>
+<td class="head-rtitle">
+SG_MODES(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sg_modes - reads mode pages with SCSI MODE SENSE command</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>sg_modes</b> [ <i>--all</i>] [<i>--control=PC</i>] [<i>--dbd</i>] [<i>--dbout</i>] [ <i>--examine</i>] [<i>--flexible</i>] [<i>--help</i>] [<i>--hex</i>] [ <i>--list</i>] [<i>--llbaa</i>] [<i>--maxlen=LEN</i>] [ <i>--page=PG[,SPG]</i>] [<i>--raw</i>] [<i>-R</i>] [<i>--six</i>] [ <i>--verbose</i>] [<i>--version</i>] [<i>DEVICE</i>]<div class="spacer">
+</div>
+<b>sg_modes</b> [ <i>-6</i>] [<i>-a</i>] [<i>-A</i>] [<i>-c=PC</i>] [<i>-d</i>] [<i>-D</i>] [ <i>-e</i>] [<i>-f</i>] [<i>-h</i>] [<i>-H</i>] [<i>-l</i>] [<i>-L</i>] [ <i>-m=LEN</i>] [<i>-p=PG[,SPG]</i>] [<i>-r</i>] [<i>-subp=SPG</i>] [ <i>-v</i>] [<i>-V</i>] [<i>-?</i>] [<i>DEVICE</i>]</div>
+<div class="section">
+<h1>DESCRIPTION</h1> This utility sends a MODE SENSE SCSI command to the  <i>DEVICE</i> and outputs the response. There is a 6 byte and 10 byte (cdb) variant of the MODE SENSE command, this utility defaults to the 10 byte variant.<div class="spacer">
+</div>
+This utility decodes mode page headers and block descriptors but outputs the contents of each mode page in hex. It also has no facility to change the mode page contents or block descriptor data. Mode page contents are decoded and can be changed by the <b>sdparm</b> utility.<div class="spacer">
+</div>
+This utility supports two command line syntaxes, the preferred one is shown first in the synopsis and explained in this section. A later section on the old command line syntax outlines the second group of options.<div class="spacer">
+</div>
+If no page is given (and <i>--list</i> is not selected) then <i>--all</i> is assumed. The  <i>--all</i> option requests all mode pages (but not subpages) in a single response.</div>
+<div class="section">
+<h1>OPTIONS</h1> Arguments to long options are mandatory for short options as well.<dl>
+<dt>
+<b>-a</b>, <b>--all</b></dt>
+<dd>
+output all the mode pages reported by the <i>DEVICE</i>. This is what the page code 63 (0x3f) is defined to do. When used once, mode subpages are not fetched. When used twice (e.g. '-aa'), all mode pages and subpages are requested which is equivalent to '--page=63,255'.</dd>
+</dl>
+<dl>
+<dt>
+<b>-c</b>, <b>--control</b>=<i>PC</i></dt>
+<dd>
+<i>PC</i> is the page control value. Up to four different versions of each page are held by the device:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  <b>0</b> : current values (i.e. those active at present)<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  <b>1</b> : changeable values<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  <b>2</b> : default values (i.e. the manufacturer's settings)<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  <b>3</b> : saved values<div style="height: 0.00em;">
+&#160;</div>
+The changeable values are bit masks showing which fields could be changed with a MODE SELECT. The saved values will be re-instated the next time the device is power cycled or reset. If this option is not given then current values [0] are assumed.</dd>
+</dl>
+<dl>
+<dt>
+<b>-d</b>, <b>--dbd</b></dt>
+<dd>
+disable block descriptors. By default, block descriptors (usually one (for disks) or none) are returned in a MODE SENSE response. This option sets the &quot;disable block descriptors&quot; (DBD) bit in the cdb which instructs the device not to return any block descriptors in its response. Older devices may not support this setting and may return an &quot;illegal request&quot; sense key; alternatively they may ignore it. Oddly the Reduced Block Command set (RBC) requires this bit set.</dd>
+</dl>
+<dl>
+<dt>
+<b>-D</b>, <b>--dbout</b></dt>
+<dd>
+disable outputting block descriptors. Irrespective of whether block descriptors are present in the response or not, they are not output.</dd>
+</dl>
+<dl>
+<dt>
+<b>-e</b>, <b>--examine</b></dt>
+<dd>
+examine each mode page in the range 0 through to 62 (inclusive). If some response is given then print out the mode page name or number (in hex) if the name is not known.</dd>
+</dl>
+<dl>
+<dt>
+<b>-f</b>, <b>--flexible</b></dt>
+<dd>
+Some devices, bridges and/or drivers attempt crude translations between MODE SENSE 6 and 10 byte commands without correcting the response. This will cause the response to be mis-interpreted (usually with an error saying the response is malformed). With this option, the length of the response is checked, and if it looks wrong, the response is then decoded as if the other mode sense (cdb length) was sent.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>, <b>--help</b></dt>
+<dd>
+print out the usage message then exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-H</b>, <b>--hex</b></dt>
+<dd>
+The default action is to decode known mode page numbers (and subpage numbers) into text. When this option is used once, the response is output in hexadecimal to stdout. When this option is used twice, mode page numbers and page control values are output in hex.<div style="height: 0.00em;">
+&#160;</div>
+When this option is used three times, the full response to the MODE SENSE command is output in hex to stdout without any decoding. This form can be redirected to a file (or piped) and then used 'sdparm --inhex=' to decode.</dd>
+</dl>
+<dl>
+<dt>
+<b>-l</b>, <b>--list</b></dt>
+<dd>
+lists all common page and subpage codes and their names that are found in the command set that matches the peripheral type of the given  <i>DEVICE</i>. If no  <i>DEVICE</i> and no <i>--page=PG</i> is given then the common page and subpage codes and their names are listed for SBC (e.g. a disk). If no  <i>DEVICE</i> is given and a <i>--page=PG</i> is given then the common page and subpage codes and their names are listed for the command set whose peripheral device type matches the value given to  <i>PG</i>. For example 'sg_mode --list --page=1' lists the command mode pages and subpages for tape devices. Additionally if a sub_page_code is given then it is interpreted as a transport identifier and command transport specific mode page codes and their names are listed following the main mode page list. Other options are ignored.</dd>
+</dl>
+<dl>
+<dt>
+<b>-L</b>, <b>--llbaa</b></dt>
+<dd>
+set the Long LBA Accepted (LLBAA) bit in the MODE SENSE (10) cdb. This bit is not defined in the MODE SENSE (6) cdb so setting the '-L' and '--six' options is reported as an error. When set the  <i>DEVICE</i> may respond with 16 byte block descriptors as indicated by the 'LongLBA' field in the response. In most cases setting this option is not needed.</dd>
+</dl>
+<dl>
+<dt>
+<b>-m</b>, <b>--maxlen</b>=<i>LEN</i></dt>
+<dd>
+The <i>LEN</i> argument is the maximum response length in bytes. It is the 'allocation length' field in the cdb. When not given (or  <i>LEN</i> is zero) then the allocation length field is set to 4096 for MODE SENSE (10) or 252 for MODE SENSE (6). The  <i>LEN</i> argument must be non-negative and no greater than 65535 for MODE SENSE (10) and not greater than 255 for MODE SENSE (6).</dd>
+</dl>
+<dl>
+<dt>
+<b>-O</b>, <b>--old</b></dt>
+<dd>
+switch to older style options.</dd>
+</dl>
+<dl>
+<dt>
+<b>-p</b>, <b>--page</b>=<i>PG</i></dt>
+<dd>
+page code to fetch. The <i>PG</i> is assumed to be a decimal value unless prefixed by '0x' or has a trailing 'h'. It should be a value between 0 and 63 (inclusive). When not given and a default is required then a value of 63 (0x3f), which fetches all mode pages, is used.</dd>
+</dl>
+<dl>
+<dt>
+<b>-p</b>, <b>--page</b>=<i>PG,SPG</i></dt>
+<dd>
+page code and subpage code values to fetch. Both arguments are assumed to be decimal unless flagged as hexadecimal. The page code should be between 0 and 63 inclusive. The subpage code should be between 0 and 255 inclusive. The default value for the subpage code is 0.</dd>
+</dl>
+<dl>
+<dt>
+<b>-r</b>, <b>--raw</b></dt>
+<dd>
+output the response in binary to stdout. Error messages and warnings, if any, are sent to stderr. When this option is used twice (e.g. '-rr') then has the same action as '-R'</dd>
+</dl>
+<dl>
+<dt>
+<b>-R</b></dt>
+<dd>
+output the selected mode page to stdout a byte per line. Each line contains two hexadecimal digits (e.g. &quot;3e&quot;). Useful as input (after editing) to the sg_wr_mode(8) utility.</dd>
+</dl>
+<dl>
+<dt>
+<b>-6</b>, <b>--six</b></dt>
+<dd>
+by default this utility sends a 10 byte MODE SENSE command to the  <i>DEVICE</i>. However some SCSI devices only support 6 byte MODE SENSE commands (e.g. SCSI-2 tape drives). This parameter forces the use of 6 byte MODE SENSE commands.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b>, <b>--verbose</b></dt>
+<dd>
+increase level of verbosity. Can be used multiple times.</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>, <b>--version</b></dt>
+<dd>
+print out version string then exit.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>NOTES</h1> If the normal sg_modes utility fails with &quot;illegal command operation code&quot; then try the '--six' (or '-6') option.<div class="spacer">
+</div>
+This utility performs a SCSI INQUIRY command to determine the peripheral type of the device (e.g. 0 -&gt; Direct Access Device (disk)) prior to sending a MODE SENSE command. This helps in decoding the block descriptor and mode pages.<div class="spacer">
+</div>
+This utility opens <i>DEVICE</i> with a read-only flag (e.g. in Unix with the O_RDONLY flag).<div class="spacer">
+</div>
+In the 2.4 series of Linux kernels the <i>DEVICE</i> must be a SCSI generic (sg) device. In the 2.6 series block devices (e.g. SCSI disks and DVD drives) can also be specified. For example &quot;sg_modes -a /dev/sda&quot; will work in the 2.6 series kernels.</div>
+<div class="section">
+<h1>EXIT STATUS</h1> The exit status of sg_modes is 0 when it is successful. Otherwise see the sg3_utils(8) man page.</div>
+<div class="section">
+<h1>OLDER COMMAND LINE OPTIONS</h1> The options in this section were the only ones available prior to sg3_utils version 1.23 . In sg3_utils version 1.23 and later these older options can be selected by either setting the SG3_UTILS_OLD_OPTS environment variable or using '--old' (or '-O) as the first option.<dl>
+<dt>
+<b>-6</b></dt>
+<dd>
+by default this utility sends a 10 byte MODE SENSE command to the  <i>DEVICE</i>. This parameter forces the use of 6 byte MODE SENSE commands. See  <i>--six</i> in the main description.</dd>
+</dl>
+<dl>
+<dt>
+<b>-a</b></dt>
+<dd>
+see <i>--all</i> in the main description.</dd>
+</dl>
+<dl>
+<dt>
+<b>-A</b></dt>
+<dd>
+output all the mode pages and subpages supported by the <i>DEVICE</i>. Same as '--all --all' in the new syntax.</dd>
+</dl>
+<dl>
+<dt>
+<b>-c</b>=<i>PC</i></dt>
+<dd>
+<i>PC</i> is the page control value. See <b>--control</b>=<i>PC</i> in the main description.</dd>
+</dl>
+<dl>
+<dt>
+<b>-d</b></dt>
+<dd>
+see <b>--dbd</b> in the main description.</dd>
+</dl>
+<dl>
+<dt>
+<b>-D</b></dt>
+<dd>
+see <b>--dbout</b> in the main description.</dd>
+</dl>
+<dl>
+<dt>
+<b>-e</b></dt>
+<dd>
+see <b>--examine</b> in the main description.</dd>
+</dl>
+<dl>
+<dt>
+<b>-f</b></dt>
+<dd>
+see <b>--flexible</b> in the main description.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b></dt>
+<dd>
+The default action is to decode known mode page numbers (and subpage numbers) into text. With this option mode page numbers (and subpage numbers) are output in hexadecimal.</dd>
+</dl>
+<dl>
+<dt>
+<b>-H</b></dt>
+<dd>
+same action as the '-h' option.</dd>
+</dl>
+<dl>
+<dt>
+<b>-l</b></dt>
+<dd>
+see <b>--list</b> in the main description.</dd>
+</dl>
+<dl>
+<dt>
+<b>-L</b></dt>
+<dd>
+see <b>--llbaa</b> in the main description.</dd>
+</dl>
+<dl>
+<dt>
+<b>-N</b></dt>
+<dd>
+switch to the newer style options.</dd>
+</dl>
+<dl>
+<dt>
+<b>-m</b>=<i>LEN</i></dt>
+<dd>
+see <b>--maxlen</b>=<i>LEN</i> in the main description.</dd>
+</dl>
+<dl>
+<dt>
+<b>-p</b>=<i>PG</i></dt>
+<dd>
+<i>PG</i> is page code to fetch. Should be a hexadecimal number between 0 and 3f inclusive (0 to 63 decimal). The default value when required is 3f (fetch all mode pages).</dd>
+</dl>
+<dl>
+<dt>
+<b>-p</b>=<i>PG,SPG</i></dt>
+<dd>
+page code and subpage code values to fetch. The page code should be a hexadecimal number between 0 and 3f inclusive. The subpage code should be a hexadecimal number between 0 and ff inclusive. The default value for the subpage code is 0.</dd>
+</dl>
+<dl>
+<dt>
+<b>-r</b></dt>
+<dd>
+output the selected mode page to stdout a byte per line. Each line contains two hexadecimal digits (e.g. &quot;3e&quot;). Useful as input (after editing) to the sg_wr_mode(8) utility.</dd>
+</dl>
+<dl>
+<dt>
+<b>-subp</b>=<i>SPG</i></dt>
+<dd>
+sub page code to fetch. Should be a hexadecimal number between 0 and 0xff inclusive. The default value is 0.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b></dt>
+<dd>
+increase verbosity of output.</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b></dt>
+<dd>
+print out version string then exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-?</b></dt>
+<dd>
+output usage message then exit. Ignore all other parameters.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>AUTHOR</h1> Written by Douglas Gilbert</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Report bugs to &lt;dgilbert at interlog dot com&gt;.</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright &#169; 2000-2015 Douglas Gilbert<div style="height: 0.00em;">
+&#160;</div>
+This software is distributed under the GPL version 2. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>sdparm(8), sg_wr_mode(8), sginfo(8),</b> <b>sgmode(scsirastools), scsiinfo(net), scu(net),</b> <b>seatools(seagate)</b><div class="spacer">
+</div>
+All these utilities offer some facility to change mode page (or block descriptor) parameters.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+January 2015</td>
+<td class="foot-os">
+sg3_utils-1.41</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

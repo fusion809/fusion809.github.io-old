@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+FANOTIFY_MARK(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+FANOTIFY_MARK(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+FANOTIFY_MARK(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> fanotify_mark - add, remove, or modify an fanotify mark on a filesystem object</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;sys/fanotify.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>int fanotify_mark(int </b><i>fanotify_fd</i><b>, unsigned int </b><i>flags</i><b>,</b><br/>
+<b>                  uint64_t </b><i>mask</i><b>, int </b><i>dirfd</i><b>, const char *</b><i>pathname</i><b>);</b><br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> For an overview of the fanotify API, see <b>fanotify</b>(7).<div class="spacer">
+</div>
+<b>fanotify_mark</b>(2) adds, removes, or modifies an fanotify mark on a filesystem object. The caller must have read permission on the filesystem object that is to be marked.<div class="spacer">
+</div>
+The <i>fanotify_fd</i> argument is a file descriptor returned by <b>fanotify_init</b>(2).<div class="spacer">
+</div>
+<i>flags</i> is a bit mask describing the modification to perform. It must include exactly one of the following values:<dl>
+<dt>
+<b>FAN_MARK_ADD</b></dt>
+<dd>
+The events in <i>mask</i> will be added to the mark mask (or to the ignore mask). <i>mask</i> must be nonempty or the error <b>EINVAL</b> will occur.</dd>
+</dl>
+<dl>
+<dt>
+<b>FAN_MARK_REMOVE</b></dt>
+<dd>
+The events in argument <i>mask</i> will be removed from the mark mask (or from the ignore mask). <i>mask</i> must be nonempty or the error <b>EINVAL</b> will occur.</dd>
+</dl>
+<dl>
+<dt>
+<b>FAN_MARK_FLUSH</b></dt>
+<dd>
+Remove either all mount or all non-mount marks from the fanotify group. If <i>flags</i> contains <b>FAN_MARK_MOUNT</b>, all marks for mounts are removed from the group. Otherwise, all marks for directories and files are removed. No flag other than <b>FAN_MARK_MOUNT</b> can be used in conjunction with <b>FAN_MARK_FLUSH</b>. <i>mask</i> is ignored.</dd>
+</dl>
+<div class="spacer">
+</div>
+If none of the values above is specified, or more than one is specified, the call fails with the error <b>EINVAL</b>.<div class="spacer">
+</div>
+In addition, zero or more of the following values may be ORed into <i>flags</i>:<dl>
+<dt>
+<b>FAN_MARK_DONT_FOLLOW</b></dt>
+<dd>
+If <i>pathname</i> is a symbolic link, mark the link itself, rather than the file to which it refers. (By default, <b>fanotify_mark</b>() dereferences <i>pathname</i> if it is a symbolic link.)</dd>
+</dl>
+<dl>
+<dt>
+<b>FAN_MARK_ONLYDIR</b></dt>
+<dd>
+If the filesystem object to be marked is not a directory, the error <b>ENOTDIR</b> shall be raised.</dd>
+</dl>
+<dl>
+<dt>
+<b>FAN_MARK_MOUNT</b></dt>
+<dd>
+Mark the mount point specified by <i>pathname</i>. If <i>pathname</i> is not itself a mount point, the mount point containing <i>pathname</i> will be marked. All directories, subdirectories, and the contained files of the mount point will be monitored.</dd>
+</dl>
+<dl>
+<dt>
+<b>FAN_MARK_IGNORED_MASK</b></dt>
+<dd>
+The events in <i>mask</i> shall be added to or removed from the ignore mask.</dd>
+</dl>
+<dl>
+<dt>
+<b>FAN_MARK_IGNORED_SURV_MODIFY</b></dt>
+<dd>
+The ignore mask shall survive modify events. If this flag is not set, the ignore mask is cleared when a modify event occurs for the ignored file or directory.</dd>
+</dl>
+<div class="spacer">
+</div>
+<i>mask</i> defines which events shall be listened for (or which shall be ignored). It is a bit mask composed of the following values:<dl>
+<dt>
+<b>FAN_ACCESS</b></dt>
+<dd>
+Create an event when a file or directory (but see BUGS) is accessed (read).</dd>
+</dl>
+<dl>
+<dt>
+<b>FAN_MODIFY</b></dt>
+<dd>
+Create an event when a file is modified (write).</dd>
+</dl>
+<dl>
+<dt>
+<b>FAN_CLOSE_WRITE</b></dt>
+<dd>
+Create an event when a writable file is closed.</dd>
+</dl>
+<dl>
+<dt>
+<b>FAN_CLOSE_NOWRITE</b></dt>
+<dd>
+Create an event when a read-only file or directory is closed.</dd>
+</dl>
+<dl>
+<dt>
+<b>FAN_OPEN</b></dt>
+<dd>
+Create an event when a file or directory is opened.</dd>
+</dl>
+<dl>
+<dt>
+<b>FAN_OPEN_PERM</b></dt>
+<dd>
+Create an event when a permission to open a file or directory is requested. An fanotify file descriptor created with <b>FAN_CLASS_PRE_CONTENT</b> or <b>FAN_CLASS_CONTENT</b> is required.</dd>
+</dl>
+<dl>
+<dt>
+<b>FAN_ACCESS_PERM</b></dt>
+<dd>
+Create an event when a permission to read a file or directory is requested. An fanotify file descriptor created with <b>FAN_CLASS_PRE_CONTENT</b> or <b>FAN_CLASS_CONTENT</b> is required.</dd>
+</dl>
+<dl>
+<dt>
+<b>FAN_ONDIR</b></dt>
+<dd>
+Create events for directories&#8212;for example, when <b>opendir</b>(3), <b>readdir</b>(3) (but see BUGS), and <b>closedir</b>(3) are called. Without this flag, only events for files are created.</dd>
+</dl>
+<dl>
+<dt>
+<b>FAN_EVENT_ON_CHILD</b></dt>
+<dd>
+Events for the immediate children of marked directories shall be created. The flag has no effect when marking mounts. Note that events are not generated for children of the subdirectories of marked directories. To monitor complete directory trees it is necessary to mark the relevant mount.</dd>
+</dl>
+<div class="spacer">
+</div>
+The following composed value is defined:<dl>
+<dt>
+<b>FAN_CLOSE</b></dt>
+<dd>
+A file is closed (<b>FAN_CLOSE_WRITE</b>|<b>FAN_CLOSE_NOWRITE</b>).</dd>
+</dl>
+<div class="spacer">
+</div>
+The filesystem object to be marked is determined by the file descriptor <i>dirfd</i> and the pathname specified in <i>pathname</i>:<dl>
+<dt>
+*</dt>
+<dd>
+If <i>pathname</i> is NULL, <i>dirfd</i> defines the filesystem object to be marked.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+If <i>pathname</i> is NULL, and <i>dirfd</i> takes the special value <b>AT_FDCWD</b>, the current working directory is to be marked.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+If <i>pathname</i> is absolute, it defines the filesystem object to be marked, and <i>dirfd</i> is ignored.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+If <i>pathname</i> is relative, and <i>dirfd</i> does not have the value <b>AT_FDCWD</b>, then the filesystem object to be marked is determined by interpreting <i>pathname</i> relative the directory referred to by <i>dirfd</i>.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+If <i>pathname</i> is relative, and <i>dirfd</i> has the value <b>AT_FDCWD</b>, then the filesystem object to be marked is determined by interpreting <i>pathname</i> relative the current working directory.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, <b>fanotify_mark</b>() returns 0. On error, -1 is returned, and <i>errno</i> is set to indicate the error.</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+An invalid file descriptor was passed in <i>fanotify_fd</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+An invalid value was passed in <i>flags</i> or <i>mask</i>, or <i>fanotify_fd</i> was not an fanotify file descriptor.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+The fanotify file descriptor was opened with <b>FAN_CLASS_NOTIF</b> and mask contains a flag for permission events (<b>FAN_OPEN_PERM</b> or <b>FAN_ACCESS_PERM</b>).</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOENT</b></dt>
+<dd>
+The filesystem object indicated by <i>dirfd</i> and <i>pathname</i> does not exist. This error also occurs when trying to remove a mark from an object which is not marked.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOMEM</b></dt>
+<dd>
+The necessary memory could not be allocated.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOSPC</b></dt>
+<dd>
+The number of marks exceeds the limit of 8192 and the <b>FAN_UNLIMITED_MARKS</b> flag was not specified when the fanotify file descriptor was created with <b>fanotify_init</b>(2).</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOSYS</b></dt>
+<dd>
+This kernel does not implement <b>fanotify_mark</b>(). The fanotify API is available only if the kernel was configured with <b>CONFIG_FANOTIFY</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+<i>flags</i> contains <b>FAN_MARK_ONLYDIR</b>, and <i>dirfd</i> and <i>pathname</i> do not specify a directory.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>VERSIONS</h1> <b>fanotify_mark</b>() was introduced in version 2.6.36 of the Linux kernel and enabled in version 2.6.37.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> This system call is Linux-specific.</div>
+<div class="section">
+<h1>BUGS</h1> The following bugs were present in Linux kernels before version 3.16:<dl>
+<dt>
+*</dt>
+<dd>
+If <i>flags</i> contains <b>FAN_MARK_FLUSH</b>, <i>dirfd</i> and <i>pathname</i> must specify a valid filesystem object, even though this object is not used.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+<b>readdir</b>(2) does not generate a <b>FAN_ACCESS</b> event.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+If <b>fanotify_mark</b>(2) is called with <b>FAN_MARK_FLUSH</b>, <i>flags</i> is not checked for invalid values.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>fanotify_init</b>(2), <b>fanotify</b>(7)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2014-10-02</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

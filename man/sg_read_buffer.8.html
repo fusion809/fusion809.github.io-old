@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SG_READ_BUFFER(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SG_READ_BUFFER(8)</td>
+<td class="head-vol">
+SG3_UTILS</td>
+<td class="head-rtitle">
+SG_READ_BUFFER(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sg_read_buffer - send SCSI READ BUFFER command</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>sg_read_buffer</b> [ <i>--help</i>] [<i>--hex</i>] [<i>--id=ID</i>] [<i>--length=LEN</i>] [ <i>--mode=MO</i>] [<i>--offset=OFF</i>] [<i>--raw</i>] [ <i>--readonly</i>] [<i>--verbose</i>] [<i>--version</i>] <i>DEVICE</i></div>
+<div class="section">
+<h1>DESCRIPTION</h1> Sends a SCSI READ BUFFER command to the  <i>DEVICE</i>, and if there is a response either decodes it, prints it in hexadecimal or sends it in binary to stdout. If a response is received for a &quot;descriptor&quot; mode then, in the absence of  <i>--hex</i> and <i>--raw</i>, it is decoded. Response for non-descriptor modes are output in hexadecimal unless the  <i>--raw</i> option is given.</div>
+<div class="section">
+<h1>OPTIONS</h1> Arguments to long options are mandatory for short options as well.<dl>
+<dt>
+<b>-h</b>, <b>--help</b></dt>
+<dd>
+output the usage message then exit. If used multiple times also prints the mode names and their acronyms.</dd>
+</dl>
+<dl>
+<dt>
+<b>-H</b>, <b>--hex</b></dt>
+<dd>
+output the response in hexadecimal. When given twice the response is output in hex with the corresponding representation in ASCII to the right of each line.</dd>
+</dl>
+<dl>
+<dt>
+<b>-i</b>, <b>--id</b>=<i>ID</i></dt>
+<dd>
+this option sets the buffer id field in the cdb. <i>ID</i> is a value between 0 (default) and 255 inclusive.</dd>
+</dl>
+<dl>
+<dt>
+<b>-l</b>, <b>--length</b>=<i>LEN</i></dt>
+<dd>
+where <i>LEN</i> is the length, in bytes, that is placed in the &quot;allocation length&quot; field in the cdb. The default value is 4 (bytes). The device may respond with less bytes.</dd>
+</dl>
+<dl>
+<dt>
+<b>-m</b>, <b>--mode</b>=<i>MO</i></dt>
+<dd>
+this option sets the mode field in the cdb. <i>MO</i> is a value between 0 (default) and 31 inclusive. Alternatively an abbreviation can be given. See the MODES section below. To list the available mode abbreviations use an invalid one (e.g. '--mode=xxx'). As an example, to fetch the read buffer descriptor give '--mode=desc' .</dd>
+</dl>
+<dl>
+<dt>
+<b>-o</b>, <b>--offset</b>=<i>OFF</i></dt>
+<dd>
+this option sets the buffer offset field in the cdb. <i>OFF</i> is a value between 0 (default) and 2**24-1 . It is a byte offset.</dd>
+</dl>
+<dl>
+<dt>
+<b>-r</b>, <b>--raw</b></dt>
+<dd>
+if a response is received then it is sent in binary to stdout.</dd>
+</dl>
+<dl>
+<dt>
+<b>-R</b>, <b>--readonly</b></dt>
+<dd>
+open the <i>DEVICE</i> read-only (e.g. in Unix with the O_RDONLY flag). The default is to open it read-write.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b>, <b>--verbose</b></dt>
+<dd>
+increase the level of verbosity, (i.e. debug output).</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>, <b>--version</b></dt>
+<dd>
+print the version string and then exit.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>MODES</h1> Following is a list of READ BUFFER command settings for the MODE field. First is an acronym accepted by the  <i>MO</i> argument of this utility. Following the acronym in square brackets are the corresponding decimal and hex values that may also be given for  <i>MO</i>. The following are listed in numerical order.<dl>
+<dt>
+hd  [0, 0x0]</dt>
+<dd>
+Combined header and data (obsolete in SPC-4).</dd>
+</dl>
+<dl>
+<dt>
+vendor  [1, 0x1]</dt>
+<dd>
+Vendor specific.</dd>
+</dl>
+<dl>
+<dt>
+data  [2, 0x2]</dt>
+<dd>
+Data.</dd>
+</dl>
+<dl>
+<dt>
+desc  [3, 0x3]</dt>
+<dd>
+Descriptor: yields 4 bytes that contain an offset boundary field (1 byte) and buffer capacity (3 bytes).</dd>
+</dl>
+<dl>
+<dt>
+echo  [10, 0xa]</dt>
+<dd>
+Read data from echo buffer (was called &quot;Echo buffer&quot; in SPC-3).</dd>
+</dl>
+<dl>
+<dt>
+echo_desc  [11, 0xb]</dt>
+<dd>
+Echo buffer descriptor: yields 4 bytes of which the last (lowest) 13 bits represent the echo buffer capacity. The maximum echo buffer size is 4096 bytes.</dd>
+</dl>
+<dl>
+<dt>
+en_ex  [26, 0x1a]</dt>
+<dd>
+Enable expander communications protocol and Echo buffer. Made obsolete in SPC-4.</dd>
+</dl>
+<dl>
+<dt>
+err_hist  [28, 0x1c]</dt>
+<dd>
+Error history. Introduced in SPC-4.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>NOTES</h1> All numbers given with options are assumed to be decimal. Alternatively numerical values can be given in hexadecimal preceded by either &quot;0x&quot; or &quot;0X&quot; (or has a trailing &quot;h&quot; or &quot;H&quot;).</div>
+<div class="section">
+<h1>EXIT STATUS</h1> The exit status of sg_read_buffer is 0 when it is successful. Otherwise see the sg3_utils(8) man page.</div>
+<div class="section">
+<h1>AUTHORS</h1> Written by Luben Tuikov and Douglas Gilbert.</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Report bugs to &lt;dgilbert at interlog dot com&gt;.</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright &#169; 2006-2014 Luben Tuikov and Douglas Gilbert<div style="height: 0.00em;">
+&#160;</div>
+This software is distributed under a FreeBSD license. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>sg_write_buffer(sg3_utils)</b></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+May 2014</td>
+<td class="foot-os">
+sg3_utils-1.39</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+BSEARCH(3P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+BSEARCH(3P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+BSEARCH(3P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> bsearch &#8212; binary search a sorted table</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;stdlib.h&gt;<div class="spacer">
+</div>
+void *bsearch(const void *<i>key</i>, const void *<i>base</i>, size_t <i>nel</i>,<br/>
+    size_t <i>width</i>, int (*<i>compar</i>)(const void *, const void *));<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The functionality described on this reference page is aligned with the ISO&#160;C standard. Any conflict between the requirements described here and the ISO&#160;C standard is unintentional. This volume of POSIX.1&#8208;2008 defers to the ISO&#160;C standard.<div class="spacer">
+</div>
+The  <i>bsearch</i>() function shall search an array of <i>nel</i> objects, the initial element of which is pointed to by <i>base</i>, for an element that matches the object pointed to by <i>key</i>. The size of each element in the array is specified by <i>width</i>. If the <i>nel</i> argument has the value zero, the comparison function pointed to by <i>compar</i> shall not be called and no match shall be found.<div class="spacer">
+</div>
+The comparison function pointed to by <i>compar</i> shall be called with two arguments that point to the <i>key</i> object and to an array element, in that order.<div class="spacer">
+</div>
+The application shall ensure that the comparison function pointed to by <i>compar</i> does not alter the contents of the array. The implementation may reorder elements of the array between calls to the comparison function, but shall not alter the contents of any individual element.<div class="spacer">
+</div>
+The implementation shall ensure that the first argument is always a pointer to the key.<div class="spacer">
+</div>
+When the same objects (consisting of width bytes, irrespective of their current positions in the array) are passed more than once to the comparison function, the results shall be consistent with one another. That is, the same object shall always compare the same way with the key.<div class="spacer">
+</div>
+The application shall ensure that the function returns an integer less than, equal to, or greater than 0 if the <i>key</i> object is considered, respectively, to be less than, to match, or to be greater than the array element. The application shall ensure that the array consists of all the elements that compare less than, all the elements that compare equal to, and all the elements that compare greater than the <i>key</i> object, in that order.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> The  <i>bsearch</i>() function shall return a pointer to a matching member of the array, or a null pointer if no match is found. If two or more members compare equal, which member is returned is unspecified.</div>
+<div class="section">
+<h1>ERRORS</h1> No errors are defined.<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>EXAMPLES</h1> The example below searches a table containing pointers to nodes consisting of a string and its length. The table is ordered alphabetically on the string in the node pointed to by each entry.<div class="spacer">
+</div>
+The code fragment below reads in strings and either finds the corresponding node and prints out the string and its length, or prints an error message.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>#include &lt;stdio.h&gt;</b><br/>
+<b>#include &lt;stdlib.h&gt;</b><br/>
+<b>#include &lt;string.h&gt;</b><div class="spacer">
+</div>
+#define&#160;TABSIZE    1000<div class="spacer">
+</div>
+struct node {                  /* These are stored in the table. */<br/>
+    char *string;<br/>
+    int length;<br/>
+};<br/>
+struct node table[TABSIZE];    /* Table to be searched. */<br/>
+    .<br/>
+    .<br/>
+    .<br/>
+{<br/>
+    struct node *node_ptr, node;<br/>
+    /* Routine to compare 2 nodes. */<br/>
+    int node_compare(const void *, const void *);<br/>
+    .<br/>
+    .<br/>
+    .<br/>
+    while (scanf(&quot;%ms&quot;, &amp;node.string) != EOF) {<br/>
+        node_ptr = (struct node *)bsearch((void *)(&amp;node),<br/>
+               (void *)table, TABSIZE,<br/>
+               sizeof(struct node), node_compare);<br/>
+        if (node_ptr != NULL) {<br/>
+            (void)printf(&quot;string = %20s, length = %d\n&quot;,<br/>
+                node_ptr-&gt;string, node_ptr-&gt;length);<br/>
+        } else {<br/>
+            (void)printf(&quot;not found: %s\n&quot;, node.string);<br/>
+        }<br/>
+        free(node.string);<br/>
+    }<br/>
+}<br/>
+/*<br/>
+    This routine compares two nodes based on an<br/>
+    alphabetical ordering of the string field.<br/>
+*/<br/>
+int<br/>
+node_compare(const void *node1, const void *node2)<br/>
+{<br/>
+    return strcoll(((const struct node *)node1)-&gt;string,<br/>
+        ((const struct node *)node2)-&gt;string);<br/>
+}<br/>
+</div>
+</div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> The pointers to the key and the element at the base of the table should be of type pointer-to-element.<div class="spacer">
+</div>
+The comparison function need not compare every byte, so arbitrary data may be contained in the elements in addition to the values being compared.<div class="spacer">
+</div>
+In practice, the array is usually sorted according to the comparison function.</div>
+<div class="section">
+<h1>RATIONALE</h1> The requirement that the second argument (hereafter referred to as <i>p</i>) to the comparison function is a pointer to an element of the array implies that for every call all of the following expressions are non-zero:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>((char *)p &#8722; (char *(base) % width == 0</b><br/>
+<b>(char *)p &gt;= (char *)base</b><br/>
+<b>(char *)p &lt; (char *)base + nel * width</b><br/>
+</div>
+</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> None.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i><i>hcreate</i>()</i>, <i><i>lsearch</i>()</i>, <i><i>qsort</i>()</i>, <i><i>tdelete</i>()</i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i><b>&lt;stdlib.h&gt;</b></i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

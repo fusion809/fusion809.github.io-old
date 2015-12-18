@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+paxctl(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+paxctl(1)</td>
+<td class="head-vol">
+PaX</td>
+<td class="head-rtitle">
+paxctl(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1>  <b>paxctl</b> - user-space utility to control PaX flags</div>
+<div class="section">
+<h1>SYNTAX</h1>  <b>paxctl</b> &lt;flags&gt; &lt;files&gt;</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>paxctl</b> is a tool that allows PaX flags to be modified on a per-binary basis.  PaX is part of common security-enhancing kernel patches and secure distributions, such as GrSecurity and Hardened Gentoo, respectively.  Your system needs to be running a properly patched and configured kernel for this program to have any effect.<dl>
+<dt>
+<b>-P</b></dt>
+<dd>
+enforce paging based non-executable pages (PAGEEXEC)</dd>
+</dl>
+<dl>
+<dt>
+<b>-p</b></dt>
+<dd>
+do not enforce paging based non-executable pages (NOPAGEEXEC)</dd>
+</dl>
+<dl>
+<dt>
+<b>-E</b></dt>
+<dd>
+emulate trampolines (EMUTRAMP)</dd>
+</dl>
+<dl>
+<dt>
+<b>-e</b></dt>
+<dd>
+do not emulate trampolines (NOEMUTRAMP)</dd>
+</dl>
+<dl>
+<dt>
+<b>-M</b></dt>
+<dd>
+enforce secure memory protections (MPROTECT)</dd>
+</dl>
+<dl>
+<dt>
+<b>-m</b></dt>
+<dd>
+do not enforce secure memory protections (NOMPROTECT)</dd>
+</dl>
+<dl>
+<dt>
+<b>-R</b></dt>
+<dd>
+randomize memory regions (RANDMMAP)</dd>
+</dl>
+<dl>
+<dt>
+<b>-r</b></dt>
+<dd>
+do not randomize memory regions (NORANDMMAP)</dd>
+</dl>
+<dl>
+<dt>
+<b>-X</b></dt>
+<dd>
+randomize base address of normal (ET_EXEC) executables (RANDEXEC)</dd>
+</dl>
+<dl>
+<dt>
+<b>-x</b></dt>
+<dd>
+do not randomize base address of normal (ET_EXEC) executables (NORANDEXEC)</dd>
+</dl>
+<dl>
+<dt>
+<b>-S</b></dt>
+<dd>
+enforce segmentation based non-executable pages (SEGMEXEC)</dd>
+</dl>
+<dl>
+<dt>
+<b>-s</b></dt>
+<dd>
+do not enforce segmentation based non-executable pages (NOSEGMEXEC)</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b></dt>
+<dd>
+view flags</dd>
+</dl>
+<dl>
+<dt>
+<b>-z</b></dt>
+<dd>
+reset all flags (further flags still apply)</dd>
+</dl>
+<dl>
+<dt>
+<b>-c</b></dt>
+<dd>
+create the PT_PAX_FLAGS program header if it does not exist by converting the PT_GNU_STACK program header if it exists</dd>
+</dl>
+<dl>
+<dt>
+<b>-C</b></dt>
+<dd>
+create the PT_PAX_FLAGS program header if it does not exist by adding a new program header, if it is possible</dd>
+</dl>
+<dl>
+<dt>
+<b>-q</b></dt>
+<dd>
+suppress error messages</dd>
+</dl>
+<dl>
+<dt>
+<b>-Q</b></dt>
+<dd>
+report flags in short format</dd>
+</dl>
+</div>
+<div class="section">
+<h1>CAVEATS</h1> The old PaX flag location and control method have been obsoleted, if your kernel and binaries use it you have to use chpax(1) instead (it is recommended to use PT_PAX_FLAGS along with -c or -C however).<div style="height: 1.00em;">
+&#160;</div>
+Converting PT_GNU_STACK into PT_PAX_FLAGS means that the information in the former is destroyed, in particular you must make sure that the EMUTRAMP PaX option is properly set in the newly created PT_PAX_FLAGS. The secure way is to disable EMUTRAMP first and if PaX reports stack execution attempts from nested function trampolines then enable it.<div style="height: 1.00em;">
+&#160;</div>
+Note that the new PT_PAX_FLAGS is created in the same state that binutils/ld itself would produce (equivalent to -zex).<div style="height: 1.00em;">
+&#160;</div>
+Note that if you use both PT_PAX_FLAGS and the extended attribute PaX flags on a binary then they must be exactly the same (except for RANDEXEC).<div style="height: 1.00em;">
+&#160;</div>
+Note that RANDEXEC is no longer supported by PaX kernels since 2.6.13, the paxctl flags are simply ignored there.<div style="height: 1.00em;">
+&#160;</div>
+Note that paxctl does not make backup copies of the files it modifies.<div style="height: 1.00em;">
+&#160;</div>
+Note that paxctl is meant to work on the native architecture's binaries only, however it should work on foreign binaries as long as they have the same endianess as the native architecture (e.g., an i386 paxctl should work on amd64 or little-endian arm but not on big-endian mips binaries).</div>
+<div class="section">
+<h1>AUTHOR</h1> Written by The PaX Team &lt;pageexec@freemail.hu&gt;<div class="spacer">
+</div>
+This manpage was adapted from the chpax manpage written by Martin F. Krafft &lt;madduck@debian.org&gt; for the Debian GNU/Linux Distribution, but may be used by others.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>chpax</b>(1), <b>gradm</b>(8)<div class="spacer">
+</div>
+PaX website: http://pax.grsecurity.net<div class="spacer">
+</div>
+GrSecurity website: http://www.grsecurity.net<div class="spacer">
+</div>
+Hardened Gentoo website: http://www.gentoo.org/proj/en/hardened</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2012-02-19</td>
+<td class="foot-os">
+paxctl Manual</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

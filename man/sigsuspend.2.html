@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SIGSUSPEND(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SIGSUSPEND(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+SIGSUSPEND(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sigsuspend, rt_sigsuspend - wait for a signal</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;signal.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<b>int sigsuspend(const sigset_t *</b><i>mask</i><b>);</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Feature Test Macro Requirements for glibc (see <b>feature_test_macros</b>(7)):<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>sigsuspend</b>(): _POSIX_C_SOURCE&#160;&gt;=&#160;1 || _XOPEN_SOURCE || _POSIX_SOURCE</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>sigsuspend</b>() temporarily replaces the signal mask of the calling process with the mask given by <i>mask</i> and then suspends the process until delivery of a signal whose action is to invoke a signal handler or to terminate a process.<div style="height: 1.00em;">
+&#160;</div>
+If the signal terminates the process, then <b>sigsuspend</b>() does not return. If the signal is caught, then <b>sigsuspend</b>() returns after the signal handler returns, and the signal mask is restored to the state before the call to <b>sigsuspend</b>().<div style="height: 1.00em;">
+&#160;</div>
+It is not possible to block <b>SIGKILL</b> or <b>SIGSTOP</b>; specifying these signals in <i>mask</i>, has no effect on the process's signal mask.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> <b>sigsuspend</b>() always returns -1, with <i>errno</i> set to indicate the error (normally, <b>EINTR</b>).</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>EFAULT</b></dt>
+<dd>
+<i>mask</i> points to memory which is not a valid part of the process address space.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINTR</b></dt>
+<dd>
+The call was interrupted by a signal.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>CONFORMING TO</h1> POSIX.1-2001, POSIX.1-2008.</div>
+<div class="section">
+<h1>NOTES</h1> Normally, <b>sigsuspend</b>() is used in conjunction with <b>sigprocmask</b>(2) in order to prevent delivery of a signal during the execution of a critical code section. The caller first blocks the signals with <b>sigprocmask</b>(2). When the critical code has completed, the caller then waits for the signals by calling <b>sigsuspend</b>() with the signal mask that was returned by <b>sigprocmask</b>(2) (in the <i>oldset</i> argument).<div class="spacer">
+</div>
+See <b>sigsetops</b>(3) for details on manipulating signal sets.<div class="subsection">
+<h2>C library/kernel differences</h2> The original Linux system call was named <b>sigsuspend</b>(). However, with the addition of real-time signals in Linux 2.2, the fixed-size, 32-bit <i>sigset_t</i> type supported by that system call was no longer fit for purpose. Consequently, a new system call, <b>rt_sigsuspend</b>(), was added to support an enlarged <i>sigset_t</i> type. The new system call takes a second argument, <i>size_t sigsetsize</i>, which specifies the size in bytes of the signal set in <i>mask</i>. This argument is currently required to have the value <i>sizeof(sigset_t)</i> (or the error <b>EINVAL</b> results). The glibc <b>sigsuspend</b>() wrapper function hides these details from us, transparently calling <b>rt_sigsuspend</b>() when the kernel provides it.</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>kill</b>(2), <b>pause</b>(2), <b>sigaction</b>(2), <b>signal</b>(2), <b>sigprocmask</b>(2), <b>sigwaitinfo</b>(2), <b>sigsetops</b>(3), <b>sigwait</b>(3), <b>signal</b>(7)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-07-23</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

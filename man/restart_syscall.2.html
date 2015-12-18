@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+RESTART_SYSCALL(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+RESTART_SYSCALL(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+RESTART_SYSCALL(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> restart_syscall - restart a system call after interruption by a stop signal</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>int restart_syscall(void);</b><div style="height: 1.00em;">
+&#160;</div>
+<i>Note</i>: There is no glibc wrapper for this system call; see NOTES.</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The <b>restart_syscall</b>() system call is used to restart certain system calls after a process that was stopped by a signal (e.g., <b>SIGSTOP</b> or <b>SIGTSTP</b>) is later resumed after receiving a <b>SIGCONT</b> signal. This system call is designed only for internal use by the kernel.<div style="height: 1.00em;">
+&#160;</div>
+<b>restart_syscall</b>() is used for restarting only those system calls that, when restarted, should adjust their time-related parameters&#8212;namely <b>poll</b>(2) (since Linux 2.6.24), <b>nanosleep</b>(2) (since Linux 2.6), <b>clock_nanosleep</b>(2) (since Linux 2.6), and <b>futex</b>(2), when employed with the <b>FUTEX_WAIT</b> (since Linux 2.6.22) and <b>FUTEX_WAIT_BITSET</b> (since Linux 2.6.31) operations. <b>restart_syscall</b>() restarts the interrupted system call with a time argument that is suitably adjusted to account for the time that has already elapsed (including the time where the process was stopped by a signal). Without the <b>restart_syscall</b>() mechanism, restarting these system calls would not correctly deduct the already elapsed time when the process continued execution.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> The return value of <b>restart_syscall</b>() is the return value of whatever system call is being restarted.</div>
+<div class="section">
+<h1>ERRORS</h1> <i>errno</i> is set as per the errors for whatever system call is being restarted by <b>restart_syscall</b>().</div>
+<div class="section">
+<h1>VERSIONS</h1> The <b>restart_syscall</b>() system call is present since Linux 2.6.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> This system call is Linux-specific.</div>
+<div class="section">
+<h1>NOTES</h1> There is no glibc wrapper for this system call, because it is intended for use only by the kernel and should never be called by applications.<div style="height: 1.00em;">
+&#160;</div>
+The kernel uses <b>restart_syscall</b>() to ensure that when a system call is restarted after a process has been stopped by a signal and then resumed by <b>SIGCONT</b>, then the time that the process spent in the stopped state is counted against the timeout interval specified in the original system call. In the case of system calls that take a timeout argument and automatically restart after a stop signal plus <b>SIGCONT</b>, but which do not have the <b>restart_syscall</b>(2) mechanism built in, then, after the process resumes execution, the time that the process spent in the stop state is <i>not</i> counted against the timeout value. Notable examples of system calls that suffer this problem are <b>ppoll</b>(2), <b>select</b>(2), and <b>pselect</b>(2).<div style="height: 1.00em;">
+&#160;</div>
+From user space, the operation of <b>restart_syscall</b>() is largely invisible: to the process that made the system call that is restarted, it appears as though that system call executed and returned in the usual fashion.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>sigaction</b>(2), <b>sigreturn</b>(2), <b>signal</b>(7)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2014-12-31</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

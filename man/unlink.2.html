@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+UNLINK(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+UNLINK(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+UNLINK(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> unlink, unlinkat - delete a name and possibly the file it refers to</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;unistd.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>int unlink(const char *</b><i>pathname</i><b>);</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>#include &lt;fcntl.h&gt;           </b>/* Definition of AT_* constants */ <b>#include &lt;unistd.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>int unlinkat(int </b><i>dirfd</i><b>, const char *</b><i>pathname</i><b>, int </b><i>flags</i><b>);</b><br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Feature Test Macro Requirements for glibc (see <b>feature_test_macros</b>(7)):<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>unlinkat</b>():<div style="margin-left: 4.00ex;">
+<dl>
+<dt>
+Since glibc 2.10:</dt>
+<dd>
+_XOPEN_SOURCE&#160;&gt;=&#160;700 || _POSIX_C_SOURCE&#160;&gt;=&#160;200809L</dd>
+</dl>
+<dl>
+<dt>
+Before glibc 2.10:</dt>
+<dd>
+_ATFILE_SOURCE</dd>
+</dl>
+</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>unlink</b>() deletes a name from the filesystem. If that name was the last link to a file and no processes have the file open, the file is deleted and the space it was using is made available for reuse.<div style="height: 1.00em;">
+&#160;</div>
+If the name was the last link to a file but any processes still have the file open, the file will remain in existence until the last file descriptor referring to it is closed.<div style="height: 1.00em;">
+&#160;</div>
+If the name referred to a symbolic link, the link is removed.<div style="height: 1.00em;">
+&#160;</div>
+If the name referred to a socket, FIFO, or device, the name for it is removed but processes which have the object open may continue to use it.<div class="subsection">
+<h2>unlinkat()</h2> The <b>unlinkat</b>() system call operates in exactly the same way as either <b>unlink</b>() or <b>rmdir</b>(2) (depending on whether or not <i>flags</i> includes the <b>AT_REMOVEDIR</b> flag) except for the differences described here.<div style="height: 1.00em;">
+&#160;</div>
+If the pathname given in <i>pathname</i> is relative, then it is interpreted relative to the directory referred to by the file descriptor <i>dirfd</i> (rather than relative to the current working directory of the calling process, as is done by <b>unlink</b>() and <b>rmdir</b>(2) for a relative pathname).<div style="height: 1.00em;">
+&#160;</div>
+If the pathname given in <i>pathname</i> is relative and <i>dirfd</i> is the special value <b>AT_FDCWD</b>, then <i>pathname</i> is interpreted relative to the current working directory of the calling process (like <b>unlink</b>() and <b>rmdir</b>(2)).<div style="height: 1.00em;">
+&#160;</div>
+If the pathname given in <i>pathname</i> is absolute, then <i>dirfd</i> is ignored.<div style="height: 1.00em;">
+&#160;</div>
+<i>flags</i> is a bit mask that can either be specified as 0, or by ORing together flag values that control the operation of <b>unlinkat</b>(). Currently only one such flag is defined:<dl>
+<dt>
+<b>AT_REMOVEDIR</b></dt>
+<dd>
+By default, <b>unlinkat</b>() performs the equivalent of <b>unlink</b>() on <i>pathname</i>. If the <b>AT_REMOVEDIR</b> flag is specified, then performs the equivalent of <b>rmdir</b>(2) on <i>pathname</i>.</dd>
+</dl>
+<div class="spacer">
+</div>
+See <b>openat</b>(2) for an explanation of the need for <b>unlinkat</b>().</div>
+</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, zero is returned. On error, -1 is returned, and <i>errno</i> is set appropriately.</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>EACCES</b></dt>
+<dd>
+Write access to the directory containing <i>pathname</i> is not allowed for the process's effective UID, or one of the directories in <i>pathname</i> did not allow search permission. (See also <b>path_resolution</b>(7).)</dd>
+</dl>
+<dl>
+<dt>
+<b>EBUSY</b></dt>
+<dd>
+The file <i>pathname</i> cannot be unlinked because it is being used by the system or another process; for example, it is a mount point or the NFS client software created it to represent an active but otherwise nameless inode (&quot;NFS silly renamed&quot;).</dd>
+</dl>
+<dl>
+<dt>
+<b>EFAULT</b></dt>
+<dd>
+<i>pathname</i> points outside your accessible address space.</dd>
+</dl>
+<dl>
+<dt>
+<b>EIO</b></dt>
+<dd>
+An I/O error occurred.</dd>
+</dl>
+<dl>
+<dt>
+<b>EISDIR</b></dt>
+<dd>
+<i>pathname</i> refers to a directory. (This is the non-POSIX value returned by Linux since 2.1.132.)</dd>
+</dl>
+<dl>
+<dt>
+<b>ELOOP</b></dt>
+<dd>
+Too many symbolic links were encountered in translating <i>pathname</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENAMETOOLONG</b></dt>
+<dd>
+<i>pathname</i> was too long.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOENT</b></dt>
+<dd>
+A component in <i>pathname</i> does not exist or is a dangling symbolic link, or <i>pathname</i> is empty.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOMEM</b></dt>
+<dd>
+Insufficient kernel memory was available.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+A component used as a directory in <i>pathname</i> is not, in fact, a directory.</dd>
+</dl>
+<dl>
+<dt>
+<b>EPERM</b></dt>
+<dd>
+The system does not allow unlinking of directories, or unlinking of directories requires privileges that the calling process doesn't have. (This is the POSIX prescribed error return; as noted above, Linux returns <b>EISDIR</b> for this case.)</dd>
+</dl>
+<dl>
+<dt>
+<b>EPERM</b> (Linux only)</dt>
+<dd>
+The filesystem does not allow unlinking of files.</dd>
+</dl>
+<dl>
+<dt>
+<b>EPERM</b> or <b>EACCES</b></dt>
+<dd>
+The directory containing <i>pathname</i> has the sticky bit (<b>S_ISVTX</b>) set and the process's effective UID is neither the UID of the file to be deleted nor that of the directory containing it, and the process is not privileged (Linux: does not have the <b>CAP_FOWNER</b> capability).</dd>
+</dl>
+<dl>
+<dt>
+<b>EROFS</b></dt>
+<dd>
+<i>pathname</i> refers to a file on a read-only filesystem.</dd>
+</dl>
+<div class="spacer">
+</div>
+The same errors that occur for <b>unlink</b>() and <b>rmdir</b>(2) can also occur for <b>unlinkat</b>(). The following additional errors can occur for <b>unlinkat</b>():<dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+<i>dirfd</i> is not a valid file descriptor.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+An invalid flag value was specified in <i>flags</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>EISDIR</b></dt>
+<dd>
+<i>pathname</i> refers to a directory, and <b>AT_REMOVEDIR</b> was not specified in <i>flags</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+<i>pathname</i> is relative and <i>dirfd</i> is a file descriptor referring to a file other than a directory.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>VERSIONS</h1> <b>unlinkat</b>() was added to Linux in kernel 2.6.16; library support was added to glibc in version 2.4.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> <b>unlink</b>(): SVr4, 4.3BSD, POSIX.1-2001, POSIX.1-2008.<div style="height: 1.00em;">
+&#160;</div>
+<b>unlinkat</b>(): POSIX.1-2008.</div>
+<div class="section">
+<h1>NOTES</h1><div class="subsection">
+<h2>Glibc notes</h2> On older kernels where <b>unlinkat</b>() is unavailable, the glibc wrapper function falls back to the use of <b>unlink</b>(2) or <b>rmdir</b>(2). When <i>pathname</i> is a relative pathname, glibc constructs a pathname based on the symbolic link in <i>/proc/self/fd</i> that corresponds to the <i>dirfd</i> argument.</div>
+</div>
+<div class="section">
+<h1>BUGS</h1> Infelicities in the protocol underlying NFS can cause the unexpected disappearance of files which are still being used.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>rm</b>(1), <b>chmod</b>(2), <b>link</b>(2), <b>mknod</b>(2), <b>open</b>(2), <b>rename</b>(2), <b>rmdir</b>(2), <b>mkfifo</b>(3), <b>remove</b>(3), <b>path_resolution</b>(7), <b>symlink</b>(7)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2014-08-19</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

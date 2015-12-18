@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+PCSCD(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+PCSCD(8)</td>
+<td class="head-vol">
+PC/SC Lite</td>
+<td class="head-rtitle">
+PCSCD(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> pcscd - PC/SC Smart Card Daemon</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>pcscd</b> [<i>options</i>]</div>
+<div class="section">
+<h1>OPTIONS</h1><dl>
+<dt>
+<b>-a</b>, <b>--apdu</b></dt>
+<dd>
+log APDUs and SW using the debug method (see <b>--debug</b>).</dd>
+</dl>
+<dl>
+<dt>
+<b>-c</b>, <b>--config</b> <i>file</i></dt>
+<dd>
+Specifies the file <i>file</i> as an alternate location for <i>/etc/reader.conf.d/reader.conf</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>-f</b>, <b>--foreground</b></dt>
+<dd>
+Runs pcscd in the foreground and sends log messages to stderr instead of syslog(3).</dd>
+</dl>
+<dl>
+<dt>
+<b>-T</b>, <b>--color</b></dt>
+<dd>
+force use of colored logs.</dd>
+</dl>
+<dl>
+<dt>
+<b>-d</b>, <b>--debug</b></dt>
+<dd>
+use the lowest log level. Any log message of this level or above will be sent to stderr or syslog(3) depending on the use of <b>--foreground</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>--info</b></dt>
+<dd>
+use info log level. This is the default log level.</dd>
+</dl>
+<dl>
+<dt>
+<b>-e</b>, <b>--error</b></dt>
+<dd>
+use error log level.</dd>
+</dl>
+<dl>
+<dt>
+<b>-C</b>, <b>--critical</b></dt>
+<dd>
+use critical log level.</dd>
+</dl>
+<div class="spacer">
+</div>
+The log levels are ordered as: debug &lt; info &lt; error &lt; critical. Use a log level l will log this level and all the levels above it.<dl>
+<dt>
+<b>--force-reader-polling</b></dt>
+<dd>
+ignore the IFD_GENERATE_HOTPLUG reader capability</dd>
+</dl>
+<dl>
+<dt>
+<b>-t</b>, <b>--max-thread</b></dt>
+<dd>
+maximum number of threads (default 200).<div style="height: 1.00em;">
+&#160;</div>
+This is the maximum number of clients (SCardEstablishContext) that pcscd can handle.</dd>
+</dl>
+<dl>
+<dt>
+<b>-s</b>, <b>--max-card-handle-per-thread</b></dt>
+<dd>
+maximum number of card handle per thread (default: 200).<div style="height: 1.00em;">
+&#160;</div>
+This is the maximum number of card handle (SCardConnect) per client (SCardEstablishContext).</dd>
+</dl>
+<dl>
+<dt>
+<b>-r</b>, <b>--max-card-handle-per-reader</b></dt>
+<dd>
+maximum number of card handle per reader (default: 200)<div style="height: 1.00em;">
+&#160;</div>
+This is the maximum number of card handle (SCardConnect) per reader.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>, <b>--help</b></dt>
+<dd>
+Displays information about the pcscd command line</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b>, <b>--version</b></dt>
+<dd>
+Displays the program version number</dd>
+</dl>
+<dl>
+<dt>
+<b>-H</b>, <b>--hotplug</b></dt>
+<dd>
+Ask pcscd to re-read the <i>/etc/reader.conf.d/reader.conf</i> file to detect added or removed non-USB readers (serial or PCMCIA).</dd>
+</dl>
+<dl>
+<dt>
+<b>-x</b>, <b>--auto-exit</b></dt>
+<dd>
+pcscd will quit after 60 seconds of inactivity. This is used when pcscd os started on demand by systemd.</dd>
+</dl>
+<dl>
+<dt>
+<b>-S</b>, <b>--reader-name-no-serial</b></dt>
+<dd>
+Do not include the USB serial number in the reader name.</dd>
+</dl>
+<dl>
+<dt>
+<b>-I</b>, <b>--reader-name-no-interface</b></dt>
+<dd>
+Do not include the USB interface name in the reader name.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> pcscd is the daemon program for pcsc-lite. It is a resource manager that coordinates communications with smart card readers and smart cards and cryptographic tokens that are connected to the system.<div class="spacer">
+</div>
+It allows applications to access smart cards and readers using the winscard API but without knowing details of the card or reader.<div class="spacer">
+</div>
+pcscd coordinates the loading of drivers for card readers.</div>
+<div class="section">
+<h1>SERIAL SMART CARD READER DRIVERS</h1> Smart card reader drivers are placed in the <i>/usr/lib64/readers/usb</i> directory. Each driver is simply an <i>.so</i> file.  pcscd locates the driver using the <i>/etc/reader.conf.d/reader.conf</i> file.  See the <b>reader.conf</b>(5) manual page for more information.<div class="spacer">
+</div>
+Some drivers are available at <i>http://pcsclite.alioth.debian.org/musclecard.com/drivers.html</i>.</div>
+<div class="section">
+<h1>USB SMART CARD READER DRIVERS</h1> USB smart card reader drivers are located in <i>/usr/lib64/readers/usb</i> directory as a bundle. You shall not add a USB driver in <i>/etc/reader.conf.d/reader.conf</i> file.</div>
+<div class="section">
+<h1>FILES</h1> <i>/etc/reader.conf.d/reader.conf</i> : Reader configuration file<div class="spacer">
+</div>
+<i>/run/pcscd/pcscd.pid</i> : process id of the running pcscd<div class="spacer">
+</div>
+<i>/usr/lib64/readers/usb</i> : directory containing bundles for USB drivers</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>bundleTool</b>(8), <b>reader.conf</b>(5), <b>syslog</b>(3)</div>
+<div class="section">
+<h1>AUTHORS</h1> David Corcoran &lt;corcoran@musclecard.com&gt; and Ludovic Rousseau &lt;ludovic.rousseau@free.fr&gt;</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+January 2007</td>
+<td class="foot-os">
+Muscle</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

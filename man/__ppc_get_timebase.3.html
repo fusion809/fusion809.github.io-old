@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+__PPC_GET_TIMEBASE(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+__PPC_GET_TIMEBASE(3)</td>
+<td class="head-vol">
+Linux Programmer'sManual</td>
+<td class="head-rtitle">
+__PPC_GET_TIMEBASE(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> __ppc_get_timebase, __ppc_get_timebase_freq - get the current value<br/>
+ of the Time Base Register on Power architecture and its frequency.</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;sys/platform/ppc.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<b>uint64_t __ppc_get_timebase(void)</b><div style="height: 1.00em;">
+&#160;</div>
+<b>uint64_t __ppc_get_timebase_freq(void);</b></div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>__ppc_get_timebase</b>() reads the current value of the Time Base Register and returns its value, while <b>__ppc_get_timebase_freq</b>() returns the frequency in which the Time Base Register is updated.<div style="height: 1.00em;">
+&#160;</div>
+The Time Base Register is a 64-bit register provided by Power Architecture processors. It stores a monotonically incremented value that is updated at a system-dependent frequency that may be different from the processor frequency.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> <b>__ppc_get_timebase</b>() returns a 64-bit unsigned integer that represents the current value of the Time Base Register.<div style="height: 1.00em;">
+&#160;</div>
+<b>__ppc_get_timebase_freq</b>() returns a 64-bit unsigned integer that represents the frequency at which the Time Base Register is updated.</div>
+<div class="section">
+<h1>VERSIONS</h1> GNU C Library support for <b>__ppc_get_timebase</b>() has been provided since version 2.16 and <b>__ppc_get_timebase_freq</b>() has been available since version 2.17.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> Both functions are nonstandard GNU extensions.</div>
+<div class="section">
+<h1>EXAMPLE</h1> The following program will calculate the time, in microseconds, spent between two calls to <b>__ppc_get_timebase</b>().<div class="subsection">
+<h2>Program source</h2> <br/>
+#include &lt;inttypes.h&gt;<br/>
+#include &lt;stdint.h&gt;<br/>
+#include &lt;stdio.h&gt;<br/>
+#include &lt;stdlib.h&gt;<br/>
+#include &lt;sys/platform/ppc.h&gt;<div class="spacer">
+</div>
+<br/>
+/* Maximum value of the Time Base Register: 2^60 - 1.<br/>
+   Source: POWER ISA.  */<br/>
+#define MAX_TB 0xFFFFFFFFFFFFFFF<div class="spacer">
+</div>
+<br/>
+int<br/>
+main(void)<br/>
+{<br/>
+    uint64_t tb1, tb2, diff;<div class="spacer">
+</div>
+<br/>
+    uint64_t freq = __ppc_get_timebase_freq();<br/>
+    printf(&quot;Time Base frequency = %&quot;PRIu64&quot; Hz\n&quot;, freq);<div class="spacer">
+</div>
+<br/>
+    tb1 = __ppc_get_timebase();<div class="spacer">
+</div>
+<br/>
+    // Do some stuff...<div class="spacer">
+</div>
+<br/>
+    tb2 = __ppc_get_timebase();<div class="spacer">
+</div>
+<br/>
+    if (tb2 &gt; tb1) {<br/>
+        diff = tb2 - tb1;<br/>
+    } else {<br/>
+        /* Treat Time Base Register overflow.  */<br/>
+        diff = (MAX_TB - tb2) + tb1;<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    printf(&quot;Elapsed time  = %1.2f usecs\n&quot;,<br/>
+            (double) diff * 1000000 / freq );<div class="spacer">
+</div>
+<br/>
+    exit(EXIT_SUCCESS);<br/>
+}<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>time</b>(2), <b>usleep</b>(3)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-07-23</td>
+<td class="foot-os">
+GNU C Library</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

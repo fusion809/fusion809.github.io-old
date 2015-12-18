@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+sensors.conf(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+sensors.conf(5)</td>
+<td class="head-vol">
+Linux User's Manual</td>
+<td class="head-rtitle">
+sensors.conf(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sensors.conf - libsensors configuration file<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> sensors.conf describes how libsensors, and so all programs using it, should translate the raw readings from the kernel modules to real-world values.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SEMANTICS</h1> On a given system, there may be one or more hardware monitoring chips. Each chip may have several features. For example, the LM78 monitors 7 voltage inputs, 3 fans and one temperature. Feature names are standardized. Typical feature names are in0, in1, in2... for voltage inputs, fan1, fan2, fan3... for fans and temp1, temp2, temp3... for temperature inputs.<div style="height: 1.00em;">
+&#160;</div>
+Each feature may in turn have one or more sub-features, each representing an attribute of the feature: input value, low limit, high limit, alarm, etc. Sub-feature names are standardized as well. For example, the first voltage input (in0) would typically have sub-features in0_input (measured value), in0_min (low limit), in0_max (high limit) and in0_alarm (alarm flag). Which sub-features are actually present depend on the exact chip type.<div style="height: 1.00em;">
+&#160;</div>
+The <i>sensors.conf</i> configuration file will let you configure each chip, feature and sub-feature in a way that makes sense for your system.<div style="height: 1.00em;">
+&#160;</div>
+The rest of this section describes the meaning of each configuration statement.<div style="height: 1.00em;">
+&#160;</div>
+<div class="subsection">
+<h2>CHIP STATEMENT</h2> A <i>chip</i> statement selects for which chips all following <i>compute</i>, <i>label</i>, <i>ignore</i> and <i>set</i> statements are meant. A chip selection remains valid until the next <i>chip</i> statement. Example:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 5.00ex;">
+chip &quot;lm78-*&quot; &quot;lm79-*&quot;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+If a chip matches at least one of the chip descriptions, the following configuration lines are examined for it, otherwise they are ignored.<div style="height: 1.00em;">
+&#160;</div>
+A chip description is built from several elements, separated by dashes. The first element is the chip type, the second element is the name of the bus, and the third element is the hexadecimal address of the chip. Such chip descriptions are printed by sensors(1) as the first line for every chip.<div style="height: 1.00em;">
+&#160;</div>
+The name of the bus is either <i>isa</i>, <i>pci</i>, <i>virtual</i>, <i>spi-*</i> or <i>i2c-N</i> with <i>N</i> being a bus number as bound with a <i>bus</i> statement. This list isn't necessarily exhaustive as support for other bus types may be added in the future.<div style="height: 1.00em;">
+&#160;</div>
+You may substitute the wildcard operator <i>*</i> for every element. Note however that it wouldn't make any sense to specify the address without the bus type, so the address part is plain omitted when the bus type isn't specified. Here is how you would express the following matches:<div style="height: 1.00em;">
+&#160;</div>
+<table class="tbl">
+<col style="width: 41.00ex;"/>
+<col style="width: 16.00ex;"/>
+<tbody>
+<tr>
+<td>
+LM78 chip at address 0x2d on I2C bus 1</td>
+<td>
+lm78-i2c-1-2d</td>
+</tr>
+<tr>
+<td>
+LM78 chip at address 0x2d on any I2C bus</td>
+<td>
+lm78-i2c-*-2d</td>
+</tr>
+<tr>
+<td>
+LM78 chip at address 0x290 on the ISA bus</td>
+<td>
+lm78-isa-0290</td>
+</tr>
+<tr>
+<td>
+Any LM78 chip on I2C bus 1</td>
+<td>
+lm78-i2c-1-*</td>
+</tr>
+<tr>
+<td>
+Any LM78 on any I2C bus</td>
+<td>
+lm78-i2c-*-*</td>
+</tr>
+<tr>
+<td>
+Any LM78 chip on the ISA bus</td>
+<td>
+lm78-isa-*</td>
+</tr>
+<tr>
+<td>
+Any LM78 chip</td>
+<td>
+lm78-*</td>
+</tr>
+<tr>
+<td>
+Any chip at address 0x2d on I2C bus 1</td>
+<td>
+*-i2c-1-2d</td>
+</tr>
+<tr>
+<td>
+Any chip at address 0x290 on the ISA bus</td>
+<td>
+*-isa-0290</td>
+</tr>
+</tbody>
+</table>
+<div style="height: 1.00em;">
+&#160;</div>
+If several chip statements match a specific chip, they are all considered.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="subsection">
+<h2>LABEL STATEMENT</h2> A <i>label</i> statement describes how a feature should be called. Features without a <i>label</i> statement are just called by their feature name. Applications can use this to label the readings they present. Example:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 5.00ex;">
+label in3 &quot;+5V&quot;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+The first argument is the feature name. The second argument is the feature description.<div style="height: 1.00em;">
+&#160;</div>
+Note that you must use the raw feature name, which is not necessarily the one displayed by &quot;sensors&quot; by default. Use &quot;sensors -u&quot; to see the raw feature names. Same applies to all other statement types below.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="subsection">
+<h2>IGNORE STATEMENT</h2> An <i>ignore</i> statement is a hint that a specific feature should be ignored - probably because it returns bogus values (for example, because a fan or temperature sensor is not connected). Example:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 5.00ex;">
+ignore fan1</div>
+<div style="height: 1.00em;">
+&#160;</div>
+The only argument is the feature name. Please note that this does not disable anything in the actual sensor chip; it simply hides the feature in question from libsensors users.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="subsection">
+<h2>COMPUTE STATEMENT</h2> A <i>compute</i> statement describes how a feature's raw value should be translated to a real-world value, and how a real-world value should be translated back to a raw value again. This is most useful for voltage sensors, because in general sensor chips have a limited range and voltages outside this range must be divided (using resistors) before they can be monitored. Example:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 5.00ex;">
+compute in3 ((6.8/10)+1)*@, @/((6.8/10)+1)</div>
+<div style="height: 1.00em;">
+&#160;</div>
+The example above expresses the fact that the voltage input is divided using two resistors of values 6.8 Ohm and 10 Ohm, respectively. See the <b>VOLTAGE COMPUTATION DETAILS</b> section below for details.<div style="height: 1.00em;">
+&#160;</div>
+The first argument is the feature name. The second argument is an expression which specifies how a raw value must be translated to a real-world value; `@' stands here for the raw value. This is the formula which will be applied when reading values from the chip. The third argument is an expression that specifies how a real-world value should be translated back to a raw value; `@' stands here for the real-world value. This is the formula which will be applied when writing values to the chip. The two formulas are obviously related, and are separated by a comma.<div style="height: 1.00em;">
+&#160;</div>
+A <i>compute</i> statement applies to all sub-features of the target feature for which it makes sense. For example, the above example would affect sub-features in3_min and in3_max (which are voltage values) but not in3_alarm (which is a boolean flag.)<div style="height: 1.00em;">
+&#160;</div>
+The following operators are supported in <i>compute</i> statements:<div style="margin-left: 5.00ex;">
++ - * / ( ) ^ `</div>
+^x means exp(x) and `x means ln(x).<div style="height: 1.00em;">
+&#160;</div>
+You may use the name of sub-features in these expressions; current readings are substituted. You should be careful though to avoid circular references.<div style="height: 1.00em;">
+&#160;</div>
+If at any moment a translation between a raw and a real-world value is called for, but no <i>compute</i> statement applies, a one-on-one translation is used instead.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="subsection">
+<h2>SET STATEMENT</h2> A <i>set</i> statement is used to write a sub-feature value to the chip. Of course not all sub-feature values can be set that way, in particular input values and alarm flags can not. Valid sub-features are usually min/max limits. Example:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 5.00ex;">
+set in3_min  5 * 0.95</div>
+<div style="margin-left: 5.00ex;">
+set in3_max  5 * 1.05</div>
+<div style="height: 1.00em;">
+&#160;</div>
+The example above basically configures the chip to allow a 5% deviance for the +5V power input.<div style="height: 1.00em;">
+&#160;</div>
+The first argument is the feature name. The second argument is an expression which determines the written value. If there is an applying <i>compute</i> statement, this value is fed to its third argument to translate it to a raw value.<div style="height: 1.00em;">
+&#160;</div>
+You may use the name of sub-features in these expressions; current readings are substituted. You should be careful though to avoid circular references.<div style="height: 1.00em;">
+&#160;</div>
+Please note that <i>set</i> statements are only executed by sensors(1) when you use the <b>-s</b> option. Typical graphical sensors applications do not care about these statements at all.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="subsection">
+<h2>BUS STATEMENT</h2> A <i>bus</i> statement binds the description of an I2C or SMBus adapter to a bus number. This makes it possible to refer to an adapter in the configuration file, independent of the actual correspondence of bus numbers and actual adapters (which may change from moment to moment). Example:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 5.00ex;">
+bus &quot;i2c-0&quot; &quot;SMBus PIIX4 adapter at e800&quot;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+The first argument is the bus number. It is the literal text <i>i2c-</i>, followed by a number. As there is a dash in this argument, it must always be quoted.<div style="height: 1.00em;">
+&#160;</div>
+The second argument is the adapter name, it must match exactly the adapter name as it appears in <i>/sys/class/i2c-adapter/i2c-*/name</i>. It should always be quoted as well as it will most certainly contain spaces or dashes.<div style="height: 1.00em;">
+&#160;</div>
+The <i>bus</i> statements may be scattered randomly throughout the configuration file; there is no need to place the bus line before the place where its binding is referred to. Still, as a matter of good style, we suggest you place all <i>bus</i> statements together at the top of your configuration file.<div style="height: 1.00em;">
+&#160;</div>
+Running <b>sensors --bus-list</b> will generate these lines for you.<div style="height: 1.00em;">
+&#160;</div>
+In the case where multiple configuration files are used, the scope of each <i>bus</i> statement is the configuration file it was defined in. This makes it possible to have bus statements in all configuration files which will not unexpectedly interfere with each other.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="subsection">
+<h2>STATEMENT ORDER</h2> Statements can go in any order, however it is recommended to put `set fanX_div' statements before `set fanX_min' statements, in case a driver doesn't preserve the fanX_min setting when the fanX_div value is changed. Even if the driver does, it's still better to put the statements in this order to avoid accuracy loss.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+</div>
+<div class="section">
+<h1>VOLTAGE COMPUTATION DETAILS</h1> Most voltage sensors in sensor chips have a range of 0 to 4.08 V. This is generally sufficient for the +3.3V and CPU supply voltages, so the sensor chip reading is the actual voltage.<div style="height: 1.00em;">
+&#160;</div>
+Other supply voltages must be scaled with an external resistor network. The driver reports the value at the chip's pin (0 - 4.08 V), and the userspace application must convert this raw value to an actual voltage. The <i>compute</i> statements provide this facility.<div style="height: 1.00em;">
+&#160;</div>
+Unfortunately the resistor values vary among motherboard types. Therefore you have to figure out the correct resistor values for your own motherboard.<div style="height: 1.00em;">
+&#160;</div>
+For positive voltages (typically +5V and +12V), two resistors are used, with the following formula:<br/>
+        R1 = R2 * (Vs/Vin - 1)<div style="height: 1.00em;">
+&#160;</div>
+where:<br/>
+        R1 and R2 are the resistor values<br/>
+        Vs is the actual voltage being monitored<br/>
+        Vin is the voltage at the pin<div style="height: 1.00em;">
+&#160;</div>
+This leads to the following compute formula:<br/>
+        compute inX @*((R1/R2)+1),  @/(((R1/R2)+1)<div style="height: 1.00em;">
+&#160;</div>
+Real-world formula for +5V and +12V would look like:<br/>
+        compute in3 @*((6.8/10)+1), @/((6.8/10)+1)<br/>
+        compute in4 @*((28/10)+1),  @/((28/10)+1)<div style="height: 1.00em;">
+&#160;</div>
+For negative voltages (typically -5V and -12V), two resistors are used as well, but different boards use different strategies to bring the voltage value into the 0 - 4.08 V range. Some use an inverting amplifier, others use a positive reference voltage. This leads to different computation formulas. Note that most users won't have to care because most modern motherboards make little use of -12V and no use of -5V so they do not bother monitoring these voltage inputs.<div style="height: 1.00em;">
+&#160;</div>
+Real-world examples for the inverting amplifier case:<br/>
+        compute in5 -@*(240/60), -@/(240/60)<br/>
+        compute in6 -@*(100/60), -@/(100/60)<div style="height: 1.00em;">
+&#160;</div>
+Real-world examples for the positive voltage reference case:<br/>
+        compute in5 @*(1+232/56) - 4.096*232/56, (@ + 4.096*232/56)/(1+232/56)<br/>
+        compute in6 @*(1+120/56) - 4.096*120/56, (@ + 4.096*120/56)/(1+120/56)<div style="height: 1.00em;">
+&#160;</div>
+Many recent monitoring chips have a 0 - 2.04 V range, so scaling resistors are even more needed, and resistor values are different.<div style="height: 1.00em;">
+&#160;</div>
+There are also a few chips out there which have internal scaling resistors, meaning that their value is known and doesn't change from one motherboard to the next. For these chips, the driver usually handles the scaling so it is transparent to the user and no <i>compute</i> statements are needed.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>TEMPERATURE CONFIGURATION</h1> On top of the usual features, temperatures can have two specific sub-features: temperature sensor type (tempX_type) and hysteresis values (tempX_max_hyst, tempX_crit_hyst etc.).<div style="height: 1.00em;">
+&#160;</div>
+<div class="subsection">
+<h2>THERMAL SENSOR TYPES</h2> Available thermal sensor types:<table class="tbl">
+<col style="width: 1.00ex;"/>
+<col style="width: 17.00ex;"/>
+<tbody>
+<tr>
+<td>
+1</td>
+<td>
+PII/Celeron Diode</td>
+</tr>
+<tr>
+<td>
+2</td>
+<td>
+3904 transistor</td>
+</tr>
+<tr>
+<td>
+3</td>
+<td>
+thermal diode</td>
+</tr>
+<tr>
+<td>
+4</td>
+<td>
+thermistor</td>
+</tr>
+<tr>
+<td>
+5</td>
+<td>
+AMD AMDSI</td>
+</tr>
+<tr>
+<td>
+6</td>
+<td>
+Intel PECI</td>
+</tr>
+</tbody>
+</table>
+<div style="height: 1.00em;">
+&#160;</div>
+For example, to set temp1 to thermistor type, use:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 5.00ex;">
+set temp1_type 4</div>
+<div style="height: 1.00em;">
+&#160;</div>
+Only certain chips support thermal sensor type change, and even these usually only support some of the types above. Please refer to the specific driver documentation to find out which types are supported by your chip.<div style="height: 1.00em;">
+&#160;</div>
+In theory, the BIOS should have configured the sensor types correctly, so you shouldn't have to touch them, but sometimes it isn't the case.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="subsection">
+<h2>THERMAL HYSTERESIS MECHANISM</h2> Many monitoring chips do not handle the high and critical temperature limits as simple limits. Instead, they have two values for each limit, one which triggers an alarm when the temperature rises and another one which clears the alarm when the temperature falls. The latter is typically a few degrees below the former. This mechanism is known as hysteresis.<div style="height: 1.00em;">
+&#160;</div>
+The reason for implementing things that way is that high temperature alarms typically trigger an action to attempt to cool the system down, either by scaling down the CPU frequency, or by kicking in an extra fan. This should normally let the temperature fall in a timely manner. If this was clearing the alarm immediately, then the system would be back to its original state where the temperature rises and the alarm would immediately trigger again, causing an undesirable tight fan on, fan off loop. The hysteresis mechanism ensures that the system is really cool before the fan stops, so that it will not have to kick in again immediately.<div style="height: 1.00em;">
+&#160;</div>
+So, in addition to tempX_max, many chips have a tempX_max_hyst sub-feature. Likewise, tempX_crit often comes with tempX_crit_hyst. tempX_emerg_hyst, tempX_min_hyst and tempX_lcrit_hyst exist too but aren't as common. Example:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 5.00ex;">
+set temp1_max      60</div>
+<div style="margin-left: 5.00ex;">
+set temp1_max_hyst 56</div>
+<div style="height: 1.00em;">
+&#160;</div>
+The hysteresis mechanism can be disabled by giving both limits the same value.<div style="height: 1.00em;">
+&#160;</div>
+Note that it is strongly recommended to set the hysteresis value after the limit value it relates to in the configuration file. Implementation details on the hardware or driver side may cause unexpected results if the hysteresis value is set first.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+</div>
+<div class="section">
+<h1>BEEPS</h1> Some chips support alarms with beep warnings. When an alarm is triggered you can be warned by a beeping signal through your computer speaker. On top of per-feature beep flags, there is usually a master beep control switch to enable or disable beeping globally. Enable beeping using:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 5.00ex;">
+set beep_enable 1</div>
+<div style="height: 1.00em;">
+&#160;</div>
+or disable it using:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 5.00ex;">
+set beep_enable 0</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>WHICH STATEMENT APPLIES</h1> If more than one statement of the same kind applies at a certain moment, the last one in the configuration file is used. So usually, you should put more general <i>chip</i> statements at the top, so you can overrule them below.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SYNTAX</h1> Comments are introduced by hash marks. A comment continues to the end of the line. Empty lines, and lines containing only whitespace or comments are ignored.  Other lines have one of the below forms. There must be whitespace between each element, but the amount of whitespace is unimportant. A line may be continued on the next line by ending it with a backslash; this does not work within a comment, <b>NAME</b> or <b>NUMBER</b>.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 5.00ex;">
+bus <b>NAME NAME NAME</b><div style="height: 0.00em;">
+&#160;</div>
+chip <b>NAME-LIST</b><div style="height: 0.00em;">
+&#160;</div>
+label <b>NAME NAME</b><div style="height: 0.00em;">
+&#160;</div>
+compute <b>NAME EXPR</b> , <b>EXPR</b><div style="height: 0.00em;">
+&#160;</div>
+ignore <b>NAME</b><div style="height: 0.00em;">
+&#160;</div>
+set <b>NAME EXPR</b></div>
+<div style="height: 1.00em;">
+&#160;</div>
+A <b>NAME</b> is a string. If it only contains letters, digits and underscores, it does not have to be quoted; in all other cases, you must use double quotes around it. Within quotes, you can use the normal escape-codes from C.<div style="height: 1.00em;">
+&#160;</div>
+A <b>NAME-LIST</b> is one or more <b>NAME</b> items behind each other, separated by whitespace.<div style="height: 1.00em;">
+&#160;</div>
+A <b>EXPR</b> is of one of the below forms:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 5.00ex;">
+<b>NUMBER</b><div style="height: 0.00em;">
+&#160;</div>
+<b>NAME</b><div style="height: 0.00em;">
+&#160;</div>
+@<div style="height: 0.00em;">
+&#160;</div>
+<b>EXPR</b> + <b>EXPR</b><div style="height: 0.00em;">
+&#160;</div>
+<b>EXPR</b> - <b>EXPR</b><div style="height: 0.00em;">
+&#160;</div>
+<b>EXPR</b> * <b>EXPR</b><div style="height: 0.00em;">
+&#160;</div>
+<b>EXPR</b> / <b>EXPR</b><div style="height: 0.00em;">
+&#160;</div>
+- <b>EXPR</b><div style="height: 0.00em;">
+&#160;</div>
+^ <b>EXPR</b><div style="height: 0.00em;">
+&#160;</div>
+` <b>EXPR</b><div style="height: 0.00em;">
+&#160;</div>
+( <b>EXPR</b> )</div>
+<div style="height: 1.00em;">
+&#160;</div>
+A <b>NUMBER</b> is a floating-point number. `10', `10.4' and `.4' are examples of valid floating-point numbers; `10.' or `10E4' are not valid.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>FILES</h1> <i>/etc/sensors3.conf</i><div style="height: 0.00em;">
+&#160;</div>
+<i>/etc/sensors.conf</i><div style="margin-left: 5.00ex;">
+The system-wide <b>libsensors</b>(3) configuration file. /etc/sensors3.conf is tried first, and if it doesn't exist, /etc/sensors.conf is used instead.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<i>/etc/sensors.d</i><div style="margin-left: 5.00ex;">
+A directory where you can put additional libsensors configuration files. Files found in this directory will be processed in alphabetical order after the default configuration file. Files with names that start with a dot are ignored.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> libsensors(3)<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>AUTHOR</h1> Frodo Looijaard and the lm_sensors group http://www.lm-sensors.org/<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+November 2012</td>
+<td class="foot-os">
+lm-sensors 3</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

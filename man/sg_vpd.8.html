@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SG_VPD(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SG_VPD(8)</td>
+<td class="head-vol">
+SG3_UTILS</td>
+<td class="head-rtitle">
+SG_VPD(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sg_vpd - fetch SCSI VPD page and/or decode its response</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>sg_vpd</b> [ <i>--all</i>] [<i>--enumerate</i>] [<i>--help</i>] [<i>--hex</i>] [ <i>--ident</i>] [<i>--inhex=FN</i>] [<i>--long</i>] [<i>--maxlen=LEN</i>] [ <i>--page=PG</i>] [<i>--quiet</i>] [<i>--raw</i>] [<i>--vendor=VP</i>] [ <i>--verbose</i>] [<i>--version</i>] [<i>DEVICE</i>]</div>
+<div class="section">
+<h1>DESCRIPTION</h1> This utility, when  <i>DEVICE</i> is given, fetches a Vital Product Data (VPD) page and decodes it or outputs it in ASCII hexadecimal or binary. VPD pages are fetched with a SCSI INQUIRY command.<div class="spacer">
+</div>
+Alternatively the <i>--inhex=FN</i> option can be given. In this case  <i>FN</i> is assumed to be a file name ('-' for stdin) containing ASCII hexadecimal representing a VPD page response. If the  <i>--raw</i> option is also given then binary input is assumed (rather than ASCII hexadecimal).<div class="spacer">
+</div>
+Probably the most important page is the Device Identification VPD page (page number: 0x83). Since SPC-3, support for this page has been flagged as mandatory. This page can be fetched by using the  <i>--ident</i> option.<div class="spacer">
+</div>
+The reference document used for interpreting VPD pages (and the INQUIRY standard response) is T10/BSR INCITS 502 Revision 02 which is draft SPC-5 revision 02, 7 January 2015). It can be found at http://www.t10.org .<div class="spacer">
+</div>
+When no options are given, other than a <i>DEVICE</i>, then the &quot;Supported VPD pages&quot; (0x0) VPD page is fetched and decoded.</div>
+<div class="section">
+<h1>OPTIONS</h1> Arguments to long options are mandatory for short options as well. The options are arranged in alphabetical order based on the long option name.<dl>
+<dt>
+<b>-a</b>, <b>--all</b></dt>
+<dd>
+decode all VPD pages. When used with <i>DEVICE</i> the pages to be decoded are found in the &quot;Supported VPD pages&quot; VPD page. Pages that cannot be decoded are displayed in hex; add the  <i>--long</i> option to have ASCII displayed to the right of each line of hex.<div style="height: 0.00em;">
+&#160;</div>
+If this option is used with the <i>--inhex=FN</i> option then the file  <i>FN</i> is assumed to contain 1 or more VPD pages (in ASCII hex or binary). Decoding continues until the file is exhausted (or an error occurs). Sanity checks are aplied on each VPD page's length and the ascending order of VPD page numbers (required by SPC-4) so bad data may be detected.<div style="height: 0.00em;">
+&#160;</div>
+If the <i>--page=PG</i> option is also given then no VPD page whose page number is greater than  <i>PG</i> (or its numeric equivalent) is decoded.</dd>
+</dl>
+<dl>
+<dt>
+<b>-e</b>, <b>--enumerate</b></dt>
+<dd>
+list the names of the known VPD pages, first the standard pages (i.e. those defined by T10), then the vendor specific pages. Each group is sorted in abbreviation order. The  <i>DEVICE</i> and most other options are ignored and this utility exits after listing the VPD page names. May be used together with  <i>--page=PG</i> where <i>PG</i> is numeric. If so, it searches for the summary lines of all VPD pages whose number matches  <i>PG</i>. May be used with  <i>--vendor=VP</i> to restrict output to known vendor specific pages for vendor/product  <i>VP</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>, <b>--help</b></dt>
+<dd>
+outputs the usage message summarizing command line options then exits. Ignores  <i>DEVICE</i> if given.</dd>
+</dl>
+<dl>
+<dt>
+<b>-H</b>, <b>--hex</b></dt>
+<dd>
+outputs the requested VPD page in ASCII hexadecimal. Can be used multiple times, see section on the ATA information vpd page.<div style="height: 0.00em;">
+&#160;</div>
+To generate output suitable for placing in a file that can be used by a later invocation with the  <i>--inhex=FN</i> option, use the '-HHHH' option (e.g. 'sg_vpd -p di -HHHH /dev/sg3 &gt; dev_id.hex'). The reason '-HHHH' is used is to flag that unadorned hexadecimal (without other text or address offsets) is sent to stdout.</dd>
+</dl>
+<dl>
+<dt>
+<b>-i</b>, <b>--ident</b></dt>
+<dd>
+decode the device identification (0x83) VPD page. When used once this option has the same effect as '--page=di'. When use twice then the short form of the device identification VPD page's logical unit designator is decoded. In the latter case this option has the same effect as '--quiet --page=di_lu'.</dd>
+</dl>
+<dl>
+<dt>
+<b>-I</b>, <b>--inhex</b>=<i>FN</i></dt>
+<dd>
+<i>FN</i> is expected to be a file name (or '-' for stdin) which contains ASCII hexadecimal or binary representing a VPD page (or a standard INQUIRY) response. This utility will then decode that response. It is preferable to also supply the  <i>--page=PG</i> option, if not this utility will attempt to guess which VPD page (or standard INQUIRY) the response is associated with. The hexadecimal should be arranged as 1 or 2 digits representing a byte each of which is whitespace or comma separated. Anything from and including a hash mark to the end of line is ignored. If the  <i>--raw</i> option is also given then  <i>FN</i> is treated as binary.</dd>
+</dl>
+<dl>
+<dt>
+<b>-l</b>, <b>--long</b></dt>
+<dd>
+when decoding some VPD pages, give a little more output. For example the ATA Information VPD page only shows the signature (in hex) and the IDENTIFY (PACKET) DEVICE (in hex) when this option is given.</dd>
+</dl>
+<dl>
+<dt>
+<b>-m</b>, <b>--maxlen</b>=<i>LEN</i></dt>
+<dd>
+where <i>LEN</i> is the (maximum) response length in bytes. It is placed in the cdb's &quot;allocation length&quot; field. If not given (or  <i>LEN</i> is zero) then 252 is used (apart from the ATA Information VPD page which defaults to 572) and, if the response indicates this value is insufficient, another INQUIRY command is sent with a larger value in the cdb's &quot;allocation length&quot; field. If this option is given and  <i>LEN</i> is greater than 0 then only one INQUIRY command is sent. Since many simple devices implement the INQUIRY command badly (and do not support VPD pages) then the safest value to use for  <i>LEN</i> is 36. See the sg_inq man page for the more information.</dd>
+</dl>
+<dl>
+<dt>
+<b>-p</b>, <b>--page</b>=<i>PG</i></dt>
+<dd>
+where <i>PG</i> is the VPD page to be decoded or output. The <i>PG</i> argument can either be an abbreviation, a number or a pair or numbers/abbreviations separated by a comma. The VPD page abbreviations can be seen by using the  <i>--enumerate</i> option. If a number is given it is assumed to be decimal unless it has a hexadecimal indicator which is either a leading '0x' or a trailing 'h'. If one number is given then it is assumed to be a VPD page number. If two numbers (or abbreviations) are given then the second one is the same as  <i>VP</i> (see the <i>--vendor=VP</i> option). If this option is not given (nor '-i', '-l' nor '-V') then the &quot;Supported VPD pages&quot; (0x0) VPD page is fetched and decoded. If  <i>PG</i> is '-1' or 'sinq' then the standard INQUIRY response is output. This option may also be used with the  <i>--enumerate</i> (see its description).</dd>
+</dl>
+<dl>
+<dt>
+<b>-q</b>, <b>--quiet</b></dt>
+<dd>
+suppress the amount of decoding output.</dd>
+</dl>
+<dl>
+<dt>
+<b>-r</b>, <b>--raw</b></dt>
+<dd>
+if not used with <i>--inhex=FN</i> then output requested VPD page in binary. The output should be piped to a file or another utility when this option is used. The binary is sent to stdout, and errors are sent to stderr.<div style="height: 0.00em;">
+&#160;</div>
+if used with <i>--inhex=FN</i> then the contents of <i>FN</i> is treated as binary.</dd>
+</dl>
+<dl>
+<dt>
+<b>-M</b>, <b>--vendor</b>=<i>VP</i></dt>
+<dd>
+where <i>VP</i> is a vendor (e.g. &quot;sea&quot; for Seagate) or vendor/product acronym (e.g. &quot;hp3par&quot; for the 3PAR array from HP). Many vendors have re-used the numbers at the beginning of the vendor specific VPD page range (e.g. page 0xc0) and this option is a way of selecting only those which are of interest. Using a  <i>VP</i> of &quot;xxx&quot; will list the available acronyms.<div style="height: 0.00em;">
+&#160;</div>
+If this option is used with <i>--page=PG</i> and <i>PG</i> is an acronym then this option is ignored. If  <i>PG</i> is a number (e.g. 0xc0) then  <i>VP</i> is used to choose the which vendor specific page (e.g. sharing page number 0xc0) to decode.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b>, <b>--verbose</b></dt>
+<dd>
+increases the level or verbosity.</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>, <b>--version</b></dt>
+<dd>
+print out version string then exit.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ATA INFORMATION VPD PAGE</h1> This VPD page (0x89 or 'ai') is defined by the SCSI to ATA Translation standard. It contains information about the SAT layer, the &quot;signature&quot; of the ATA device and the response to the ATA IDENTIFY (PACKET) DEVICE command. The latter part has 512 bytes of identity, capability and settings data which the hdparm utility is capable of decoding (so this utility doesn't decode it).<div class="spacer">
+</div>
+To unclutter the output for this page, the signature and the IDENTIFY (PACKET) DEVICE response are not output unless the  <i>--long</i> option (or  <i>--hex</i> or <i>--raw</i>) are given. When the <i>--long</i> option is given the IDENTIFY (PACKET) DEVICE response is output as 256 (16 bit) words as is the fashion for ATA devices. To see that response as a string of bytes use the '-HH' option. To format the output suitable for hdparm to decode use either the '-HHH' or '-rr' option. For example if 'dev/sdb' is a SATA disk behind a SAT layer then this command: 'sg_vpd -p ai -HHH /dev/sdb | hdparm --Istdin' should decode the ATA IDENTIFY (PACKET) DEVICE response.</div>
+<div class="section">
+<h1>NOTES</h1> Since some VPD pages (e.g. the Extended INQUIRY page) depend on settings in the standard INQUIRY response, then the standard INQUIRY response is output as a pseudo VPD page when  <i>PG</i> is set to '-1' or 'sinq'. Also the decoding of some fields (e.g. the Extended INQUIRY page's SPT field) is expanded when the '--long' option is given using the standard INQUIRY response information (e.g. the PDT and the PROTECT fields).<div class="spacer">
+</div>
+In the 2.4 series of Linux kernels the <i>DEVICE</i> must be a SCSI generic (sg) device. In the 2.6 series block devices (e.g. disks and ATAPI DVDs) can also be specified. For example &quot;sg_inq /dev/sda&quot; will work in the 2.6 series kernels. From lk 2.6.6 other SCSI &quot;char&quot; device names may be used as well (e.g. &quot;/dev/st0m&quot;).<div class="spacer">
+</div>
+The <i>DEVICE</i> is opened with a read-only flag (e.g. in Unix with the O_RDONLY flag).</div>
+<div class="section">
+<h1>EXIT STATUS</h1> The exit status of sg_vpd is 0 when it is successful. Otherwise see the sg3_utils(8) man page.</div>
+<div class="section">
+<h1>EXAMPLES</h1> The examples in this page use Linux device names. For suitable device names in other supported Operating Systems see the sg3_utils(8) man page.<div class="spacer">
+</div>
+To see the VPD pages that a device supports, use with no options. The command line invocation is shown first followed by a typical response:<div class="spacer">
+</div>
+<br/>
+   # sg_vpd /dev/sdb<div style="height: 0.00em;">
+&#160;</div>
+Supported VPD pages VPD page:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  Supported VPD pages [sv]<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  Unit serial number [sn]<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  Device identification [di]<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  Extended inquiry data [ei]<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  Block limits (SBC) [bl]<div class="spacer">
+</div>
+To see the VPD page numbers associated with each supported page then add the '--long' option to the above command line. To view a VPD page either its number or abbreviation can be given to the '--page=' option. The page name abbreviations are shown within square brackets above. In the next example the Extended inquiry data VPD page is listed:<div class="spacer">
+</div>
+<br/>
+   # sg_vpd --page=ei /dev/sdb<div style="height: 0.00em;">
+&#160;</div>
+extended INQUIRY data VPD page:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  ACTIVATE_MICROCODE=0 SPT=0 GRD_CHK=0 APP_CHK=0 REF_CHK=0<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  UASK_SUP=0 GROUP_SUP=0 PRIOR_SUP=0 HEADSUP=1 ORDSUP=1 SIMPSUP=1<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  WU_SUP=0 CRD_SUP=0 NV_SUP=0 V_SUP=0<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  P_I_I_SUP=0 LUICLR=0 R_SUP=0 CBCS=0<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  Multi I_T nexus microcode download=0<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  Extended self-test completion minutes=0<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  POA_SUP=0 HRA_SUP=0 VSA_SUP=0<div class="spacer">
+</div>
+To check if any protection types are supported by a disk use the '--long' option on the Extended inquiry data VPD page:<div class="spacer">
+</div>
+<br/>
+   # sg_vpd --page=ei --long /dev/sdb<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   extended INQUIRY data VPD page:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+     ACTIVATE_MICROCODE=0<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+     SPT=1 [protection types 1 and 2 supported]<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+     GRD_CHK=1<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+     ....<div class="spacer">
+</div>
+Search for the name (and acronym) of all pages that share VPD page number 0xb0 .<div class="spacer">
+</div>
+<br/>
+   # sg_vpd --page=0xb0 --enumerate<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   Matching standard VPD pages:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+     bl         0xb0      Block limits (SBC)<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+     oi         0xb0      OSD information<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+     sad        0xb0      Sequential access device capabilities (SSC)<div class="spacer">
+</div>
+Some examples follow using the &quot;--all&quot; option. Send an ASCII hexadecimal representation of all VPD pages to a file:<div class="spacer">
+</div>
+<br/>
+   # sg_vpd --all -HHHH /dev/sg3 &gt; all_vpds.hex<div class="spacer">
+</div>
+At some later time that file could be decoded with:<div class="spacer">
+</div>
+<br/>
+   # sg_vpd --all --inhex=all_vpds.hex<div class="spacer">
+</div>
+To do the equivalent as the previous example but use a file containing binary:<div class="spacer">
+</div>
+<br/>
+   # sg_vpd --all --raw /dev/sg3 &gt; all_vpds.bin<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   # sg_vpd --all --raw --inhex=all_vpds.bin<div class="spacer">
+</div>
+Notice that &quot;--raw&quot; must be given with the second (--inhex) invocation to alert the utility that all_vpds.bin contains binary as it assumes ASCII hexadecimal by default. Next we only decode T10 specified VPD pages excluding vendor specific VPD pages that start at page number 0xc0:<div class="spacer">
+</div>
+<br/>
+   # sg_vpd --all --page=0xbf --raw --inhex=all_vpds.bin<div class="spacer">
+</div>
+Further examples can be found on the http://sg.danny.cz/sg/sg3_utils.html web page.</div>
+<div class="section">
+<h1>AUTHOR</h1> Written by Douglas Gilbert</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Report bugs to &lt;dgilbert at interlog dot com&gt;.</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright &#169; 2006-2015 Douglas Gilbert<div style="height: 0.00em;">
+&#160;</div>
+This software is distributed under a FreeBSD license. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>sg_inq(sg3_utils), sg3_utils(sg3_utils), sdparm(sdparm), hdparm(hdparm)</b></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+January 2015</td>
+<td class="foot-os">
+sg3_utils-1.41</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

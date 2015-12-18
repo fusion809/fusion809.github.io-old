@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+CHEM(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+CHEM(1)</td>
+<td class="head-vol">
+General Commands Manual</td>
+<td class="head-rtitle">
+CHEM(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> chem - groff preprocessor for producing chemical structure diagrams</div>
+<div class="section">
+<h1>SYNOPSIS</h1> [<span class="opt"><b><i>option</i></b> <i><i>....</i></i>]</span> [<span class="opt"><b>--</b>]</span> [<span class="opt"><b><i>filespec</i></b> <i><i>....</i></i>]</span> <b>-h</b> | <b>--help</b> <b>-v</b> | <b>--version</b></div>
+<div class="section">
+<h1>OPTION USAGE</h1> There are no other options than <b>-h</b>, <b>--help</b>, <b>-v</b>, and <b>--version</b>; these options provoke the printing of a version or usage information, respectively, and all <i>filespec</i> arguments are ignored. A <i>filespec</i> argument is either a file name of an existing file or a minus character <b>-</b>, meaning standard input. If no argument is specified then standard input is taken automatically.</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <i>chem</i> produces chemical structure diagrams. Today's version is best suited for organic chemistry (bonds, rings). The <b>chem</b> program is a <b>groff</b> preprocessor like <b>eqn</b>, <b>pic</b>, <b>tbl</b>, etc. It generates <i>pic</i> output such that all <i>chem</i> parts are translated into diagrams of the <i>pic</i> language.<div class="spacer">
+</div>
+The program <b>chem</b> originates from the Perl source file <b>chem.pl</b>. It tells <b>pic</b> to include a copy of the macro file <b>chem.pic</b>. Moreover the <i>groff</i> source file <b>pic.tmac</b> is loaded.<div class="spacer">
+</div>
+In a style reminiscent of <i>eqn</i> and <i>pic</i>, the <i>chem</i> diagrams are written in a special language.<div class="spacer">
+</div>
+A set of <i>chem</i> lines looks like this<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+.cstart<br/>
+<i>chem data</i><br/>
+.cend<br/>
+</dd>
+</dl>
+<div class="spacer">
+</div>
+Lines containing the keywords <b>.cstart</b> and <b>.cend</b> start and end the input for <b>chem</b>, respectively. In <i>pic</i> context, i.e., after the call of <b>.PS</b>, <i>chem</i> input can optionally be started by the line <b>begin&#160;chem</b> and ended by the line with the single word <b>end</b> instead.<div class="spacer">
+</div>
+Anything outside these initialization lines is copied through without modification; all data between the initialization lines is converted into <i>pic</i> commands to draw the diagram.<div class="spacer">
+</div>
+As an example,<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+.cstart<br/>
+CH3<br/>
+bond<br/>
+CH3<br/>
+.cend<br/>
+</dd>
+</dl>
+<div class="spacer">
+</div>
+prints two <b>CH3</b> groups with a bond between them.<div class="spacer">
+</div>
+To actually view this, you must run <b>chem</b> followed by <b>groffer</b>:<dl>
+<dt>
+</dt>
+<dd>
+<b>chem [file ....] | groffer</b></dd>
+</dl>
+<div class="spacer">
+</div>
+If you want to create just <b>groff</b> output, you must run <b>chem</b> followed by <b>groff</b> with the option <b>-p</b> for the activation of <b>pic</b>:<dl>
+<dt>
+</dt>
+<dd>
+<b>chem [file ....] | groff -p ....</b></dd>
+</dl>
+</div>
+<div class="section">
+<h1>THE LANGUAGE</h1> The <i>chem</i> input language is rather small.  It provides rings of several styles and a way to glue them together as desired, bonds of several styles, moieties (e.g., <b>C</b>, <b>NH3</b>, ...., and strings.<div class="subsection">
+<h2>Setting Variables</h2> There are some variables that can be set by commands. Such commands have two possible forms, either<div style="margin-left: 5.00ex;">
+<div class="spacer">
+</div>
+<i>variable value</i></div>
+<div class="spacer">
+</div>
+or<div style="margin-left: 5.00ex;">
+<div class="spacer">
+</div>
+<i>variable </i><b>=</b><i> value</i></div>
+<div class="spacer">
+</div>
+This sets the given <i>variable</i> to the argument <i>value</i>. If more arguments are given only the last argument is taken, all other arguments are ignored.<div class="spacer">
+</div>
+There are only a few variables to be set by these commands:<dl>
+<dt>
+<b>textht</b><i> arg</i></dt>
+<dd>
+Set the height of the text to <i>arg</i>; default is 0.16.</dd>
+</dl>
+<dl>
+<dt>
+<b>cwid</b><i> arg</i></dt>
+<dd>
+Set the character width to <i>arg</i>; default is 0.12.</dd>
+</dl>
+<dl>
+<dt>
+<b>db</b><i> arg</i></dt>
+<dd>
+Set the bond length to <i>arg</i>; default is 0.2.</dd>
+</dl>
+<dl>
+<dt>
+<b>size</b><i> arg</i></dt>
+<dd>
+Scale the diagram to make it look plausible at point size <i>arg</i>; default is 10 point.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>Bonds</h2> This<div style="margin-left: 5.00ex;">
+[<i>direction</i>] [<i>length&#160;n</i>] [<b>from&#160;</b><i>Name</i>|<i>picstuff</i>]</div>
+<div class="spacer">
+</div>
+draws a single bond in direction from nearest corner of <i>Name</i>. <b>bond</b> can also be <b>double bond</b>, <b>front bond</b>, <b>back bond</b>, etc. (We will get back to <i>Name</i> soon.)<div class="spacer">
+</div>
+<i>direction</i> is the angle in degrees (0&#160;up, positive clockwise) or a direction word like <b>up</b>, <b>down</b>, <b>sw</b> (=&#160;southwest), etc. If no direction is specified, the bond goes in the current direction (usually that of the last bond).<div class="spacer">
+</div>
+Normally the bond begins at the last object placed;  this can be changed by naming a <b>from</b> place. For instance, to make a simple alkyl chain:<div style="margin-left: 5.00ex;">
+<table class="tbl">
+<col style="width: 17.00ex;"/>
+<col style="width: 34.00ex;"/>
+<tbody>
+<tr>
+<td>
+CH3</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+bond</td>
+<td>
+(this one goes right from the CH3)</td>
+</tr>
+<tr>
+<td>
+C</td>
+<td>
+(at the right end of the bond)</td>
+</tr>
+<tr>
+<td>
+double bond up</td>
+<td>
+(from the C)</td>
+</tr>
+<tr>
+<td>
+O</td>
+<td>
+(at the end of the double bond)</td>
+</tr>
+<tr>
+<td>
+bond right from C</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+CH3</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="spacer">
+</div>
+A length in inches may be specified to override the default length. Other <i>pic</i> commands can be tacked on to the end of a bond command, to created dotted or dashed bonds or to specify a <b>to</b> place.</div>
+<div class="subsection">
+<h2>Rings</h2> There are lots of rings, but only 5 and 6-sided rings get much support. <b>ring</b> by itself is a 6-sided ring; <b>benzene</b> is the benzene ring with a circle inside. <b>aromatic</b> puts a circle into any kind of ring.<div style="margin-left: 5.00ex;">
+[<b>pointing&#160;</b>(<b>up</b>|<b>right</b>|<b>left</b>|<b>down</b>)] [<b>aromatic</b>] [<b>put&#160;Mol&#160;at&#160;<i>n/</i></b>] [<b>double&#160;</b><i>i</i>,<i>j&#160;</i><i>k</i>,<i>l&#160;</i>.... [<i>picstuff</i>]</div>
+<div class="spacer">
+</div>
+The vertices of a ring are numbered 1, 2, .... from the vertex that points in the natural compass direction. So for a hexagonal ring with the point at the top, the top vertex is&#160;1, while if the ring has a point at the east side, that is vertex&#160;1. This is expressed as<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+R1: ring pointing up<br/>
+R2: ring pointing right<br/>
+</dd>
+</dl>
+<div class="spacer">
+</div>
+The ring vertices are named <b>.V1</b>, ...., <b>.V</b><i>n,</i> with <b>.V1</b> in the pointing direction. So the corners of <b>R1</b> are <b>R1.V1</b> (the <i>top</i>), <b>R1.V2</b>, <b>R1.V3</b>, <b>R1.V4</b> (the <i>bottom</i>), etc., whereas for <b>R2</b>, <b>R2.V1</b> is the rightmost vertex and <b>R2.V4</b> the leftmost. These vertex names are used for connecting bonds or other rings.  For example,<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+R1: benzene pointing right<br/>
+R2: benzene pointing right with .V6 at R1.V2<br/>
+</dd>
+</dl>
+<div class="spacer">
+</div>
+creates two benzene rings connected along a side.<div class="spacer">
+</div>
+Interior double bonds are specified as <b>double&#160;</b><i>n1</i><b>,</b><i>n2&#160;n3</i><b>,</b><i>n4&#160;....;</i> each number pair adds an interior bond. So the alternate form of a benzene ring is<dl>
+<dt>
+</dt>
+<dd>
+<b>ring double 1,2 3,4 5,6</b></dd>
+</dl>
+<div class="spacer">
+</div>
+Heterocycles (rings with something other than carbon at a vertex) are written as <b>put&#160;</b><i>X&#160;</i><b>at&#160;</b><i>V,</i> as in<dl>
+<dt>
+</dt>
+<dd>
+<b>R: ring put N at 1 put O at 2</b></dd>
+</dl>
+<div class="spacer">
+</div>
+In this heterocycle, <b>R.N</b> and <b>R.O</b> become synonyms for <b>R.V1</b> and <b>R.V2</b>.<div class="spacer">
+</div>
+There are two 5-sided rings. <b>ring5</b> is pentagonal with a side that matches the 6-sided ring; it has four natural directions. A <b>flatring</b> is a 5-sided ring created by chopping one corner of a 6-sided ring so that it exactly matches the 6-sided rings.<div class="spacer">
+</div>
+The description of a ring has to fit on a single line.</div>
+<div class="subsection">
+<h2>Moieties and Strings</h2> A moiety is a string of characters beginning with a capital letter, such as N(C2H5)2. Numbers are converted to subscripts (unless they appear to be fractional values, as in N2.5H). The name of a moiety is determined from the moiety after special characters have been stripped out: e.g., N(C2H5)2) has the name NC2H52.<div class="spacer">
+</div>
+Moieties can be specified in two kinds. Normally a moiety is placed right after the last thing mentioned, separated by a semicolon surrounded by spaces, e.g.,<dl>
+<dt>
+</dt>
+<dd>
+<b>B1: bond ; OH</b></dd>
+</dl>
+<div class="spacer">
+</div>
+Here the moiety is <b>OH</b>; it is set after a bond.<div class="spacer">
+</div>
+As the second kind a moiety can be positioned as the first word in a <i>pic</i>-like command, e.g.,<dl>
+<dt>
+</dt>
+<dd>
+<b>CH3 at C + (0.5,0.5)</b></dd>
+</dl>
+<div class="spacer">
+</div>
+Here the moiety is <b>CH3</b>. It is placed at a position relative to <b>C</b>, a moiety used earlier in the chemical structure.<div class="spacer">
+</div>
+So moiety names can be specified as <i>chem</i> positions everywhere in the <i>chem</i> code. Beneath their printing moieties are names for places.<div class="spacer">
+</div>
+The moiety <b>BP</b> is special. It is not printed but just serves as a mark to be referred to in later <i>chem</i> commands. For example,<dl>
+<dt>
+</dt>
+<dd>
+<b>bond ; BP</b></dd>
+</dl>
+<div class="spacer">
+</div>
+sets a mark at the end of the bond. This can be used then for specifying a place. The name <b>BP</b> is derived from <i>branch point</i> (i.e., line crossing).<div class="spacer">
+</div>
+A string within double quotes <b>&quot;</b> is interpreted as a part of a <i>chem</i> command. It represents a string that should be printed (without the quotes). Text within quotes &quot;....&quot; is treated more or less like a moiety except that no changes are made to the quoted part.</div>
+<div class="subsection">
+<h2>Names</h2> In the alkyl chain above, notice that the carbon atom <b>C</b> was used both to draw something and as the name for a place. A moiety always defines a name for a place;  you can use your own names for places instead, and indeed, for rings you will have to. A name is just<dl>
+<dt>
+</dt>
+<dd>
+<i>Name</i><b>:</b> ....</dd>
+</dl>
+<div class="spacer">
+</div>
+<i>Name</i> is often the name of a moiety like <b>CH3</b>, but it need not to be. Any name that begins with a capital letter and which contains only letters and numbers is valid:<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+<b>First:</b></dt>
+<dd>
+<b>bond</b>  <b>bond 30 from First</b></dd>
+</dl>
+</div>
+</div>
+<div class="subsection">
+<h2>Miscellaneous</h2> The specific construction<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+<b>bond&#160;</b>....<b> ; moiety</b></dt>
+<dd>
+</dd>
+</dl>
+</div>
+<div class="spacer">
+</div>
+is equivalent to<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+bond<br/>
+moiety<br/>
+</dd>
+</dl>
+<div class="spacer">
+</div>
+Otherwise, each item has to be on a separate line (and only one line). Note that there must be whitespace after the semicolon which separates the commands.<div class="spacer">
+</div>
+A period character <b>.</b> or a single quote <b>'</b> in the first column of a line signals a <i>troff</i> command, which is copied through as-is.<div class="spacer">
+</div>
+A line whose first non-blank character is a hash character (<b>#</b>) is treated as a comment and thus ignored. However, hash characters within a word are kept.<div class="spacer">
+</div>
+A line whose first word is <b>pic</b> is copied through as-is after the word <b>pic</b> has been removed.<div class="spacer">
+</div>
+The command<dl>
+<dt>
+</dt>
+<dd>
+<b>size</b> <i>n</i></dd>
+</dl>
+<div class="spacer">
+</div>
+scales the diagram to make it look plausible at point size&#160;<i>n</i> (default is 10&#160;point).<div class="spacer">
+</div>
+Anything else is assumed to be <i>pic</i> code, which is copied through with a label.<div class="spacer">
+</div>
+Since <b>chem</b> is a <b>pic</b> preprocessor, it is possible to include <i>pic</i> statements in the middle of a diagram to draw things not provided for by <i>chem</i> itself. Such <i>pic</i> statements should be included in <i>chem</i> code by adding <b>pic</b> as the first word of this line for clarity.<div class="spacer">
+</div>
+The following <i>pic</i> commands are accepted as <i>chem</i> commands, so no <b>pic</b> command word is needed:<dl>
+<dt>
+</dt>
+<dd>
+<b>define</b> Start the definition of <i>pic</i> macro within <i>chem</i>.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+<b>[</b></dt>
+<dd>
+Start a block composite.</dd>
+</dl>
+<dl>
+<dt>
+<b>]</b></dt>
+<dd>
+End a block composite.</dd>
+</dl>
+<dl>
+<dt>
+<b>{</b></dt>
+<dd>
+Start a macro definition block.</dd>
+</dl>
+<dl>
+<dt>
+<b>}</b></dt>
+<dd>
+End a macro definition block.</dd>
+</dl>
+</div>
+<div class="spacer">
+</div>
+The macro names from <b>define</b> statements are stored and their call is accepted as a <i>chem</i> command as well.</div>
+<div class="subsection">
+<h2>WISH LIST</h2> This TODO list was collected by Brian Kernighan.<div class="spacer">
+</div>
+Error checking is minimal; errors are usually detected and reported in an oblique fashion by <i>pic</i>.<div class="spacer">
+</div>
+There is no library or file inclusion mechanism, and there is no shorthand for repetitive structures.<div class="spacer">
+</div>
+The extension mechanism is to create <i>pic</i> macros, but these are tricky to get right and don't have all the properties of built-in objects.<div class="spacer">
+</div>
+There is no in-line chemistry yet (e.g., analogous to the $....$ construct of eqn).<div class="spacer">
+</div>
+There is no way to control entry point for bonds on groups. Normally a bond connects to the carbon atom if entering from the top or bottom and otherwise to the nearest corner.<div class="spacer">
+</div>
+Bonds from substituted atoms on heterocycles do not join at the proper place without adding a bit of <i>pic</i>.<div class="spacer">
+</div>
+There is no decent primitive for brackets.<div class="spacer">
+</div>
+Text (quoted strings) doesn't work very well.<div class="spacer">
+</div>
+A squiggle bond is needed.</div>
+</div>
+<div class="section">
+<h1>FILES</h1><dl>
+<dt>
+<b>/usr/share/groff/1.22.3/pic/chem.pic</b></dt>
+<dd>
+A collection of <i>pic</i> macros needed by <b>chem</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>/usr/share/groff/1.22.3/tmac/pic.tmac</b></dt>
+<dd>
+A macro file which redefines <b>.PS</b> and <b>.PE</b> to center <i>pic</i> diagrams.</dd>
+</dl>
+<dl>
+<dt>
+<b>/usr/share/doc/groff-1.22.3/examples/chem/*.chem</b></dt>
+<dd>
+Example files for <i>chem</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>/usr/share/doc/groff-1.22.3/examples/chem/122/*.chem</b></dt>
+<dd>
+Example files from the classical <i>chem</i> book <b>122.ps</b>.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>BUGS</h1> Report bugs to the bug-groff mailing list Include a complete, self-contained example that will allow the bug to be reproduced, and say which version of <i>groff</i> and <i>chem</i> you are using. You can get both version numbers by calling <b>chem --version</b>.<div class="spacer">
+</div>
+You can also use the groff mailing list but you must first subscribe to this list. You can do that by visiting the <a class="link-ext" href="http://lists.gnu.org/mailman/listinfo/groff">groff mailing list web page</a><div class="spacer">
+</div>
+See <b>groff</b>(1) for information on availability.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>groff</b>(1), <b>pic</b>(1), <b>groffer</b>(1).<div class="spacer">
+</div>
+You can still get the original <a class="link-ext" href="http://cm.bell-labs.com/netlib/typesetting/chem.gz">chem awk source</a> Its <b>README</b> file was used for this manual page.<div class="spacer">
+</div>
+The other classical document on <i>chem</i> is <a class="link-ext" href="http://cm.bell-labs.com/cm/cs/cstr/122.ps.gz">122.ps</a></div>
+<div class="section">
+<h1>COPYING</h1> Copyright &#169; 2006-2014 Free Software Foundation, Inc.<div style="height: 1.00em;">
+&#160;</div>
+This file is part of chem, which is part of groff, a free software project.<div style="height: 1.00em;">
+&#160;</div>
+You can redistribute it and/or modify it under the terms of the GNU General Public License version 2 (GPL2) as published by the Free Software Foundation.<div style="height: 1.00em;">
+&#160;</div>
+The license text for GPL2 is available in the internet at <a class="link-ext" href="http://www.gnu.org/licenses/gpl-2.0.html">http://www.gnu.org/licenses/gpl-2.0.html</a></div>
+<div class="section">
+<h1>AUTHORS</h1> This file was written by Bernd Warken &lt;groff-bernd.warken-72@web.de&gt;.<div style="height: 1.00em;">
+&#160;</div>
+It is based on the documentation of Brian Kernighan's original awk version of chem at <a class="link-ext" href="http://cm.bell-labs.com/cm/cs/who/bwk/index.html">http://cm.bell-labs.com/cm/cs/who/bwk/index.html</a></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+4 November 2014</td>
+<td class="foot-os">
+Groff Version 1.22.3</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

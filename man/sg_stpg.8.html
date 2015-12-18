@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SG_STPG(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SG_STPG(8)</td>
+<td class="head-vol">
+SG3_UTILS</td>
+<td class="head-rtitle">
+SG_STPG(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sg_stpg - send SCSI SET TARGET PORT GROUPS command</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>sg_stpg</b> [ <i>--active</i>] [<i>--help</i>] [<i>--hex</i>] [<i>--offline</i>] [ <i>--optimized</i>] [<i>--raw</i>] [<i>--standby</i>] [ <i>--state=S,S...</i>] [<i>--tp=P,P...</i>] [<i>--unavailable</i>] [ <i>--verbose</i>] [<i>--version</i>] <i>DEVICE</i></div>
+<div class="section">
+<h1>DESCRIPTION</h1> Send a SCSI SET TARGET PORT GROUPS command to  <i>DEVICE</i>. This utility has different modes depending on whether the  <i>--tp=</i> option is given.<div class="spacer">
+</div>
+If <i>--tp=</i> is given then the SET TARGET PORT GROUPS command parameter block is built with a descriptor for each element in the list given to  <i>--tp=</i>. The corresponding asymmetric access state value is either taken from the  <i>--state=</i> list or, if that is not given, from one of the explicit state options (e.g.  <i>--unavailable</i>), used repeatedly if required.<div class="spacer">
+</div>
+If <i>--tp=</i> is not given then a sequence of SCSI commands are sent to the  <i>DEVICE</i> leading up to the SET TARGET PORT GROUPS command. First an INQUIRY is sent to fetch the device identification VPD page to find the (primary) target port group associated with  <i>DEVICE</i>. Then a REPORT TARGET PORT GROUPS command is issued to find the current state and whether a transition to the requested state is supported. If so the SET TARGET PORT GROUPS command is sent.<div class="spacer">
+</div>
+Target port group access is described in SPC-4 found at www.t10.org in sections 5.8 and 5.16 (in rev 36e dated 2012/8/24). The SET TARGET PORT GROUPS command is also described in section 6.45 of that document.</div>
+<div class="section">
+<h1>OPTIONS</h1> Arguments to long options are mandatory for short options as well. The options are arranged in alphabetical order based on the long option name.<dl>
+<dt>
+<b>-a</b>, <b>--active</b></dt>
+<dd>
+set active/non-optimized state.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>, <b>--help</b></dt>
+<dd>
+output the usage message then exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-H</b>, <b>--hex</b></dt>
+<dd>
+output response to the REPORT TARGET PORT GROUPS command in hex then exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-O</b>, <b>-l</b>, <b>--offline</b></dt>
+<dd>
+set offline state. This is the appropriate state to set a target port to prior to removing the device.  Note that a relative target port identifier should be given with this state (rather than a target port group identifier that all other states take).</dd>
+</dl>
+<dl>
+<dt>
+<b>-o</b>, <b>--optimized</b></dt>
+<dd>
+set active/optimized state. If no other state options or <i>--tp=</i> option are given then active/optimized is the default state.</dd>
+</dl>
+<dl>
+<dt>
+<b>-r</b>, <b>--raw</b></dt>
+<dd>
+output response to the REPORT TARGET PORT GROUPS command in binary to stdout then exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-s</b>, <b>--standby</b></dt>
+<dd>
+set standby state. Port group shall accept those commands listed for &quot;unavailable&quot; state plus LOG SELECT/SENSE, MODE SELECT/SENSE, RECEIVE DIAGNOSTIC RESULTS, SEND DIAGNOSTIC, PERSISTENT RESERVE IN/OUT commands.</dd>
+</dl>
+<dl>
+<dt>
+<b>-S</b>, <b>--state</b>=<i>S,S...</i></dt>
+<dd>
+specifies a comma separated list (one element of more) of states. Either a number or an abbreviation can be given. A number is assumed to be a decimal number unless it is prefixed by &quot;0x&quot; or has a trailing &quot;h&quot; in which case a hexadecimal value is assumed. Only the values 0, 1, 2, 3 or 14 are accepted. The accepted abbreviations are &quot;an&quot;, &quot;ao&quot;, &quot;o&quot;, &quot;s&quot; or &quot;u&quot;; which represent active/non-optimized(1), active/optimized(0), offline(14), standby(2) or unavailable(3) respectively.</dd>
+</dl>
+<dl>
+<dt>
+<b>-t</b>, <b>--tp</b>=<i>P,P...</i></dt>
+<dd>
+specifies a comma separated list (one element of more). Each elements is either a target port group identifier (when the corresponding state is other than &quot;offline&quot;) or a relative target port identifier (when the corresponding state is &quot;offline&quot;). Each element is assumed to be a decimal number unless it is prefixed by &quot;0x&quot; or has a trailing &quot;h&quot; in which case a hexadecimal value is assumed.</dd>
+</dl>
+<dl>
+<dt>
+<b>-u</b>, <b>--unavailable</b></dt>
+<dd>
+set unavailable state. Port group shall only accept INQUIRY, REPORT LUNS, REPORT/SET TARGET PORT GROUPS, REQUEST SENSE and READ/WRITE BUFFER commands.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b>, <b>--verbose</b></dt>
+<dd>
+increase the level of verbosity, (i.e. debug output).</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>, <b>--version</b></dt>
+<dd>
+print the version string and then exit.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>NOTES</h1> The SET TARGET PORT GROUPS command should be supported whenever the TPGS value in a standard INQUIRY response is 2 or 3. [View with sg_inq utility.]<div class="spacer">
+</div>
+Notice that the offline state is termed as a &quot;secondary target port asymmetric access state&quot; and takes a relative target port identifier (i.e. acts on a single target port). All the other states are termed as &quot;primary target port asymmetric access states&quot; and each takes a target port group identifier (i.e. acts on one or more target ports).<div class="spacer">
+</div>
+When <i>--tp=</i> is given then the same number of elements should be given to the  <i>--state=</i> option. If more than one list element is given to  <i>--tp=</i> and an equal number of elements is _not_ given to the  <i>--state=</i> option, then if only one state is specified then it is repeated.</div>
+<div class="section">
+<h1>EXIT STATUS</h1> The exit status of sg_stpg is 0 when it is successful. Otherwise see the sg3_utils(8) man page.</div>
+<div class="section">
+<h1>AUTHORS</h1> Written by Douglas Gilbert.</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Report bugs to &lt;dgilbert at interlog dot com&gt;.</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright &#169; 2007-2014 Hannes Reinecke, Christophe Varoqui and Douglas Gilbert<div style="height: 0.00em;">
+&#160;</div>
+This software is distributed under a FreeBSD license. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>sg_inq, sg_rtpg (sg3_utils)</b></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+January 2014</td>
+<td class="foot-os">
+sg3_utils-1.38</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

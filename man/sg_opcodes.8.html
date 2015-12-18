@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SG_OPCODES(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SG_OPCODES(8)</td>
+<td class="head-vol">
+SG3_UTILS</td>
+<td class="head-rtitle">
+SG_OPCODES(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sg_opcodes - report supported SCSI commands or task management functions</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>sg_opcodes</b> [ <i>--alpha</i>] [<i>--compact</i>] [<i>--help</i>] [<i>--hex</i>] [ <i>--no-inquiry</i>] [<i>--opcode=OP</i>] [<i>--raw</i>] [<i>--rctd</i>] [ <i>--repd</i>] [<i>--sa=SA</i>] [<i>--tmf</i>] [<i>--unsorted</i>] [ <i>--verbose</i>] [<i>--version</i>] <i>DEVICE</i><div class="spacer">
+</div>
+<b>sg_opcodes</b> [ <i>-a</i>] [<i>-c</i>] [<i>-n</i>] [<i>-o=OP</i>] [<i>-q</i>] [<i>-R</i>] [ <i>-s=SA</i>] [<i>-t</i>] [<i>-u</i>] [<i>-v</i>] [<i>-V</i>] [<i>-?</i>]  <i>DEVICE</i></div>
+<div class="section">
+<h1>DESCRIPTION</h1> This utility sends a SCSI REPORT SUPPORTED OPERATION CODES or a REPORT SUPPORTED TASK MANAGEMENT FUNCTIONS command to the  <i>DEVICE</i> and then outputs the response. The default action is to report supported operation codes. In this mode it will either list all supported commands or give detailed information on a specific command identified by the  <i>--opcode=OP</i> option (perhaps with additional information from the  <i>--sa=SA</i> option).<div class="spacer">
+</div>
+The name of a SCSI command depends on its peripheral device type (e.g. a disk). The REPORT SUPPORTED OPERATION CODES and REPORT SUPPORTED TASK MANAGEMENT FUNCTIONS commands are not supported in the MMC command set for CD and DVD devices. This utility does an INQUIRY to obtain the peripheral device type and prints out the vendor, product and revision strings.<div class="spacer">
+</div>
+A similar facility to query supported operation codes previously was available via the CmdDt bit in the SCSI INQUIRY command (see sg_inq(8)). However that facility was made obsolete and replaced by the REPORT SUPPORTED OPERATION CODES command in SPC-3 (revision 4) during February 2002.<div class="spacer">
+</div>
+This utility supports two command line syntaxes, the preferred one is shown first in the synopsis and explained in this section. A later section on the old command line syntax outlines the second group of options.</div>
+<div class="section">
+<h1>OPTIONS</h1> Arguments to long options are mandatory for short options as well.<dl>
+<dt>
+<b>-a</b>, <b>--alpha</b></dt>
+<dd>
+when all supported commands are being listed there is no requirement for the device server (i.e. the  <i>DEVICE</i>) to sort the list of commands. When this option is given the list of supported commands is sorted by name (alphabetically). When this option and the  <b>--unsorted</b> option are both _not_ given then the list of supported commands is sorted numerically (first by operation code and then by service action).</dd>
+</dl>
+<dl>
+<dt>
+<b>-c</b>, <b>--compact</b></dt>
+<dd>
+some command names, especially those associated with some service actions, are getting longer. This may cause line wrap in the one line per command mode on some terminals. When this option is given the opcode and service action fields are combined into a single field with the service action, prefixed by a comma shown directly after the opcode. If there is no service action associated with the command, then the comma and the service action are not shown after the opcode. The CDB size field is not shown when this option is given.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>, <b>--help</b></dt>
+<dd>
+outputs the usage message summarizing command line options then exits. Ignores  <i>DEVICE</i> if given.</dd>
+</dl>
+<dl>
+<dt>
+<b>-H</b>, <b>--hex</b></dt>
+<dd>
+outputs the response in ASCII hexadecimal to stdout.</dd>
+</dl>
+<dl>
+<dt>
+<b>-n</b>, <b>--no-inquiry</b></dt>
+<dd>
+Prior to calling a SCSI REPORT SUPPORTED OPERATION CODES or a REPORT SUPPORTED TASK MANAGEMENT FUNCTIONS command, a SCSI INQUIRY command is performed. The reason is to determine the peripheral device type (pdt) of the  <i>DEVICE</i> as this is helpful in translating operation codes to the command names. By default this utility prints a summary of INQUIRY command response on stdout. If this option (or the  <i>--raw</i> option) is given then that summary is not printed on stdout.</dd>
+</dl>
+<dl>
+<dt>
+<b>-O</b>, <b>--old</b></dt>
+<dd>
+switch to older style options.</dd>
+</dl>
+<dl>
+<dt>
+<b>-o</b>, <b>--opcode</b>=<i>OP</i></dt>
+<dd>
+the <i>DEVICE</i> will be queried for the given operation code ( i.e. the  <i>OP</i> value) which is the first byte of a SCSI command. <i>OP</i> is decimal unless prefixed by &quot;0x&quot; or it has a trailing &quot;h&quot;.  <i>OP</i> should be in the range 0 to 255 (0xff) inclusive. When this option is not given then all available SCSI commands supported by the  <i>DEVICE</i> are listed.</dd>
+</dl>
+<dl>
+<dt>
+<b>-r</b>, <b>--raw</b></dt>
+<dd>
+output the response in binary to stdout. Error messages and warnings, if any, are sent to stderr.</dd>
+</dl>
+<dl>
+<dt>
+<b>-R</b>, <b>--rctd</b></dt>
+<dd>
+set report command timeout descriptor (RCTD) bit in the cdb. The response may or may not contain command timeout descriptors. If available they are output. If supported there are two values: a nominal command timeout and a recommended command timeout. Both have units of seconds. A value of zero means that no timeout is indicated and this is shown in the corresponding decoded output as &quot;-&quot;.</dd>
+</dl>
+<dl>
+<dt>
+<b>-q</b>, <b>--repd</b></dt>
+<dd>
+set read extended parameter data (REPD) bit in the report task management functions cdb. 16 bytes rather than the default 4 bytes expected in the response. This was added in SPC-4 (revision 26).</dd>
+</dl>
+<dl>
+<dt>
+<b>-s</b>, <b>--sa</b>=<i>SA</i></dt>
+<dd>
+the <i>DEVICE</i> will be queried for a command with the given service action (i.e. the  <i>SA</i> value). Used in conjunction with the  <i>--opcode=OP</i> option. If this option is not given, <i>--opcode=OP</i> is given and the command in question does have a service action then a value of 0 will be assumed.  <i>SA</i> is decimal and expected to be in the range 0 to 65535 (0xffff) inclusive.</dd>
+</dl>
+<dl>
+<dt>
+<b>-t</b>, <b>--tmf</b></dt>
+<dd>
+list supported task management functions. This is done with the SCSI REPORT SUPPORTED TASK MANAGEMENT FUNCTIONS command.  When this option is chosen the  <i>--alpha</i>, <i>--opcode=OP</i>, <i>--rctd</i>, <i>--sa=SA</i> and  <i>--unsorted</i> options are ignored.</dd>
+</dl>
+<dl>
+<dt>
+<b>-u</b>, <b>--unsorted</b></dt>
+<dd>
+when all supported commands are being listed there is no requirement for the device server (i.e. the  <i>DEVICE</i>) to sort the list of commands. When this option is given the list of supported commands is in the order given by the  <i>DEVICE</i>. When this option is not given the supported commands are sorted numerically (first by operation code and then by service action).</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b>, <b>--verbose</b></dt>
+<dd>
+increase level of verbosity. Can be used multiple times.</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>, <b>--version</b></dt>
+<dd>
+print out version string then exit.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>NOTES</h1> As of SPC-4 revision 7a the recognized task management functions are: abort set, abort task set, clear ACA, clear task set, I_T nexus reset, logical unit reset, query task, target reset and wakeup. As of SPC-4 revision 26 target reset and wakeup have been made obsolete while query task set and query asynchronous event notification have been added.<div class="spacer">
+</div>
+In the 2.4 series of Linux kernels the <i>DEVICE</i> must be a SCSI generic (sg) device. In the 2.6 series block devices (e.g. SCSI disks and DVD drives) can also be specified. For example &quot;sg_opcodes /dev/sda&quot; will work in the 2.6 series kernels.</div>
+<div class="section">
+<h1>EXIT STATUS</h1> The exit status of sg_opcodes is 0 when it is successful. Otherwise see the sg3_utils(8) man page.</div>
+<div class="section">
+<h1>OLDER COMMAND LINE OPTIONS</h1> The options in this section were the only ones available prior to sg3_utils version 1.23 . In sg3_utils version 1.23 and later these older options can be selected by either setting the SG3_UTILS_OLD_OPTS environment variable or using '--old' (or '-O) as the first option.<dl>
+<dt>
+<b>-a</b></dt>
+<dd>
+sort command alphabetically. Equivalent to <i>--alpha</i> in main description.</dd>
+</dl>
+<dl>
+<dt>
+<b>-n</b></dt>
+<dd>
+don't print a summary of the SCSI INQUIRY response on stdout.</dd>
+</dl>
+<dl>
+<dt>
+<b>-N</b></dt>
+<dd>
+switch to the newer style options.</dd>
+</dl>
+<dl>
+<dt>
+<b>-o</b>=<i>OP</i></dt>
+<dd>
+the <i>DEVICE</i> will be queried for the given operation code (i.e.  <i>OP</i>) which is the first byte of a SCSI command. <i>OP</i> is hexadecimal and expected to be in the range 0 to ff inclusive. When this option is not given then all available SCSI commands supported by the  <i>DEVICE</i> are listed.</dd>
+</dl>
+<dl>
+<dt>
+<b>-q</b></dt>
+<dd>
+set the read extended parameter data (REPD) bit in report TMF cdb. Equivalent to  <i>--repd</i> in main description.</dd>
+</dl>
+<dl>
+<dt>
+<b>-R</b></dt>
+<dd>
+set the report command timeout descriptor (RCTD) bit in cdb. Equivalent to  <i>--rctd</i> in main description.</dd>
+</dl>
+<dl>
+<dt>
+<b>-s</b>=<i>SA</i></dt>
+<dd>
+the <i>DEVICE</i> will be queried for a command with the given service action (i.e.  <i>SA</i>). Used in conjunction with the <i>-o=OP</i> option. If this option is not given,  <i>-o=OP</i> is given and the command in question does have a service action then a value of 0 will be assumed.  <i>SA</i> is hexadecimal and expected to be in the range 0 to ffff inclusive.</dd>
+</dl>
+<dl>
+<dt>
+<b>-t</b></dt>
+<dd>
+list supported task management functions. Equivalent to <i>--tmf</i> in the main description.</dd>
+</dl>
+<dl>
+<dt>
+<b>-u</b></dt>
+<dd>
+output all supported commands in the order given by <i>DEVICE</i>. Equivalent to  <i>--unsorted</i> in main description.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b></dt>
+<dd>
+increase level of verbosity. Can be used multiple times.</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b></dt>
+<dd>
+print out version string then exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-?</b></dt>
+<dd>
+output usage message. Ignore all other parameters.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>EXAMPLES</h1> The examples in this page use Linux device names. For suitable device names in other supported Operating Systems see the sg3_utils(8) man page.<div class="spacer">
+</div>
+To see the information about a specific command give its operation code to the '--op=' option. A command line invocation is shown first followed by a typical response:<div class="spacer">
+</div>
+<br/>
+   # sg_opcodes --op=93h /dev/sdb<div class="spacer">
+</div>
+<br/>
+  Opcode=0x93<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  Command_name: Write same(16)<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  Command supported [conforming to SCSI standard]<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  Usage data: 93 e2 00 00 00 00 ff ff ff ff 00 00 ff ff 00 00<div class="spacer">
+</div>
+The next example shows the supported task management functions:<div class="spacer">
+</div>
+<br/>
+   # sg_opcodes --tmf -n /dev/sdb<div class="spacer">
+</div>
+Task Management Functions supported by device:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+    Abort task<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+    Abort task set<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+    Clear ACA<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+    Clear task set<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+    Logical unit reset<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+    Query task<div style="height: 0.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>AUTHOR</h1> Written by Douglas Gilbert</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Report bugs to &lt;dgilbert at interlog dot com&gt;.</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright &#169; 2004-2012 Douglas Gilbert<div style="height: 0.00em;">
+&#160;</div>
+This software is distributed under the GPL version 2. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>sg_inq(sg3_utils)</b></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+December 2012</td>
+<td class="foot-os">
+sg3_utils-1.35</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

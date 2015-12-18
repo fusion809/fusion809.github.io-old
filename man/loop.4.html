@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+LOOP(4)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+LOOP(4)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+LOOP(4)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> loop, loop-control - loop devices</div>
+<div class="section">
+<h1>SYNOPSIS</h1> #include &lt;linux/loop.h&gt;</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The loop device is a block device that maps its data blocks not to a physical device such as a hard disk or optical disk drive, but to the blocks of a regular file in a filesystem or to another block device. This can be useful for example to provide a block device for a filesystem image stored in a file, so that it can be mounted with the <b>mount</b>(8) command. You could do<dl>
+<dt>
+</dt>
+<dd>
+$ <b>dd if=/dev/zero of=file.img bs=1MiB count=10</b><br/>
+$ <b>sudo losetup /dev/loop4 file.img </b><br/>
+$ <b>sudo mkfs -t ext4 /dev/loop4</b><br/>
+$ <b>sudo mkdir /myloopdev</b><br/>
+$ <b>sudo mount /dev/loop4 /myloopdev</b><br/>
+</dd>
+</dl>
+<div class="spacer">
+</div>
+See <b>losetup</b>(8) for another example.<div style="height: 1.00em;">
+&#160;</div>
+A transfer function can be specified for each loop device for encryption and decryption purposes.<div style="height: 1.00em;">
+&#160;</div>
+The following <b>ioctl</b>(2) operations are provided by the loop block device:<dl>
+<dt>
+<b>LOOP_SET_FD</b></dt>
+<dd>
+Associate the loop device with the open file whose file descriptor is passed as the (third) <b>ioctl</b>(2) argument.</dd>
+</dl>
+<dl>
+<dt>
+<b>LOOP_CLR_FD</b></dt>
+<dd>
+Disassociate the loop device from any file descriptor.</dd>
+</dl>
+<dl>
+<dt>
+<b>LOOP_SET_STATUS</b></dt>
+<dd>
+Set the status of the loop device using the (third) <b>ioctl</b>(2) argument. This argument is a pointer to <i>loop_info</i> structure, defined in <i>&lt;linux/loop.h&gt;</i> as:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<br/>
+struct loop_info {<br/>
+    int           lo_number;            /* ioctl r/o */<br/>
+    dev_t         lo_device;            /* ioctl r/o */<br/>
+    unsigned long lo_inode;             /* ioctl r/o */<br/>
+    dev_t         lo_rdevice;           /* ioctl r/o */<br/>
+    int           lo_offset;<br/>
+    int           lo_encrypt_type;<br/>
+    int           lo_encrypt_key_size;  /* ioctl w/o */<br/>
+    int           lo_flags;             /* ioctl r/o */<br/>
+    char          lo_name[LO_NAME_SIZE];<br/>
+    unsigned char lo_encrypt_key[LO_KEY_SIZE];<br/>
+                                        /* ioctl w/o */<br/>
+    unsigned long lo_init[2];<br/>
+    char          reserved[4];<br/>
+};<br/>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+The encryption type (<i>lo_encrypt_type</i>) should be one of <b>LO_CRYPT_NONE</b>, <b>LO_CRYPT_XOR</b>, <b>LO_CRYPT_DES</b>, <b>LO_CRYPT_FISH2</b>, <b>LO_CRYPT_BLOW</b>, <b>LO_CRYPT_CAST128</b>, <b>LO_CRYPT_IDEA</b>, <b>LO_CRYPT_DUMMY</b>, <b>LO_CRYPT_SKIPJACK</b>, or (since Linux 2.6.0) <b>LO_CRYPT_CRYPTOAPI</b>.<div style="height: 1.00em;">
+&#160;</div>
+The <i>lo_flags</i> field is a bit mask that can include zero or more of the following:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+<b>LO_FLAGS_READ_ONLY</b></dt>
+<dd>
+The loopback device is read-only.</dd>
+</dl>
+<dl>
+<dt>
+<b>LO_FLAGS_AUTOCLEAR</b> (since Linux 2.6.25)</dt>
+<dd>
+The loopback device will autodestruct on last close.</dd>
+</dl>
+<dl>
+<dt>
+<b>LO_FLAGS_PARTSCAN</b> (since Linux 3.2)</dt>
+<dd>
+Allow automatic partition scanning.</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>LOOP_GET_STATUS</b></dt>
+<dd>
+Get the status of the loop device. The (third) <b>ioctl</b>(2) argument must be a pointer to a <i>struct loop_info</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>LOOP_CHANGE_FD</b> (since Linux 2.6.5)</dt>
+<dd>
+Switch the backing store of the loop device to the new file identified file descriptor specified in the (third) <b>ioctl</b>(2) argument, which is an integer. This operation is possible only if the loop device is read-only and the new backing store is the same size and type as the old backing store.</dd>
+</dl>
+<dl>
+<dt>
+<b>LOOP_SET_CAPACITY</b> (since Linux 2.6.30)</dt>
+<dd>
+Resize a live loop device. One can change the size of the underlying backing store and then use this operation so that the loop driver learns about the new size. This operation takes no argument.</dd>
+</dl>
+<div class="spacer">
+</div>
+Since Linux 2.6, there are two new <b>ioctl</b>(2) operations:<dl>
+<dt>
+<b>LOOP_SET_STATUS64</b>, <b>LOOP_GET_STATUS64</b></dt>
+<dd>
+These are similar to <b>LOOP_SET_STATUS</b> and <b>LOOP_GET_STATUS</b> described above but use the <i>loop_info64</i> structure, which has some additional fields and a larger range for some other fields:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<br/>
+struct loop_info64 {<br/>
+    uint64_t lo_device;                   /* ioctl r/o */<br/>
+    uint64_t lo_inode;                    /* ioctl r/o */<br/>
+    uint64_t lo_rdevice;                  /* ioctl r/o */<br/>
+    uint64_t lo_offset;<br/>
+    uint64_t lo_sizelimit;/* bytes, 0 == max available */<br/>
+    uint32_t lo_number;                   /* ioctl r/o */<br/>
+    uint32_t lo_encrypt_type;<br/>
+    uint32_t lo_encrypt_key_size;         /* ioctl w/o */<br/>
+    uint32_t lo_flags;                    /* ioctl r/o */<br/>
+    uint8_t  lo_file_name[LO_NAME_SIZE];<br/>
+    uint8_t  lo_crypt_name[LO_NAME_SIZE];<br/>
+    uint8_t  lo_encrypt_key[LO_KEY_SIZE]; /* ioctl w/o */<br/>
+    uint64_t lo_init[2];<br/>
+};<br/>
+<br/>
+</dd>
+</dl>
+<div class="subsection">
+<h2>/dev/loop-control</h2> Since Linux 3.1, the kernel provides the <i>/dev/loop-control</i> device, which permits an application to dynamically find a free device, and to add and remove loop devices from the system. To perform these operations, one first opens <i>/dev/loop-control</i> and then employs one of the following <b>ioctl</b>(2) operations:<dl>
+<dt>
+<b>LOOP_CTL_GET_FREE</b></dt>
+<dd>
+Allocate or find a free loop device for use. On success, the device number is returned as the result of the call. This operation takes no argument.</dd>
+</dl>
+<dl>
+<dt>
+<b>LOOP_CTL_ADD</b></dt>
+<dd>
+Add the new loop device whose device number is specified as a long integer in the third <b>ioctl</b>(2) argument. On success, the device index is returned as the result of the call. If the device is already allocated, the call fails with the error <b>EEXIST</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>LOOP_CTL_REMOVE</b></dt>
+<dd>
+Remove the loop device whose device number is specified as a long integer in the third <b>ioctl</b>(2) argument. On success, the device number is returned as the result of the call. If the device is in use, the call fails with the error <b>EBUSY</b>.</dd>
+</dl>
+</div>
+</div>
+<div class="section">
+<h1>EXAMPLE</h1> The program below uses the <i>/dev/loop-control</i> device to find a free loop device, opens the loop device, opens a file to be used as the underlying storage for the device, and then associates the loop device with the backing store. The following shell session demonstrates the use of the program:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<br/>
+$ <b>dd if=/dev/zero of=file.img bs=1MiB count=10</b><br/>
+10+0 records in<br/>
+10+0 records out<br/>
+10485760 bytes (10 MB) copied, 0.00609385 s, 1.7 GB/s<br/>
+$ <b>sudo ./mnt_loop file.img</b><br/>
+loopname = /dev/loop5<br/>
+<br/>
+<div class="subsection">
+<h2>Program source</h2> <div class="spacer">
+</div>
+<br/>
+#include &lt;fcntl.h&gt;<br/>
+#include &lt;linux/loop.h&gt;<br/>
+#include &lt;sys/ioctl.h&gt;<br/>
+#include &lt;stdio.h&gt;<br/>
+#include &lt;stdlib.h&gt;<br/>
+#include &lt;unistd.h&gt;<div class="spacer">
+</div>
+<br/>
+#define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \<br/>
+                        } while (0)<div class="spacer">
+</div>
+<br/>
+int<br/>
+main(int argc, char *argv[])<br/>
+{<br/>
+    int loopctlfd, loopfd, backingfile;<br/>
+    long devnr;<br/>
+    char loopname[4096];<div class="spacer">
+</div>
+<br/>
+    if (argc != 2) {<br/>
+        fprintf(stderr, &quot;Usage: %s backing-file\n&quot;, argv[0]);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    loopctlfd = open(&quot;/dev/loop-control&quot;, O_RDWR);<br/>
+    if (loopctlfd == -1)<br/>
+        errExit(&quot;open: /dev/loop-control&quot;);<div class="spacer">
+</div>
+<br/>
+    devnr = ioctl(loopctlfd, LOOP_CTL_GET_FREE);<br/>
+    if (devnr == -1)<br/>
+        errExit(&quot;ioctl-LOOP_CTL_GET_FREE&quot;);<div class="spacer">
+</div>
+<br/>
+    sprintf(loopname, &quot;/dev/loop%ld&quot;, devnr);<br/>
+    printf(&quot;loopname = %s\n&quot;, loopname);<div class="spacer">
+</div>
+<br/>
+    loopfd = open(loopname, O_RDWR);<br/>
+    if (loopfd == -1)<br/>
+        errExit(&quot;open: loopname&quot;);<div class="spacer">
+</div>
+<br/>
+    backingfile = open(argv[1], O_RDWR);<br/>
+    if (backingfile == -1)<br/>
+        errExit(&quot;open: backing-file&quot;);<div class="spacer">
+</div>
+<br/>
+    if (ioctl(loopfd, LOOP_SET_FD, backingfile) == -1)<br/>
+        errExit(&quot;ioctl-LOOP_SET_FD&quot;);<div class="spacer">
+</div>
+<br/>
+    exit(EXIT_SUCCESS);<br/>
+}<br/>
+</div>
+</div>
+<div class="section">
+<h1>FILES</h1> <i>/dev/loop*</i>: the loop block special device files</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>losetup</b>(8), <b>mount</b>(8)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-05-07</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

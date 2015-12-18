@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SG_SANITIZE(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SG_SANITIZE(8)</td>
+<td class="head-vol">
+SG3_UTILS</td>
+<td class="head-rtitle">
+SG_SANITIZE(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sg_sanitize - remove all user data from disk with SCSI SANITIZE command</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>sg_sanitize</b> [ <i>--ause</i>] [<i>--block</i>] [<i>--count=OC</i>] [<i>--crypto</i>] [ <i>--desc</i>] [<i>--early</i>] [<i>--fail</i>] [<i>--help</i>] [ <i>--invert</i>] [<i>--ipl=LEN</i>] [<i>--overwrite</i>] [ <i>--pattern=PF</i>] [<i>--quick</i>] [<i>--test=TE</i>] [ <i>--verbose</i>] [<i>--version</i>] [<i>--wait</i>] [<i>--zero</i>]  <i>DEVICE</i></div>
+<div class="section">
+<h1>DESCRIPTION</h1> This utility invokes the SCSI SANITIZE command. This command was first introduced in the SBC-3 revision 27 draft. The purpose of the sanitize operation is to alter the information in the cache and on the medium of a logical unit (e.g. a disk) so that the recovery of user data is not possible. If that user data cannot be erased, or is in the process of being erased, then the sanitize operation prevents access to that user data.<div class="spacer">
+</div>
+Once a SCSI SANITIZE command has successfully started, then user data from that disk is no longer available. Even if the disk is power cycled, the sanitize operation will continue after power is re-instated until it is complete.<div class="spacer">
+</div>
+This utility requires either the <i>--block</i>, <i>--crypto</i>,  <i>--fail</i> or <i>--overwrite</i> option. With the <i>--block</i>,  <i>--crypto</i> or <i>--overwrite</i> option the user is given 15 seconds to reconsider whether they wish to erase all the data on a disk, unless the  <i>--quick</i> option is given in which case the sanitize operation starts immediately. The disk's INQUIRY response strings are printed out just in case the wrong  <i>DEVICE</i> has been given.<div class="spacer">
+</div>
+If the <i>--early</i> option is given then this utility will exit soon after starting the SANITIZE command with the IMMED bit set. The user can monitor the progress of the sanitize operation with the &quot;sg_request --num=9999 --progress&quot; which sends a REQUEST SENSE command every 30 seconds. Otherwise if the  <i>--wait</i> option is given then this utility will wait until the SANITIZE command completes (or fails) and that can be many hours.<div class="spacer">
+</div>
+If neither the <i>--early</i> nor <i>--wait</i> option is given then the SANITIZE command is started with the IMMED bit set. After that this utility sends a REQUEST SENSE command every 60 seconds until there are no more progress indications.</div>
+<div class="section">
+<h1>OPTIONS</h1> Arguments to long options are mandatory for short options as well. The options are arranged in alphabetical order based on the long option name.<dl>
+<dt>
+<b>-A</b>, <b>--ause</b></dt>
+<dd>
+sets the AUSE bit in the cdb. AUSE is an acronym for &quot;allow unrestricted sanitize exit&quot;. The default action is to leave the AUSE bit cleared.</dd>
+</dl>
+<dl>
+<dt>
+<b>-B</b>, <b>--block</b></dt>
+<dd>
+perform a &quot;block erase&quot; sanitize operation.</dd>
+</dl>
+<dl>
+<dt>
+<b>-c</b>, <b>--count</b>=<i>OC</i></dt>
+<dd>
+where <i>OC</i> is the &quot;overwrite count&quot; associated with the &quot;overwrite&quot; sanitize operation.  <i>OC</i> can be a value between 1 and 31 and 1 is the default.</dd>
+</dl>
+<dl>
+<dt>
+<b>-C</b>, <b>--crypto</b></dt>
+<dd>
+perform a &quot;cryptographic erase&quot; sanitize operation.</dd>
+</dl>
+<dl>
+<dt>
+<b>-d</b>, <b>--desc</b></dt>
+<dd>
+sets the DESC field in the REQUEST SENSE command used for polling. By default this field is set to zero. A REQUEST SENSE polling loop is used after the SANITIZE command is issued (assuming that neither the  <i>--early</i> nor the <i>--wait</i> option have been given) to check on the progress of this command as it can take some time.</dd>
+</dl>
+<dl>
+<dt>
+<b>-e</b>, <b>--early</b></dt>
+<dd>
+the default action of this utility is to poll the disk every 60 seconds to fetch the progress indication until the sanitize is finished. When this option is given this utility will exit &quot;early&quot; as soon as the SANITIZE command with the IMMED bit set to 1 has been acknowledged. This option and  <i>--wait</i> cannot both be given.</dd>
+</dl>
+<dl>
+<dt>
+<b>-F</b>, <b>--fail</b></dt>
+<dd>
+perform an &quot;exit failure mode&quot; sanitize operation. Typically requires the preceding SANITIZE command to have set the AUSE bit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>, <b>--help</b></dt>
+<dd>
+print out the usage information then exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-i</b>, <b>--ipl</b>=<i>LEN</i></dt>
+<dd>
+set the initialization pattern length to <i>LEN</i> bytes. By default it is set to the length of the pattern file ( <i>PF</i>) or 4 if the <i>--zero</i> option is given. Only active when the  <i>--overwrite</i> option is also given. It is the number of bytes from the  <i>PF</i> file that will be used as the initialization pattern (if the  <i>--zero</i> option is not given). The minimum size is 1 byte and the maximum is the logical block size of the  <i>DEVICE</i> (and not to exceed 65535). If <i>LEN</i> exceeds the <i>PF</i> file size then the initialization pattern is padded with zeros.</dd>
+</dl>
+<dl>
+<dt>
+<b>-I</b>, <b>--invert</b></dt>
+<dd>
+set the INVERT bit in the overwrite service action parameter list. This only affects the &quot;overwrite&quot; sanitize operation. The default is a clear INVERT bit. When the INVERT bit is set then the initialization pattern is inverted between consecutive overwrite passes.</dd>
+</dl>
+<dl>
+<dt>
+<b>-O</b>, <b>--overwrite</b></dt>
+<dd>
+perform an &quot;overwrite&quot; sanitize operation. When this option is given then the  <i>--pattern=PF</i> or the <i>--zero</i> option is required.</dd>
+</dl>
+<dl>
+<dt>
+<b>-p</b>, <b>--pattern</b>=<i>PF</i></dt>
+<dd>
+where <i>PF</i> is the filename of a file containing the initialization pattern required by an &quot;overwrite&quot; sanitize operation. The length of this file will be used as the length of the initialization pattern unless the  <i>--ipl=LEN</i> option is given. The length of the initialization pattern must be from 1 to the logical block size of the  <i>DEVICE</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>-Q</b>, <b>--quick</b></dt>
+<dd>
+the default action (i.e. when the option is not given) is to give the user 15 seconds to reconsider doing a sanitize operation on the  <i>DEVICE</i>. When this option is given that step (i.e. the 15 second warning period) is skipped.</dd>
+</dl>
+<dl>
+<dt>
+<b>-T</b>, <b>--test</b>=<i>TE</i></dt>
+<dd>
+set the TEST field in the overwrite service action parameter list. This only affects the &quot;overwrite&quot; sanitize operation. The default is to place 0 in that field.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b>, <b>--verbose</b></dt>
+<dd>
+increase the level of verbosity, (i.e. debug output).</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>, <b>--version</b></dt>
+<dd>
+print the version string and then exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-w</b>, <b>--wait</b></dt>
+<dd>
+the default action (i.e. without this option and the <i>--early</i> option) is to start the SANITIZE command with the IMMED bit set then poll for the progress indication with the REQUEST SENSE command until the sanitize operation is complete (or fails). When this option is given (and the  <i>--early</i> option is not given) then the SANITIZE command is started with the IMMED bit clear. For a large disk this might take hours. [A cryptographic erase operation could potentially be very quick.]</dd>
+</dl>
+<dl>
+<dt>
+<b>-z</b>, <b>--zero</b></dt>
+<dd>
+with an &quot;overwrite&quot; sanitize operation this option causes the initialization pattern to be zero (4 zeros are used as the initialization pattern). Cannot be used with the  <i>--pattern=PF</i> option. If this option is given twice (e.g. '-zz') then 0xff is used as the initialization byte.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>NOTES</h1> The SCSI SANITIZE command is closely related to the ATA SANITIZE command, both are relatively new with the ATA command being the first one defined. The SCSI to ATA Translation (SAT) definition for the SCSI SANITIZE command appeared in the SAT-3 revision 4 draft.<div class="spacer">
+</div>
+When a SAT layer is used to a (S)ATA disk then for OVERWRITE the initialization pattern must be 4 bytes long. So this means either the  <i>--zero</i> option may be given, or a pattern file (with the  <i>--pattern=PF</i> option) that is 4 bytes long or set to that length with the  <i>--ipl=LEN</i> option.<div class="spacer">
+</div>
+The SCSI SANITIZE command is related to the SCSI FORMAT UNIT command. It is likely that a block erase sanitize operation would take a similar amount of time as a format on the same disk (e.g. 9 hours for a 2 Terabyte disk). The primary goal of a format is the configuration of the disk at the end of a format (e.g. different logical block size or protection information added). Removal of user data is only a side effect of a format. With the SCSI SANITIZE command, removal of user data is the primary goal. If a sanitize operation is interrupted (e.g. the disk is power cycled) then after power up any remaining user data will not be available and the sanitize operation will continue. When a format is interrupted (e.g. the disk is power cycled) the drafts say very little about the state of the disk. In practice some of the original user data may remain and the format may need to be restarted.<div class="spacer">
+</div>
+Finding out whether a disk (SCSI or ATA) supports SANITIZE can be a challenge. If the user really needs to find out and no other information is available then try 'sg_sanitize --fail -vvv &lt;device&gt;' and observe the sense data returned may be the safest approach. Using the  <i>--fail</i> variant of this utility should have no effect unless it follows an already failed sanitize operation. If the SCSI REPORT SUPPORTED OPERATION CODES command (see sg_opcodes) is supported then using it would be a better approach for finding if sanitize is supported.</div>
+<div class="section">
+<h1>EXAMPLES</h1> These examples use Linux device names. For suitable device names in other supported Operating Systems see the sg3_utils(8) man page.<div class="spacer">
+</div>
+As a precaution if this utility is called with no options then apart from printing a usage message, nothing happens:<div class="spacer">
+</div>
+<br/>
+   sg_sanitize /dev/sdm<div class="spacer">
+</div>
+To do a &quot;block erase&quot; sanitize the <i>--block</i> option is required. The user will be given a 15 second period to reconsider, the SCSI SANITIZE command will be started with the IMMED bit set, then this utility will poll for a progress indication with a REQUEST SENSE command until the sanitize operation is finished:<div class="spacer">
+</div>
+<br/>
+   sg_sanitize --block /dev/sdm<div class="spacer">
+</div>
+To start a &quot;block erase&quot; sanitize and return from this utility once it is started (but not yet completed) use the  <i>--early</i> option:<div class="spacer">
+</div>
+<br/>
+   sg_sanitize --block --early /dev/sdm<div class="spacer">
+</div>
+If the 15 second reconsideration time is not required add the  <i>--quick</i> option:<div class="spacer">
+</div>
+<br/>
+   sg_sanitize --block --quick --early /dev/sdm<div class="spacer">
+</div>
+To do an &quot;overwrite&quot; sanitize a pattern file may be given:<div class="spacer">
+</div>
+<br/>
+   sg_sanitize --overwrite --pattern=rand.img /dev/sdm<div class="spacer">
+</div>
+If the length of that &quot;rand.img&quot; is 512 bytes (a typically logical block size) then to use only the first 17 bytes (repeatedly) in the &quot;overwrite&quot; sanitize operation:<div class="spacer">
+</div>
+<br/>
+   sg_sanitize --overwrite --pattern=rand.img --ipl=17 /dev/sdm<div class="spacer">
+</div>
+To overwrite with zeros use:<br/>
+   sg_sanitize --overwrite --zero /dev/sdm</div>
+<div class="section">
+<h1>EXIT STATUS</h1> The exit status of sg_sanitize is 0 when it is successful. Otherwise see the sg3_utils(8) man page. Unless the  <i>--wait</i> option is given, the exit status may not reflect the success of otherwise of the format.</div>
+<div class="section">
+<h1>AUTHORS</h1> Written by Douglas Gilbert.</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Report bugs to &lt;dgilbert at interlog dot com&gt;.</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright &#169; 2011-2014 Douglas Gilbert<div style="height: 0.00em;">
+&#160;</div>
+This software is distributed under a FreeBSD license. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>sg_requests(8), sg_format(8)</b></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+September 2014</td>
+<td class="foot-os">
+sg3_utils-1.40</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

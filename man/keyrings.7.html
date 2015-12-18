@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+KEYRINGS(7)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+KEYRINGS(7)</td>
+<td class="head-vol">
+Kernel key management</td>
+<td class="head-rtitle">
+KEYRINGS(7)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> keyrings - In-kernel key management and retention facility</div>
+<div class="section">
+<h1>OVERVIEW</h1> The <b>keyrings</b> facility is primarily a way for drivers to retain or cache security data, authentication keys, encryption keys and other data in the kernel.<div class="spacer">
+</div>
+System call interfaces are provided so that userspace programs can manage those objects and also use the facility for their own purposes.<div class="spacer">
+</div>
+A library and some userspace utilities are provided to allow access to the facility.  See <b>keyutils</b>(7) manual page for more information.<div class="spacer">
+</div>
+This document contains the following sections:<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;">
+- Keys.<div style="height: 0.00em;">
+&#160;</div>
+- Key types.<div style="height: 0.00em;">
+&#160;</div>
+- Keyrings.<div style="height: 0.00em;">
+&#160;</div>
+- Anchoring keys.<div style="height: 0.00em;">
+&#160;</div>
+- Possession.<div style="height: 0.00em;">
+&#160;</div>
+- Access rights.<div style="height: 0.00em;">
+&#160;</div>
+- Searching for keys.<div style="height: 0.00em;">
+&#160;</div>
+- On-demand key creation.<div style="height: 0.00em;">
+&#160;</div>
+- Users.<div style="height: 0.00em;">
+&#160;</div>
+</div>
+</div>
+<div class="section">
+<h1>KEYS</h1> The facility provides the concept of a ' <b>key</b>', where all of the above examples are encapsulated within objects of this type.<div class="spacer">
+</div>
+A 'key' contains the following elements:<dl>
+<dt>
+<b>Serial number</b></dt>
+<dd>
+This is a unique integer handle by which a key is referred to in system call arguments.</dd>
+</dl>
+<dl>
+<dt>
+<b>Type</b></dt>
+<dd>
+This defines what sort of data can be held in the key, how the proposed content of the key will be parsed and how the payload will be used.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+There are a number of general purpose types available, plus some specialist types defined by specific drivers.</dd>
+</dl>
+<dl>
+<dt>
+<b>Description</b></dt>
+<dd>
+This is a printable string that is used as the search term for the key (in conjunction with the type) as well as a display name.  The description may be partially matched or exactly matched.</dd>
+</dl>
+<dl>
+<dt>
+<b>Payload</b></dt>
+<dd>
+This is the actual content of a key.  This is usually set when a key is created, but it is possible for the kernel to upcall to userspace to finish the instantiation of a key if that key wasn't already known to the kernel when it was requested.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+A key's payload can be read and updated if the key type supports it and if suitable permission is granted to the caller.</dd>
+</dl>
+<dl>
+<dt>
+<b>Access rights</b></dt>
+<dd>
+Each key has an owning user ID, an owning group and a security label - much as files do.  They also have a set of permissions, though there are more than for a normal UNIX file, and there is an additional category beyond the usual user, group and other (see below).</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+Note that keys are quota controlled since they represent unswappable kernel memory and the owning user ID specifies whose quota is to be debited.</dd>
+</dl>
+<dl>
+<dt>
+<b>Expiration time</b></dt>
+<dd>
+Each key can have an expiration time set.  When that time is reached, the key is marked as being expired and accesses to it fail with  <i>EKEYEXPIRED</i>.  If not deleted, updated or replaced, after a set amount of time, expired keys are automatically removed along with all links to them and  <i>ENOKEY</i> will be reported.</dd>
+</dl>
+<dl>
+<dt>
+<b>Reference count</b></dt>
+<dd>
+Each key has a reference count.  Keys are referenced by keyrings, by current active users and by a process's credentials.  When the reference count reaches zero, the key is scheduled for garbage collection.</dd>
+</dl>
+<div class="spacer">
+</div>
+See the <b>keyctl_describe</b>(3) manual page for more information.</div>
+<div class="section">
+<h1>KEY TYPES</h1> The facility provides several basic types of key:<dl>
+<dt>
+<b>keyring</b></dt>
+<dd>
+Keys of this type are special.  The payload consists of a set of links to other keys, analogous to a directory holding links to files.  The main purpose of a keyring is to prevent other keys from being garbage collected because nothing refers to them.</dd>
+</dl>
+<dl>
+<dt>
+<b>user</b></dt>
+<dd>
+This is a general purpose key type.  It may be instantiated with an arbitrary blob of data of up to about 32KB.  It is kept entirely within kernel memory. It may be read and updated by userspace.</dd>
+</dl>
+<dl>
+<dt>
+<b>big_key</b></dt>
+<dd>
+This is similar to <b>user</b> but it may hold data up to 1MB in size.  The data may be stored in the swap space rather than in kernel memory if the size exceeds the overhead of doing so (a tmpfs file is used - which requires filesystem structures to be allocated in the kernel).</dd>
+</dl>
+<dl>
+<dt>
+<b>logon</b></dt>
+<dd>
+This is similar to <b>user</b> but the contents may not be read by userspace.</dd>
+</dl>
+<div class="spacer">
+</div>
+There are more specialised key types available also, but they're not discussed here as they're not intended for normal userspace use.</div>
+<div class="section">
+<h1>KEYRINGS</h1> As previously mentioned, keyrings are a special type of key that contain links to other keys (which may include other keyrings).  Keys may be linked to by multiple keyrings.  Keyrings may be considered as analogous to UNIX directories where each directory contains a set of hard links to files.<div class="spacer">
+</div>
+Several of the syscall functions available may only be applied to keyrings:<dl>
+<dt>
+<b>Adding</b></dt>
+<dd>
+A key may be added to a keyring by system calls that create keys.  This prevents the new key from being immediately deleted when the system call driver releases its last reference to the key.</dd>
+</dl>
+<dl>
+<dt>
+<b>Linking</b></dt>
+<dd>
+A link may be added to a keyring pointing to a key that is already known, provided this does not create a self-referential cycle.</dd>
+</dl>
+<dl>
+<dt>
+<b>Unlinking</b></dt>
+<dd>
+A link may be removed from a keyring.  When the last link to a key is removed, that key will be scheduled for deletion by the garbage collector.</dd>
+</dl>
+<dl>
+<dt>
+<b>Clearing</b></dt>
+<dd>
+All the links may be removed from a keyring.</dd>
+</dl>
+<dl>
+<dt>
+<b>Searching</b></dt>
+<dd>
+A keyring may be considered the root of a tree or subtree in which keyrings form the branches and non-keyrings the leaves.  This tree may be searched for a leaf matching a particular type and description.</dd>
+</dl>
+<div class="spacer">
+</div>
+See the <b>keyctl_clear</b>(3), <b>keyctl_link</b>(3), <b>keyctl_search</b>(3) and <b>keyctl_unlink</b>(3) manual pages for more information.</div>
+<div class="section">
+<h1>ANCHORING KEYS</h1> To prevent a key from being prematurely garbage collected, it must anchored to keep its reference count elevated when it is not in active use by the kernel.<div class="spacer">
+</div>
+<b>Keyrings</b> are used to anchor other keys - each link is a reference on a key - but whilst keyrings are available to link to keys, keyrings themselves are just keys and are also subject to the same anchoring necessity.<div class="spacer">
+</div>
+The kernel makes available a number of anchor keyrings.  Note that some of these keyrings will only be created when first accessed.<dl>
+<dt>
+<b>Process keyrings</b></dt>
+<dd>
+Process credentials themselves reference keyrings with specific semantics. These keyrings are pinned as long as the set of credentials exists - which is usually as long as the process does.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+There are three keyrings with different inheritance/sharing rules:  The <b>session</b>  <b>keyring</b> (inherited and shared by all child processes), the <b>process keyring</b> (shared by all threads in a process) and the  <b>thread keyring</b> (specific to a particular thread).</dd>
+</dl>
+<dl>
+<dt>
+<b>User keyrings</b></dt>
+<dd>
+Each UID known to the kernel has a record that contains two keyrings: The  <b>user keyring</b> and the <b>user session keyring</b>.  These exist for as long as the UID record in the kernel exists.  A link to the user keyring is placed in a new session keyring by  <b>pam_keyinit</b> when a new login session is initiated.</dd>
+</dl>
+<dl>
+<dt>
+<b>Persistent keyrings</b></dt>
+<dd>
+There is a <b>persistent keyring</b> available to each UID known to the system. It may persist beyond the life of the UID record previously mentioned, but has an expiration time set such that it is automatically cleaned up after a set time.  This, for example, permits cron scripts to use credentials left when the user logs out.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+Note that the expiration time is reset every time the persistent key is requested.</dd>
+</dl>
+<dl>
+<dt>
+<b>Special keyrings</b></dt>
+<dd>
+There are special keyrings owned by the kernel that can anchor keys for special purposes.  An example of this is the  <b>system keyring</b> used for holding encryption keys for module signature verification.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+These are usually closed to direct alteration by userspace.</dd>
+</dl>
+<div class="spacer">
+</div>
+See the <b>thread-keyring</b>(7), <b>process-keyring</b>(7), <b>session-keyring</b>(7), <b>user-keyring</b>(7), <b>user-session-keyring</b>(7), and <b>persistent-keyring</b>(7) manual pages for more information.</div>
+<div class="section">
+<h1>POSSESSION</h1> The concept of ' <b>possession</b>' is important to understanding the keyrings security model.  Whether a thread possesses a key is determined by the following rules:<dl>
+<dt>
+(1)</dt>
+<dd>
+Any key or keyring that does not grant <b>Search</b> permission to the caller is  <i>ignored</i> in all the following rules.</dd>
+</dl>
+<dl>
+<dt>
+(2)</dt>
+<dd>
+A thread <i>possesses</i> its <b>session</b>, <b>process</b> and <b>thread</b> keyrings directly because those are pointed to by its credentials.</dd>
+</dl>
+<dl>
+<dt>
+(3)</dt>
+<dd>
+If a keyring is possessed, then any key it links to is <i>also</i> possessed.</dd>
+</dl>
+<dl>
+<dt>
+(4)</dt>
+<dd>
+If any key a keyring links to is itself a keyring, then rule (3) applies  <i>recursively</i>.</dd>
+</dl>
+<dl>
+<dt>
+(5)</dt>
+<dd>
+If a process is upcalled from the kernel to instantiate a key, then it also possess's the  <i>requester's</i> keyrings as in rule (1) as if it were the requester.</dd>
+</dl>
+<div class="spacer">
+</div>
+Note that possession is not a fundamental property of a key, but must rather be calculated each time it is needed.<div class="spacer">
+</div>
+Possession is designed to allow setuid programs run from, say, a user's shell to access the user's keys.  It also allows the prevention of access to keys just on the basis of UID and GID matches.<div class="spacer">
+</div>
+When it creates the session keyring, the <b>pam_keyinit</b> module adds a link to the user keyring, thus making the user keyring and anything it contains possessed by default.</div>
+<div class="section">
+<h1>ACCESS RIGHTS</h1> Each key has the following security-related attributes:<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;">
+- The owning user ID<div style="height: 0.00em;">
+&#160;</div>
+- The ID of a group that is permitted to access the key<div style="height: 0.00em;">
+&#160;</div>
+- A security label<div style="height: 0.00em;">
+&#160;</div>
+- A permissions mask</div>
+<div class="spacer">
+</div>
+The permissions mask is used to govern the following rights:<dl>
+<dt>
+<b>View</b></dt>
+<dd>
+If set, the attributes of a key may be read.  This includes the type, description and access rights (excluding the security label).</dd>
+</dl>
+<dl>
+<dt>
+<b>Read</b></dt>
+<dd>
+If set, the payload of a key may be read and a list of the serial numbers to which a keyring has links may be read.</dd>
+</dl>
+<dl>
+<dt>
+<b>Write</b></dt>
+<dd>
+If set, the payload of a key may be updated, links may be added to or removed from a keyring, a keyring may be cleared completely and a key may be revoked.</dd>
+</dl>
+<dl>
+<dt>
+<b>Search</b></dt>
+<dd>
+If set, keyrings and subkeyrings may be searched and keys and keyrings may be found by that search.</dd>
+</dl>
+<dl>
+<dt>
+<b>Link</b></dt>
+<dd>
+If set, an additional link may be made to a key from a keyring.  The initial link to a key when it is created doesn't require this permit.</dd>
+</dl>
+<dl>
+<dt>
+<b>Setattr</b></dt>
+<dd>
+If set, the ownership details on a key and its security label may be changed, its expiration time may be set and it may be revoked.</dd>
+</dl>
+<div class="spacer">
+</div>
+The permissions mask contains four sets of rights.  The first three sets are mutually exclusive.  One and only one will be in force at any one time.  In order of descending priority:<dl>
+<dt>
+<b>User</b></dt>
+<dd>
+Used if the key's user ID matches the caller's <b>fsuid</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>Group</b></dt>
+<dd>
+Used if the user ID didn't match and the key's group ID matches the caller's  <b>fsgid</b> or one of the caller's supplementary group list.</dd>
+</dl>
+<dl>
+<dt>
+<b>Other</b></dt>
+<dd>
+Used if neither the key's user ID nor group ID matched.</dd>
+</dl>
+<div class="spacer">
+</div>
+The fourth set of rights is:<dl>
+<dt>
+<b>Possessor</b></dt>
+<dd>
+Used if a key is determined to be <b>possessed</b> by the caller.</dd>
+</dl>
+<div class="spacer">
+</div>
+The complete set of rights for a key is the set union of whichever of the first three sets is selected plus the fourth if the key is possessed.<div class="spacer">
+</div>
+If any right is granted to a thread for a key, then that thread will see the key listed in /proc/keys.  If no rights at all are granted, then that thread can't even tell that the key exists.<div class="spacer">
+</div>
+In addition to access rights, any active <b>Linux Security Module</b> may prevent access to a key if its policy so dictates.  A key may be given a security label or other attribute by the LSM which can be retrieved.<div class="spacer">
+</div>
+See the <b>keyctl_chown</b>(3), <b>keyctl_describe</b>(3), <b>keyctl_get_security</b>(3), <b>keyctl_setperm</b>(3) and <b>selinux</b>(8) manual pages for more information.</div>
+<div class="section">
+<h1>SEARCHING FOR KEYS</h1> One of the key features of this facility is the ability to find a key that it is retaining.  The  <b>request_key</b>() system call is the primary point of access for userspace to find a key to use (the kernel has something similar available).<div class="spacer">
+</div>
+The search algorithm works as follows:<dl>
+<dt>
+(1)</dt>
+<dd>
+The three process keyrings are searched in the following order: the thread keyring if it exists, the process keyring if it exists and then either the session keyring if it exists or the user session keyring if that exists.</dd>
+</dl>
+<dl>
+<dt>
+(2)</dt>
+<dd>
+If the caller was a process that was invoked by the <b>request_key</b>() upcall mechanism then the keyrings of the original caller of that  <b>request_key</b>() will be searched as well.</dd>
+</dl>
+<dl>
+<dt>
+(3)</dt>
+<dd>
+Each keyring is searched first for a match, then the keyrings referred to by that keyring are searched.</dd>
+</dl>
+<dl>
+<dt>
+(4)</dt>
+<dd>
+If a matching key is found that is valid, then the search terminates and that key is returned.</dd>
+</dl>
+<dl>
+<dt>
+(5)</dt>
+<dd>
+If a matching key is found that has an error state attached, that error state is noted and the search continues.</dd>
+</dl>
+<dl>
+<dt>
+(6)</dt>
+<dd>
+If valid matching key is found, then the first noted error state is returned or else  <b>ENOKEY</b> is returned.</dd>
+</dl>
+<div class="spacer">
+</div>
+It is also possible to search a specific keyring, in which case only steps (3) to (6) apply.<div class="spacer">
+</div>
+See the <b>request_key</b>(2) and <b>keyctl_search</b>(3) manual pages for more information.</div>
+<div class="section">
+<h1>ON-DEMAND KEY CREATION</h1> If a key cannot be found, the  <b>request_key</b>() system call will, if given a  <i>callout_info</i> argument, create a new key and then upcall to userspace to instantiate the key.  This allows keys to be created on an as-needed basis.<div class="spacer">
+</div>
+Typically, this will involve the kernel forking and exec'ing <b>request-key</b> program, which will then execute the appopriate handler based on its configuration.<div class="spacer">
+</div>
+The handler is passed a special authorisation key that allows it and only it to instantiate the new key.  This is also used to permit searches performed by the handler program to also search the requester's keyrings.<div class="spacer">
+</div>
+See the <b>keyctl_assume_authority</b>(3), <b>keyctl_instantiate</b>(3), <b>keyctl_negate</b>(3), <b>keyctl_reject</b>(3), <b>request_key</b>(2), <b>request-key</b>(8) and <b>request-key.conf</b>(5) manual pages for more information.</div>
+<div class="section">
+<h1>USERS</h1> The facility has a number of users and usages, but is not limited to those that already exist.<div class="spacer">
+</div>
+In-kernel users of this facility include:<dl>
+<dt>
+<b>Network filesystems - DNS</b></dt>
+<dd>
+The kernel uses the upcall mechanism provided by the keys to upcall to userspace to do DNS lookups and then to cache the results.</dd>
+</dl>
+<dl>
+<dt>
+<b>AF_RXRPC and kAFS - Authentication</b></dt>
+<dd>
+The AF_RXRPC network protocol and the in-kernel AFS filesystem store the ticket needed to do secured or encrypted traffic in keys.  These are then looked up by network operations on AF_RXRPC and filesystem operations on kAFS.</dd>
+</dl>
+<dl>
+<dt>
+<b>NFS - User ID mapping</b></dt>
+<dd>
+The NFS filesystem uses keys to store foreign user ID to local user ID mapping.</dd>
+</dl>
+<dl>
+<dt>
+<b>CIFS - Password</b></dt>
+<dd>
+The CIFS filesystem uses keys to store passwords for accessing remote shares.</dd>
+</dl>
+<dl>
+<dt>
+<b>Module verification</b></dt>
+<dd>
+The kernel build process can be made to cryptographically sign modules.  That signature is then checked when a module is loaded.</dd>
+</dl>
+<div class="spacer">
+</div>
+Userspace users of this facility include:<dl>
+<dt>
+<b>Kerberos key storage</b></dt>
+<dd>
+The MIT Kerberos 5 facility (libkrb5) can use keys to store authentication tokens which can be made to be automatically cleaned up a set time after the user last uses them, but until then permits them to hang around after the user has logged out so that cron scripts can use them.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>keyutils</b>(7),<div style="height: 0.00em;">
+&#160;</div>
+<b>pam_keyinit</b>(8),<div style="height: 0.00em;">
+&#160;</div>
+<b>thread-keyring</b>(7),<div style="height: 0.00em;">
+&#160;</div>
+<b>process-keyring</b>(7),<div style="height: 0.00em;">
+&#160;</div>
+<b>session-keyring</b>(7),<div style="height: 0.00em;">
+&#160;</div>
+<b>user-keyring</b>(7),<div style="height: 0.00em;">
+&#160;</div>
+<b>user-session-keyring</b>(7),<div style="height: 0.00em;">
+&#160;</div>
+<b>persistent-keyring</b>(7)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+21 Feb 2014</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+openrc-run(8) (smm)</title>
+</head>
+<body>
+<div class="mandoc">
+<div class="section">
+<h1 id="x4e414d45">NAME</h1> <b class="name">openrc-run</b> &#8212; <span class="desc">a means of hooking shell commands into a service</span></div>
+<div class="section">
+<h1 id="x53594e4f50534953">SYNOPSIS</h1><table class="synopsis">
+<col style="width: 10.00ex;"/>
+<col/>
+<tbody>
+<tr>
+<td>
+openrc-run</td>
+<td>
+[<span class="opt"><b class="flag">-D</b>, <b class="flag">--nodeps</b></span>] [<span class="opt"><b class="flag">-d</b>, <b class="flag">--debug</b></span>] [<span class="opt"><b class="flag">-s</b>, <b class="flag">--ifstarted</b></span>] [<span class="opt"><b class="flag">-S</b>, <b class="flag">--ifstopped</b></span>] [<span class="opt"><b class="flag">-Z</b>, <b class="flag">--dry-run</b></span>] [<span class="opt"><i class="arg">command ...</i></span>]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section">
+<h1 id="x4445534352495054494f4e">DESCRIPTION</h1> <b class="name">openrc-run</b> is basically an interpreter for shell scripts which provides an easy interface to the often complex system commands and daemons. When a service runs a command it first loads its multiplexed configuration file, then its master configuration file, then <i class="file">/etc/rc.conf</i> and finally the script itself. At this point <b class="name">openrc-run</b> then runs the command given.<div class="spacer">
+</div>
+Commands are defined as shell functions within the script. Here is a list of some functions that all scripts have by default:<dl style="margin-top: 0.00em;margin-bottom: 0.00em;" class="list list-tag">
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">describe</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Describes what the service does and each command the service defines.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">start</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+First we ensure that any services we depend on are started. If any needed services fail to start then we exit with a suitable error, otherwise call the supplied start function if it exists.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">stop</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+First we ensure that any services that depend on us are stopped. If any services that need us fail to stop then we exit with a suitable error, otherwise call the supplied stop function if it exists.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">restart</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Stops and starts the service, including dependencies. This cannot be overridden. See the description of the RC_CMD variable below for the method to make your service behave differently when restart is being executed.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">status</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Shows the status of the service. The return code matches the status, with the exception of &quot;started&quot; returning 0 to match standard command behaviour.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">zap</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Resets the service state to stopped and removes all saved data about the service.</dd>
+</dl>
+<div class="spacer">
+</div>
+The following options affect how the service is run:<dl style="margin-top: 0.00em;margin-bottom: 0.00em;" class="list list-tag">
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="flag">-d</b>, <b class="flag">--debug</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Set xtrace on in the shell to assist in debugging.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="flag">-D</b>, <b class="flag">--nodeps</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Ignore all dependency information the service supplies.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="flag">-s</b>, <b class="flag">--ifstarted</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Only run the command if the service has been started.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="flag">-S</b>, <b class="flag">--ifstopped</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Only run the command if the service has been stopped.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="flag">-q</b>, <b class="flag">--quiet</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Turns off all informational output the service generates. Output from any non OpenRC commands is not affected.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="flag">-v</b>, <b class="flag">--verbose</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Turns on any extra informational output the service generates.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="flag">-Z</b>, <b class="flag">--dry-run</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Shows which services would be stopped and/or started without actually stopping or starting them.</dd>
+</dl>
+<div class="spacer">
+</div>
+The following variables affect the service script:<dl style="margin-top: 0.00em;margin-bottom: 0.00em;" class="list list-tag">
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">extra_commands</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Space separated list of extra commands the service defines. These should not depend on the service being stopped or started.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">extra_started_commands</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Space separated list of extra commands the service defines. These only work if the service has already been started.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">extra_stopped_commands</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Space separated list of extra commands the service defines. These only work if the service has already been stopped.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">description</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+String describing the service.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">description_$command</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+String describing the extra command.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">supervisor</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Supervisor to use to monitor this daemon. If this is unset, start-stop-daemon will be used. The only alternate supervisor we support in this release is S6 from Skarnet software. To use this, set supervisor=s6.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">s6_service_path</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+The path to the s6 service directory if you are monitoring this service with S6. The default is /var/svc.d/${RC_SVCNAME}.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">s6_svwait_options_start</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+The options to pass to s6-svwait when starting the service via s6.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">s6_service_timeout_stop</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+The amount of time, in milliseconds, s6-svc should wait for the service to go down when stopping the service. The default is 10000.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">start_stop_daemon_args</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+List of arguments passed to start-stop-daemon when starting the daemon.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">command</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Daemon to start or stop via <b class="name">start-stop-daemon</b> if no start or stop function is defined by the service.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">command_args</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+List of arguments to pass to the daemon when starting via <b class="name">start-stop-daemon</b>.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">command_background</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Set this to &quot;true&quot;, &quot;yes&quot; or &quot;1&quot; (case-insensitive) to force the daemon into the background. This implies the &quot;--make-pidfile&quot; and &quot;--pidfile&quot; option of <a class="link-man">start-stop-daemon(8)</a> so the pidfile variable must be set.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">chroot</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+<a class="link-man">start-stop-daemon(8)</a> will chroot into this path before writing the pid file or starting the daemon.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">pidfile</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Pidfile to use for the above defined command.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">name</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Display name used for the above defined command.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">stopsig</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Signal to send when stopping the daemon.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">retry</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Retry schedule to use when stopping the daemon. It can either be a timeout in seconds or multiple signal/timeout pairs (like SIGTERM/5).</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">required_dirs</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+A list of directories which must exist for the service to start.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">required_files</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+A list of files which must exist for the service to start.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">start_inactive</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Set to yes to have the service marked inactive when it starts. This is used along with in_background_fake to support re-entrant services.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<i class="arg">in_background_fake</i></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Space separated list of commands which should always succeed when in_background is yes.</dd>
+</dl>
+</div>
+<div class="section">
+<h1 id="x444550454e44454e43494553">DEPENDENCIES</h1> You should define a <b class="cmd">depend</b> function for the service so that <b class="name">openrc-run</b> will start and stop it in the right order in relation to other services. As it's a function it can be very flexible, see the example below. Here is a list of the functions you can use in a <b class="cmd">depend</b> function. You simply pass the names of the services to it to add to that dependency type, or prefix it with ! to remove it.<dl style="margin-top: 0.00em;margin-bottom: 0.00em;" class="list list-tag">
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">need</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+The service will refuse to start until needed services have started and it will refuse to stop until any services that need it have stopped.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">use</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+The service will attempt to start any services we use that have been added to the runlevel.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">after</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+The service will start after these services and stop before these services.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">before</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+The service will start before these services and stop after these services.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">provide</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+We provide this virtual service. For example, named provides dns. Virtual services take precedence over real services, so it is highly recommended that you do not have a real service that has the same name as a virtual service.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">config</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+We should recalculate our dependencies if the listed files have changed.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">keyword</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Tags a service with a keyword. These are the keywords we currently understand:<dl style="margin-top: 0.00em;margin-bottom: 0.00em;" class="list list-tag">
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">-shutdown</span></dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+Don't stop this service when shutting the system down. This is normally quite safe as remaining daemons will be sent a SIGTERM just before final shutdown. Network related services such as the network and dhcpcd init scripts normally have this keyword.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">-stop</span></dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+Don't stop this service when changing runlevels, even if not present. This includes shutting the system down.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">-timeout</span></dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+Other services should wait indefinitely for this service to start. Use this keyword if your service may take longer than 60 seconds to start.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">-jail</span></dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+When in a jail, exclude this service from any dependencies. The service can still be run directly. Set via <b class="cmd">rc_sys</b> in <i class="file">/etc/rc.conf</i></dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">-lxc</span></dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+Same as -jail, but for Linux Resource Containers (LXC).</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">-openvz</span></dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+Same as -jail, but for OpenVZ systems.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">-prefix</span></dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+Same as -jail, but for Prefix systems.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">-uml</span></dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+Same as -jail, but for UML systems.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">-vserver</span></dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+Same as -jail, but for VServer systems.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">-xen0</span></dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+Same as -jail, but for Xen DOM0 systems.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<span class="define">-xenu</span></dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+Same as -jail, but for Xen DOMU systems.</dd>
+</dl>
+</dd>
+</dl>
+<div class="spacer">
+</div>
+To see how to influence dependencies in configuration files, see the <i class="link-sec"><a class="link-sec" href="#x46494c4553">FILES</a></i> section below.</div>
+<div class="section">
+<h1 id="x4255494c54494e53">BUILTINS</h1> <b class="name">openrc-run</b> defines some builtin functions that you can use inside your service scripts:<dl style="margin-top: 0.00em;margin-bottom: 0.00em;" class="list list-tag">
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">einfo</b> [<span class="opt"><i class="arg">string</i></span>]</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+Output a green asterisk followed by the string.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">ewarn</b> [<span class="opt"><i class="arg">string</i></span>]</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+Output a yellow asterisk followed by the string.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">eerror</b> [<span class="opt"><i class="arg">string</i></span>]</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+Output a red asterisk followed by the string to stderr.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">ebegin</b> [<span class="opt"><i class="arg">string</i></span>]</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+Same as einfo, but append 3 dots to the end.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">eend</b> <i class="arg">retval</i> [<span class="opt"><i class="arg">string</i></span>]</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+If <i class="arg">retval</i> does not equal 0 then output the string using <b class="cmd">eerror</b> and !! in square brackets at the end of the line. Otherwise output ok in square brackets at the end of the line. The value of <i class="arg">retval</i> is returned.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">ewend</b> <i class="arg">retval</i> [<span class="opt"><i class="arg">string</i></span>]</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+Same as <b class="cmd">eend</b>, but use <b class="cmd">ewarn</b> instead of <b class="cmd">eerror</b>.</dd>
+</dl>
+<div class="spacer">
+</div>
+You can prefix the above commands with the letter <b class="cmd">v</b>, which means they only output when the environment variable <b class="var">EINFO_VERBOSE</b> is true.<dl style="margin-top: 0.00em;margin-bottom: 0.00em;" class="list list-tag">
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">ewaitfile</b> <i class="arg">timeout</i> <i class="arg">file1</i> <i class="arg">file2 ...</i></dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+Wait for <i class="arg">timeout</i> seconds until all files exist. Returns 0 if all files exist, otherwise non zero. If <i class="arg">timeout</i> is less than 1 then we wait indefinitely.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">is_newer_than</b> <i class="arg">file1</i> <i class="arg">file2 ...</i></dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+If <i class="arg">file1</i> is newer than <i class="arg">file2</i> return 0, otherwise 1. If <i class="arg">file2</i> is a directory, then check all its contents too.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">is_older_than</b> <i class="arg">file1</i> <i class="arg">file2 ...</i></dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+If <i class="arg">file1</i> is newer than <i class="arg">file2</i> return 0, otherwise 1. If <i class="arg">file2</i> is a directory, then check all its contents too.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">service_set_value</b> <i class="arg">name</i> <i class="arg">value</i></dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+Saves the <i class="arg">name</i> <i class="arg">value</i> for later retrieval. Saved values are lost when the service stops.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">service_get_value</b> <i class="arg">name</i></dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+Returns the saved value called <i class="arg">name</i>.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">service_started</b> [<span class="opt"><i class="arg">service</i></span>]</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+If the service is started, return 0 otherwise 1.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">service_starting</b> [<span class="opt"><i class="arg">service</i></span>]</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+If the service is starting, return 0 otherwise 1.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">service_inactive</b> [<span class="opt"><i class="arg">service</i></span>]</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+If the service is inactive, return 0 otherwise 1.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">service_stopping</b> [<span class="opt"><i class="arg">service</i></span>]</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+If the service is stopping, return 0 otherwise 1.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">service_stopped</b> [<span class="opt"><i class="arg">service</i></span>]</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+If the service is stopped, return 0 otherwise 1.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">service_coldplugged</b> [<span class="opt"><i class="arg">service</i></span>]</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+If the service is coldplugged, return 0 otherwise 1.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">service_wasinactive</b> [<span class="opt"><i class="arg">service</i></span>]</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+If the service was inactive, return 0 otherwise 1.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">service_started_daemon</b> [<span class="opt"><i class="arg">service</i></span>] <i class="arg">daemon</i> [<span class="opt"><i class="arg">index</i></span>]</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+If the service has started the daemon using <b class="name">start-stop-daemon</b>, return 0 otherwise 1. If an index is specified, it has to be the nth daemon started by the service.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">mark_service_started</b> [<span class="opt"><i class="arg">service</i></span>]</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+Mark the service as started.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">mark_service_starting</b> [<span class="opt"><i class="arg">service</i></span>]</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+Mark the service as starting.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">mark_service_inactive</b> [<span class="opt"><i class="arg">service</i></span>]</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+Mark the service as inactive.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">mark_service_stopping</b> [<span class="opt"><i class="arg">service</i></span>]</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+Mark the service as stopping.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">mark_service_stopped</b> [<span class="opt"><i class="arg">service</i></span>]</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+Mark the service as stopped.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">mark_service_coldplugged</b> [<span class="opt"><i class="arg">service</i></span>]</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+Mark the service as coldplugged.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">mark_service_wasinactive</b> [<span class="opt"><i class="arg">service</i></span>]</dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+Mark the service as inactive.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">checkpath</b> [<span class="opt"><b class="flag">-D</b>, <b class="flag">--directory-truncate</b></span>] [<span class="opt"><b class="flag">-d</b>, <b class="flag">--directory</b></span>] [<span class="opt"><b class="flag">-F</b>, <b class="flag">--file-truncate</b></span>] [<span class="opt"><b class="flag">-f</b>, <b class="flag">--file</b></span>] [<span class="opt"><b class="flag">-p</b>, <b class="flag">--pipe</b></span>] [<span class="opt"><b class="flag">-m</b>, <b class="flag">--mode</b> <i class="arg">mode</i></span>] [<span class="opt"><b class="flag">-o</b>, <b class="flag">--owner</b> <i class="arg">owner</i></span>] [<span class="opt"><b class="flag">-W</b>, <b class="flag">--writable</b></span>] [<span class="opt"><b class="flag">-q</b>, <b class="flag">--quiet</b></span>] <i class="arg">path ...</i></dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+If -d, -f or -p is specified, checkpath checks to see if the path exists, is the right type and has the correct owner and access modes. If any of these tests fail, the path is created and set up as specified. If more than one of -d, -f or -p are specified, the last one will be used.<div style="height: 1.00em;">
+&#160;</div>
+The argument to -m is a three or four digit octal number. If this option is not provided, the value defaults to 0644 for files and 0775 for directories.<div style="height: 1.00em;">
+&#160;</div>
+The argument to -o is a representation of the user and/or group which should own the path. The user and group can be represented numerically or with names, and are separated by a colon.<div style="height: 1.00em;">
+&#160;</div>
+The truncate options (-D and -F) cause the directory or file to be cleared of all contents.<div style="height: 1.00em;">
+&#160;</div>
+If -W is specified, checkpath checks to see if the first path given on the command line is writable.  This is different from how the test command in the shell works, because it also checks to make sure the file system is not read only.<div style="height: 1.00em;">
+&#160;</div>
+Also, the -d, -f or -p options should not be specified along with this option.<div style="height: 1.00em;">
+&#160;</div>
+The -q option suppresses all informational output. If it is specified twice, all error messages are suppressed as well.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="cmd">yesno</b> <i class="arg">value</i></dt>
+<dd class="list-tag" style="margin-left: 6.00ex;">
+If <i class="arg">value</i> matches YES, TRUE, ON or 1 regardless of case then we return 0, otherwise 1.</dd>
+</dl>
+</div>
+<div class="section">
+<h1 id="x454e5649524f4e4d454e54">ENVIRONMENT</h1> <b class="name">openrc-run</b> sets the following environment variables for use in the service scripts:<dl style="margin-top: 0.00em;margin-bottom: 0.00em;" class="list list-tag">
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="var">RC_SVCNAME</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Name of the service.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="var">RC_SERVICE</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Full path to the service.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="var">RC_RUNLEVEL</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Current runlevel that OpenRC is in. Note that, in OpenRC, the reboot runlevel is mapped to the shutdown runlevel. This was done because most services do not need to know if a system is shutting down or rebooting. If you are writing a service that does need to know this, see the RC_REBOOT variable.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="var">RC_REBOOT</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+This variable contains YES if the system is rebooting. If your service needs to know the system is rebooting, you should test this variable.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="var">RC_BOOTLEVEL</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Boot runlevel chosen. Default is boot.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="var">RC_DEFAULTLEVEL</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+Default runlevel chosen. Default is default.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="var">RC_SYS</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+A special variable to describe the system more. Possible values are OPENVZ, XENU, XEN0, UML and VSERVER.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="var">RC_PREFIX</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+In a Gentoo Prefix installation, this variable contains the prefix offset. Otherwise it is undefined.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="var">RC_UNAME</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+The result of `uname -s`.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="var">RC_CMD</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+This contains the name of the command the service script is executing, such as start, stop, restart etc. One example of using this is to make a service script behave differently when restart is being executed.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="var">RC_GOINGDOWN</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+This variable contains YES if the system is going into single user mode or shutting down.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="var">RC_LIBEXECDIR</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+The value of libexecdir which OpenRC was configured with during build time.</dd>
+<dt class="list-tag" style="margin-top: 1.00em;">
+<b class="var">RC_NO_UMOUNTS</b></dt>
+<dd class="list-tag" style="margin-left: 15.00ex;">
+This variable is used by plugins to contain a list of directories which should not be unmounted.</dd>
+</dl>
+</div>
+<div class="section">
+<h1 id="x46494c4553">FILES</h1> Configuration files, relative to the location of the service. If a file ending with .${RC_RUNLEVEL} exists then we use that instead.<dl style="margin-top: 0.00em;margin-bottom: 0.00em;" class="list list-ohang">
+<dt class="list-ohang" style="margin-top: 1.00em;">
+<i class="file">../conf.d/${RC_SVCNAME%%.*}</i></dt>
+<dd class="list-ohang">
+multiplexed configuration file. Example: if ${RC_SVCNAME} is net.eth1 then look for <i class="file">../conf.d/net</i>.</dd>
+<dt class="list-ohang" style="margin-top: 1.00em;">
+<i class="file">../conf.d/${RC_SVCNAME}</i></dt>
+<dd class="list-ohang">
+service configuration file.</dd>
+<dt class="list-ohang" style="margin-top: 1.00em;">
+<i class="file">/etc/rc.conf</i></dt>
+<dd class="list-ohang">
+host configuration file.</dd>
+</dl>
+<div class="spacer">
+</div>
+With the exception of <i class="file">/etc/rc.conf</i>, the configuration files can also influence the dependencies of the service through variables. Simply prefix the name of the dependency with rc_. Examples:<div class="spacer">
+</div>
+<pre style="margin-left: 5.00ex;" class="lit display">
+# Whilst most services don't bind to a specific interface, our 
+# openvpn configuration requires a specific interface, namely bge0. 
+rc_need=&quot;net.bge0&quot; 
+# To put it in /etc/rc.conf you would do it like this 
+rc_openvpn_need=&quot;net.bge0&quot; 
+ 
+# Services should not depend on the tap1 interface for network, 
+# but we need to add net.tap1 to the default runlevel to start it. 
+rc_provide=&quot;!net&quot; 
+# To put it in /etc/conf.d/net you would do it like this 
+rc_provide_tap1=&quot;!net&quot; 
+# To put in in /etc/rc.conf you would do it like this 
+rc_net_tap1_provide=&quot;!net&quot; 
+ 
+# It's also possible to negate keywords. This is mainly useful for prefix 
+# users testing OpenRC. 
+rc_keyword=&quot;!-prefix&quot;</pre>
+</div>
+<div class="section">
+<h1 id="x4558414d504c4553">EXAMPLES</h1> An example service script for foo.<div class="spacer">
+</div>
+<pre style="margin-left: 5.00ex;" class="lit display">
+#!/sbin/openrc-run 
+command=/usr/bin/foo 
+command_args=&quot;${foo_args} --bar&quot; 
+pidfile=/var/run/foo.pid 
+name=&quot;FooBar Daemon&quot; 
+ 
+description=&quot;FooBar is a daemon that eats and drinks&quot; 
+extra_commands=&quot;show&quot; 
+extra_started_commands=&quot;drink eat&quot; 
+description_drink=&quot;Opens mouth and reflexively swallows&quot; 
+description_eat=&quot;Chews food in mouth&quot; 
+description_show=&quot;Shows what's in the tummy&quot; 
+ 
+_need_dbus() 
+{ 
+    grep -q dbus /etc/foo/plugins 
+} 
+ 
+depend() 
+{ 
+    # We write a pidfile and to /var/cache, so we need localmount. 
+    need localmount 
+    # We can optionally use the network, but it's not essential. 
+    use net 
+    # We should be after bootmisc so that /var/run is cleaned before 
+    # we put our pidfile there. 
+    after bootmisc 
+ 
+    # Foo may use a dbus plugin. 
+    # However, if we add the dbus plugin whilst foo is running and 
+    # stop dbus, we don't need to stop foo as foo didn't use dbus. 
+    config /etc/foo/plugins 
+    local _need= 
+    if service_started; then 
+	_need=`service_get_value need` 
+    else 
+	if _need_dbus; then 
+	   _need=&quot;${_need} dbus&quot; 
+	fi 
+    fi 
+    need ${_need} 
+} 
+ 
+# This function does any pre-start setup. If it fails, the service will 
+# not be started. 
+# If you need this function to behave differently for a restart command, 
+# you should check the value of RC_CMD for &quot;restart&quot;. 
+# This also applies to start_post, stop_pre and stop_post. 
+start_pre() 
+{ 
+	if [ &quot;$RC_CMD&quot; = restart ]; then 
+		# This block will only execute for a restart command. Use a 
+		# structure like this if you need special processing for a 
+		# restart which you do not need for a normal start. 
+		# The function can also fail from here, which will mean that a 
+		# restart can fail. 
+		# This logic can also be used in start_post, stop_pre and 
+		# stop_post. 
+	fi 
+    # Ensure that our dirs are correct 
+    checkpath --directory --owner foo:foo --mode 0775 \ 
+	/var/run/foo /var/cache/foo 
+} 
+ 
+start_post() 
+{ 
+    # Save our need 
+    if _need_dbus; then 
+	service_set_value need dbus 
+    fi 
+} 
+ 
+stop_post() { 
+    # Clean any spills 
+    rm -rf /var/cache/foo/* 
+} 
+ 
+drink() 
+{ 
+    ebegin &quot;Starting to drink&quot; 
+    ${command} --drink beer 
+    eend $? &quot;Failed to drink any beer :(&quot; 
+} 
+ 
+eat() 
+{ 
+    local result=0 retval= ate= food= 
+    ebegin &quot;Starting to eat&quot; 
+ 
+    if yesno &quot;${foo_diet}&quot;; then 
+    	eend 1 &quot;We are on a diet!&quot; 
+	return 1 
+    fi 
+ 
+    for food in /usr/share/food/*; do 
+	veinfo &quot;Eating `basename ${food}`&quot; 
+	${command} --eat ${food} 
+	retval=$? 
+	: $(( result += retval )) 
+	[ ${retval} = 0 ] &amp;&amp; ate=&quot;${ate} `basename ${food}`&quot; 
+    done 
+ 
+    if eend ${result} &quot;Failed to eat all the food&quot;; then 
+	service_set_value ate &quot;${ate}&quot; 
+    fi 
+} 
+ 
+show() 
+{ 
+    einfo &quot;Foo has eaten: `service_get_value ate`&quot; 
+} 
+</pre>
+</div>
+<div class="section">
+<h1 id="x42554753">BUGS</h1> Because of the way we load our configuration files and the need to handle more than one service directory, you can only use symlinks in service directories to other services in the same directory. You cannot symlink to a service in a different directory even if it is another service directory.<div class="spacer">
+</div>
+is_older_than should return 0 on success. Instead we return 1 to be compliant with Gentoo baselayout. Users are encouraged to use the is_newer_than function which returns correctly.</div>
+<div class="section">
+<h1 id="x53454520414c534f">SEE ALSO</h1> <a class="link-man">einfo(3)</a>, <a class="link-man">openrc(8)</a>, <a class="link-man">rc-status(8)</a>, <a class="link-man">rc-update(8)</a>, <a class="link-man">rc_plugin_hook(3)</a>, <a class="link-man">sh(1p)</a>, <a class="link-man">start-stop-daemon(8)</a>, <a class="link-man">uname(1)</a></div>
+<div class="section">
+<h1 id="x415554484f5253">AUTHORS</h1> <span class="author">Roy Marples &lt;roy@marples.name&gt;</span></div>
+</div>
+</body>
+</html>
+

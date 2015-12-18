@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SCANDIR(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SCANDIR(3)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+SCANDIR(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> scandir, scandirat, alphasort, versionsort - scan a directory for matching entries</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;dirent.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>int scandir(const char *</b><i>dirp</i><b>, struct dirent ***</b><i>namelist</i><b>,</b><div style="margin-left: 5.00ex;">
+<br/>
+<b>int (*</b><i>filter</i><b>)(const struct dirent *),</b><br/>
+<b>int (*</b><i>compar</i><b>)(const struct dirent **, const struct dirent **));</b></div>
+<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>int alphasort(const struct dirent **</b><i>a</i><b>, const struct dirent **</b><i>b</i><b>);</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>int versionsort(const struct dirent **</b><i>a</i><b>, const struct dirent **</b><i>b</i><b>);</b><div class="spacer">
+</div>
+<br/>
+<b>#include &lt;fcntl.h&gt;</b>          /* Definition of AT_* constants */ <b>#include &lt;dirent.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>int scandirat(int </b><i>dirfd</i><b>, const char *</b><i>dirp</i><b>,</b> <b>struct dirent ***</b><i>namelist</i><b>,</b><div style="margin-left: 5.00ex;">
+<br/>
+<b>int (*</b><i>filter</i><b>)(const struct dirent *),</b><br/>
+<b>int (*</b><i>compar</i><b>)(const struct dirent **, const struct dirent **));</b></div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Feature Test Macro Requirements for glibc (see <b>feature_test_macros</b>(7)):<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>scandir</b>(), <b>alphasort</b>():<div style="height: 0.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+_BSD_SOURCE || _SVID_SOURCE<div style="height: 0.00em;">
+&#160;</div>
+|| /* Since glibc 2.10: */<div style="margin-left: 4.00ex;">
+(_POSIX_C_SOURCE&#160;&gt;=&#160;200809L || _XOPEN_SOURCE&#160;&gt;=&#160;700)</div>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>versionsort</b>(): _GNU_SOURCE<div style="height: 1.00em;">
+&#160;</div>
+<b>scandirat</b>(): _GNU_SOURCE</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The <b>scandir</b>() function scans the directory  <i>dirp</i>, calling  <i>filter</i>() on each directory entry. Entries for which  <i>filter</i>() returns nonzero are stored in strings allocated via <b>malloc</b>(3), sorted using <b>qsort</b>(3) with the comparison function  <i>compar</i>(), and collected in array <i>namelist</i> which is allocated via <b>malloc</b>(3). If  <i>filter</i> is NULL, all entries are selected.<div class="spacer">
+</div>
+The <b>alphasort</b>() and <b>versionsort</b>() functions can be used as the comparison function <i>compar</i>(). The former sorts directory entries using <b>strcoll</b>(3), the latter using <b>strverscmp</b>(3) on the strings  <i>(*a)-&gt;d_name</i> and <i>(*b)-&gt;d_name</i>.<div class="subsection">
+<h2>scandirat()</h2> The <b>scandirat</b>() function operates in exactly the same way as <b>scandir</b>(), except for the differences described here.<div style="height: 1.00em;">
+&#160;</div>
+If the pathname given in <i>dirp</i> is relative, then it is interpreted relative to the directory referred to by the file descriptor <i>dirfd</i> (rather than relative to the current working directory of the calling process, as is done by <b>scandir</b>() for a relative pathname).<div style="height: 1.00em;">
+&#160;</div>
+If <i>dirp</i> is relative and <i>dirfd</i> is the special value <b>AT_FDCWD</b>, then <i>dirp</i> is interpreted relative to the current working directory of the calling process (like <b>scandir</b>()).<div style="height: 1.00em;">
+&#160;</div>
+If <i>dirp</i> is absolute, then <i>dirfd</i> is ignored.<div class="spacer">
+</div>
+See <b>openat</b>(2) for an explanation of the need for <b>scandirat</b>().</div>
+</div>
+<div class="section">
+<h1>RETURN VALUE</h1> The <b>scandir</b>() function returns the number of directory entries selected. On error, -1 is returned, with <i>errno</i> set to indicate the cause of the error.<div class="spacer">
+</div>
+The <b>alphasort</b>() and <b>versionsort</b>() functions return an integer less than, equal to, or greater than zero if the first argument is considered to be respectively less than, equal to, or greater than the second.</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>ENOENT</b></dt>
+<dd>
+The path in <i>dirp</i> does not exist.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOMEM</b></dt>
+<dd>
+Insufficient memory to complete the operation.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+The path in <i>dirp</i> is not a directory.</dd>
+</dl>
+<div class="spacer">
+</div>
+The following additional errors can occur for <b>scandirat</b>():<dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+<i>dirfd</i> is not a valid file descriptor.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+<i>dirp</i> is a relative path and <i>dirfd</i> is a file descriptor referring to a file other than a directory.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>VERSIONS</h1> <b>versionsort</b>() was added to glibc in version 2.1.<div style="height: 1.00em;">
+&#160;</div>
+<b>scandirat</b>() was added to glibc in version 2.15.</div>
+<div class="section">
+<h1>ATTRIBUTES</h1> For an explanation of the terms used in this section, see <b>attributes</b>(7).<table class="tbl">
+<col style="width: 28.00ex;"/>
+<col style="width: 13.00ex;"/>
+<col style="width: 5.00ex;"/>
+<tbody>
+<tr>
+<td>
+Interface</td>
+<td>
+Attribute</td>
+<td>
+Value</td>
+</tr>
+<tr>
+<td>
+scandir (), scandirat ()</td>
+<td>
+Thread safety</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+alphasort (), versionsort ()</td>
+<td>
+Thread safety</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>CONFORMING TO</h1> <b>alphasort</b>(), <b>scandir</b>(): 4.3BSD, POSIX.1-2008.<div style="height: 1.00em;">
+&#160;</div>
+<b>versionsort</b>() and <b>scandirat</b>() are GNU extensions.</div>
+<div class="section">
+<h1>NOTES</h1> Since glibc 2.1, <b>alphasort</b>() calls <b>strcoll</b>(3); earlier it used <b>strcmp</b>(3).<div style="height: 1.00em;">
+&#160;</div>
+Before glibc 2.10, the two arguments of <b>alphasort</b>() and <b>versionsort</b>() were typed as <i>const void&#160;*</i>. When <b>alphasort</b>() was standardized in POSIX.1-2008, the argument type was specified as the type-safe <i>const struct dirent&#160;**</i>, and glibc 2.10 changed the definition of <b>alphasort</b>() (and the nonstandard <b>versionsort</b>()) to match the standard.</div>
+<div class="section">
+<h1>EXAMPLE</h1><br/>
+#define _SVID_SOURCE<br/>
+/* print files in current directory in reverse order */<br/>
+#include &lt;dirent.h&gt;<div class="spacer">
+</div>
+<br/>
+int<br/>
+main(void)<br/>
+{<br/>
+    struct dirent **namelist;<br/>
+    int n;<div class="spacer">
+</div>
+<br/>
+    n = scandir(&quot;.&quot;, &amp;namelist, NULL, alphasort);<br/>
+    if (n &lt; 0)<br/>
+        perror(&quot;scandir&quot;);<br/>
+    else {<br/>
+        while (n--) {<br/>
+            printf(&quot;%s\n&quot;, namelist[n]-&gt;d_name);<br/>
+            free(namelist[n]);<br/>
+        }<br/>
+        free(namelist);<br/>
+    }<br/>
+}<br/>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>closedir</b>(3), <b>fnmatch</b>(3), <b>opendir</b>(3), <b>readdir</b>(3), <b>rewinddir</b>(3), <b>seekdir</b>(3), <b>strcmp</b>(3), <b>strcoll</b>(3), <b>strverscmp</b>(3), <b>telldir</b>(3)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-04-19</td>
+<td class="foot-os">
+GNU</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

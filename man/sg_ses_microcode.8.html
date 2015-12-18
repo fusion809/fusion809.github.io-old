@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SG_SES_MICROCODE(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SG_SES_MICROCODE(8)</td>
+<td class="head-vol">
+SG3_UTILS</td>
+<td class="head-rtitle">
+SG_SES_MICROCODE(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sg_ses_microcode - send microcode to a SCSI enclosure</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>sg_ses_microcode</b> [ <i>--bpw=CS</i>] [<i>--help</i>] [<i>--id=ID</i>] [<i>--in=FILE</i>] [ <i>--length=LEN</i>] [<i>--mode=MO</i>] [<i>--non</i>] [ <i>--offset=OFF</i>] [<i>--skip=SKIP</i>] [<i>--subenc=MS</i>] [ <i>--tlength=TLEN</i>] [<i>--verbose</i>] [<i>--version</i>] <i>DEVICE</i></div>
+<div class="section">
+<h1>DESCRIPTION</h1> This utility attempts to download microcode to an enclosure (or one of its sub-enclosures) associated with the  <i>DEVICE</i>. The process for doing this is defined in the SCSI Enclosure Services (SES) standards and drafts maintained by the T10 committee.<div class="spacer">
+</div>
+The process is to send one or more sequences containing a SCSI SEND DIAGNOSTIC command followed optionally by a RECEIVE DIAGNOSTIC RESULTS command. The former sends a Download microcode Control diagnostic page (dpage) and the latter fetches a Download microcode status dpage which can be viewed as a report on the former command.<div class="spacer">
+</div>
+The default action (i.e. when the <i>--mode=MO</i> option is not given) is to fetch the Download microcode status dpage and decode it. This does not require the microcode (firmware) itself so the  <i>--in=FILE</i> option is not required.<div class="spacer">
+</div>
+The most recent reference for this utility is the draft SCSI Enclosure Services 3 (SES-3) document T10/2149-D Revision 7 at http://www.t10.org . Existing standards for SES and SES-2 are ANSI INCITS 305-1998 and ANSI INCITS 448-2008 respectively.<div class="spacer">
+</div>
+Most other support for SES in this package (apart from downloading microcode) can be found in the sg_ses utility. Another way of downloading firmware to a SCSI device is with the WRITE BUFFER command defined in SPC-4, see the sg_write_buffer utility.</div>
+<div class="section">
+<h1>OPTIONS</h1> Arguments to long options are mandatory for short options as well.<dl>
+<dt>
+<b>-b</b>, <b>--bpw</b>=<i>CS</i></dt>
+<dd>
+where <i>CS</i> is the chunk size in bytes and should be a multiple of 4. This will be the maximum number of bytes sent per SEND DIAGNOSTIC command. So if  <i>CS</i> is less than the effective length of the microcode then multiple SEND DIAGNOSTIC commands are sent, each taking the next chunk from the read data and increasing the buffer offset field in the Download microcode control dpage by the appropriate amount. The default is a chunk size of 0 which is interpreted as a very large number hence only one SEND DIAGNOSTIC command will be sent.<div style="height: 0.00em;">
+&#160;</div>
+The number in <i>CS</i> can optionally be followed by &quot;,act&quot; or &quot;,activate&quot;. In this case after the microcode has been successfully sent to the  <i>DEVICE</i>, an additional Download microcode control dpage with its mode set to &quot;Activate deferred microcode&quot; [0xf] is sent.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>, <b>--help</b></dt>
+<dd>
+output the usage message then exit. If used multiple times also prints the mode names and their acronyms.</dd>
+</dl>
+<dl>
+<dt>
+<b>-i</b>, <b>--id</b>=<i>ID</i></dt>
+<dd>
+this option sets the BUFFER ID field in the Download microcode control dpage.  <i>ID</i> is a value between 0 (default) and 255 inclusive.</dd>
+</dl>
+<dl>
+<dt>
+<b>-I</b>, <b>--in</b>=<i>FILE</i></dt>
+<dd>
+read data from file <i>FILE</i> that will be sent with the SEND DIAGNOSTIC command.  If  <i>FILE</i> is '-' then stdin is read until an EOF is detected (this is the same action as  <i>--raw</i>). Data is read from the beginning of  <i>FILE</i> except in the case when it is a regular file and the  <i>--skip=SKIP</i> option is given.</dd>
+</dl>
+<dl>
+<dt>
+<b>-l</b>, <b>--length</b>=<i>LEN</i></dt>
+<dd>
+where <i>LEN</i> is the length, in bytes, of data to be written to the device. If not given (and the length cannot be deduced from  <i>--in=FILE</i> or  <i>--raw</i>) then defaults to zero. If the option is given and the length deduced from  <i>--in=FILE</i> or <i>--raw</i> is less (or no data is provided), then bytes of 0xff are used as fill bytes.</dd>
+</dl>
+<dl>
+<dt>
+<b>-m</b>, <b>--mode</b>=<i>MO</i></dt>
+<dd>
+this option sets the MODE. <i>MO</i> is a value between 0 (which is dmc_status and the default) and 255 inclusive. Alternatively an abbreviation can be given. See the MODES section below. To list the available mode abbreviations at run time give an invalid one (e.g. '--mode=xxx') or use the '-h' option.</dd>
+</dl>
+<dl>
+<dt>
+<b>-N</b>, <b>--non</b></dt>
+<dd>
+allow for non-standard implementations that reset their Download microcode engine after a RECEIVE DIAGNOSTIC RESULTS command with the Download microcode status dpage is sent. When this option is given sending that command and dpage combination is avoided unless an error has already occurred.</dd>
+</dl>
+<dl>
+<dt>
+<b>-o</b>, <b>--offset</b>=<i>OFF</i></dt>
+<dd>
+this option sets the BUFFER OFFSET field in the Download microcode control dpage.  <i>OFF</i> is a value between 0 (default) and 2**32-1 . It is a byte offset.</dd>
+</dl>
+<dl>
+<dt>
+<b>-s</b>, <b>--skip</b>=<i>SKIP</i></dt>
+<dd>
+this option is only active when <i>--in=FILE</i> is given and <i>FILE</i> is a regular file, rather than stdin. Data is read starting at byte offset  <i>SKIP</i> to the end of file (or the amount given by <i>--length=LEN</i>). If not given the byte offset defaults to 0 (i.e. the start of the file).</dd>
+</dl>
+<dl>
+<dt>
+<b>-S</b>, <b>--subenc</b>=<i>SEID</i></dt>
+<dd>
+<i>SEID</i> is the subenclosure identify. It defaults to 0 which is the primary enclosure identifier.</dd>
+</dl>
+<dl>
+<dt>
+<b>-t</b>, <b>--tlength</b>=<i>TLEN</i></dt>
+<dd>
+<i>TLEN</i> is the total length in bytes of the microcode to be (or being) downloaded. It defaults to 0 which is okay in most cases. This option is only needed when sections of microcode and being sent in separate invocations of this utility.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b>, <b>--verbose</b></dt>
+<dd>
+increase the level of verbosity, (i.e. debug output).</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>, <b>--version</b></dt>
+<dd>
+print the version string and then exit.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>MODES</h1> Following is a list accepted by the  <i>MO</i> argument of this utility. First shown is an acronym followed in square brackets by the corresponding decimal and hex values that may also be given for  <i>MO</i>.<dl>
+<dt>
+dmc_status  [0, 0x0]</dt>
+<dd>
+Use RECEIVE DIAGNOSTIC RESULTS to fetch the Download microcode status dpage and print it out.</dd>
+</dl>
+<dl>
+<dt>
+dmc_offs  [6, 0x6]</dt>
+<dd>
+Download microcode with offsets and activate.</dd>
+</dl>
+<dl>
+<dt>
+dmc_offs_save  [7, 0x7]</dt>
+<dd>
+Download microcode with offsets, save, and activate.</dd>
+</dl>
+<dl>
+<dt>
+dmc_offs_defer  [14, 0xe]</dt>
+<dd>
+Download microcode with offsets, save, and defer activate.</dd>
+</dl>
+<dl>
+<dt>
+activate_mc  [15, 0xf]</dt>
+<dd>
+Activate deferred microcode. There is no follow-up RECEIVE DIAGNOSTIC RESULTS to fetch the Download microcode status dpage since the  <i>DEVICE</i> might be resetting.</dd>
+</dl>
+<div class="spacer">
+</div>
+Apart from dmc_status, these are placed in the Download microcode mode field in the Download microcode control dpage. In the case of dmc_status the Download microcode status dpage is fetch with the RECEIVE DIAGNOSTIC RESULTS command and decoded.</div>
+<div class="section">
+<h1>WHEN THE DOWNLOAD FAILS</h1> Firstly, if it succeeds, this utility should stay silent and return. Typically vendors will change the &quot;revision&quot; string (which is 4 characters long) whenever they release new firmware. That can be seen in the response to a SCSI INQUIRY command, for example by using the sg_inq utility. It is possible that the device needs to be power cycled before the new microcode becomes active. Also if mode dmc_offs_defer [0xe] is used to download the microcode, then another invocation with activate_mc may be needed.<div class="spacer">
+</div>
+If something goes wrong, there will typically be messages printed out by this utility. The first thing to check is the microcode (firmware) file itself. Is it designed for the device model; has it been corrupted, and if downgrading (i.e. trying to re-instate older firmware), does the vendor allow that?<div class="spacer">
+</div>
+Getting new firmware on a device is a delicate operation that is not always well defined by T10's standards and drafts. One might speculate that they are deliberately vague. In testing this utility one vendor's interpretation of the standard was somewhat surprising. The  <i>--non</i> option was added to cope with their interpretation. So if the above suggestions don't help, try adding the  <i>--non</i> option.</div>
+<div class="section">
+<h1>NOTES</h1> This utility can handle a maximum size of 128 MB of microcode which should be sufficient for most purposes. In a system that is memory constrained, such large allocations of memory may fail.<div class="spacer">
+</div>
+The user should be aware that most operating systems have limits on the amount of data that can be sent with one SCSI command. In Linux this depends on the pass through mechanism used (e.g. block SG_IO or the sg driver) and various setting in sysfs in the Linux lk 2.6/3 series (e.g. /sys/block/sda/queue/max_sectors_kb). Devices (i.e. logical units) also typically have limits on the maximum amount of data they can handle in one command. These two limitations suggest that modes containing the word &quot;offset&quot; together with the  <i>--bpw=CS</i> option are required as firmware files get larger and larger. And  <i>CS</i> can be quite small, for example 4096 bytes, resulting in many SEND DIAGNOSTIC commands being sent.<div class="spacer">
+</div>
+The exact error from the non-standard implementation was a sense key of ILLEGAL REQUEST and an asc/ascq code of 0x26,0x0 which is &quot;Invalid field in parameter list&quot;. If that is seen try again with the  <i>--non</i> option.<div class="spacer">
+</div>
+Downloading incorrect microcode into a device has the ability to render that device inoperable. One would hope that the device vendor verifies the data before activating it.<div class="spacer">
+</div>
+A long (operating system) timeout of 7200 seconds is set on each SEND DIAGNOSTIC command.<div class="spacer">
+</div>
+All numbers given with options are assumed to be decimal. Alternatively numerical values can be given in hexadecimal preceded by either &quot;0x&quot; or &quot;0X&quot; (or has a trailing &quot;h&quot; or &quot;H&quot;).</div>
+<div class="section">
+<h1>EXAMPLES</h1> If no microcode/firmware file is given then this utility fetches and decodes the Download microcode status dpage which could possibly show another initiator in the process of updating the microcode. Even if that is happening, fetching the status page should not cause any problems:<div class="spacer">
+</div>
+<br/>
+  sg_ses_microcode /dev/sg3<div style="height: 0.00em;">
+&#160;</div>
+Download microcode status diagnostic page:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  number of secondary subenclosures: 0<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  generation code: 0x0<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   subenclosure identifier: 0 [primary]<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+     download microcode status: No download microcode operation in progress [0x0]<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+     download microcode additional status: 0x0<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+     download microcode maximum size: 1048576 bytes<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+     download microcode expected buffer id: 0x0<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+     download microcode expected buffer id offset: 0<div class="spacer">
+</div>
+The following sends new microcode/firmware to an enclosure. Sending a 1.5 MB file in one command caused the enclosure to lock up temporarily and did not update the firmware. Breaking the firmware file into 4 KB chunks (an educated guess) was more successful:<div class="spacer">
+</div>
+<br/>
+  sg_ses_microcode -b 4k -m dmc_offs_save -I firmware.bin /dev/sg4<div class="spacer">
+</div>
+The firmware update occurred in the following enclosure power cycle. With a modern enclosure the Extended Inquiry VPD page gives indications in which situations a firmware upgrade will take place.</div>
+<div class="section">
+<h1>EXIT STATUS</h1> The exit status of sg_ses_microcode is 0 when it is successful. Otherwise see the sg3_utils(8) man page.</div>
+<div class="section">
+<h1>AUTHORS</h1> Written by Douglas Gilbert.</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Report bugs to &lt;dgilbert at interlog dot com&gt;.</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright &#169; 2014 Douglas Gilbert<div style="height: 0.00em;">
+&#160;</div>
+This software is distributed under a FreeBSD license. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>sg_ses, sg_write_buffer(sg3_utils)</b></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+October 2014</td>
+<td class="foot-os">
+sg3_utils-1.40</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+EXECVEAT(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+EXECVEAT(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+EXECVEAT(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> execveat - execute program relative to a directory file descriptor</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;unistd.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<b>int execveat(int </b><i>dirfd</i><b>, const char *</b><i>pathname</i><b>,</b><div style="height: 0.00em;">
+&#160;</div>
+<b>             char *const </b><i>argv</i><b>[], char *const </b><i>envp</i><b>[],</b><div style="height: 0.00em;">
+&#160;</div>
+<b>             int </b><i>flags</i><b>);</b></div>
+<div class="section">
+<h1>DESCRIPTION</h1> The <b>execveat</b>() system call executes the program referred to by the combination of <i>dirfd</i> and <i>pathname</i>. It operates in exactly the same way as <b>execve</b>(2), except for the differences described in this manual page.<div style="height: 1.00em;">
+&#160;</div>
+If the pathname given in <i>pathname</i> is relative, then it is interpreted relative to the directory referred to by the file descriptor <i>dirfd</i> (rather than relative to the current working directory of the calling process, as is done by <b>execve</b>(2) for a relative pathname).<div style="height: 1.00em;">
+&#160;</div>
+If <i>pathname</i> is relative and <i>dirfd</i> is the special value <b>AT_FDCWD</b>, then <i>pathname</i> is interpreted relative to the current working directory of the calling process (like <b>execve</b>(2)).<div style="height: 1.00em;">
+&#160;</div>
+If <i>pathname</i> is absolute, then <i>dirfd</i> is ignored.<div style="height: 1.00em;">
+&#160;</div>
+If <i>pathname</i> is an empty string and the <b>AT_EMPTY_PATH</b> flag is specified, then the file descriptor <i>dirfd</i> specifies the file to be executed (i.e., <i>dirfd</i> refers to an executable file, rather than a directory).<div style="height: 1.00em;">
+&#160;</div>
+The <i>flags</i> argument is a bit mask that can include zero or more of the following flags:<dl>
+<dt>
+<b>AT_EMPTY_PATH</b></dt>
+<dd>
+If <i>pathname</i> is an empty string, operate on the file referred to by <i>dirfd</i> (which may have been obtained using the <b>open</b>(2) <b>O_PATH</b> flag).</dd>
+</dl>
+<dl>
+<dt>
+<b>AT_SYMLINK_NOFOLLOW</b></dt>
+<dd>
+If the file identified by <i>dirfd</i> and a non-NULL <i>pathname</i> is a symbolic link, then the call fails with the error <b>ELOOP</b>.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, <b>execveat</b>() does not return. On error, -1 is returned, and <i>errno</i> is set appropriately.</div>
+<div class="section">
+<h1>ERRORS</h1> The same errors that occur for <b>execve</b>(2) can also occur for <b>execveat</b>(). The following additional errors can occur for <b>execveat</b>():<dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+<i>dirfd</i> is not a valid file descriptor.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+Invalid flag specified in <i>flags</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>ELOOP</b></dt>
+<dd>
+<i>flags</i> includes <b>AT_SYMLINK_NOFOLLOW</b> and the file identified by <i>dirfd</i> and a non-NULL <i>pathname</i> is a symbolic link.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOENT</b></dt>
+<dd>
+The program identified by <i>dirfd</i> and <i>pathname</i> requires the use of an interpreter program (such as a script starting with &quot;#!&quot;), but the file descriptor <i>dirfd</i> was opened with the <b>O_CLOEXEC</b> flag, with the result that the program file is inaccessible to the launched interpreter. See BUGS.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+<i>pathname</i> is relative and <i>dirfd</i> is a file descriptor referring to a file other than a directory.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>VERSIONS</h1> <b>execveat</b>() was added to Linux in kernel 3.19. GNU C library support is pending.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> The <b>execveat</b>() system call is Linux-specific.</div>
+<div class="section">
+<h1>NOTES</h1> In addition to the reasons explained in <b>openat</b>(2), the <b>execveat</b>() system call is also needed to allow <b>fexecve</b>(3) to be implemented on systems that do not have the <i>/proc</i> filesystem mounted.<div style="height: 1.00em;">
+&#160;</div>
+When asked to execute a script file, the <i>argv[0]</i> that is passed to the script interpreter is a string of the form <i>/dev/fd/N</i> or <i>/dev/fd/N/P</i>, where <i>N</i> is the number of the file descriptor passed via the <i>dirfd</i> argument. A string of the first form occurs when <b>AT_EMPTY_PATH</b> is employed. A string of the second form occurs when the script is specified via both <i>dirfd</i> and <i>pathname</i>; in this case, <i>P</i> is the value given in <i>pathname</i>.<div style="height: 1.00em;">
+&#160;</div>
+For the same reasons described in <b>fexecve</b>(3), the natural idiom when using <b>execveat</b>(2) is to set the close-on-exec flag on <i>dirfd</i>. (But see BUGS.)</div>
+<div class="section">
+<h1>BUGS</h1> The <b>ENOENT</b> error described above means that it is not possible to set the close-on-exec flag on the file descriptor given to a call of the form:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    execveat(fd, &quot;&quot;, argv, envp, AT_EMPTY_PATH);<div style="height: 1.00em;">
+&#160;</div>
+However, the inability to set the close-on-exec flag means that a file descriptor referring to the script leaks through to the script itself. As well as wasting a file descriptor, this leakage can lead to file-descriptor exhaustion in scenarios where scripts recursively employ <b>execveat</b>().</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>execve</b>(2), <b>openat</b>(2), <b>fexecve</b>(3)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-01-22</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+HOSTS.EQUIV(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+HOSTS.EQUIV(5)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+HOSTS.EQUIV(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> /etc/hosts.equiv - list of hosts and users that are granted &quot;trusted&quot; <b>r</b> command access to your system</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The <b>hosts.equiv</b> file allows or denies hosts and users to use the  <b>r</b>-commands (e.g., <b>rlogin</b>, <b>rsh</b>, or <b>rcp</b>) without supplying a password.<div class="spacer">
+</div>
+The file uses the following format:<dl>
+<dt>
+<i>+|[-]hostname|+@netgroup|-@netgroup</i> <i>[+|[-]username|+@netgroup|-@netgroup]</i></dt>
+<dd>
+</dd>
+</dl>
+<div class="spacer">
+</div>
+The <i>hostname</i> is the name of a host which is logically equivalent to the local host. Users logged into that host are allowed to access like-named user accounts on the local host without supplying a password. The <i>hostname</i> may be (optionally) preceded by a plus (+) sign. If the plus sign is used alone, it allows any host to access your system. You can explicitly deny access to a host by preceding the <i>hostname</i> by a minus (-) sign. Users from that host must always supply additional credentials, including possibly a password. For security reasons you should always use the FQDN of the hostname and not the short hostname.<div class="spacer">
+</div>
+The <i>username</i> entry grants a specific user access to all user accounts (except root) without supplying a password. That means the user is NOT restricted to like-named accounts. The <i>username</i> may be (optionally) preceded by a plus (+) sign. You can also explicitly deny access to a specific user by preceding the <i>username</i> with a minus (-) sign. This says that the user is not trusted no matter what other entries for that host exist.<div class="spacer">
+</div>
+Netgroups can be specified by preceding the netgroup by an @ sign.<div class="spacer">
+</div>
+Be extremely careful when using the plus (+) sign. A simple typographical error could result in a standalone plus sign. A standalone plus sign is a wildcard character that means &quot;any host&quot;!</div>
+<div class="section">
+<h1>FILES</h1> <i>/etc/hosts.equiv</i></div>
+<div class="section">
+<h1>NOTES</h1> Some systems will honor the contents of this file only when it has owner root and no write permission for anybody else. Some exceptionally paranoid systems even require that there be no other hard links to the file.<div class="spacer">
+</div>
+Modern systems use the Pluggable Authentication Modules library (PAM). With PAM a standalone plus sign is considered a wildcard character which means &quot;any host&quot; only when the word <i>promiscuous</i> is added to the auth component line in your PAM file for the particular service (e.g., <b>rlogin</b>).</div>
+<div class="section">
+<h1>EXAMPLE</h1> Below are some example <i>/etc/host.equiv</i> or <i>~/.rhosts</i> files.<div style="height: 1.00em;">
+&#160;</div>
+Allow any user to log in from any host:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    +<div style="height: 1.00em;">
+&#160;</div>
+Allow any user from <i>host</i> with a matching local account to log in:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    host<div style="height: 1.00em;">
+&#160;</div>
+Note: the use of <i>+host</i> is never a valid syntax, including attempting to specify that any user from the host is allowed.<div style="height: 1.00em;">
+&#160;</div>
+Allow any user from <i>host</i> to log in:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    host +<div style="height: 1.00em;">
+&#160;</div>
+Note: this is distinct from the previous example since it does not require a matching local account.<div style="height: 1.00em;">
+&#160;</div>
+Allow <i>user</i> from <i>host</i> to log in as any non-root user:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    host user<div style="height: 1.00em;">
+&#160;</div>
+Allow all users with matching local accounts from <i>host</i> to log in except for <i>baduser</i>:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    host -baduser<br/>
+    host<div style="height: 1.00em;">
+&#160;</div>
+Deny all users from <i>host</i>:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    -host<div style="height: 1.00em;">
+&#160;</div>
+Note: the use of <i>-host&#160;-user</i> is never a valid syntax, including attempting to specify that a particular user from the host is not trusted.<div style="height: 1.00em;">
+&#160;</div>
+Allow all users with matching local accounts on all hosts in a <i>netgroup</i>:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    +@netgroup<div style="height: 1.00em;">
+&#160;</div>
+Disallow all users on all hosts in a <i>netgroup</i>:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    -@netgroup<div style="height: 1.00em;">
+&#160;</div>
+Allow all users in a <i>netgroup</i> to log in from <i>host</i> as any non-root user:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    host +@netgroup<div style="height: 1.00em;">
+&#160;</div>
+Allow all users with matching local accounts on all hosts in a <i>netgroup</i> except <i>baduser</i>:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    +@netgroup -baduser<br/>
+    +@netgroup<div style="height: 1.00em;">
+&#160;</div>
+Note: the deny statements must always precede the allow statements because the file is processed sequentially until the first matching rule is found.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>rhosts</b>(5), <b>rlogind</b>(8), <b>rshd</b>(8)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-07-23</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

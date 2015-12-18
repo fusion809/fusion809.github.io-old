@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+PRCTL(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+PRCTL(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+PRCTL(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> prctl - operations on a process</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;sys/prctl.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>int prctl(int </b><i>option</i><b>, unsigned long </b><i>arg2</i><b>, unsigned long </b><i>arg3</i><b>,</b><br/>
+<b>          unsigned long </b><i>arg4</i><b>, unsigned long </b><i>arg5</i><b>);</b><br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>prctl</b>() is called with a first argument describing what to do (with values defined in  <i>&lt;linux/prctl.h&gt;</i>), and further arguments with a significance depending on the first one. The first argument can be:<dl>
+<dt>
+<b>PR_CAPBSET_READ</b> (since Linux 2.6.25)</dt>
+<dd>
+Return (as the function result) 1 if the capability specified in <i>arg2</i> is in the calling thread's capability bounding set, or 0 if it is not. (The capability constants are defined in <i>&lt;linux/capability.h&gt;</i>.) The capability bounding set dictates whether the process can receive the capability through a file's permitted capability set on a subsequent call to <b>execve</b>(2).<div style="height: 1.00em;">
+&#160;</div>
+If the capability specified in <i>arg2</i> is not valid, then the call fails with the error <b>EINVAL</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_CAPBSET_DROP</b> (since Linux 2.6.25)</dt>
+<dd>
+If the calling thread has the <b>CAP_SETPCAP</b> capability, then drop the capability specified by <i>arg2</i> from the calling thread's capability bounding set. Any children of the calling thread will inherit the newly reduced bounding set.<div style="height: 1.00em;">
+&#160;</div>
+The call fails with the error: <b>EPERM</b> if the calling thread does not have the <b>CAP_SETPCAP</b>; <b>EINVAL</b> if <i>arg2</i> does not represent a valid capability; or <b>EINVAL</b> if file capabilities are not enabled in the kernel, in which case bounding sets are not supported.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_CHILD_SUBREAPER</b> (since Linux 3.4)</dt>
+<dd>
+If <i>arg2</i> is nonzero, set the &quot;child subreaper&quot; attribute of the calling process; if <i>arg2</i> is zero, unset the attribute. When a process is marked as a child subreaper, all of the children that it creates, and their descendants, will be marked as having a subreaper. In effect, a subreaper fulfills the role of <b>init</b>(1) for its descendant processes. Upon termination of a process that is orphaned (i.e., its immediate parent has already terminated) and marked as having a subreaper, the nearest still living ancestor subreaper will receive a <b>SIGCHLD</b> signal and be able to <b>wait</b>(2) on the process to discover its termination status.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_GET_CHILD_SUBREAPER</b> (since Linux 3.4)</dt>
+<dd>
+Return the &quot;child subreaper&quot; setting of the caller, in the location pointed to by <i>(int&#160;*) arg2</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_DUMPABLE</b> (since Linux 2.3.20)</dt>
+<dd>
+Set the state of the &quot;dumpable&quot; flag, which determines whether core dumps are produced for the calling process upon delivery of a signal whose default behavior is to produce a core dump.<div style="height: 1.00em;">
+&#160;</div>
+In kernels up to and including 2.6.12, <i>arg2</i> must be either 0 (<b>SUID_DUMP_DISABLE</b>, process is not dumpable) or 1 (<b>SUID_DUMP_USER</b>, process is dumpable). Between kernels 2.6.13 and 2.6.17, the value 2 was also permitted, which caused any binary which normally would not be dumped to be dumped readable by root only; for security reasons, this feature has been removed. (See also the description of <i>/proc/sys/fs/suid_dumpable</i> in <b>proc</b>(5).)<div style="height: 1.00em;">
+&#160;</div>
+Normally, this flag is set to 1. However, it is reset to the current value contained in the file <i>/proc/sys/fs/suid_dumpable</i> (which by default has the value 0), if any of the following attributes of the process are changed by the operations listed below:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+*</dt>
+<dd>
+The effective user or group ID is changed.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+The filesystem user or group ID is changed (see <b>credentials</b>(7)).</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+The process's set of permitted capabilities (see <b>capabilities</b>(7)) is changed such that its new set of capabilities is not a subset of its previous set of capabilities.</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+The operations that may trigger changes to the dumpable flag include:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+*</dt>
+<dd>
+execution (<b>execve</b>(2)) of a set-user-ID or set-group-ID program, or a program that has capabilities (see <b>capabilities</b>(7));</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+<b>capset</b>(2); and</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+system calls that change process credentials (<b>setuid</b>(2) <b>setgid</b>(2), <b>setresuid</b>(2), <b>setresgid</b>(2), <b>setgroups</b>(2), and so on).</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+Processes that are not dumpable can not be attached via <b>ptrace</b>(2) <b>PTRACE_ATTACH</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_GET_DUMPABLE</b> (since Linux 2.3.20)</dt>
+<dd>
+Return (as the function result) the current state of the calling process's dumpable flag.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_ENDIAN</b> (since Linux 2.6.18, PowerPC only)</dt>
+<dd>
+Set the endian-ness of the calling process to the value given in  <i>arg2</i>, which should be one of the following: <b>PR_ENDIAN_BIG</b>, <b>PR_ENDIAN_LITTLE</b>, or <b>PR_ENDIAN_PPC_LITTLE</b> (PowerPC pseudo little endian).</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_GET_ENDIAN</b> (since Linux 2.6.18, PowerPC only)</dt>
+<dd>
+Return the endian-ness of the calling process, in the location pointed to by <i>(int&#160;*) arg2</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_FPEMU</b> (since Linux 2.4.18, 2.5.9, only on ia64)</dt>
+<dd>
+Set floating-point emulation control bits to <i>arg2</i>. Pass <b>PR_FPEMU_NOPRINT</b> to silently emulate floating-point operation accesses, or <b>PR_FPEMU_SIGFPE</b> to not emulate floating-point operations and send <b>SIGFPE</b> instead.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_GET_FPEMU</b> (since Linux 2.4.18, 2.5.9, only on ia64)</dt>
+<dd>
+Return floating-point emulation control bits, in the location pointed to by <i>(int&#160;*) arg2</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_FPEXC</b> (since Linux 2.4.21, 2.5.32, only on PowerPC)</dt>
+<dd>
+Set floating-point exception mode to <i>arg2</i>. Pass  <b>PR_FP_EXC_SW_ENABLE</b> to use FPEXC for FP exception enables,  <b>PR_FP_EXC_DIV</b> for floating-point divide by zero,  <b>PR_FP_EXC_OVF</b> for floating-point overflow,  <b>PR_FP_EXC_UND</b> for floating-point underflow,  <b>PR_FP_EXC_RES</b> for floating-point inexact result,  <b>PR_FP_EXC_INV</b> for floating-point invalid operation,  <b>PR_FP_EXC_DISABLED</b> for FP exceptions disabled,  <b>PR_FP_EXC_NONRECOV</b> for async nonrecoverable exception mode,  <b>PR_FP_EXC_ASYNC</b> for async recoverable exception mode,  <b>PR_FP_EXC_PRECISE</b> for precise exception mode.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_GET_FPEXC</b> (since Linux 2.4.21, 2.5.32, only on PowerPC)</dt>
+<dd>
+Return floating-point exception mode, in the location pointed to by <i>(int&#160;*) arg2</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_KEEPCAPS</b> (since Linux 2.2.18)</dt>
+<dd>
+Set the state of the thread's &quot;keep capabilities&quot; flag, which determines whether the threads's permitted capability set is cleared when a change is made to the threads's user IDs such that the threads's real UID, effective UID, and saved set-user-ID all become nonzero when at least one of them previously had the value 0. By default, the permitted capability set is cleared when such a change is made; setting the &quot;keep capabilities&quot; flag prevents it from being cleared. <i>arg2</i> must be either 0 (permitted capabilities are cleared) or 1 (permitted capabilities are kept). (A thread's <i>effective</i> capability set is always cleared when such a credential change is made, regardless of the setting of the &quot;keep capabilities&quot; flag.) The &quot;keep capabilities&quot; value will be reset to 0 on subsequent calls to <b>execve</b>(2).</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_GET_KEEPCAPS</b> (since Linux 2.2.18)</dt>
+<dd>
+Return (as the function result) the current state of the calling threads's &quot;keep capabilities&quot; flag.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_NAME</b> (since Linux 2.6.9)</dt>
+<dd>
+Set the name of the calling thread, using the value in the location pointed to by <i>(char&#160;*) arg2</i>. The name can be up to 16 bytes long, including the terminating null byte. (If the length of the string, including the terminating null byte, exceeds 16 bytes, the string is silently truncated.) This is the same attribute that can be set via <b>pthread_setname_np</b>(3) and retrieved using <b>pthread_getname_np</b>(3). The attribute is likewise accessible via <i>/proc/self/task/[tid]/comm</i>, where <i>tid</i> is the name of the calling thread.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_GET_NAME</b> (since Linux 2.6.11)</dt>
+<dd>
+Return the name of the calling thread, in the buffer pointed to by <i>(char&#160;*) arg2</i>. The buffer should allow space for up to 16 bytes; the returned string will be null-terminated.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_NO_NEW_PRIVS</b> (since Linux 3.5)</dt>
+<dd>
+Set the calling process's <i>no_new_privs</i> bit to the value in <i>arg2</i>. With <i>no_new_privs</i> set to 1, <b>execve</b>(2) promises not to grant privileges to do anything that could not have been done without the <b>execve</b>(2) call (for example, rendering the set-user-ID and set-group-ID mode bits, and file capabilities non-functional). Once set, this bit cannot be unset. The setting of this bit is inherited by children created by <b>fork</b>(2) and <b>clone</b>(2), and preserved across <b>execve</b>(2).<div style="height: 1.00em;">
+&#160;</div>
+For more information, see the kernel source file <i>Documentation/prctl/no_new_privs.txt</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_GET_NO_NEW_PRIVS</b> (since Linux 3.5)</dt>
+<dd>
+Return (as the function result) the value of the <i>no_new_privs</i> bit for the current process. A value of 0 indicates the regular <b>execve</b>(2) behavior. A value of 1 indicates <b>execve</b>(2) will operate in the privilege-restricting mode described above.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_PDEATHSIG</b> (since Linux 2.1.57)</dt>
+<dd>
+Set the parent death signal of the calling process to  <i>arg2</i> (either a signal value in the range 1..maxsig, or 0 to clear). This is the signal that the calling process will get when its parent dies. This value is cleared for the child of a <b>fork</b>(2) and (since Linux 2.4.36 / 2.6.23) when executing a set-user-ID or set-group-ID binary, or a binary that has associated capabilities (see <b>capabilities</b>(7)). This value is preserved across <b>execve</b>(2).<div style="height: 1.00em;">
+&#160;</div>
+<i>Warning</i>: the &quot;parent&quot; in this case is considered to be the <i>thread</i> that created this process. In other words, the signal will be sent when that thread terminates (via, for example, <b>pthread_exit</b>(3)), rather than after all of the threads in the parent process terminate.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_GET_PDEATHSIG</b> (since Linux 2.3.15)</dt>
+<dd>
+Return the current value of the parent process death signal, in the location pointed to by <i>(int&#160;*) arg2</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_PTRACER</b> (since Linux 3.4)</dt>
+<dd>
+This is meaningful only when the Yama LSM is enabled and in mode 1 (&quot;restricted ptrace&quot;, visible via <i>/proc/sys/kernel/yama/ptrace_scope</i>). When a &quot;ptracer process ID&quot; is passed in  <i>arg2</i>, the caller is declaring that the ptracer process can <b>ptrace</b>(2) the calling process as if it were a direct process ancestor. Each <b>PR_SET_PTRACER</b> operation replaces the previous &quot;ptracer process ID&quot;. Employing <b>PR_SET_PTRACER</b> with <i>arg2</i> set to 0 clears the caller's &quot;ptracer process ID&quot;. If <i>arg2</i> is <b>PR_SET_PTRACER_ANY</b>, the ptrace restrictions introduced by Yama are effectively disabled for the calling process.<div style="height: 1.00em;">
+&#160;</div>
+For further information, see the kernel source file <i>Documentation/security/Yama.txt</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_SECCOMP</b> (since Linux 2.6.23)</dt>
+<dd>
+Set the secure computing (seccomp) mode for the calling thread, to limit the available system calls. The more recent <b>seccomp</b>(2) system call provides a superset of the functionality of <b>PR_SET_SECCOMP</b>.<div style="height: 1.00em;">
+&#160;</div>
+The seccomp mode is selected via <i>arg2</i>. (The seccomp constants are defined in <i>&lt;linux/seccomp.h&gt;</i>.)<div style="height: 1.00em;">
+&#160;</div>
+With <i>arg2</i> set to <b>SECCOMP_MODE_STRICT</b>, the only system calls that the thread is permitted to make are <b>read</b>(2), <b>write</b>(2), <b>_exit</b>(2) (but not <b>exit_group</b>(2)), and <b>sigreturn</b>(2). Other system calls result in the delivery of a <b>SIGKILL</b> signal. Strict secure computing mode is useful for number-crunching applications that may need to execute untrusted byte code, perhaps obtained by reading from a pipe or socket. This operation is available only if the kernel is configured with <b>CONFIG_SECCOMP</b> enabled.<div style="height: 1.00em;">
+&#160;</div>
+With <i>arg2</i> set to <b>SECCOMP_MODE_FILTER</b> (since Linux 3.5), the system calls allowed are defined by a pointer to a Berkeley Packet Filter passed in <i>arg3</i>. This argument is a pointer to <i>struct sock_fprog</i>; it can be designed to filter arbitrary system calls and system call arguments. This mode is available only if the kernel is configured with <b>CONFIG_SECCOMP_FILTER</b> enabled.<div style="height: 1.00em;">
+&#160;</div>
+If <b>SECCOMP_MODE_FILTER</b> filters permit <b>fork</b>(2), then the seccomp mode is inherited by children created by <b>fork</b>(2); if <b>execve</b>(2) is permitted, then the seccomp mode is preserved across <b>execve</b>(2). If the filters permit <b>prctl</b>() calls, then additional filters can be added; they are run in order until the first non-allow result is seen.<div style="height: 1.00em;">
+&#160;</div>
+For further information, see the kernel source file <i>Documentation/prctl/seccomp_filter.txt</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_GET_SECCOMP</b> (since Linux 2.6.23)</dt>
+<dd>
+Return (as the function result) the secure computing mode of the calling thread. If the caller is not in secure computing mode, this operation returns 0; if the caller is in strict secure computing mode, then the <b>prctl</b>() call will cause a <b>SIGKILL</b> signal to be sent to the process. If the caller is in filter mode, and this system call is allowed by the seccomp filters, it returns 2; otherwise, the process is killed with a <b>SIGKILL</b> signal. This operation is available only if the kernel is configured with <b>CONFIG_SECCOMP</b> enabled.<div style="height: 1.00em;">
+&#160;</div>
+Since Linux 3.8, the <i>Seccomp</i> field of the <i>/proc/[pid]/status</i> file provides a method of obtaining the same information, without the risk that the process is killed; see <b>proc</b>(5).</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_SECUREBITS</b> (since Linux 2.6.26)</dt>
+<dd>
+Set the &quot;securebits&quot; flags of the calling thread to the value supplied in <i>arg2</i>. See <b>capabilities</b>(7).</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_GET_SECUREBITS</b> (since Linux 2.6.26)</dt>
+<dd>
+Return (as the function result) the &quot;securebits&quot; flags of the calling thread. See <b>capabilities</b>(7).</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_THP_DISABLE</b> (since Linux 3.15)</dt>
+<dd>
+Set the state of the &quot;THP disable&quot; flag for the calling thread. If <i>arg2</i> has a nonzero value, the flag is set, otherwise it is cleared. Setting this flag provides a method for disabling transparent huge pages for jobs where the code cannot be modified, and using a malloc hook with <b>madvise</b>(2) is not an option (i.e., statically allocated data). The setting of the &quot;THP disable&quot; flag is inherited by a child created via <b>fork</b>(2) and is preserved across <b>execve</b>(2).</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_GET_THP_DISABLE</b> (since Linux 3.15)</dt>
+<dd>
+Return (via the function result) the current setting of the &quot;THP disable&quot; flag for the calling thread: either 1, if the flag is set, or 0, if it is not.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_GET_TID_ADDRESS</b> (since Linux 3.5)</dt>
+<dd>
+Retrieve the <i>clear_child_tid</i> address set by <b>set_tid_address</b>(2) and the <b>clone</b>(2) <b>CLONE_CHILD_CLEARTID</b> flag, in the location pointed to by <i>(int&#160;**)&#160;arg2</i>. This feature is available only if the kernel is built with the <b>CONFIG_CHECKPOINT_RESTORE</b> option enabled.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_TIMERSLACK</b> (since Linux 2.6.28)</dt>
+<dd>
+Set the current timer slack for the calling thread to the nanosecond value supplied in <i>arg2</i>. If <i>arg2</i> is less than or equal to zero, reset the current timer slack to the thread's default timer slack value. The timer slack is used by the kernel to group timer expirations for the calling thread that are close to one another; as a consequence, timer expirations for the thread may be up to the specified number of nanoseconds late (but will never expire early). Grouping timer expirations can help reduce system power consumption by minimizing CPU wake-ups.<div style="height: 1.00em;">
+&#160;</div>
+The timer expirations affected by timer slack are those set by <b>select</b>(2), <b>pselect</b>(2), <b>poll</b>(2), <b>ppoll</b>(2), <b>epoll_wait</b>(2), <b>epoll_pwait</b>(2), <b>clock_nanosleep</b>(2), <b>nanosleep</b>(2), and <b>futex</b>(2) (and thus the library functions implemented via futexes, including <b>pthread_cond_timedwait</b>(3), <b>pthread_mutex_timedlock</b>(3), <b>pthread_rwlock_timedrdlock</b>(3), <b>pthread_rwlock_timedwrlock</b>(3), and <b>sem_timedwait</b>(3)).<div style="height: 1.00em;">
+&#160;</div>
+Timer slack is not applied to threads that are scheduled under a real-time scheduling policy (see <b>sched_setscheduler</b>(2)).<div style="height: 1.00em;">
+&#160;</div>
+Each thread has two associated timer slack values: a &quot;default&quot; value, and a &quot;current&quot; value. The current value is the one that governs grouping of timer expirations. When a new thread is created, the two timer slack values are made the same as the current value of the creating thread. Thereafter, a thread can adjust its current timer slack value via <b>PR_SET_TIMERSLACK</b> (the default value can't be changed). The timer slack values of <i>init</i> (PID 1), the ancestor of all processes, are 50,000 nanoseconds (50 microseconds). The timer slack values are preserved across <b>execve</b>(2).</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_GET_TIMERSLACK</b> (since Linux 2.6.28)</dt>
+<dd>
+Return (as the function result) the current timer slack value of the calling thread.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_TIMING</b> (since Linux 2.6.0-test4)</dt>
+<dd>
+Set whether to use (normal, traditional) statistical process timing or accurate timestamp-based process timing, by passing <b>PR_TIMING_STATISTICAL</b> or <b>PR_TIMING_TIMESTAMP</b> to  <i>arg2</i>. <b>PR_TIMING_TIMESTAMP</b> is not currently implemented (attempting to set this mode will yield the error <b>EINVAL</b>).</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_GET_TIMING</b> (since Linux 2.6.0-test4)</dt>
+<dd>
+Return (as the function result) which process timing method is currently in use.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_TASK_PERF_EVENTS_DISABLE</b> (since Linux 2.6.31)</dt>
+<dd>
+Disable all performance counters attached to the calling process, regardless of whether the counters were created by this process or another process. Performance counters created by the calling process for other processes are unaffected. For more information on performance counters, see the Linux kernel source file <i>tools/perf/design.txt</i>.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+Originally called <b>PR_TASK_PERF_COUNTERS_DISABLE</b>; renamed (with same numerical value) in Linux 2.6.32.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_TASK_PERF_EVENTS_ENABLE</b> (since Linux 2.6.31)</dt>
+<dd>
+The converse of <b>PR_TASK_PERF_EVENTS_DISABLE</b>; enable performance counters attached to the calling process.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+Originally called <b>PR_TASK_PERF_COUNTERS_ENABLE</b>; renamed in Linux 2.6.32.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_TSC</b> (since Linux 2.6.26, x86 only)</dt>
+<dd>
+Set the state of the flag determining whether the timestamp counter can be read by the process. Pass <b>PR_TSC_ENABLE</b> to <i>arg2</i> to allow it to be read, or <b>PR_TSC_SIGSEGV</b> to generate a <b>SIGSEGV</b> when the process tries to read the timestamp counter.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_GET_TSC</b> (since Linux 2.6.26, x86 only)</dt>
+<dd>
+Return the state of the flag determining whether the timestamp counter can be read, in the location pointed to by <i>(int&#160;*) arg2</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_UNALIGN</b></dt>
+<dd>
+(Only on: ia64, since Linux 2.3.48; parisc, since Linux 2.6.15; PowerPC, since Linux 2.6.18; Alpha, since Linux 2.6.22) Set unaligned access control bits to  <i>arg2</i>. Pass  <b>PR_UNALIGN_NOPRINT</b> to silently fix up unaligned user accesses, or  <b>PR_UNALIGN_SIGBUS</b> to generate <b>SIGBUS</b> on unaligned user access.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_GET_UNALIGN</b></dt>
+<dd>
+(see <b>PR_SET_UNALIGN</b> for information on versions and architectures) Return unaligned access control bits, in the location pointed to by <i>(int&#160;*) arg2</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_MCE_KILL</b> (since Linux 2.6.32)</dt>
+<dd>
+Set the machine check memory corruption kill policy for the current thread. If <i>arg2</i> is <b>PR_MCE_KILL_CLEAR</b>, clear the thread memory corruption kill policy and use the system-wide default. (The system-wide default is defined by <i>/proc/sys/vm/memory_failure_early_kill</i>; see <b>proc</b>(5).) If <i>arg2</i> is <b>PR_MCE_KILL_SET</b>, use a thread-specific memory corruption kill policy. In this case, <i>arg3</i> defines whether the policy is <i>early kill</i> (<b>PR_MCE_KILL_EARLY</b>), <i>late kill</i> (<b>PR_MCE_KILL_LATE</b>), or the system-wide default (<b>PR_MCE_KILL_DEFAULT</b>). Early kill means that the thread receives a <b>SIGBUS</b> signal as soon as hardware memory corruption is detected inside its address space. In late kill mode, the process is killed only when it accesses a corrupted page. See <b>sigaction</b>(2) for more information on the <b>SIGBUS</b> signal. The policy is inherited by children. The remaining unused <b>prctl</b>() arguments must be zero for future compatibility.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_MCE_KILL_GET</b> (since Linux 2.6.32)</dt>
+<dd>
+Return the current per-process machine check kill policy. All unused <b>prctl</b>() arguments must be zero.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_MM</b> (since Linux 3.3)</dt>
+<dd>
+Modify certain kernel memory map descriptor fields of the calling process. Usually these fields are set by the kernel and dynamic loader (see <b>ld.so</b>(8) for more information) and a regular application should not use this feature. However, there are cases, such as self-modifying programs, where a program might find it useful to change its own memory map. This feature is available only if the kernel is built with the <b>CONFIG_CHECKPOINT_RESTORE</b> option enabled. The calling process must have the <b>CAP_SYS_RESOURCE</b> capability. The value in <i>arg2</i> is one of the options below, while <i>arg3</i> provides a new value for the option.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+<b>PR_SET_MM_START_CODE</b></dt>
+<dd>
+Set the address above which the program text can run. The corresponding memory area must be readable and executable, but not writable or sharable (see <b>mprotect</b>(2) and <b>mmap</b>(2) for more information).</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_MM_END_CODE</b></dt>
+<dd>
+Set the address below which the program text can run. The corresponding memory area must be readable and executable, but not writable or sharable.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_MM_START_DATA</b></dt>
+<dd>
+Set the address above which initialized and uninitialized (bss) data are placed. The corresponding memory area must be readable and writable, but not executable or sharable.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_MM_END_DATA</b></dt>
+<dd>
+Set the address below which initialized and uninitialized (bss) data are placed. The corresponding memory area must be readable and writable, but not executable or sharable.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_MM_START_STACK</b></dt>
+<dd>
+Set the start address of the stack. The corresponding memory area must be readable and writable.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_MM_START_BRK</b></dt>
+<dd>
+Set the address above which the program heap can be expanded with <b>brk</b>(2) call. The address must be greater than the ending address of the current program data segment. In addition, the combined size of the resulting heap and the size of the data segment can't exceed the <b>RLIMIT_DATA</b> resource limit (see <b>setrlimit</b>(2)).</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_MM_BRK</b></dt>
+<dd>
+Set the current <b>brk</b>(2) value. The requirements for the address are the same as for the <b>PR_SET_MM_START_BRK</b> option.</dd>
+</dl>
+<div class="spacer">
+</div>
+The following options are available since Linux 3.5.<dl>
+<dt>
+<b>PR_SET_MM_ARG_START</b></dt>
+<dd>
+Set the address above which the program command line is placed.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_MM_ARG_END</b></dt>
+<dd>
+Set the address below which the program command line is placed.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_MM_ENV_START</b></dt>
+<dd>
+Set the address above which the program environment is placed.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_MM_ENV_END</b></dt>
+<dd>
+Set the address below which the program environment is placed.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+The address passed with <b>PR_SET_MM_ARG_START</b>, <b>PR_SET_MM_ARG_END</b>, <b>PR_SET_MM_ENV_START</b>, and <b>PR_SET_MM_ENV_END</b> should belong to a process stack area. Thus, the corresponding memory area must be readable, writable, and (depending on the kernel configuration) have the <b>MAP_GROWSDOWN</b> attribute set (see <b>mmap</b>(2)).</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_MM_AUXV</b></dt>
+<dd>
+Set a new auxiliary vector. The <i>arg3</i> argument should provide the address of the vector. The <i>arg4</i> is the size of the vector.</dd>
+</dl>
+<dl>
+<dt>
+<b>PR_SET_MM_EXE_FILE</b></dt>
+<dd>
+Supersede the <i>/proc/pid/exe</i> symbolic link with a new one pointing to a new executable file identified by the file descriptor provided in <i>arg3</i> argument. The file descriptor should be obtained with a regular <b>open</b>(2) call.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+To change the symbolic link, one needs to unmap all existing executable memory areas, including those created by the kernel itself (for example the kernel usually creates at least one executable memory area for the ELF <i>.text</i> section).</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+The second limitation is that such transitions can be done only once in a process life time. Any further attempts will be rejected. This should help system administrators monitor unusual symbolic-link transitions over all processes running on a system.</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>PR_MPX_ENABLE_MANAGEMENT</b>, <b>PR_MPX_DISABLE_MANAGEMENT</b> (since Linux 3.19) </dt>
+<dd>
+Enable or disable kernel management of Memory Protection eXtensions (MPX) bounds tables. The <i>arg2</i>, <i>arg3</i>, <i>arg4</i>, and <i>arg5</i> arguments must be zero.<div style="height: 1.00em;">
+&#160;</div>
+MPX is a hardware-assisted mechanism for performing bounds checking on pointers. It consists of a set of registers storing bounds information and a set of special instruction prefixes that tell the CPU on which instructions it should do bounds enforcement. There is a limited number of these registers and when there are more pointers than registers, their contents must be &quot;spilled&quot; into a set of tables. These tables are called &quot;bounds tables&quot; and the MPX <b>prctl</b>() operations control whether the kernel manages their allocation and freeing.<div style="height: 1.00em;">
+&#160;</div>
+When management is enabled, the kernel will take over allocation and freeing of the bounds tables. It does this by trapping the #BR exceptions that result at first use of missing bounds tables and instead of delivering the exception to user space, it allocates the table and populates the bounds directory with the location of the new table. For freeing, the kernel checks to see if bounds tables are present for memory which is not allocated, and frees them if so.<div style="height: 1.00em;">
+&#160;</div>
+Before enabling MPX management using <b>PR_MPX_ENABLE_MANAGEMENT</b>, the application must first have allocated a user-space buffer for the bounds directory and placed the location of that directory in the <i>bndcfgu</i> register.<div style="height: 1.00em;">
+&#160;</div>
+These calls will fail if the CPU or kernel does not support MPX. Kernel support for MPX is enabled via the <b>CONFIG_X86_INTEL_MPX</b> configuration option. You can check whether the CPU supports MPX by looking for the 'mpx' CPUID bit, like with the following command:<div style="height: 1.00em;">
+&#160;</div>
+	cat /proc/cpuinfo | grep ' mpx '<div style="height: 1.00em;">
+&#160;</div>
+A thread may not switch in or out of long (64-bit) mode while MPX is enabled.<div style="height: 1.00em;">
+&#160;</div>
+All threads in a process are affected by these calls.<div style="height: 1.00em;">
+&#160;</div>
+The child of a <b>fork</b>(2) inherits the state of MPX management. During <b>execve</b>(2), MPX management is reset to a state as if <b>PR_MPX_DISABLE_MANAGEMENT</b> had been called.<div style="height: 1.00em;">
+&#160;</div>
+For further information on Intel MPX, see the kernel source file <i>Documentation/x86/intel_mpx.txt</i>.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, <b>PR_GET_DUMPABLE</b>, <b>PR_GET_KEEPCAPS</b>, <b>PR_GET_NO_NEW_PRIVS</b>, <b>PR_GET_THP_DISABLE</b>, <b>PR_CAPBSET_READ</b>, <b>PR_GET_TIMING</b>, <b>PR_GET_TIMERSLACK</b>, <b>PR_GET_SECUREBITS</b>, <b>PR_MCE_KILL_GET</b>, and (if it returns) <b>PR_GET_SECCOMP</b> return the nonnegative values described above. All other <i>option</i> values return 0 on success. On error, -1 is returned, and <i>errno</i> is set appropriately.</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>EFAULT</b></dt>
+<dd>
+<i>arg2</i> is an invalid address.</dd>
+</dl>
+<dl>
+<dt>
+<b>EFAULT</b></dt>
+<dd>
+<i>option</i> is <b>PR_SET_SECCOMP</b>, <i>arg2</i> is <b>SECCOMP_MODE_FILTER</b>, the system was built with <b>CONFIG_SECCOMP_FILTER</b>, and <i>arg3</i> is an invalid address.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+The value of <i>option</i> is not recognized.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>option</i> is <b>PR_MCE_KILL</b> or <b>PR_MCE_KILL_GET</b> or <b>PR_SET_MM</b>, and unused <b>prctl</b>() arguments were not specified as zero.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>arg2</i> is not valid value for this <i>option</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>option</i> is <b>PR_SET_SECCOMP</b> or <b>PR_GET_SECCOMP</b>, and the kernel was not configured with <b>CONFIG_SECCOMP</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>option</i> is <b>PR_SET_SECCOMP</b>, <i>arg2</i> is <b>SECCOMP_MODE_FILTER</b>, and the kernel was not configured with <b>CONFIG_SECCOMP_FILTER</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>option</i> is <b>PR_SET_MM</b>, and one of the following is true</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+*</dt>
+<dd>
+<i>arg4</i> or <i>arg5</i> is nonzero;</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+<i>arg3</i> is greater than <b>TASK_SIZE</b> (the limit on the size of the user address space for this architecture);</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+<i>arg2</i> is <b>PR_SET_MM_START_CODE</b>, <b>PR_SET_MM_END_CODE</b>, <b>PR_SET_MM_START_DATA</b>, <b>PR_SET_MM_END_DATA</b>, or <b>PR_SET_MM_START_STACK</b>, and the permissions of the corresponding memory area are not as required;</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+<i>arg2</i> is <b>PR_SET_MM_START_BRK</b> or <b>PR_SET_MM_BRK</b>, and <i>arg3</i> is less than or equal to the end of the data segment or specifies a value that would cause the <b>RLIMIT_DATA</b> resource limit to be exceeded.</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>option</i> is <b>PR_SET_PTRACER</b> and <i>arg2</i> is not 0, <b>PR_SET_PTRACER_ANY</b>, or the PID of an existing process.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>option</i> is <b>PR_SET_PDEATHSIG</b> and <i>arg2</i> is not a valid signal number.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>option</i> is <b>PR_SET_DUMPABLE</b> and <i>arg2</i> is neither <b>SUID_DUMP_DISABLE</b> nor <b>SUID_DUMP_USER</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>option</i> is <b>PR_SET_TIMING</b> and <i>arg2</i> is not <b>PR_TIMING_STATISTICAL</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>option</i> is <b>PR_SET_NO_NEW_PRIVS</b> and <i>arg2</i> is not equal to 1 or <i>arg3</i>, <i>arg4</i>, or <i>arg5</i> is nonzero.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>option</i> is <b>PR_GET_NO_NEW_PRIVS</b> and <i>arg2</i>, <i>arg3</i>, <i>arg4</i>, or <i>arg5</i> is nonzero.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>option</i> is <b>PR_SET_THP_DISABLE</b> and <i>arg3</i>, <i>arg4</i>, or <i>arg5</i> is nonzero.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>option</i> is <b>PR_GET_THP_DISABLE</b> and <i>arg2</i>, <i>arg3</i>, <i>arg4</i>, or <i>arg5</i> is nonzero.</dd>
+</dl>
+<dl>
+<dt>
+<b>EPERM</b></dt>
+<dd>
+<i>option</i> is <b>PR_SET_SECUREBITS</b>, and the caller does not have the <b>CAP_SETPCAP</b> capability, or tried to unset a &quot;locked&quot; flag, or tried to set a flag whose corresponding locked flag was set (see <b>capabilities</b>(7)).</dd>
+</dl>
+<dl>
+<dt>
+<b>EPERM</b></dt>
+<dd>
+<i>option</i> is <b>PR_SET_KEEPCAPS</b>, and the callers's <b>SECURE_KEEP_CAPS_LOCKED</b> flag is set (see <b>capabilities</b>(7)).</dd>
+</dl>
+<dl>
+<dt>
+<b>EPERM</b></dt>
+<dd>
+<i>option</i> is <b>PR_CAPBSET_DROP</b>, and the caller does not have the <b>CAP_SETPCAP</b> capability.</dd>
+</dl>
+<dl>
+<dt>
+<b>EPERM</b></dt>
+<dd>
+<i>option</i> is <b>PR_SET_MM</b>, and the caller does not have the <b>CAP_SYS_RESOURCE</b> capability.</dd>
+</dl>
+<dl>
+<dt>
+<b>EACCES</b></dt>
+<dd>
+<i>option</i> is <b>PR_SET_MM</b>, and <i>arg3</i> is <b>PR_SET_MM_EXE_FILE</b>, the file is not executable.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBUSY</b></dt>
+<dd>
+<i>option</i> is <b>PR_SET_MM</b>, <i>arg3</i> is <b>PR_SET_MM_EXE_FILE</b>, and this the second attempt to change the <i>/proc/pid/exe</i> symbolic link, which is prohibited.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+<i>option</i> is <b>PR_SET_MM</b>, <i>arg3</i> is <b>PR_SET_MM_EXE_FILE</b>, and the file descriptor passed in <i>arg4</i> is not valid.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENXIO</b></dt>
+<dd>
+<i>option</i> was <b>PR_MPX_ENABLE_MANAGEMENT</b> or <b>PR_MPX_DISABLE_MANAGEMENT</b> and the kernel or the CPU does not support MPX management. Check that the kernel and processor have MPX support.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>VERSIONS</h1> The <b>prctl</b>() system call was introduced in Linux 2.1.57.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> This call is Linux-specific. IRIX has a <b>prctl</b>() system call (also introduced in Linux 2.1.44 as irix_prctl on the MIPS architecture), with prototype<div style="height: 1.00em;">
+&#160;</div>
+<b>ptrdiff_t prctl(int </b><i>option</i><b>, int </b><i>arg2</i><b>, int </b><i>arg3</i><b>);</b><div style="height: 1.00em;">
+&#160;</div>
+and options to get the maximum number of processes per user, get the maximum number of processors the calling process can use, find out whether a specified process is currently blocked, get or set the maximum stack size, and so on.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>signal</b>(2), <b>core</b>(5)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-05-07</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

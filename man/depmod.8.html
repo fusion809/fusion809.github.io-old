@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+DEPMOD(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+DEPMOD(8)</td>
+<td class="head-vol">
+depmod</td>
+<td class="head-rtitle">
+DEPMOD(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> depmod - Generate modules.dep and map files.</div>
+<div class="section">
+<h1>SYNOPSIS</h1><div style="margin-left: 7.00ex;text-indent: -7.00ex;" class="spacer">
+<b>depmod</b> [<b>-b&#160;</b><b></b><i>basedir</i>] [<b>-e</b>] [<b>-E&#160;</b><b></b><i>Module.symvers</i>] [<b>-F&#160;</b><b></b><i>System.map</i>] [<b>-n</b>] [<b>-v</b>] [<b>-A</b>] [<b>-P&#160;</b><b></b><i>prefix</i>] [<b>-w</b>] [<b></b><i>version</i>]</div>
+<div class="spacer">
+</div>
+<div style="margin-left: 7.00ex;text-indent: -7.00ex;" class="spacer">
+<b>depmod</b> [<b>-e</b>] [<b>-E&#160;</b><b></b><i>Module.symvers</i>] [<b>-F&#160;</b><b></b><i>System.map</i>] [<b>-m</b>] [<b>-n</b>] [<b>-v</b>] [<b>-P&#160;</b><b></b><i>prefix</i>] [<b>-w</b>] [<b></b><i>version</i>] [<b></b><i>filename</i>...]</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> Linux kernel modules can provide services (called &quot;symbols&quot;) for other modules to use (using one of the EXPORT_SYMBOL variants in the code). If a second module uses this symbol, that second module clearly depends on the first module. These dependencies can get quite complex.<div class="spacer">
+</div>
+<b>depmod</b> creates a list of module dependencies by reading each module under /lib/modules/ <i>version</i> and determining what symbols it exports and what symbols it needs. By default, this list is written to modules.dep, and a binary hashed version named modules.dep.bin, in the same directory. If filenames are given on the command line, only those modules are examined (which is rarely useful unless all modules are listed).  <b>depmod</b> also creates a list of symbols provided by modules in the file named modules.symbols and its binary hashed version, modules.symbols.bin. Finally,  <b>depmod</b> will output a file named modules.devname if modules supply special device names (devname) that should be populated in /dev on boot (by a utility such as systemd-tmpfiles).<div class="spacer">
+</div>
+If a  <i>version</i> is provided, then that kernel version's module directory is used rather than the current kernel version (as returned by  <b>uname -r</b>).</div>
+<div class="section">
+<h1>OPTIONS</h1>  <b>-a</b>, <b>--all</b><div style="margin-left: 4.00ex;">
+Probe all modules. This option is enabled by default if no file names are given in the command-line.</div>
+<div class="spacer">
+</div>
+<b>-A</b>, <b>--quick</b><div style="margin-left: 4.00ex;">
+This option scans to see if any modules are newer than the modules.dep file before any work is done: if not, it silently exits rather than regenerating the files.</div>
+<div class="spacer">
+</div>
+<b>-b </b><b></b><i>basedir</i>, <b>--basedir </b><b></b><i>basedir</i><div style="margin-left: 4.00ex;">
+If your modules are not currently in the (normal) directory /lib/modules/ <i>version</i>, but in a staging area, you can specify a  <i>basedir</i> which is prepended to the directory name. This  <i>basedir</i> is stripped from the resulting modules.dep file, so it is ready to be moved into the normal location. Use this option if you are a distribution vendor who needs to pre-generate the meta-data files rather than running depmod again later.</div>
+<div class="spacer">
+</div>
+<b>-C</b>, <b>--config </b><b></b><i>file or directory</i><div style="margin-left: 4.00ex;">
+This option overrides the default configuration directory at /etc/depmod.d/.</div>
+<div class="spacer">
+</div>
+<b>-e</b>, <b>--errsyms</b><div style="margin-left: 4.00ex;">
+When combined with the  <b>-F</b> option, this reports any symbols which a module needs which are not supplied by other modules or the kernel. Normally, any symbols not provided by modules are assumed to be provided by the kernel (which should be true in a perfect world), but this assumption can break especially when additionally updated third party drivers are not correctly installed or were built incorrectly.</div>
+<div class="spacer">
+</div>
+<b>-E</b>, <b>--symvers</b><div style="margin-left: 4.00ex;">
+When combined with the  <b>-e</b> option, this reports any symbol versions supplied by modules that do not match with the symbol versions provided by the kernel in its Module.symvers. This option is mutually incompatible with  <b>-F</b>.</div>
+<div class="spacer">
+</div>
+<b>-F</b>, <b>--filesyms </b><b></b><i>System.map</i><div style="margin-left: 4.00ex;">
+Supplied with the System.map produced when the kernel was built, this allows the  <b>-e</b> option to report unresolved symbols. This option is mutually incompatible with  <b>-E</b>.</div>
+<div class="spacer">
+</div>
+<b>-h</b>, <b>--help</b><div style="margin-left: 4.00ex;">
+Print the help message and exit.</div>
+<div class="spacer">
+</div>
+<b>-n</b>, <b>--show</b>, <b>--dry-run</b><div style="margin-left: 4.00ex;">
+This sends the resulting modules.dep and the various map files to standard output rather than writing them into the module directory.</div>
+<div class="spacer">
+</div>
+<b>-P</b><div style="margin-left: 4.00ex;">
+Some architectures prefix symbols with an extraneous character. This specifies a prefix character (for example '_') to ignore.</div>
+<div class="spacer">
+</div>
+<b>-v</b>, <b>--verbose</b><div style="margin-left: 4.00ex;">
+In verbose mode,  <b>depmod</b> will print (to stdout) all the symbols each module depends on and the module's file name which provides that symbol.</div>
+<div class="spacer">
+</div>
+<b>-V</b>, <b>--version</b><div style="margin-left: 4.00ex;">
+Show version of program and exit. See below for caveats when run on older kernels.</div>
+<div class="spacer">
+</div>
+<b>-w</b><div style="margin-left: 4.00ex;">
+Warn on duplicate dependencies, aliases, symbol versions, etc.</div>
+</div>
+<div class="section">
+<h1>COPYRIGHT</h1> This manual page originally Copyright 2002, Rusty Russell, IBM Corporation. Portions Copyright Jon Masters, and others.</div>
+<div class="section">
+<h1>SEE ALSO</h1>  <b>depmod.d</b>(5),  <b>modprobe</b>(8),  <b>modules.dep</b>(5)</div>
+<div class="section">
+<h1>AUTHORS</h1>  <b>Jon Masters</b> &lt;jcm@jonmasters.org&gt;<div style="margin-left: 4.00ex;">
+Developer</div>
+<div class="spacer">
+</div>
+<b>Robby Workman</b> &lt;rworkman@slackware.com&gt;<div style="margin-left: 4.00ex;">
+Developer</div>
+<div class="spacer">
+</div>
+<b>Lucas De Marchi</b> &lt;lucas.de.marchi@gmail.com&gt;<div style="margin-left: 4.00ex;">
+Developer</div>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+06/09/2015</td>
+<td class="foot-os">
+kmod</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

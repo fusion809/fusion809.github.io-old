@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+PROCESS_VM_READV(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+PROCESS_VM_READV(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+PROCESS_VM_READV(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> process_vm_readv, process_vm_writev - transfer data between process address spaces</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;sys/uio.h&gt;</b><div class="spacer">
+</div>
+<br/>
+<b>ssize_t process_vm_readv(pid_t </b><i>pid</i><b>,</b><br/>
+<b>                         const struct iovec *</b><i>local_iov</i><b>,</b><br/>
+<b>                         unsigned long </b><i>liovcnt</i><b>,</b><br/>
+<b>                         const struct iovec *</b><i>remote_iov</i><b>,</b><br/>
+<b>                         unsigned long </b><i>riovcnt</i><b>,</b><br/>
+<b>                         unsigned long </b><i>flags</i><b>);</b><div class="spacer">
+</div>
+<br/>
+<b>ssize_t process_vm_writev(pid_t </b><i>pid</i><b>,</b><br/>
+<b>                          const struct iovec *</b><i>local_iov</i><b>,</b><br/>
+<b>                          unsigned long </b><i>liovcnt</i><b>,</b><br/>
+<b>                          const struct iovec *</b><i>remote_iov</i><b>,</b><br/>
+<b>                          unsigned long </b><i>riovcnt</i><b>,</b><br/>
+<b>                          unsigned long </b><i>flags</i><b>);</b><br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Feature Test Macro Requirements for glibc (see <b>feature_test_macros</b>(7)):<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>process_vm_readv</b>(), <b>process_vm_writev</b>():<div style="margin-left: 4.00ex;">
+<b>_GNU_SOURCE</b></div>
+<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> These system calls transfer data between the address space of the calling process (&quot;the local process&quot;) and the process identified by <i>pid</i> (&quot;the remote process&quot;). The data moves directly between the address spaces of the two processes, without passing through kernel space.<div style="height: 1.00em;">
+&#160;</div>
+The <b>process_vm_readv</b>() system call transfers data from the remote process to the local process. The data to be transferred is identified by <i>remote_iov</i> and <i>riovcnt</i>: <i>remote_iov</i> is a pointer to an array describing address ranges in the process <i>pid</i>, and <i>riovcnt</i> specifies the number of elements in <i>remote_iov</i>. The data is transferred to the locations specified by <i>local_iov</i> and <i>liovcnt</i>: <i>local_iov</i> is a pointer to an array describing address ranges in the calling process, and <i>liovcnt</i> specifies the number of elements in <i>local_iov</i>.<div style="height: 1.00em;">
+&#160;</div>
+The <b>process_vm_writev</b>() system call is the converse of <b>process_vm_readv</b>()&#8212;it transfers data from the local process to the remote process. Other than the direction of the transfer, the arguments <i>liovcnt</i>, <i>local_iov</i>, <i>riovcnt</i>, and <i>remote_iov</i> have the same meaning as for <b>process_vm_readv</b>().<div style="height: 1.00em;">
+&#160;</div>
+The <i>local_iov</i> and <i>remote_iov</i> arguments point to an array of <i>iovec</i> structures, defined in <i>&lt;sys/uio.h&gt;</i> as:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<br/>
+struct iovec {<br/>
+    void  *iov_base;    /* Starting address */<br/>
+    size_t iov_len;     /* Number of bytes to transfer */<br/>
+};<br/>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+Buffers are processed in array order. This means that <b>process_vm_readv</b>() completely fills <i>local_iov[0]</i> before proceeding to <i>local_iov[1]</i>, and so on. Likewise, <i>remote_iov[0]</i> is completely read before proceeding to <i>remote_iov[1]</i>, and so on.<div style="height: 1.00em;">
+&#160;</div>
+Similarly, <b>process_vm_writev</b>() writes out the entire contents of <i>local_iov[0]</i> before proceeding to <i>local_iov[1]</i>, and it completely fills <i>remote_iov[0]</i> before proceeding to <i>remote_iov[1]</i>.<div style="height: 1.00em;">
+&#160;</div>
+The lengths of <i>remote_iov[i].iov_len</i> and <i>local_iov[i].iov_len</i> do not have to be the same. Thus, it is possible to split a single local buffer into multiple remote buffers, or vice versa.<div style="height: 1.00em;">
+&#160;</div>
+The <i>flags</i> argument is currently unused and must be set to 0.<div style="height: 1.00em;">
+&#160;</div>
+The values specified in the <i>liovcnt</i> and <i>riovcnt</i> arguments must be less than or equal to <b>IOV_MAX</b> (defined in <i>&lt;limits.h&gt;</i> or accessible via the call <i>sysconf(_SC_IOV_MAX)</i>).<div style="height: 1.00em;">
+&#160;</div>
+The count arguments and <i>local_iov</i> are checked before doing any transfers. If the counts are too big, or <i>local_iov</i> is invalid, or the addresses refer to regions that are inaccessible to the local process, none of the vectors will be processed and an error will be returned immediately.<div style="height: 1.00em;">
+&#160;</div>
+Note, however, that these system calls do not check the memory regions in the remote process until just before doing the read/write. Consequently, a partial read/write (see RETURN VALUE) may result if one of the <i>remote_iov</i> elements points to an invalid memory region in the remote process. No further reads/writes will be attempted beyond that point. Keep this in mind when attempting to read data of unknown length (such as C strings that are null-terminated) from a remote process, by avoiding spanning memory pages (typically 4KiB) in a single remote <i>iovec</i> element. (Instead, split the remote read into two <i>remote_iov</i> elements and have them merge back into a single write <i>local_iov</i> entry. The first read entry goes up to the page boundary, while the second starts on the next page boundary.)<div style="height: 1.00em;">
+&#160;</div>
+In order to read from or write to another process, either the caller must have the capability <b>CAP_SYS_PTRACE</b>, or the real user ID, effective user ID, and saved set-user-ID of the remote process must match the real user ID of the caller <i>and</i> the real group ID, effective group ID, and saved set-group-ID of the remote process must match the real group ID of the caller. (The permission required is exactly the same as that required to perform a <b>ptrace</b>(2) <b>PTRACE_ATTACH</b> on the remote process.)</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, <b>process_vm_readv</b>() returns the number of bytes read and <b>process_vm_writev</b>() returns the number of bytes written. This return value may be less than the total number of requested bytes, if a partial read/write occurred. (Partial transfers apply at the granularity of <i>iovec</i> elements. These system calls won't perform a partial transfer that splits a single <i>iovec</i> element.) The caller should check the return value to determine whether a partial read/write occurred.<div style="height: 1.00em;">
+&#160;</div>
+On error, -1 is returned and <i>errno</i> is set appropriately.</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+The sum of the <i>iov_len</i> values of either <i>local_iov</i> or <i>remote_iov</i> overflows a <i>ssize_t</i> value.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>flags</i> is not 0.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>liovcnt</i> or <i>riovcnt</i> is too large.</dd>
+</dl>
+<dl>
+<dt>
+<b>EFAULT</b></dt>
+<dd>
+The memory described by <i>local_iov</i> is outside the caller's accessible address space.</dd>
+</dl>
+<dl>
+<dt>
+<b>EFAULT</b></dt>
+<dd>
+The memory described by <i>remote_iov</i> is outside the accessible address space of the process <i>pid</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOMEM</b></dt>
+<dd>
+Could not allocate memory for internal copies of the <i>iovec</i> structures.</dd>
+</dl>
+<dl>
+<dt>
+<b>EPERM</b></dt>
+<dd>
+The caller does not have permission to access the address space of the process <i>pid</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>ESRCH</b></dt>
+<dd>
+No process with ID <i>pid</i> exists.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>VERSIONS</h1> These system calls were added in Linux 3.2. Support is provided in glibc since version 2.15.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> These system calls are nonstandard Linux extensions.</div>
+<div class="section">
+<h1>NOTES</h1> The data transfers performed by <b>process_vm_readv</b>() and <b>process_vm_writev</b>() are not guaranteed to be atomic in any way.<div style="height: 1.00em;">
+&#160;</div>
+These system calls were designed to permit fast message passing by allowing messages to be exchanged with a single copy operation (rather than the double copy that would be required when using, for example, shared memory or pipes).</div>
+<div class="section">
+<h1>EXAMPLE</h1> The following code sample demonstrates the use of <b>process_vm_readv</b>(). It reads 20 bytes at the address 0x10000 from the process with PID 10 and writes the first 10 bytes into <i>buf1</i> and the second 10 bytes into <i>buf2</i>.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+#include &lt;sys/uio.h&gt;<div class="spacer">
+</div>
+<br/>
+int<br/>
+main(void)<br/>
+{<br/>
+    struct iovec local[2];<br/>
+    struct iovec remote[1];<br/>
+    char buf1[10];<br/>
+    char buf2[10];<br/>
+    ssize_t nread;<br/>
+    pid_t pid = 10;             /* PID of remote process */<div class="spacer">
+</div>
+<br/>
+    local[0].iov_base = buf1;<br/>
+    local[0].iov_len = 10;<br/>
+    local[1].iov_base = buf2;<br/>
+    local[1].iov_len = 10;<br/>
+    remote[0].iov_base = (void *) 0x10000;<br/>
+    remote[0].iov_len = 20;<div class="spacer">
+</div>
+<br/>
+    nread = process_vm_readv(pid, local, 2, remote, 1, 0);<br/>
+    if (nread != 20)<br/>
+        return 1;<br/>
+    else<br/>
+        return 0;<br/>
+}<br/>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>readv</b>(2), <b>writev</b>(2)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2014-08-19</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+KEYCTL_SEARCH(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+KEYCTL_SEARCH(3)</td>
+<td class="head-vol">
+Linux Key Management Calls</td>
+<td class="head-rtitle">
+KEYCTL_SEARCH(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> keyctl_search - Search a keyring for a key</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;keyutils.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>long keyctl_search(key_serial_t </b><i>keyring</i><b>, const char *</b><i>type</i><b>,</b><br/>
+<b>const char *</b><i>description</i><b>, key_serial_t </b><i>destination</i><b>);</b></div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>keyctl_search</b>() recursively searches the <i>keyring</i> for a key of the specified <i>type</i> and <i>description</i>.<div class="spacer">
+</div>
+If found, the key will be attached to the <i>destination</i> keyring (if given), and its serial number will be returned.<div class="spacer">
+</div>
+The source keyring must grant <b>search</b> permission to the caller, and for a key to be found, it must also grant <b>search</b> permission to the caller.  Child keyrings will be only be recursively searched if they grant <b>search</b> permission to the caller as well.<div class="spacer">
+</div>
+If the destination keyring is <b>zero</b>, no attempt will be made to forge a link to the key, and just the serial number will be returned.<div class="spacer">
+</div>
+If the destination keyring is given, then the link may only be formed if the found key grants the caller <b>link</b> permission and the destination keyring grants the caller <b>write</b> permission.<div class="spacer">
+</div>
+If the search is successful, and if the destination keyring already contains a link to a key that matches the specified <i>type</i> and <i>description</i>, then that link will be replaced by a link to the found key.<div class="spacer">
+</div>
+The source keyring and destination keyring serial numbers may be those of valid keyrings to which the caller has appropriate permission, or they may be special keyring IDs:<dl>
+<dt>
+<b>KEY_SPEC_THREAD_KEYRING</b></dt>
+<dd>
+This specifies the caller's thread-specific keyring.</dd>
+</dl>
+<dl>
+<dt>
+<b>KEY_SPEC_PROCESS_KEYRING</b></dt>
+<dd>
+This specifies the caller's process-specific keyring.</dd>
+</dl>
+<dl>
+<dt>
+<b>KEY_SPEC_SESSION_KEYRING</b></dt>
+<dd>
+This specifies the caller's session-specific keyring.</dd>
+</dl>
+<dl>
+<dt>
+<b>KEY_SPEC_USER_KEYRING</b></dt>
+<dd>
+This specifies the caller's UID-specific keyring.</dd>
+</dl>
+<dl>
+<dt>
+<b>KEY_SPEC_USER_SESSION_KEYRING</b></dt>
+<dd>
+This specifies the caller's UID-session keyring.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success <b>keyctl_search</b>() returns the serial number of the key it found.  On error, the value <b>-1</b> will be returned and errno will have been set to an appropriate error.</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>ENOKEY</b></dt>
+<dd>
+One of the keyrings doesn't exist, no key was found by the search, or the only key found by the search was a negative key.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+One of the keyrings is a valid key that isn't a keyring.</dd>
+</dl>
+<dl>
+<dt>
+<b>EKEYEXPIRED</b></dt>
+<dd>
+One of the keyrings has expired, or the only key found was expired.</dd>
+</dl>
+<dl>
+<dt>
+<b>EKEYREVOKED</b></dt>
+<dd>
+One of the keyrings has been revoked, or the only key found was revoked.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOMEM</b></dt>
+<dd>
+Insufficient memory to expand the destination keyring.</dd>
+</dl>
+<dl>
+<dt>
+<b>EDQUOT</b></dt>
+<dd>
+The key quota for this user would be exceeded by creating a link to the found key in the destination keyring.</dd>
+</dl>
+<dl>
+<dt>
+<b>EACCES</b></dt>
+<dd>
+The source keyring didn't grant <b>search</b> permission, the destination keyring didn't grant <b>write</b> permission or the found key didn't grant <b>link</b> permission to the caller.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>LINKING</h1> Although this is a Linux system call, it is not present in <i>libc</i> but can be found rather in <i>libkeyutils</i>. When linking, <b>-lkeyutils</b> should be specified to the linker.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>keyctl</b>(1),<div style="height: 0.00em;">
+&#160;</div>
+<b>add_key</b>(2),<div style="height: 0.00em;">
+&#160;</div>
+<b>keyctl</b>(2),<div style="height: 0.00em;">
+&#160;</div>
+<b>request_key</b>(2),<div style="height: 0.00em;">
+&#160;</div>
+<b>keyctl</b>(3),<div style="height: 0.00em;">
+&#160;</div>
+<b>keyutils</b>(7),<div style="height: 0.00em;">
+&#160;</div>
+<b>keyrings</b>(7)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+4 May 2006</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

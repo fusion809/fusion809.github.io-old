@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SG_SAT_PHY_EVENT(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SG_SAT_PHY_EVENT(8)</td>
+<td class="head-vol">
+SG3_UTILS</td>
+<td class="head-rtitle">
+SG_SAT_PHY_EVENT(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sg_sat_phy_event - use ATA READ LOG EXT via a SAT pass-through to fetch SATA phy event counters</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>sg_sat_phy_event</b> [ <i>--ck_cond</i>] [<i>--extend</i>] [<i>--help</i>] [<i>--hex</i>] [ <i>--ignore</i>] [<i>--len=</i>{16|12}] [<i>--raw</i>] [<i>--reset</i>] [ <i>--verbose</i>] [<i>--version</i>] <i>DEVICE</i></div>
+<div class="section">
+<h1>DESCRIPTION</h1> This utility sends an ATA READ LOG EXT with the log page (&quot;address&quot;) set to 11h to  <i>DEVICE</i> and outputs the response. Log page 11h is defined in the SATA 2.5 standard and contains phy event counters. Rather than send this command directly to the  <i>DEVICE</i>, are sent via a SCSI transport which is assumed to contain a SCSI to ATA Translation (SAT) Layer (SATL). The SATL may be in an operating system driver, in host bus adapter firmware or in some external enclosure.<div class="spacer">
+</div>
+The SAT standard (SAT ANSI INCITS 431-2007, prior draft: sat-r09.pdf at www.t10.org) defines two SCSI &quot;ATA PASS-THROUGH&quot; commands: one using a 16 byte &quot;cdb&quot; and the other with a 12 byte cdb. This utility defaults to using the 16 byte cdb variant. SAT-2 is also a standard: SAT-2 ANSI INCITS 465-2010 and the draft prior to that is sat2r09.pdf . The SAT-3 project has started and the most recent draft is sat3r01.pdf .</div>
+<div class="section">
+<h1>OPTIONS</h1> Arguments to long options are mandatory for short options as well.<dl>
+<dt>
+<b>-c</b>, <b>--ck_cond</b></dt>
+<dd>
+sets the CK_COND bit in the ATA PASS-THROUGH SCSI cdb. The default setting is clear (i.e. 0). When set the SATL should yield a sense buffer containing a ATA Result descriptor irrespective of whether the command succeeded or failed. When clear the SATL should only yield a sense buffer containing a ATA Result descriptor if the command failed.</dd>
+</dl>
+<dl>
+<dt>
+<b>-e</b>, <b>--extend</b></dt>
+<dd>
+sets the EXTEND bit in the ATA PASS-THROUGH SCSI cdb. The default setting is clear (i.e. 0). When set a 48 bit LBA command is sent to the device. This option has no effect when  <i>--len=12</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>, <b>--help</b></dt>
+<dd>
+outputs the usage message summarizing command line options then exits. Ignores  <i>DEVICE</i> if given.</dd>
+</dl>
+<dl>
+<dt>
+<b>-H</b>, <b>--hex</b></dt>
+<dd>
+outputs the ATA READ LOG EXT response in hex. The default action (i.e. without any '-H' options) is to output the response in hex, grouped in 16 bit words (i.e. the ATA standard's preference). When given once, the response is output in ASCII hex bytes (i.e. the SCSI standard's preference). When given twice (i.e. '-HH') the output is in hex, grouped in 16 bit words, the same as the default but without a header.</dd>
+</dl>
+<dl>
+<dt>
+<b>-i</b>, <b>--ignore</b></dt>
+<dd>
+usually the phy counter identifier names are decoded. When this option is given, the numeric value of the identifier is output, the vendor flag, the data length (in bytes) and the corresponding value.</dd>
+</dl>
+<dl>
+<dt>
+<b>-l</b>, <b>--len</b>={16|12}</dt>
+<dd>
+this is the length of the SCSI cdb used for the ATA PASS-THROUGH commands. The argument can either be 16 or 12. The default is 16. The larger cdb size is needed for 48 bit LBA addressing of ATA devices. On the other hand some SCSI transports cannot convey SCSI commands longer than 12 bytes.</dd>
+</dl>
+<dl>
+<dt>
+<b>-r</b>, <b>--raw</b></dt>
+<dd>
+output the ATA READ LOG EXT response in binary. The output should be piped to a file or another utility when this option is used. The binary is sent to stdout, and errors are sent to stderr.</dd>
+</dl>
+<dl>
+<dt>
+<b>-R</b>, <b>--reset</b></dt>
+<dd>
+reset the counters after the current values are returned, decoded and displayed.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b>, <b>--verbose</b></dt>
+<dd>
+increases the level or verbosity.</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>, <b>--version</b></dt>
+<dd>
+print out version string</dd>
+</dl>
+</div>
+<div class="section">
+<h1>NOTES</h1> The SCSI ATA PASS-THROUGH (12) command's opcode is 0xa1 and it clashes with the MMC set's BLANK command used by cd/dvd writers. So a SATL in front of an ATAPI device that uses MMC (i.e. has peripheral device type 5) probably should treat opcode 0xa1 as a BLANK command and send it through to the cd/dvd drive. The ATA PASS-THROUGH (16) command's opcode (0x85) does not clash with anything so it is a better choice.<div class="spacer">
+</div>
+In the 2.4 series of Linux kernels the <i>DEVICE</i> must be a SCSI generic (sg) device. In the 2.6 series block devices (e.g. disks and ATAPI DVDs) can also be specified. For example &quot;sg_inq /dev/sda&quot; will work in the 2.6 series kernels. From lk 2.6.6 other SCSI &quot;char&quot; device names may be used as well (e.g. &quot;/dev/st0m&quot;). Prior to lk 2.6.29 USB mass storage limited sense data to 18 bytes which made the  <b>--ck_cond</b> option yield strange (truncated) results.</div>
+<div class="section">
+<h1>EXIT STATUS</h1> The exit status of sg_sat_identify is 0 when it is successful. Otherwise see the sg3_utils(8) man page.</div>
+<div class="section">
+<h1>AUTHOR</h1> Written by Douglas Gilbert</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Report bugs to &lt;dgilbert at interlog dot com&gt;.</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright &#169; 2006-2014 Douglas Gilbert<div style="height: 0.00em;">
+&#160;</div>
+This software is distributed under a FreeBSD license. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>sg_sat_identify,sg_sat_read_gplog(sg3_utils),</b> <b>smp_rep_phy_err_log(smp_utils), sdparm(sdparm), hdparm(hdparm)</b></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+November 2014</td>
+<td class="foot-os">
+sg3_utils-1.40</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

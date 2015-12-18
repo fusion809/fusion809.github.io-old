@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SHMGET(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SHMGET(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+SHMGET(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> shmget - allocates a System V shared memory segment</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;sys/ipc.h&gt;</b><div style="height: 0.00em;">
+&#160;</div>
+<b>#include &lt;sys/shm.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<b>int shmget(key_t </b><i>key</i><b>, size_t </b><i>size</i><b>, int </b><i>shmflg</i><b>);</b></div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>shmget</b>() returns the identifier of the System&#160;V shared memory segment associated with the value of the argument <i>key</i>. A new shared memory segment, with size equal to the value of <i>size</i> rounded up to a multiple of <b>PAGE_SIZE</b>, is created if <i>key</i> has the value <b>IPC_PRIVATE</b> or <i>key</i> isn't <b>IPC_PRIVATE</b>, no shared memory segment corresponding to <i>key</i> exists, and <b>IPC_CREAT</b> is specified in <i>shmflg</i>.<div class="spacer">
+</div>
+If <i>shmflg</i> specifies both <b>IPC_CREAT</b> and <b>IPC_EXCL</b> and a shared memory segment already exists for <i>key</i>, then <b>shmget</b>() fails with <i>errno</i> set to <b>EEXIST</b>. (This is analogous to the effect of the combination <b>O_CREAT | O_EXCL</b> for <b>open</b>(2).)<div class="spacer">
+</div>
+The value <i>shmflg</i> is composed of:<dl>
+<dt>
+<b>IPC_CREAT</b></dt>
+<dd>
+Create a new segment. If this flag is not used, then <b>shmget</b>() will find the segment associated with  <i>key</i> and check to see if the user has permission to access the segment.</dd>
+</dl>
+<dl>
+<dt>
+<b>IPC_EXCL</b></dt>
+<dd>
+This flag is used with <b>IPC_CREAT</b> to ensure that this call creates the segment. If the segment already exists, the call fails.</dd>
+</dl>
+<dl>
+<dt>
+<b>SHM_HUGETLB</b> (since Linux 2.6)</dt>
+<dd>
+Allocate the segment using &quot;huge pages.&quot; See the Linux kernel source file <i>Documentation/vm/hugetlbpage.txt</i> for further information.</dd>
+</dl>
+<dl>
+<dt>
+<b>SHM_HUGE_2MB</b>, <b>SHM_HUGE_1GB</b> (since Linux 3.8)</dt>
+<dd>
+Used in conjunction with <b>SHM_HUGETLB</b> to select alternative hugetlb page sizes (respectively, 2 MB and 1 GB) on systems that support multiple hugetlb page sizes.<div style="height: 1.00em;">
+&#160;</div>
+More generally, the desired huge page size can be configured by encoding the base-2 logarithm of the desired page size in the six bits at the offset <b>SHM_HUGE_SHIFT</b>. Thus, the above two constants are defined as:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<br/>
+#define SHM_HUGE_2MB    (21 &lt;&lt; SHM_HUGE_SHIFT)<br/>
+#define SHM_HUGE_1GB    (30 &lt;&lt; SHM_HUGE_SHIFT)<br/>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+For some additional details, see the discussion of the similarly named constants in <b>mmap</b>(2).</dd>
+</dl>
+<dl>
+<dt>
+<b>SHM_NORESERVE</b> (since Linux 2.6.15)</dt>
+<dd>
+This flag serves the same purpose as the <b>mmap</b>(2) <b>MAP_NORESERVE</b> flag. Do not reserve swap space for this segment. When swap space is reserved, one has the guarantee that it is possible to modify the segment. When swap space is not reserved one might get <b>SIGSEGV</b> upon a write if no physical memory is available. See also the discussion of the file <i>/proc/sys/vm/overcommit_memory</i> in <b>proc</b>(5).</dd>
+</dl>
+<div class="spacer">
+</div>
+In addition to the above flags, the least significant 9 bits of <i>shmflg</i> specify the permissions granted to the owner, group, and others. These bits have the same format, and the same meaning, as the <i>mode</i> argument of <b>open</b>(2). Presently, execute permissions are not used by the system.<div class="spacer">
+</div>
+When a new shared memory segment is created, its contents are initialized to zero values, and its associated data structure, <i>shmid_ds</i> (see <b>shmctl</b>(2)), is initialized as follows:<dl>
+<dt>
+</dt>
+<dd>
+<i>shm_perm.cuid</i> and <i>shm_perm.uid</i> are set to the effective user ID of the calling process.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+<i>shm_perm.cgid</i> and <i>shm_perm.gid</i> are set to the effective group ID of the calling process.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+The least significant 9 bits of <i>shm_perm.mode</i> are set to the least significant 9 bit of <i>shmflg</i>.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+<i>shm_segsz</i> is set to the value of <i>size</i>.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+<i>shm_lpid</i>, <i>shm_nattch</i>, <i>shm_atime</i>, and <i>shm_dtime</i> are set to 0.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+<i>shm_ctime</i> is set to the current time.</dd>
+</dl>
+<div class="spacer">
+</div>
+If the shared memory segment already exists, the permissions are verified, and a check is made to see if it is marked for destruction.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, a valid shared memory identifier is returned. On error, -1 is returned, and <i>errno</i> is set to indicate the error.</div>
+<div class="section">
+<h1>ERRORS</h1> On failure, <i>errno</i> is set to one of the following:<dl>
+<dt>
+<b>EACCES</b></dt>
+<dd>
+The user does not have permission to access the shared memory segment, and does not have the <b>CAP_IPC_OWNER</b> capability.</dd>
+</dl>
+<dl>
+<dt>
+<b>EEXIST</b></dt>
+<dd>
+<b>IPC_CREAT</b> and <b>IPC_EXCL</b> were specified in <i>shmflg</i>, but a shared memory segment already exists for <i>key</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+A new segment was to be created and <i>size</i> is less than <b>SHMMIN</b> or greater than <b>SHMMAX</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+A segment for the given <i>key</i> exists, but  <i>size</i> is greater than the size of that segment.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENFILE</b></dt>
+<dd>
+The system limit on the total number of open files has been reached.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOENT</b></dt>
+<dd>
+No segment exists for the given <i>key</i>, and <b>IPC_CREAT</b> was not specified.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOMEM</b></dt>
+<dd>
+No memory could be allocated for segment overhead.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOSPC</b></dt>
+<dd>
+All possible shared memory IDs have been taken (<b>SHMMNI</b>), or allocating a segment of the requested <i>size</i> would cause the system to exceed the system-wide limit on shared memory (<b>SHMALL</b>).</dd>
+</dl>
+<dl>
+<dt>
+<b>EPERM</b></dt>
+<dd>
+The <b>SHM_HUGETLB</b> flag was specified, but the caller was not privileged (did not have the <b>CAP_IPC_LOCK</b> capability).</dd>
+</dl>
+</div>
+<div class="section">
+<h1>CONFORMING TO</h1> POSIX.1-2001, POSIX.1-2008, SVr4.<div style="height: 1.00em;">
+&#160;</div>
+<b>SHM_HUGETLB</b> and <b>SHM_NORESERVE</b> are Linux extensions.</div>
+<div class="section">
+<h1>NOTES</h1> The inclusion of <i>&lt;sys/types.h&gt;</i> and <i>&lt;sys/ipc.h&gt;</i> isn't required on Linux or by any version of POSIX. However, some old implementations required the inclusion of these header files, and the SVID also documented their inclusion. Applications intended to be portable to such old systems may need to include these header files.<div style="height: 1.00em;">
+&#160;</div>
+<b>IPC_PRIVATE</b> isn't a flag field but a <i>key_t</i> type. If this special value is used for <i>key</i>, the system call ignores all but the least significant 9 bits of <i>shmflg</i> and creates a new shared memory segment.<div class="subsection">
+<h2>Shared memory limits</h2> The following limits on shared memory segment resources affect the <b>shmget</b>() call:<dl>
+<dt>
+<b>SHMALL</b></dt>
+<dd>
+System-wide limit on the total amount of shared memory, measured in units of the system page size.<div style="height: 1.00em;">
+&#160;</div>
+On Linux, this limit can be read and modified via <i>/proc/sys/kernel/shmall</i>. Since Linux 3.16, the default value for this limit is:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    ULONG_MAX - 2^24<div style="height: 1.00em;">
+&#160;</div>
+The effect of this value (which is suitable for both 32-bit and 64-bit systems) is to impose no limitation on allocations. This value, rather than <b>ULONG_MAX</b>, was chosen as the default to prevent some cases where historical applications simply raised the existing limit without first checking its current value. Such applications would cause the value to overflow if the limit was set at <b>ULONG_MAX</b>.<div style="height: 1.00em;">
+&#160;</div>
+From Linux 2.4 up to Linux 3.15, the default value for this limit was:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    SHMMAX / PAGE_SIZE * (SHMMNI / 16)<div style="height: 1.00em;">
+&#160;</div>
+If <b>SHMMAX</b> and <b>SHMMNI</b> were not modified, then multiplying the result of this formula by the page size (to get a value in bytes) yielded a value of 8 GB as the limit on the total memory used by all shared memory segments.</dd>
+</dl>
+<dl>
+<dt>
+<b>SHMMAX</b></dt>
+<dd>
+Maximum size in bytes for a shared memory segment.<div style="height: 1.00em;">
+&#160;</div>
+On Linux, this limit can be read and modified via <i>/proc/sys/kernel/shmmax</i>. Since Linux 3.16, the default value for this limit is:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    ULONG_MAX - 2^24<div style="height: 1.00em;">
+&#160;</div>
+The effect of this value (which is suitable for both 32-bit and 64-bit systems) is to impose no limitation on allocations. See the description of <b>SHMALL</b> for a discussion of why this default value (rather than <b>ULONG_MAX</b>) is used.<div style="height: 1.00em;">
+&#160;</div>
+From Linux 2.2 up to Linux 3.15, the default value of this limit was 0x2000000 (32MB).<div style="height: 1.00em;">
+&#160;</div>
+Because it is not possible to map just part of a shared memory segment, the amount of virtual memory places another limit on the maximum size of a usable segment: for example, on i386 the largest segments that can be mapped have a size of around 2.8 GB, and on x86_64 the limit is around 127 TB.</dd>
+</dl>
+<dl>
+<dt>
+<b>SHMMIN</b></dt>
+<dd>
+Minimum size in bytes for a shared memory segment: implementation dependent (currently 1 byte, though <b>PAGE_SIZE</b> is the effective minimum size).</dd>
+</dl>
+<dl>
+<dt>
+<b>SHMMNI</b></dt>
+<dd>
+System-wide limit on the number of shared memory segments. In Linux 2.2, the default value for this limit was 128; since Linux 2.4, the default value is 4096.<div style="height: 1.00em;">
+&#160;</div>
+On Linux, this limit can be read and modified via <i>/proc/sys/kernel/shmmni</i>.</dd>
+</dl>
+<div class="spacer">
+</div>
+The implementation has no specific limits for the per-process maximum number of shared memory segments (<b>SHMSEG</b>).</div>
+<div class="subsection">
+<h2>Linux notes</h2> Until version 2.3.30, Linux would return <b>EIDRM</b> for a <b>shmget</b>() on a shared memory segment scheduled for deletion.</div>
+</div>
+<div class="section">
+<h1>BUGS</h1> The name choice <b>IPC_PRIVATE</b> was perhaps unfortunate, <b>IPC_NEW</b> would more clearly show its function.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>memfd_create</b>(2), <b>shmat</b>(2), <b>shmctl</b>(2), <b>shmdt</b>(2), <b>ftok</b>(3), <b>capabilities</b>(7), <b>shm_overview</b>(7), <b>svipc</b>(7)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-08-08</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

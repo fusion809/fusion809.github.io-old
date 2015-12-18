@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+READ(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+READ(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+READ(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> read - read from a file descriptor</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;unistd.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>ssize_t read(int </b><i>fd</i><b>, void *</b><i>buf</i><b>, size_t </b><i>count</i><b>);</b><br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>read</b>() attempts to read up to <i>count</i> bytes from file descriptor <i>fd</i> into the buffer starting at <i>buf</i>.<div style="height: 1.00em;">
+&#160;</div>
+On files that support seeking, the read operation commences at the current file offset, and the file offset is incremented by the number of bytes read. If the current file offset is at or past the end of file, no bytes are read, and <b>read</b>() returns zero.<div style="height: 1.00em;">
+&#160;</div>
+If <i>count</i> is zero, <b>read</b>() <i>may</i> detect the errors described below. In the absence of any errors, or if <b>read</b>() does not check for errors, a <b>read</b>() with a <i>count</i> of 0 returns zero and has no other effects.<div style="height: 1.00em;">
+&#160;</div>
+If <i>count</i> is greater than <b>SSIZE_MAX</b>, the result is unspecified.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, the number of bytes read is returned (zero indicates end of file), and the file position is advanced by this number. It is not an error if this number is smaller than the number of bytes requested; this may happen for example because fewer bytes are actually available right now (maybe because we were close to end-of-file, or because we are reading from a pipe, or from a terminal), or because <b>read</b>() was interrupted by a signal. See also NOTES.<div style="height: 1.00em;">
+&#160;</div>
+On error, -1 is returned, and <i>errno</i> is set appropriately. In this case, it is left unspecified whether the file position (if any) changes.</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>EAGAIN</b></dt>
+<dd>
+The file descriptor <i>fd</i> refers to a file other than a socket and has been marked nonblocking (<b>O_NONBLOCK</b>), and the read would block. See <b>open</b>(2) for further details on the <b>O_NONBLOCK</b> flag.</dd>
+</dl>
+<dl>
+<dt>
+<b>EAGAIN</b> or <b>EWOULDBLOCK</b></dt>
+<dd>
+The file descriptor <i>fd</i> refers to a socket and has been marked nonblocking (<b>O_NONBLOCK</b>), and the read would block. POSIX.1-2001 allows either error to be returned for this case, and does not require these constants to have the same value, so a portable application should check for both possibilities.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+<i>fd</i> is not a valid file descriptor or is not open for reading.</dd>
+</dl>
+<dl>
+<dt>
+<b>EFAULT</b></dt>
+<dd>
+<i>buf</i> is outside your accessible address space.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINTR</b></dt>
+<dd>
+The call was interrupted by a signal before any data was read; see <b>signal</b>(7).</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>fd</i> is attached to an object which is unsuitable for reading; or the file was opened with the <b>O_DIRECT</b> flag, and either the address specified in <i>buf</i>, the value specified in <i>count</i>, or the current file offset is not suitably aligned.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>fd</i> was created via a call to <b>timerfd_create</b>(2) and the wrong size buffer was given to <b>read</b>(); see <b>timerfd_create</b>(2) for further information.</dd>
+</dl>
+<dl>
+<dt>
+<b>EIO</b></dt>
+<dd>
+I/O error. This will happen for example when the process is in a background process group, tries to read from its controlling terminal, and either it is ignoring or blocking <b>SIGTTIN</b> or its process group is orphaned. It may also occur when there is a low-level I/O error while reading from a disk or tape.</dd>
+</dl>
+<dl>
+<dt>
+<b>EISDIR</b></dt>
+<dd>
+<i>fd</i> refers to a directory.</dd>
+</dl>
+<div class="spacer">
+</div>
+Other errors may occur, depending on the object connected to <i>fd</i>. POSIX allows a <b>read</b>() that is interrupted after reading some data to return -1 (with <i>errno</i> set to <b>EINTR</b>) or to return the number of bytes already read.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> SVr4, 4.3BSD, POSIX.1-2001.</div>
+<div class="section">
+<h1>NOTES</h1> On Linux, <b>read</b>() (and similar system calls) will transfer at most 0x7ffff000 (2,147,479,552) bytes, returning the number of bytes actually transferred. (This is true on both 32-bit and 64-bit systems.)<div style="height: 1.00em;">
+&#160;</div>
+On NFS filesystems, reading small amounts of data will update the timestamp only the first time, subsequent calls may not do so. This is caused by client side attribute caching, because most if not all NFS clients leave <i>st_atime</i> (last file access time) updates to the server, and client side reads satisfied from the client's cache will not cause <i>st_atime</i> updates on the server as there are no server-side reads. UNIX semantics can be obtained by disabling client-side attribute caching, but in most situations this will substantially increase server load and decrease performance.</div>
+<div class="section">
+<h1>BUGS</h1> According to POSIX.1-2008/SUSv4 Section XSI 2.9.7 (&quot;Thread Interactions with Regular File Operations&quot;):<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+All of the following functions shall be atomic with respect to each other in the effects specified in POSIX.1-2008 when they operate on regular files or symbolic links: ...</div>
+<div style="height: 1.00em;">
+&#160;</div>
+Among the APIs subsequently listed are <b>read</b>() and <b>readv</b>(2). And among the effects that should be atomic across threads (and processes) are updates of the file offset. However, on Linux before version 3.14, this was not the case: if two processes that share an open file description (see <b>open</b>(2)) perform a <b>read</b>() (or <b>readv</b>(2)) at the same time, then the I/O operations were not atomic with respect updating the file offset, with the result that the reads in the two processes might (incorrectly) overlap in the blocks of data that they obtained. This problem was fixed in Linux 3.14.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>close</b>(2), <b>fcntl</b>(2), <b>ioctl</b>(2), <b>lseek</b>(2), <b>open</b>(2), <b>pread</b>(2), <b>readdir</b>(2), <b>readlink</b>(2), <b>readv</b>(2), <b>select</b>(2), <b>write</b>(2), <b>fread</b>(3)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-07-23</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

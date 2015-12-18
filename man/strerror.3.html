@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+STRERROR(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+STRERROR(3)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+STRERROR(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> strerror, strerror_r, strerror_l - return string describing error number</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;string.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>char *strerror(int </b><i>errnum</i><b>);</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>int strerror_r(int </b><i>errnum</i><b>, char *</b><i>buf</i><b>, size_t </b><i>buflen</i><b>);</b><br/>
+            /* XSI-compliant */<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>char *strerror_r(int </b><i>errnum</i><b>, char *</b><i>buf</i><b>, size_t </b><i>buflen</i><b>);</b><br/>
+            /* GNU-specific */<div class="spacer">
+</div>
+<br/>
+<b>char *strerror_l(int </b><i>errnum</i><b>, locale_t </b><i>locale</i><b>);</b><br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Feature Test Macro Requirements for glibc (see <b>feature_test_macros</b>(7)):<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>strerror_r</b>():<div style="margin-left: 4.00ex;">
+The XSI-compliant version is provided if:<div style="height: 0.00em;">
+&#160;</div>
+(_POSIX_C_SOURCE&#160;&gt;=&#160;200112L || _XOPEN_SOURCE&#160;&gt;=&#160;600) &amp;&amp; !&#160;_GNU_SOURCE<div style="height: 0.00em;">
+&#160;</div>
+Otherwise, the GNU-specific version is provided.</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The <b>strerror</b>() function returns a pointer to a string that describes the error code passed in the argument <i>errnum</i>, possibly using the <b>LC_MESSAGES</b> part of the current locale to select the appropriate language. (For example, if <i>errnum</i> is <b>EINVAL</b>, the returned description will be &quot;Invalid argument&quot;.) This string must not be modified by the application, but may be modified by a subsequent call to <b>strerror</b>() or <b>strerror_l</b>(). No other library function, including <b>perror</b>(3), will modify this string.<div class="subsection">
+<h2>strerror_r()</h2> The <b>strerror_r</b>() function is similar to <b>strerror</b>(), but is thread safe. This function is available in two versions: an XSI-compliant version specified in POSIX.1-2001 (available since glibc 2.3.4, but not POSIX-compliant until glibc 2.13), and a GNU-specific version (available since glibc 2.0). The XSI-compliant version is provided with the feature test macros settings shown in the SYNOPSIS; otherwise the GNU-specific version is provided. If no feature test macros are explicitly defined, then (since glibc 2.4) <b>_POSIX_SOURCE</b> is defined by default with the value 200112L, so that the XSI-compliant version of <b>strerror_r</b>() is provided by default.<div style="height: 1.00em;">
+&#160;</div>
+The XSI-compliant <b>strerror_r</b>() is preferred for portable applications. It returns the error string in the user-supplied buffer <i>buf</i> of length <i>buflen</i>.<div style="height: 1.00em;">
+&#160;</div>
+The GNU-specific <b>strerror_r</b>() returns a pointer to a string containing the error message. This may be either a pointer to a string that the function stores in <i>buf</i>, or a pointer to some (immutable) static string (in which case <i>buf</i> is unused). If the function stores a string in <i>buf</i>, then at most <i>buflen</i> bytes are stored (the string may be truncated if <i>buflen</i> is too small and <i>errnum</i> is unknown). The string always includes a terminating null byte ('\0').</div>
+<div class="subsection">
+<h2>strerror_l()</h2> <b>strerror_l</b>() is like <b>strerror</b>(), but maps <i>errnum</i> to a locale-dependent error message in the locale specified by <i>locale</i>. The behavior of <b>strerror_l</b>() is undefined if <i>locale</i> is the special locale object <b>LC_GLOBAL_LOCALE</b> or is not a valid locale object handle.</div>
+</div>
+<div class="section">
+<h1>RETURN VALUE</h1> The <b>strerror</b>(), <b>strerror_l</b>(), and the GNU-specific <b>strerror_r</b>() functions return the appropriate error description string, or an &quot;Unknown error nnn&quot; message if the error number is unknown.<div style="height: 1.00em;">
+&#160;</div>
+The XSI-compliant <b>strerror_r</b>() function returns 0 on success. On error, a (positive) error number is returned (since glibc 2.13), or -1 is returned and <i>errno</i> is set to indicate the error (glibc versions before 2.13).<div style="height: 1.00em;">
+&#160;</div>
+POSIX.1-2001 and POSIX.1-2008 require that a successful call to <b>strerror</b>() or <b>strerror_l</b>() shall leave <i>errno</i> unchanged, and note that, since no function return value is reserved to indicate an error, an application that wishes to check for errors should initialize <i>errno</i> to zero before the call, and then check <i>errno</i> after the call.</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+The value of <i>errnum</i> is not a valid error number.</dd>
+</dl>
+<dl>
+<dt>
+<b>ERANGE</b></dt>
+<dd>
+Insufficient storage was supplied to contain the error description string.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ATTRIBUTES</h1> For an explanation of the terms used in this section, see <b>attributes</b>(7).<table class="tbl">
+<col style="width: 29.00ex;"/>
+<col style="width: 13.00ex;"/>
+<col style="width: 5.00ex;"/>
+<tbody>
+<tr>
+<td>
+Interface</td>
+<td>
+Attribute</td>
+<td>
+Value</td>
+</tr>
+<tr>
+<td>
+strerror ()</td>
+<td>
+Thread safety</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+strerror_r (),  strerror_l ()</td>
+<td>
+Thread safety</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section">
+<h1>VERSIONS</h1> The <b>strerror_l</b>() function first appeared in glibc 2.6.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> <b>strerror</b>() is specified by POSIX.1-2001, POSIX.1-2008, C89, and C99. <b>strerror_r</b>() is specified by POSIX.1-2001 and POSIX.1-2008.<div style="height: 1.00em;">
+&#160;</div>
+<b>strerror_l</b>() is specified in POSIX.1-2008.<div style="height: 1.00em;">
+&#160;</div>
+The GNU-specific <b>strerror_r</b>() function is a nonstandard extension.<div style="height: 1.00em;">
+&#160;</div>
+POSIX.1-2001 permits <b>strerror</b>() to set <i>errno</i> if the call encounters an error, but does not specify what value should be returned as the function result in the event of an error. On some systems, <b>strerror</b>() returns NULL if the error number is unknown. On other systems, <b>strerror</b>() returns a string something like &quot;Error nnn occurred&quot; and sets <i>errno</i> to <b>EINVAL</b> if the error number is unknown. C99 and POSIX.1-2008 require the return value to be non-NULL.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>err</b>(3), <b>errno</b>(3), <b>error</b>(3), <b>perror</b>(3), <b>strsignal</b>(3), <b>locale</b>(7)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-03-02</td>
+<td class="foot-os">
+</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+TRAP(1P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+TRAP(1P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+TRAP(1P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> trap &#8212; trap signals</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+trap <i>n </i><b>[</b><i>condition</i>...<b>]</b><br/>
+trap <b>[</b><i>action condition</i>...<b>]</b><br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> If the first operand is an unsigned decimal integer, the shell shall treat all operands as conditions, and shall reset each condition to the default value. Otherwise, if there are operands, the first is treated as an action and the remaining as conditions.<div class="spacer">
+</div>
+If <i>action</i> is <b>'&#8722;'</b>, the shell shall reset each <i>condition</i> to the default value. If <i>action</i> is null (<b>&quot;&quot;</b>), the shell shall ignore each specified <i>condition</i> if it arises. Otherwise, the argument <i>action</i> shall be read and executed by the shell when one of the corresponding conditions arises. The action of <i>trap</i> shall override a previous action (either default action or one explicitly set). The value of <b>&quot;$?&quot;</b> after the <i>trap</i> action completes shall be the value it had before <i>trap</i> was invoked.<div class="spacer">
+</div>
+The condition can be EXIT, 0 (equivalent to EXIT), or a signal specified using a symbolic name, without the SIG prefix, as listed in the tables of signal names in the <i>&lt;signal.h&gt;</i> header defined in the Base Definitions volume of POSIX.1&#8208;2008, <i>Chapter 13</i>, <i>Headers</i>; for example, HUP, INT, QUIT, TERM. Implementations may permit names with the SIG prefix or ignore case in signal names as an extension. Setting a trap for SIGKILL or SIGSTOP produces undefined results.<div class="spacer">
+</div>
+The environment in which the shell executes a <i>trap</i> on EXIT shall be identical to the environment immediately after the last command executed before the <i>trap</i> on EXIT was taken.<div class="spacer">
+</div>
+Each time <i>trap</i> is invoked, the <i>action</i> argument shall be processed in a manner equivalent to:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>eval </b><i>action</i><br/>
+</div>
+<div class="spacer">
+</div>
+Signals that were ignored on entry to a non-interactive shell cannot be trapped or reset, although no error need be reported when attempting to do so. An interactive shell may reset or catch signals ignored on entry. Traps shall remain in place for a given shell until explicitly changed with another <i>trap</i> command.<div class="spacer">
+</div>
+When a subshell is entered, traps that are not being ignored shall be set to the default actions, except in the case of a command substitution containing only a single <i>trap</i> command, when the traps need not be altered. Implementations may check for this case using only lexical analysis; for example, if <i>`trap`</i> and <i>$( trap -- )</i> do not alter the traps in the subshell, cases such as assigning <i>var=trap</i> and then using <i>$($var)</i> may still alter them. This does not imply that the <i>trap</i> command cannot be used within the subshell to set new traps.<div class="spacer">
+</div>
+The <i>trap</i> command with no operands shall write to standard output a list of commands associated with each condition. If the command is executed in a subshell, the implementation does not perform the optional check described above for a command substitution containing only a single <i>trap</i> command, and no <i>trap</i> commands with operands have been executed since entry to the subshell, the list shall contain the commands that were associated with each condition immediately before the subshell environment was entered. Otherwise, the list shall contain the commands currently associated with each condition. The format shall be:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>&quot;trap &#8722;&#8722; %s %s ...\n&quot;, &lt;</b><i>action</i>&gt;, &lt;<i>condition</i>&gt; ...<br/>
+</div>
+<div class="spacer">
+</div>
+The shell shall format the output, including the proper use of quoting, so that it is suitable for reinput to the shell as commands that achieve the same trapping results. For example:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>save_traps=$(trap)</b><br/>
+<b>...</b><br/>
+<b>eval &quot;$save_traps&quot;</b><br/>
+</div>
+<div class="spacer">
+</div>
+XSI-conformant systems also allow numeric signal numbers for the conditions corresponding to the following signal names:<dl>
+<dt>
+1</dt>
+<dd>
+SIGHUP</dd>
+</dl>
+<dl>
+<dt>
+2</dt>
+<dd>
+SIGINT</dd>
+</dl>
+<dl>
+<dt>
+3</dt>
+<dd>
+SIGQUIT</dd>
+</dl>
+<dl>
+<dt>
+6</dt>
+<dd>
+SIGABRT</dd>
+</dl>
+<dl>
+<dt>
+9</dt>
+<dd>
+SIGKILL</dd>
+</dl>
+<dl>
+<dt>
+14</dt>
+<dd>
+SIGALRM</dd>
+</dl>
+<dl>
+<dt>
+15</dt>
+<dd>
+SIGTERM</dd>
+</dl>
+<div class="spacer">
+</div>
+The <i>trap</i> special built-in shall conform to the Base Definitions volume of POSIX.1&#8208;2008, <i>Section 12.2</i>, <i>Utility Syntax Guidelines</i>.</div>
+<div class="section">
+<h1>OPTIONS</h1> None.</div>
+<div class="section">
+<h1>OPERANDS</h1> See the DESCRIPTION.</div>
+<div class="section">
+<h1>STDIN</h1> Not used.</div>
+<div class="section">
+<h1>INPUT FILES</h1> None.</div>
+<div class="section">
+<h1>ENVIRONMENT VARIABLES</h1> None.</div>
+<div class="section">
+<h1>ASYNCHRONOUS EVENTS</h1> Default.</div>
+<div class="section">
+<h1>STDOUT</h1> See the DESCRIPTION.</div>
+<div class="section">
+<h1>STDERR</h1> The standard error shall be used only for diagnostic messages.</div>
+<div class="section">
+<h1>OUTPUT FILES</h1> None.</div>
+<div class="section">
+<h1>EXTENDED DESCRIPTION</h1> None.</div>
+<div class="section">
+<h1>EXIT STATUS</h1> If the trap name or number is invalid, a non-zero exit status shall be returned; otherwise, zero shall be returned. For both interactive and non-interactive shells, invalid signal names or numbers shall not be considered a syntax error and do not cause the shell to abort.</div>
+<div class="section">
+<h1>CONSEQUENCES OF ERRORS</h1> Default.<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> None.</div>
+<div class="section">
+<h1>EXAMPLES</h1> Write out a list of all traps and actions:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>trap</b><br/>
+</div>
+<div class="spacer">
+</div>
+Set a trap so the <i>logout</i> utility in the directory referred to by the <i>HOME</i> environment variable executes when the shell terminates:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>trap '&quot;$HOME&quot;/logout' EXIT</b><br/>
+</div>
+<div class="spacer">
+</div>
+or:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>trap '&quot;$HOME&quot;/logout' 0</b><br/>
+</div>
+<div class="spacer">
+</div>
+Unset traps on INT, QUIT, TERM, and EXIT:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>trap &#8722; INT QUIT TERM EXIT</b><br/>
+</div>
+</div>
+<div class="section">
+<h1>RATIONALE</h1> Implementations may permit lowercase signal names as an extension. Implementations may also accept the names with the SIG prefix; no known historical shell does so. The <i>trap</i> and <i>kill</i> utilities in this volume of POSIX.1&#8208;2008 are now consistent in their omission of the SIG prefix for signal names. Some <i>kill</i> implementations do not allow the prefix, and <i>kill</i> <b>&#8722;l</b> lists the signals without prefixes.<div class="spacer">
+</div>
+Trapping SIGKILL or SIGSTOP is syntactically accepted by some historical implementations, but it has no effect. Portable POSIX applications cannot attempt to trap these signals.<div class="spacer">
+</div>
+The output format is not historical practice. Since the output of historical <i>trap</i> commands is not portable (because numeric signal values are not portable) and had to change to become so, an opportunity was taken to format the output in a way that a shell script could use to save and then later reuse a trap if it wanted.<div class="spacer">
+</div>
+The KornShell uses an <b>ERR</b> trap that is triggered whenever <i>set</i> <b>&#8722;e</b> would cause an exit. This is allowable as an extension, but was not mandated, as other shells have not used it.<div class="spacer">
+</div>
+The text about the environment for the EXIT trap invalidates the behavior of some historical versions of interactive shells which, for example, close the standard input before executing a trap on 0. For example, in some historical interactive shell sessions the following trap on 0 would always print <b>&quot;&#8722;&#8722;&quot;</b>:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>trap 'read foo; echo &quot;&#8722;$foo&#8722;&quot;' 0</b><br/>
+</div>
+<div class="spacer">
+</div>
+The command:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>trap 'eval &quot; $cmd&quot;' 0</b><br/>
+</div>
+<div class="spacer">
+</div>
+causes the contents of the shell variable <i>cmd</i> to be executed as a command when the shell exits. Using:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>trap '$cmd' 0</b><br/>
+</div>
+<div class="spacer">
+</div>
+does not work correctly if <i>cmd</i> contains any special characters such as quoting or redirections. Using:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>trap &quot; $cmd&quot; 0</b><br/>
+</div>
+<div class="spacer">
+</div>
+also works (the leading &lt;space&gt; character protects against unlikely cases where <i>cmd</i> is a decimal integer or begins with <b>'&#8722;'</b>), but it expands the <i>cmd</i> variable when the <i>trap</i> command is executed, not when the exit action is executed.</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> None.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i>Section 2.14</i>, <i>Special Built-In Utilities</i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i>Section 12.2</i>, <i>Utility Syntax Guidelines</i>, <i><b>&lt;signal.h&gt;</b></i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

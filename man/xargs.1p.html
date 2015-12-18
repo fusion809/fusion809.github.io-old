@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+XARGS(1P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+XARGS(1P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+XARGS(1P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> xargs &#8212; construct argument lists and invoke utility</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+xargs <b>[</b>&#8722;ptx<b>] [</b>&#8722;E <i>eofstr</i><b>] [</b>&#8722;I <i>replstr</i>|&#8722;L <i>number</i>|&#8722;n <i>number</i><b>]</b><br/>
+    <b>[</b>&#8722;s <i>size</i><b>] [</b><i>utility </i><b>[</b><i>argument</i>...<b>]]</b><br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The <i>xargs</i> utility shall construct a command line consisting of the <i>utility</i> and <i>argument</i> operands specified followed by as many arguments read in sequence from standard input as fit in length and number constraints specified by the options. The <i>xargs</i> utility shall then invoke the constructed command line and wait for its completion. This sequence shall be repeated until one of the following occurs:<dl>
+<dt>
+ *</dt>
+<dd>
+An end-of-file condition is detected on standard input.</dd>
+</dl>
+<dl>
+<dt>
+ *</dt>
+<dd>
+An argument consisting of just the logical end-of-file string (see the <b>&#8722;E</b> <i>eofstr</i> option) is found on standard input after double-quote processing, &lt;apostrophe&gt; processing, and &lt;backslash&gt;-escape processing (see next paragraph). All arguments up to but not including the argument consisting of just the logical end-of-file string shall be used as arguments in constructed command lines.</dd>
+</dl>
+<dl>
+<dt>
+ *</dt>
+<dd>
+An invocation of a constructed command line returns an exit status of 255.</dd>
+</dl>
+<div class="spacer">
+</div>
+The application shall ensure that arguments in the standard input are separated by unquoted &lt;blank&gt; characters, unescaped &lt;blank&gt; characters, or &lt;newline&gt; characters. A string of zero or more non-double-quote (<b>'&quot;'</b>) characters and non-&lt;newline&gt; characters can be quoted by enclosing them in double-quotes. A string of zero or more non-&lt;apostrophe&gt; (<b>'\''</b>) characters and non-&lt;newline&gt; characters can be quoted by enclosing them in &lt;apostrophe&gt; characters. Any unquoted character can be escaped by preceding it with a &lt;backslash&gt;. The utility named by <i>utility</i> shall be executed one or more times until the end-of-file is reached or the logical end-of file string is found. The results are unspecified if the utility named by <i>utility</i> attempts to read from its standard input.<div class="spacer">
+</div>
+The generated command line length shall be the sum of the size in bytes of the utility name and each argument treated as strings, including a null byte terminator for each of these strings. The <i>xargs</i> utility shall limit the command line length such that when the command line is invoked, the combined argument and environment lists (see the <i>exec</i> family of functions in the System Interfaces volume of POSIX.1&#8208;2008) shall not exceed {ARG_MAX}&#8722;2048 bytes. Within this constraint, if neither the <b>&#8722;n</b> nor the <b>&#8722;s</b> option is specified, the default command line length shall be at least {LINE_MAX}.</div>
+<div class="section">
+<h1>OPTIONS</h1> The <i>xargs</i> utility shall conform to the Base Definitions volume of POSIX.1&#8208;2008, <i>Section 12.2</i>, <i>Utility Syntax Guidelines</i>.<div class="spacer">
+</div>
+The following options shall be supported:<dl>
+<dt>
+<b>&#8722;E&#160;</b><i>eofstr</i></dt>
+<dd>
+Use <i>eofstr</i> as the logical end-of-file string. If <b>&#8722;E</b> is not specified, it is unspecified whether the logical end-of-file string is the &lt;underscore&gt; character (<b>'_'</b>) or the end-of-file string capability is disabled. When <i>eofstr</i> is the null string, the logical end-of-file string capability shall be disabled and &lt;underscore&gt; characters shall be taken literally.</dd>
+</dl>
+<dl>
+<dt>
+<b>&#8722;I&#160;</b><i>replstr</i></dt>
+<dd>
+Insert mode: <i>utility</i> is executed for each logical line from standard input. Arguments in the standard input shall be separated only by unescaped &lt;newline&gt; characters, not by &lt;blank&gt; characters. Any unquoted unescaped &lt;blank&gt; characters at the beginning of each line shall be ignored. The resulting argument shall be inserted in <i>arguments</i> in place of each occurrence of <i>replstr</i>. At least five arguments in <i>arguments</i> can each contain one or more instances of <i>replstr</i>. Each of these constructed arguments cannot grow larger than an implementation-defined limit greater than or equal to 255 bytes. Option <b>&#8722;x</b> shall be forced on.</dd>
+</dl>
+<dl>
+<dt>
+<b>&#8722;L&#160;</b><i>number</i></dt>
+<dd>
+The <i>utility</i> shall be executed for each non-empty <i>number</i> lines of arguments from standard input. The last invocation of <i>utility</i> shall be with fewer lines of arguments if fewer than <i>number</i> remain. A line is considered to end with the first &lt;newline&gt; unless the last character of the line is a &lt;blank&gt;; a trailing &lt;blank&gt; signals continuation to the next non-empty line, inclusive.</dd>
+</dl>
+<dl>
+<dt>
+<b>&#8722;n&#160;</b><i>number</i></dt>
+<dd>
+Invoke <i>utility</i> using as many standard input arguments as possible, up to <i>number</i> (a positive decimal integer) arguments maximum. Fewer arguments shall be used if:</dd>
+</dl>
+<div style="margin-left: 10.00ex;">
+<dl>
+<dt>
+ *</dt>
+<dd>
+The command line length accumulated exceeds the size specified by the <b>&#8722;s</b> option (or {LINE_MAX} if there is no <b>&#8722;s</b> option).</dd>
+</dl>
+<dl>
+<dt>
+ *</dt>
+<dd>
+The last iteration has fewer than <i>number</i>, but not zero, operands remaining.</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>&#8722;p</b></dt>
+<dd>
+Prompt mode: the user is asked whether to execute <i>utility</i> at each invocation. Trace mode (<b>&#8722;t</b>) is turned on to write the command instance to be executed, followed by a prompt to standard error. An affirmative response read from <b>/dev/tty</b> shall execute the command; otherwise, that particular invocation of <i>utility</i> shall be skipped.</dd>
+</dl>
+<dl>
+<dt>
+<b>&#8722;s&#160;</b><i>size</i></dt>
+<dd>
+Invoke <i>utility</i> using as many standard input arguments as possible yielding a command line length less than <i>size</i> (a positive decimal integer) bytes. Fewer arguments shall be used if:</dd>
+</dl>
+<div style="margin-left: 10.00ex;">
+<dl>
+<dt>
+ *</dt>
+<dd>
+The total number of arguments exceeds that specified by the <b>&#8722;n</b> option.</dd>
+</dl>
+<dl>
+<dt>
+ *</dt>
+<dd>
+The total number of lines exceeds that specified by the <b>&#8722;L</b> option.</dd>
+</dl>
+<dl>
+<dt>
+ *</dt>
+<dd>
+End-of-file is encountered on standard input before <i>size</i> bytes are accumulated.</dd>
+</dl>
+<div class="spacer">
+</div>
+Values of <i>size</i> up to at least {LINE_MAX} bytes shall be supported, provided that the constraints specified in the DESCRIPTION are met. It shall not be considered an error if a value larger than that supported by the implementation or exceeding the constraints specified in the DESCRIPTION is given; <i>xargs</i> shall use the largest value it supports within the constraints.</div>
+<dl>
+<dt>
+<b>&#8722;t</b></dt>
+<dd>
+Enable trace mode. Each generated command line shall be written to standard error just prior to invocation.</dd>
+</dl>
+<dl>
+<dt>
+<b>&#8722;x</b></dt>
+<dd>
+Terminate if a constructed command line will not fit in the implied or specified size (see the <b>&#8722;s</b> option above).</dd>
+</dl>
+</div>
+<div class="section">
+<h1>OPERANDS</h1> The following operands shall be supported:<dl>
+<dt>
+<i>utility</i></dt>
+<dd>
+The name of the utility to be invoked, found by search path using the <i>PATH</i> environment variable, described in the Base Definitions volume of POSIX.1&#8208;2008, <i>Chapter 8</i>, <i>Environment Variables</i>. If <i>utility</i> is omitted, the default shall be the <i>echo</i> utility. If the <i>utility</i> operand names any of the special built-in utilities in <i>Section 2.14</i>, <i>Special Built-In Utilities</i>, the results are undefined.</dd>
+</dl>
+<dl>
+<dt>
+<i>argument</i></dt>
+<dd>
+An initial option or operand for the invocation of <i>utility</i>.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>STDIN</h1> The standard input shall be a text file. The results are unspecified if an end-of-file condition is detected immediately following an escaped &lt;newline&gt;.</div>
+<div class="section">
+<h1>INPUT FILES</h1> The file <b>/dev/tty</b> shall be used to read responses required by the <b>&#8722;p</b> option.</div>
+<div class="section">
+<h1>ENVIRONMENT VARIABLES</h1> The following environment variables shall affect the execution of <i>xargs</i>:<dl>
+<dt>
+<i>LANG</i></dt>
+<dd>
+Provide a default value for the internationalization variables that are unset or null. (See the Base Definitions volume of POSIX.1&#8208;2008, <i>Section 8.2</i>, <i>Internationalization Variables</i> for the precedence of internationalization variables used to determine the values of locale categories.)</dd>
+</dl>
+<dl>
+<dt>
+<i>LC_ALL</i></dt>
+<dd>
+If set to a non-empty string value, override the values of all the other internationalization variables.</dd>
+</dl>
+<dl>
+<dt>
+<i>LC_COLLATE</i></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+Determine the locale for the behavior of ranges, equivalence classes, and multi-character collating elements used in the extended regular expression defined for the <b>yesexpr</b> locale keyword in the <i>LC_MESSAGES</i> category.</dd>
+</dl>
+<dl>
+<dt>
+<i>LC_CTYPE</i></dt>
+<dd>
+Determine the locale for the interpretation of sequences of bytes of text data as characters (for example, single-byte as opposed to multi-byte characters in arguments and input files) and the behavior of character classes used in the extended regular expression defined for the <b>yesexpr</b> locale keyword in the <i>LC_MESSAGES</i> category.</dd>
+</dl>
+<dl>
+<dt>
+<i>LC_MESSAGES</i></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+Determine the locale used to process affirmative responses, and the locale used to affect the format and contents of diagnostic messages and prompts written to standard error.</dd>
+</dl>
+<dl>
+<dt>
+<i>NLSPATH</i></dt>
+<dd>
+Determine the location of message catalogs for the processing of <i>LC_MESSAGES</i>.</dd>
+</dl>
+<dl>
+<dt>
+<i>PATH</i></dt>
+<dd>
+Determine the location of <i>utility</i>, as described in the Base Definitions volume of POSIX.1&#8208;2008, <i>Chapter 8</i>, <i>Environment Variables</i>.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ASYNCHRONOUS EVENTS</h1> Default.</div>
+<div class="section">
+<h1>STDOUT</h1> Not used.</div>
+<div class="section">
+<h1>STDERR</h1> The standard error shall be used for diagnostic messages and the <b>&#8722;t</b> and <b>&#8722;p</b> options. If the <b>&#8722;t</b> option is specified, the <i>utility</i> and its constructed argument list shall be written to standard error, as it will be invoked, prior to invocation. If <b>&#8722;p</b> is specified, a prompt of the following format shall be written (in the POSIX locale):<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>&quot;?...&quot;</b><br/>
+</div>
+<div class="spacer">
+</div>
+at the end of the line of the output from <b>&#8722;t</b>.</div>
+<div class="section">
+<h1>OUTPUT FILES</h1> None.</div>
+<div class="section">
+<h1>EXTENDED DESCRIPTION</h1> None.</div>
+<div class="section">
+<h1>EXIT STATUS</h1> The following exit values shall be returned:<dl>
+<dt>
+&#8194;&#8194;&#8194;&#8194;0</dt>
+<dd>
+All invocations of <i>utility</i> returned exit status zero.</dd>
+</dl>
+<dl>
+<dt>
+1&#8208;125</dt>
+<dd>
+A command line meeting the specified requirements could not be assembled, one or more of the invocations of <i>utility</i> returned a non-zero exit status, or some other error occurred.</dd>
+</dl>
+<dl>
+<dt>
+&#8194;&#8194;126</dt>
+<dd>
+The utility specified by <i>utility</i> was found but could not be invoked.</dd>
+</dl>
+<dl>
+<dt>
+&#8194;&#8194;127</dt>
+<dd>
+The utility specified by <i>utility</i> could not be found.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>CONSEQUENCES OF ERRORS</h1> If a command line meeting the specified requirements cannot be assembled, the utility cannot be invoked, an invocation of the utility is terminated by a signal, or an invocation of the utility exits with exit status 255, the <i>xargs</i> utility shall write a diagnostic message and exit without processing any remaining input.<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> The 255 exit status allows a utility being used by <i>xargs</i> to tell <i>xargs</i> to terminate if it knows no further invocations using the current data stream will succeed. Thus, <i>utility</i> should explicitly <i>exit</i> with an appropriate value to avoid accidentally returning with 255.<div class="spacer">
+</div>
+Note that since input is parsed as lines, &lt;blank&gt; characters separate arguments, and &lt;backslash&gt;, &lt;apostrophe&gt;, and double-quote characters are used for quoting, if <i>xargs</i> is used to bundle the output of commands like <i>find</i> <i>dir</i> <b>&#8722;print</b> or <i>ls</i> into commands to be executed, unexpected results are likely if any filenames contain &lt;blank&gt;, &lt;newline&gt;, or quoting characters. This can be solved by using find to call a script that converts each file found into a quoted string that is then piped to <i>xargs</i>, but in most cases it is preferable just to have <i>find</i> do the argument aggregation itself by using <b>&#8722;exec</b> with a <b>'+'</b> terminator instead of <b>';'</b>. Note that the quoting rules used by <i>xargs</i> are not the same as in the shell. They were not made consistent here because existing applications depend on the current rules. An easy (but inefficient) method that can be used to transform input consisting of one argument per line into a quoted form that <i>xargs</i> interprets correctly is to precede each non-&lt;newline&gt; character with a &lt;backslash&gt;. More efficient alternatives are shown in Example 2 and Example 5 below.<div class="spacer">
+</div>
+On implementations with a large value for {ARG_MAX}, <i>xargs</i> may produce command lines longer than {LINE_MAX}. For invocation of utilities, this is not a problem. If <i>xargs</i> is being used to create a text file, users should explicitly set the maximum command line length with the <b>&#8722;s</b> option.<div class="spacer">
+</div>
+The <i>command</i>, <i>env</i>, <i>nice</i>, <i>nohup</i>, <i>time</i>, and <i>xargs</i> utilities have been specified to use exit code 127 if an error occurs so that applications can distinguish ``failure to find a utility'' from ``invoked utility exited with an error indication''. The value 127 was chosen because it is not commonly used for other meanings; most utilities use small values for ``normal error conditions'' and the values above 128 can be confused with termination due to receipt of a signal. The value 126 was chosen in a similar manner to indicate that the utility could be found, but not invoked. Some scripts produce meaningful error messages differentiating the 126 and 127 cases. The distinction between exit codes 126 and 127 is based on KornShell practice that uses 127 when all attempts to <i>exec</i> the utility fail with <b>[ENOENT]</b>, and uses 126 when any attempt to <i>exec</i> the utility fails for any other reason.</div>
+<div class="section">
+<h1>EXAMPLES</h1><dl>
+<dt>
+ 1.</dt>
+<dd>
+The following command combines the output of the parenthesized commands (minus the &lt;apostrophe&gt; characters) onto one line, which is then appended to the file log. It assumes that the expansion of <b>&quot;$0</b>$*&quot; does not include any &lt;apostrophe&gt; or &lt;newline&gt; characters.</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>(logname; date; printf &quot;'%s'\n$0 $*&quot;) | xargs &#8722;E &quot;&quot; &gt;&gt;log</b><br/>
+</div>
+</div>
+<dl>
+<dt>
+ 2.</dt>
+<dd>
+The following command invokes <i>diff</i> with successive pairs of arguments originally typed as command line arguments. It assumes there are no embedded &lt;newline&gt; characters in the elements of the original argument list.</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>printf &quot;%s\n$@&quot; | sed 's/[^[:alnum:]]/\\&amp;/g' |</b><br/>
+<b>    xargs &#8722;E &quot;&quot; &#8722;n 2 &#8722;x diff</b><br/>
+</div>
+</div>
+<dl>
+<dt>
+ 3.</dt>
+<dd>
+In the following commands, the user is asked which files in the current directory (excluding dotfiles) are to be archived. The files are archived into <b>arch</b>; <i>a</i>, one at a time or <i>b</i>, many at a time. The commands assume that no filenames contain &lt;blank&gt;, &lt;newline&gt;, &lt;backslash&gt;, &lt;apostrophe&gt;, or double-quote characters.</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>a. ls | xargs &#8722;E &quot;&quot; &#8722;p &#8722;L 1 ar &#8722;r arch</b><div class="spacer">
+</div>
+b. ls | xargs &#8722;E &quot;&quot; &#8722;p &#8722;L 1 | xargs &#8722;E &quot;&quot; ar &#8722;r arch<br/>
+</div>
+</div>
+<dl>
+<dt>
+ 4.</dt>
+<dd>
+The following command invokes <i>command1</i> one or more times with multiple arguments, stopping if an invocation of <i>command1</i> has a non-zero exit status.</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>xargs &#8722;E &quot;&quot; sh &#8722;c 'command1 &quot;$@&quot; || exit 255' sh &lt; xargs_input</b><br/>
+</div>
+</div>
+<dl>
+<dt>
+ 5.</dt>
+<dd>
+On XSI-conformant systems, the following command moves all files from directory <b>$1</b> to directory <b>$2</b>, and echoes each move command just before doing it. It assumes no filenames contain &lt;newline&gt; characters and that neither <b>$1</b> nor <b>$2</b> contains the sequence <b>&quot;{}&quot;</b>.</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>ls &#8722;A &quot;$1&quot; | sed &#8722;e 's/&quot;/&quot;\\&quot;&quot;/g' &#8722;e 's/.*/&quot;&amp;&quot;/' |</b><br/>
+<b>    xargs &#8722;E &quot;&quot; &#8722;I {} &#8722;t mv &quot;$1&quot;/{} &quot;$2&quot;/{}</b><br/>
+</div>
+</div>
+</div>
+<div class="section">
+<h1>RATIONALE</h1> The <i>xargs</i> utility was usually found only in System V-based systems; BSD systems included an <i>apply</i> utility that provided functionality similar to <i>xargs</i> <b>&#8722;n</b> <i>number</i>. The SVID lists <i>xargs</i> as a software development extension. This volume of POSIX.1&#8208;2008 does not share the view that it is used only for development, and therefore it is not optional.<div class="spacer">
+</div>
+The classic application of the <i>xargs</i> utility is in conjunction with the <i>find</i> utility to reduce the number of processes launched by a simplistic use of the <i>find</i> <b>&#8722;exec</b> combination. The <i>xargs</i> utility is also used to enforce an upper limit on memory required to launch a process. With this basis in mind, this volume of POSIX.1&#8208;2008 selected only the minimal features required.<div class="spacer">
+</div>
+Although the 255 exit status is mostly an accident of historical implementations, it allows a utility being used by <i>xargs</i> to tell <i>xargs</i> to terminate if it knows no further invocations using the current data stream shall succeed. Any non-zero exit status from a utility falls into the 1&#8208;125 range when <i>xargs</i> exits. There is no statement of how the various non-zero utility exit status codes are accumulated by <i>xargs</i>. The value could be the addition of all codes, their highest value, the last one received, or a single value such as 1. Since no algorithm is arguably better than the others, and since many of the standard utilities say little more (portably) than ``pass/fail'', no new algorithm was invented.<div class="spacer">
+</div>
+Several other <i>xargs</i> options were removed because simple alternatives already exist within this volume of POSIX.1&#8208;2008. For example, the <b>&#8722;i</b> <i>replstr</i> option can be just as efficiently performed using a shell <b>for</b> loop. Since <i>xargs</i> calls an <i>exec</i> function with each input line, the <b>&#8722;i</b> option does not usually exploit the grouping capabilities of <i>xargs</i>.<div class="spacer">
+</div>
+The requirement that <i>xargs</i> never produces command lines such that invocation of <i>utility</i> is within 2048 bytes of hitting the POSIX <i>exec</i> {ARG_MAX} limitations is intended to guarantee that the invoked utility has room to modify its environment variables and command line arguments and still be able to invoke another utility. Note that the minimum {ARG_MAX} allowed by the System Interfaces volume of POSIX.1&#8208;2008 is 4096 bytes and the minimum value allowed by this volume of POSIX.1&#8208;2008 is 2048 bytes; therefore, the 2048 bytes difference seems reasonable. Note, however, that <i>xargs</i> may never be able to invoke a utility if the environment passed in to <i>xargs</i> comes close to using {ARG_MAX} bytes.<div class="spacer">
+</div>
+The version of <i>xargs</i> required by this volume of POSIX.1&#8208;2008 is required to wait for the completion of the invoked command before invoking another command. This was done because historical scripts using <i>xargs</i> assumed sequential execution. Implementations wanting to provide parallel operation of the invoked utilities are encouraged to add an option enabling parallel invocation, but should still wait for termination of all of the children before <i>xargs</i> terminates normally.<div class="spacer">
+</div>
+The <b>&#8722;e</b> option was omitted from the ISO&#160;POSIX&#8208;2:1993 standard in the belief that the <i>eofstr</i> option-argument was recognized only when it was on a line by itself and before quote and escape processing were performed, and that the logical end-of-file processing was only enabled if a <b>&#8722;e</b> option was specified. In that case, a simple <i>sed</i> script could be used to duplicate the <b>&#8722;e</b> functionality. Further investigation revealed that:<dl>
+<dt>
+ *</dt>
+<dd>
+The logical end-of-file string was checked for after quote and escape processing, making a <i>sed</i> script that provided equivalent functionality much more difficult to write.</dd>
+</dl>
+<dl>
+<dt>
+ *</dt>
+<dd>
+The default was to perform logical end-of-file processing with an &lt;underscore&gt; as the logical end-of-file string.</dd>
+</dl>
+<div class="spacer">
+</div>
+To correct this misunderstanding, the <b>&#8722;E</b> <i>eofstr</i> option was adopted from the X/Open Portability Guide. Users should note that the description of the <b>&#8722;E</b> option matches historical documentation of the <b>&#8722;e</b> option (which was not adopted because it did not support the Utility Syntax Guidelines), by saying that if <i>eofstr</i> is the null string, logical end-of-file processing is disabled. Historical implementations of <i>xargs</i> actually did not disable logical end-of-file processing; they treated a null argument found in the input as a logical end-of-file string. (A null <i>string</i> argument could be generated using single or double-quotes (<b>''</b> or <b>&quot;&quot;</b>). Since this behavior was not documented historically, it is considered to be a bug.<div class="spacer">
+</div>
+The <b>&#8722;I</b>, <b>&#8722;L</b>, and <b>&#8722;n</b> options are mutually-exclusive. Some implementations use the last one specified if more than one is given on a command line; other implementations treat combinations of the options in different ways.</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> None.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i>Chapter 2</i>, <i>Shell Command Language</i>, <i><i>diff</i></i>, <i><i>echo</i></i>, <i><i>find</i></i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i>Chapter 8</i>, <i>Environment Variables</i>, <i>Section 12.2</i>, <i>Utility Syntax Guidelines</i><div class="spacer">
+</div>
+The System Interfaces volume of POSIX.1&#8208;2008, <i><i>exec</i></i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

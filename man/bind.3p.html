@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+BIND(3P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+BIND(3P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+BIND(3P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> bind &#8212; bind a name to a socket</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;sys/socket.h&gt;<div class="spacer">
+</div>
+int bind(int <i>socket</i>, const struct sockaddr *<i>address</i>,<br/>
+    socklen_t <i>address_len</i>);<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <i>bind</i>() function shall assign a local socket address <i>address</i> to a socket identified by descriptor <i>socket</i> that has no local socket address assigned. Sockets created with the  <i>socket</i>() function are initially unnamed; they are identified only by their address family.<div class="spacer">
+</div>
+The  <i>bind</i>() function takes the following arguments:<dl>
+<dt>
+<i>socket</i></dt>
+<dd>
+Specifies the file descriptor of the socket to be bound.</dd>
+</dl>
+<dl>
+<dt>
+<i>address</i></dt>
+<dd>
+Points to a <b>sockaddr</b> structure containing the address to be bound to the socket. The length and format of the address depend on the address family of the socket.</dd>
+</dl>
+<dl>
+<dt>
+<i>address_len</i></dt>
+<dd>
+Specifies the length of the <b>sockaddr</b> structure pointed to by the <i>address</i> argument.</dd>
+</dl>
+<div class="spacer">
+</div>
+The socket specified by <i>socket</i> may require the process to have appropriate privileges to use the  <i>bind</i>() function.<div class="spacer">
+</div>
+If the address family of the socket is AF_UNIX and the pathname in <i>address</i> names a symbolic link,  <i>bind</i>() shall fail and set <i>errno</i> to <b>[EADDRINUSE]</b>.<div class="spacer">
+</div>
+If the socket address cannot be assigned immediately and O_NONBLOCK is set for the file descriptor for the socket,  <i>bind</i>() shall fail and set <i>errno</i> to <b>[EINPROGRESS]</b>, but the assignment request shall not be aborted, and the assignment shall be completed asynchronously. Subsequent calls to  <i>bind</i>() for the same socket, before the assignment is completed, shall fail and set <i>errno</i> to <b>[EALREADY]</b>.<div class="spacer">
+</div>
+When the assignment has been performed asynchronously,  <i>pselect</i>(),  <i>select</i>(), and  <i>poll</i>() shall indicate that the file descriptor for the socket is ready for reading and writing.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> Upon successful completion,  <i>bind</i>() shall return 0; otherwise, &#8722;1 shall be returned and <i>errno</i> set to indicate the error.</div>
+<div class="section">
+<h1>ERRORS</h1> The  <i>bind</i>() function shall fail if:<dl>
+<dt>
+<b>EADDRINUSE</b></dt>
+<dd>
+The specified address is already in use.</dd>
+</dl>
+<dl>
+<dt>
+<b>EADDRNOTAVAIL</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The specified address is not available from the local machine.</dd>
+</dl>
+<dl>
+<dt>
+<b>EAFNOSUPPORT</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The specified address is not a valid address for the address family of the specified socket.</dd>
+</dl>
+<dl>
+<dt>
+<b>EALREADY</b></dt>
+<dd>
+An assignment request is already in progress for the specified socket.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+The <i>socket</i> argument is not a valid file descriptor.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINPROGRESS</b></dt>
+<dd>
+O_NONBLOCK is set for the file descriptor for the socket and the assignment cannot be immediately performed; the assignment shall be performed asynchronously.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+The socket is already bound to an address, and the protocol does not support binding to a new address; or the socket has been shut down.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOBUFS</b></dt>
+<dd>
+Insufficient resources were available to complete the call.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTSOCK</b></dt>
+<dd>
+The <i>socket</i> argument does not refer to a socket.</dd>
+</dl>
+<dl>
+<dt>
+<b>EOPNOTSUPP</b></dt>
+<dd>
+The socket type of the specified socket does not support binding to an address.</dd>
+</dl>
+<div class="spacer">
+</div>
+If the address family of the socket is AF_UNIX, then  <i>bind</i>() shall fail if:<dl>
+<dt>
+<b>EACCES</b></dt>
+<dd>
+A component of the path prefix denies search permission, or the requested name requires writing in a directory with a mode that denies write permission.</dd>
+</dl>
+<dl>
+<dt>
+<b>EDESTADDRREQ</b> or <b>EISDIR</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The <i>address</i> argument is a null pointer.</dd>
+</dl>
+<dl>
+<dt>
+<b>EIO</b></dt>
+<dd>
+An I/O error occurred.</dd>
+</dl>
+<dl>
+<dt>
+<b>ELOOP</b></dt>
+<dd>
+A loop exists in symbolic links encountered during resolution of the pathname in <i>address</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENAMETOOLONG</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The length of a component of a pathname is longer than {NAME_MAX}.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOENT</b></dt>
+<dd>
+A component of the path prefix of the pathname in <i>address</i> does not name an existing file or the pathname is an empty string.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOENT</b> or <b>ENOTDIR</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The pathname in <i>address</i> contains at least one non-&lt;slash&gt; character and ends with one or more trailing &lt;slash&gt; characters. If the pathname names an existing file, an <b>[ENOENT]</b> error shall not occur.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+A component of the path prefix of the pathname in <i>address</i> names an existing file that is neither a directory nor a symbolic link to a directory, or the pathname in <i>address</i> contains at least one non-&lt;slash&gt; character and ends with one or more trailing &lt;slash&gt; characters and the last pathname component names an existing file that is neither a directory nor a symbolic link to a directory.</dd>
+</dl>
+<dl>
+<dt>
+<b>EROFS</b></dt>
+<dd>
+The name would reside on a read-only file system.</dd>
+</dl>
+<div class="spacer">
+</div>
+The  <i>bind</i>() function may fail if:<dl>
+<dt>
+<b>EACCES</b></dt>
+<dd>
+The specified address is protected and the current user does not have permission to bind to it.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+The <i>address_len</i> argument is not a valid length for the address family.</dd>
+</dl>
+<dl>
+<dt>
+<b>EISCONN</b></dt>
+<dd>
+The socket is already connected.</dd>
+</dl>
+<dl>
+<dt>
+<b>ELOOP</b></dt>
+<dd>
+More than {SYMLOOP_MAX} symbolic links were encountered during resolution of the pathname in <i>address</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENAMETOOLONG</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The length of a pathname exceeds {PATH_MAX}, or pathname resolution of a symbolic link produced an intermediate result with a length that exceeds {PATH_MAX}.</dd>
+</dl>
+<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>EXAMPLES</h1> The following code segment shows how to create a socket and bind it to a name in the AF_UNIX domain.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>#define MY_SOCK_PATH &quot;/somepath&quot;</b><div class="spacer">
+</div>
+int sfd;<br/>
+struct sockaddr_un my_addr;<div class="spacer">
+</div>
+sfd = socket(AF_UNIX, SOCK_STREAM, 0);<br/>
+if (sfd == &#8722;1)<br/>
+    /* Handle error */;<div class="spacer">
+</div>
+memset(&amp;my_addr, '\0', sizeof(struct sockaddr_un));<br/>
+                     /* Clear structure */<br/>
+my_addr.sun_family = AF_UNIX;<br/>
+strncpy(my_addr.sun_path, MY_SOCK_PATH, sizeof(my_addr.sun_path) &#8722;1);<div class="spacer">
+</div>
+if (bind(sfd, (struct sockaddr *) &amp;my_addr,<br/>
+    sizeof(struct sockaddr_un)) == &#8722;1)<br/>
+    /* Handle error */;<br/>
+</div>
+</div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> An application program can retrieve the assigned socket name with the  <i>getsockname</i>() function.</div>
+<div class="section">
+<h1>RATIONALE</h1> None.</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> None.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i><i>connect</i>()</i>, <i><i>getsockname</i>()</i>, <i><i>listen</i>()</i>, <i><i>socket</i>()</i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i><b>&lt;sys_socket.h&gt;</b></i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

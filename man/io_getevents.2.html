@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+IO_GETEVENTS(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+IO_GETEVENTS(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+IO_GETEVENTS(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> io_getevents - read asynchronous I/O events from the completion queue</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+<b>#include &lt;linux/aio_abi.h&gt;</b>         /* Defines needed types */<br/>
+<b>#include &lt;linux/time.h&gt;</b>            /* Defines 'struct timespec' */<div class="spacer">
+</div>
+<br/>
+<b>int io_getevents(aio_context_t </b><i>ctx_id</i><b>, long </b><i>min_nr</i><b>, long </b><i>nr</i><b>,</b><br/>
+<b>                 struct io_event *</b><i>events</i><b>, struct timespec *</b><i>timeout</i><b>);</b><br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<i>Note</i>: There is no glibc wrapper for this system call; see NOTES.</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The <b>io_getevents</b>() system call attempts to read at least  <i>min_nr</i> events and up to  <i>nr</i> events from the completion queue of the AIO context specified by  <i>ctx_id</i>.<div style="height: 1.00em;">
+&#160;</div>
+The <i>timeout</i> argument specifies the amount of time to wait for events, and is specified as a relative timeout in a structure of the following form:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<br/>
+struct timespec {<br/>
+    time_t tv_sec;      /* seconds */<br/>
+    long   tv_nsec;     /* nanoseconds [0 .. 999999999] */<br/>
+};<br/>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+The specified time will be rounded up to the system clock granularity and is guaranteed not to expire	early.<div style="height: 1.00em;">
+&#160;</div>
+Specifying <i>timeout</i> as NULL means block indefinitely until at least <i>min_nr</i> events have been obtained.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, <b>io_getevents</b>() returns the number of events read. This may be 0, or a value less than <i>min_nr</i>, if the <i>timeout</i> expired. It may also be a nonzero value less than <i>min_nr</i>, if the call was interrupted by a signal handler.<div style="height: 1.00em;">
+&#160;</div>
+For the failure return, see NOTES.</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>EFAULT</b></dt>
+<dd>
+Either <i>events</i> or <i>timeout</i> is an invalid pointer.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>ctx_id</i> is invalid.  <i>min_nr</i> is out of range or <i>nr</i> is out of range.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINTR</b></dt>
+<dd>
+Interrupted by a signal handler; see <b>signal</b>(7).</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOSYS</b></dt>
+<dd>
+<b>io_getevents</b>() is not implemented on this architecture.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>VERSIONS</h1> The asynchronous I/O system calls first appeared in Linux 2.5.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> <b>io_getevents</b>() is Linux-specific and should not be used in programs that are intended to be portable.</div>
+<div class="section">
+<h1>NOTES</h1> Glibc does not provide a wrapper function for this system call. You could invoke it using <b>syscall</b>(2). But instead, you probably want to use the <b>io_getevents</b>() wrapper function provided by <i>libaio</i>.<div style="height: 1.00em;">
+&#160;</div>
+Note that the <i>libaio</i> wrapper function uses a different type (<i>io_context_t</i>) for the <i>ctx_id</i> argument. Note also that the <i>libaio</i> wrapper does not follow the usual C library conventions for indicating errors: on error it returns a negated error number (the negative of one of the values listed in ERRORS). If the system call is invoked via <b>syscall</b>(2), then the return value follows the usual conventions for indicating an error: -1, with <i>errno</i> set to a (positive) value that indicates the error.</div>
+<div class="section">
+<h1>BUGS</h1> An invalid <i>ctx_id</i> may cause a segmentation fault instead of generating the error <b>EINVAL</b>.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>io_cancel</b>(2), <b>io_destroy</b>(2), <b>io_setup</b>(2), <b>io_submit</b>(2), <b>aio</b>(7), <b>time</b>(7)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-08-08</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

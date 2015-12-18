@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+GROPDF(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+GROPDF(1)</td>
+<td class="head-vol">
+General Commands Manual</td>
+<td class="head-rtitle">
+GROPDF(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> gropdf - PDF driver for groff</div>
+<div class="section">
+<h1>SYNOPSIS</h1> [<span class="opt"><b>-delvs</b>]</span> [<span class="opt"><b>-F</b> <i>dir</i>]</span><div style="height: 1.00em;">
+&#160;</div>
+[<span class="opt"><b>-p</b> <i>papersize</i>]</span><div style="height: 1.00em;">
+&#160;</div>
+[<span class="opt"><b>-y</b> <i>foundry</i>]</span> [<span class="opt"><b>-u</b> <i>[cmapfile]</i>]</span> [<i>files</i> <i>...</i>]<div class="spacer">
+</div>
+It is possible to have whitespace between a command line option and its parameter.</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>gropdf</b> translates the output of GNU <b>troff</b> to PDF. Normally <b>gropdf</b> should be invoked by using the groff command with a <b>-Tpdf</b> option. If no files are given, <b>gropdf</b> reads the standard input. A filename of <b>-</b> also causes <b>gropdf</b> to read the standard input. PDF output is written to the standard output. When <b>gropdf</b> is run by <b>groff</b> options can be passed to <b>gropdf</b> using <b>groff</b>'s <b>-P</b> option.<div class="spacer">
+</div>
+See section <b>FONT INSTALLATION</b> below for a guide how to install fonts for <b>gropdf</b>.</div>
+<div class="section">
+<h1>OPTIONS</h1><dl>
+<dt>
+<b>-d</b></dt>
+<dd>
+Include debug information as comments within the PDF. Also produces an uncompressed PDF.</dd>
+</dl>
+<dl>
+<dt>
+<b>-e</b></dt>
+<dd>
+Force all fonts to be embedded in the PDF.</dd>
+</dl>
+<dl>
+<dt>
+<b>-F</b><i>dir</i></dt>
+<dd>
+Prepend directory <i>dir</i><b>/dev</b><i>name</i> to the search path for font, and device description files; <i>name</i> is the name of the device, usually <b>pdf</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>-l</b></dt>
+<dd>
+Print the document in landscape format.</dd>
+</dl>
+<dl>
+<dt>
+<b>-p</b><i>paper-size</i></dt>
+<dd>
+Set physical dimension of output medium. This overrides the <b>papersize</b>, <b>paperlength</b>, and <b>paperwidth</b> commands in the <b>DESC</b> file; it accepts the same arguments as the <b>papersize</b> command. See <b>groff_font (5)</b> for details.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b></dt>
+<dd>
+Print the version number.</dd>
+</dl>
+<dl>
+<dt>
+<b>-y</b><i>foundry</i></dt>
+<dd>
+Set the foundry to use for selecting fonts of the same name.</dd>
+</dl>
+<dl>
+<dt>
+<b>-e</b></dt>
+<dd>
+Forces <b>gropdf</b> to embed ALL fonts (even the 14 base PDF fonts).</dd>
+</dl>
+<dl>
+<dt>
+<b>-s</b></dt>
+<dd>
+Append a comment line to end of PDF showing statistics, i.e. number of pages in document. Ghostscript's <b>ps2pdf</b> complains about this line if it is included, but works anyway.</dd>
+</dl>
+<dl>
+<dt>
+<b>-u</b></dt>
+<dd>
+<b>-u</b><i>cmapfilename</i> <b>Gropdf</b> normally includes a ToUnicode CMap with any font created using <b>text.enc</b> as the encoding file, this makes it easier to search for words which contain ligatures. You can include your own CMap by specifying a <i>cmapfilename</i> or have no CMap at all by omitting the argument.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>USAGE</h1> The input to <b>gropdf</b> must be in the format output by <b>troff</b>(1). This is described in <b>groff_out</b>(5).<div class="spacer">
+</div>
+In addition, the device and font description files for the device used must meet certain requirements: The resolution must be an integer multiple of&#160;72 times the <b>sizescale</b>. The <b>pdf</b> device uses a resolution of 72000 and a sizescale of 1000.<div class="spacer">
+</div>
+The device description file must contain a valid paper size; see <b>groff_font</b>(5) for more information. <b>gropdf</b> uses the same Type&#160;1 Adobe postscript fonts as the <b>grops</b> device driver. Although the PDF Standard allows the use of other font types (like TrueType) this implementation only accepts the Type&#160;1 postscript font. Fewer Type&#160;1 fonts are supported natively in PDF documents than the standard 35 fonts supported by <b>grops</b> and all postscript printers, but all the fonts are available since any which aren't supported natively are automatically embedded in the PDF.<div class="spacer">
+</div>
+<b>gropdf</b> supports the concept of foundries, that is different versions of basically the same font. During install a <b>Foundry</b> file controls where fonts are found and builds <b>groff</b> fonts from the files it discovers on your system.<div class="spacer">
+</div>
+Each font description file must contain a command<dl>
+<dt>
+</dt>
+<dd>
+<b>internalname&#160;</b><i>psname</i></dd>
+</dl>
+<div class="spacer">
+</div>
+which says that the PostScript name of the font is <i>psname</i>. Lines starting with <b>#</b> and blank lines are ignored. The code for each character given in the font file must correspond to the code in the default encoding for the font. This code can be used with the <b>\N</b> escape sequence in <b>troff</b> to select the character, even if the character does not have a groff name. Every character in the font file must exist in the PostScript font, and the widths given in the font file must match the widths used in the PostScript font.<div class="spacer">
+</div>
+Note that <b>gropdf</b> is currently only able to display the first 256 glyphs in any font. This restriction will be lifted in a later version.<div class="spacer">
+</div>
+<b>gropdf</b> can automatically include the downloadable fonts necessary to print the document. Fonts may be in PFA or PFB format.<div class="spacer">
+</div>
+Any downloadable fonts which should, when required, be included by <b>gropdf</b> must be listed in the file <b>/usr/share/groff/1.22.3/font/devpdf/download</b>; this should consist of lines of the form<dl>
+<dt>
+</dt>
+<dd>
+<i>foundry font filename</i></dd>
+</dl>
+<div class="spacer">
+</div>
+where <i>foundry</i> is the foundry name or blank for the default foundry. <i>font</i> is the PostScript name of the font, and <i>filename</i> is the name of the file containing the font; lines beginning with <b>#</b> and blank lines are ignored; fields must be separated by tabs (spaces are <b>not</b> allowed); <i>filename</i> is searched for using the same mechanism that is used for groff font metric files. The <b>download</b> file itself is also searched for using this mechanism; currently, only the first found file in the font path is used. Foundry names are usually a single character (such as &#8216;U&#8217; for the URW Foundry) or blank for the default foundry. This default uses the same fonts as <b>ghostscript</b> uses when it embeds fonts in a PDF file.<div class="spacer">
+</div>
+In the default setup there are styles called <b>R</b>, <b>I</b>, <b>B</b>, and <b>BI</b> mounted at font positions 1 to&#160;4. The fonts are grouped into families <b>A</b>, <b>BM</b>, <b>C</b>, <b>H</b>, <b>HN</b>, <b>N</b>, <b>P</b>, and&#160;<b>T</b> having members in each of these styles:<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+<b>AR</b></dt>
+<dd>
+AvantGarde-Book <b>AI</b> AvantGarde-BookOblique <b>AB</b> AvantGarde-Demi <b>ABI</b> AvantGarde-DemiOblique <b>BMR</b> Bookman-Light <b>BMI</b> Bookman-LightItalic <b>BMB</b> Bookman-Demi <b>BMBI</b> Bookman-DemiItalic <b>CR</b> Courier <b>CI</b> Courier-Oblique <b>CB</b> Courier-Bold <b>CBI</b> Courier-BoldOblique <b>HR</b> Helvetica <b>HI</b> Helvetica-Oblique <b>HB</b> Helvetica-Bold <b>HBI</b> Helvetica-BoldOblique <b>HNR</b> Helvetica-Narrow <b>HNI</b> Helvetica-Narrow-Oblique <b>HNB</b> Helvetica-Narrow-Bold <b>HNBI</b> Helvetica-Narrow-BoldOblique <b>NR</b> NewCenturySchlbk-Roman <b>NI</b> NewCenturySchlbk-Italic <b>NB</b> NewCenturySchlbk-Bold <b>NBI</b> NewCenturySchlbk-BoldItalic <b>PR</b> Palatino-Roman <b>PI</b> Palatino-Italic <b>PB</b> Palatino-Bold <b>PBI</b> Palatino-BoldItalic <b>TR</b> Times-Roman <b>TI</b> Times-Italic <b>TB</b> Times-Bold <b>TBI</b> Times-BoldItalic</dd>
+</dl>
+</div>
+<div class="spacer">
+</div>
+There is also the following font which is not a member of a family:<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+<b>ZCMI</b></dt>
+<dd>
+ZapfChancery-MediumItalic</dd>
+</dl>
+</div>
+<div class="spacer">
+</div>
+There are also some special fonts called <b>S</b> for the PS Symbol font. The lower case greek characters are automatically slanted (to match the SymbolSlanted font (SS) available to postscript). Zapf Dingbats is available as <b>ZD</b>, the &quot;hand pointing left&quot; glyph (\[lh]) is available since it has been defined using the \X'pdf: xrev' extension which reverses the direction of letters within words.<div class="spacer">
+</div>
+The default color for <b>\m</b> and <b>\M</b> is black; for colors defined in the &#8216;rgb&#8217; color space <b>setrgbcolor</b> is used, for &#8216;cmy&#8217; and &#8216;cmyk&#8217; <b>setcmykcolor</b>, and for &#8216;gray&#8217; <b>setgray</b>. Note that <b>setcmykcolor</b> is a PostScript LanguageLevel&#160;2 command and thus not available on some older printers.<div class="spacer">
+</div>
+<b>gropdf</b> understands some of the X&#160;commands produced using the <b>\X</b> escape sequences supported by <b>grops.</b> Specifically, the following is supported.<dl>
+<dt>
+<b>\X'ps: invis'</b></dt>
+<dd>
+Suppress output.</dd>
+</dl>
+<dl>
+<dt>
+<b>\X'ps: endinvis'</b></dt>
+<dd>
+Stop suppressing output.</dd>
+</dl>
+<dl>
+<dt>
+<b>\X'ps: exec gsave currentpoint 2 copy translate <i>n</i> rotate neg exch neg exch translate'</b></dt>
+<dd>
+where <i>n</i> is the angle of rotation. This is to support the <i>align</i> command in <b>gpic</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>\X'ps: exec grestore'</b></dt>
+<dd>
+Again used by <b>gpic</b> to restore after rotation.</dd>
+</dl>
+<dl>
+<dt>
+<b>\X'ps: exec </b><i>n </i><b>setlinejoin'</b></dt>
+<dd>
+where <i>n</i> can be one of the following values.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+0 = Miter join<div style="height: 0.00em;">
+&#160;</div>
+1 = Round join<div style="height: 0.00em;">
+&#160;</div>
+2 = Bevel join</dd>
+</dl>
+<dl>
+<dt>
+<b>\X'ps: exec </b><i>n </i><b>setlinecap'</b></dt>
+<dd>
+where <i>n</i> can be one of the following values.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+0 = Butt cap<div style="height: 0.00em;">
+&#160;</div>
+1 = Round cap, and<div style="height: 0.00em;">
+&#160;</div>
+2 = Projecting square cap</dd>
+</dl>
+<dl>
+<dt>
+<b>\X'ps: ... pdfmark'</b></dt>
+<dd>
+All the <i>pdfmark</i> macros installed by using <i>-m pdfmark</i> or <i>-m mspdf</i> (see documentation in &#8216;pdfmark.pdf&#8217;). A subset of these macros are installed automatically when you use <b>-Tpdf</b> so you should not need to use &#8216;-m pdfmark&#8217; for using most of the PDF functionality.</dd>
+</dl>
+<div class="spacer">
+</div>
+All other <b>ps:</b> tags are silently ignored.<div class="spacer">
+</div>
+One <b>\X</b> special used by the DVI driver is also recognised:<dl>
+<dt>
+<b>\X'papersize=</b><i>paper-size</i><b>'</b></dt>
+<dd>
+where the <i>paper-size</i> parameter is the same as the <b>papersize</b> command. See <b>groff_font</b>(5) for details. This means that you can alter the page size at will within the PDF file being created by <b>gropdf</b>. If you do want to change the paper size, it must be done before you start creating the page.</dd>
+</dl>
+<div class="spacer">
+</div>
+In addition, <b>gropdf</b> supports its own suite of <b>pdf:</b> tags. The following tags are supported:<dl>
+<dt>
+<b>\X'pdf: pdfpic </b><i>file alignment width height line-length</i><b>'</b></dt>
+<dd>
+Place an image of the specified <i>width</i> containing the PDF drawing from file <i>file</i> of desired <i>width</i> and <i>height</i> (if <i>height</i> is missing or zero then it is scaled proportionally). If <i>alignment</i> is <b>-L</b> the drawing is left aligned. If it is <b>-C</b> or <b>-R</b> a <i>linelength</i> greater than the width of the drawing is required as well. If <i>width</i> is specified as zero then the width is scaled in proportion to the height.</dd>
+</dl>
+<dl>
+<dt>
+<b>\X'pdf: xrev'</b></dt>
+<dd>
+This toggles a flag which reverses the direction of printing <i>letter by letter</i>, i.e., each separate letter is reversed, not the entire word. This is useful for reversing the direction of glyphs in the Dingbats font. To return to normal printing repeat the command again.</dd>
+</dl>
+<dl>
+<dt>
+<b>\X'pdf: markstart </b><i>/ANN definition</i><b>'</b></dt>
+<dd>
+The macros which support PDF Bookmarks use this call internally to start the definition of bookmark hotspot (user will have called &#8216;.pdfhref&#160;L&#8217; with the text which will become the &#8216;hot spot&#8217; region). Normally this is never used except from within the pdfmark macros.</dd>
+</dl>
+<dl>
+<dt>
+<b>\X'pdf: markend'</b></dt>
+<dd>
+The macros which support PDF Bookmarks use this call internally to stop the definition of bookmark hotspot (user will have called &#8216;.pdfhref&#160;L&#8217; with the text which will become the &#8216;hot spot&#8217; region). Normally this is never used except from within the pdfmark macros.</dd>
+</dl>
+<dl>
+<dt>
+<b>\X'pdf: marksuspend'</b></dt>
+<dd>
+<b>\X'pdf: markrestart'</b> If you are using page traps to produce headings, footings, etc., you need to use these in case a &#8216;hot spot&#8217; crosses a page boundary, otherwise any text output by the heading or footing macro will be marked as part of the &#8216;hot spot&#8217;. To stop this happening just place &#8216;.pdfmarksuspend&#8217; and &#8216;.pdfmarkrestart&#8217; at the start and end of the page trap macro, respectively. (These are just convenience macros which emit the \X code. These macros must only be used within page traps.)</dd>
+</dl>
+<div class="subsection">
+<h2>Importing graphics</h2> <b>gropdf</b> only supports importing other PDF files as graphics. But that PDF file may contain any of the graphic formats supported by the PDF standard (such as JPEG, PNG, GIF, etc.). So any application which outputs PDF can be used as an embedded file in <b>gropdf</b>. The PDF file you wish to insert must be a single page and the drawing must just fit inside the media size of the PDF file. So, in <b>inkscape</b>(1) or <b>gimp</b>(1) (for example) make sure the canvas size just fits the image.<div class="spacer">
+</div>
+The PDF parser used in <b>gropdf</b> has not been rigorously tested with all possible applications which produce PDFs. If you find a single page PDF which fails to import properly, it is worth running it through the <b>pdftk</b>(1) program by issuing the command:<div style="margin-left: 5.00ex;">
+<div class="spacer">
+</div>
+<b>pdftk</b> <i>oldfile.pdf</i> <b>output</b> <i>newfile.pdf</i></div>
+<div class="spacer">
+</div>
+You may find that <i>newfile.pdf</i> will now load successfully.</div>
+<div class="subsection">
+<h2>TrueType and other font formats</h2> <b>gropdf</b> does not support any other fonts except Adobe Type 1 (PFA or PFB).</div>
+</div>
+<div class="section">
+<h1>FONT INSTALLATION</h1> This section gives a summary of the above explanations; it can serve as a step-by-step font installation guide for <b>gropdf</b>.<dl>
+<dt>
+<div class="spacer">
+</div>
+</dt>
+<dd>
+&#8226;&#160;&#160;Convert your font to something groff understands. This is either a PostScript Type&#160;1 font in either PFA or PFB, together with an AFM file.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+The very first line in a PFA/PFB file contains this:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<b>%!PS-AdobeFont-1.0:</b></dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+A PFB file has this also in the first line, but the string is preceded with some binary bytes.</dd>
+</dl>
+<dl>
+<dt>
+<div class="spacer">
+</div>
+</dt>
+<dd>
+&#8226;&#160;&#160;Convert the AFM file to a groff font description file with the <b>afmtodit</b>(1) program. An example call is</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+afmtodit Foo-Bar-Bold.afm map/textmap FBB</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+which converts the metric file &#8216;Foo-Bar-Bold.afm&#8217; to the groff font &#8216;FBB&#8217;. If you have a font family which comes with normal, bold, italic, and bold italic faces, it is recommended to use the letters <b>R</b>, <b>B</b>, <b>I</b>, and <b>BI</b>, respectively, as postfixes in the groff font names to make groff's &#8216;.fam&#8217; request work. An example is groff's built-in Times-Roman font: The font family name is <b>T</b>, and the groff font names are <b>TR</b>, <b>TB</b>, <b>TI</b>, and <b>TBI</b>.</dd>
+</dl>
+<dl>
+<dt>
+<div class="spacer">
+</div>
+</dt>
+<dd>
+&#8226;&#160;&#160;Install both the groff font description files and the fonts in a &#8216;devpdf&#8217; subdirectory of the font path which groff finds. See the <b>ENVIRONMENT</b> section in the <b>troff</b>(1) man page which lists the actual value of the font path. Note that groff doesn't use the AFM files (but it is a good idea to store them anyway).</dd>
+</dl>
+<dl>
+<dt>
+<div class="spacer">
+</div>
+</dt>
+<dd>
+&#8226;&#160;&#160;Register all fonts which must be downloaded to the printer in the &#8216;devpdf/download&#8217; file. Only the first occurrence of this file in the font path is read. This means that you should copy the default &#8216;download&#8217; file to the first directory in your font path and add your fonts there. To continue the above example we assume that the PS font name for Foo-Bar-Bold.pfa is &#8216;XY-Foo-Bar-Bold&#8217; (the PS font name is stored in the <b>internalname</b> field in the &#8216;FBB&#8217; file) and belongs to foundry &#8216;Fcq] thus the following line should be added to &#8216;download&#8217;:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<b>F XY-Foo-Bar-Bold Foo-Bar-Bold.pfa</b></dd>
+</dl>
+<div class="spacer">
+</div>
+Use a tab character to separate the fields, and the &#8216;foundry&#8217; field should be null for the default foundry.</div>
+</div>
+<div class="section">
+<h1>ENVIRONMENT</h1><dl>
+<dt>
+<b>GROFF_FONT_PATH</b></dt>
+<dd>
+A list of directories in which to search for the <b>dev</b><i>name</i> directory in addition to the default ones. If, in the &#8216;download&#8217; file, the font file has been specified with a full path, no directories are searched. See <b>troff</b>(1) and <b>groff_font</b>(5) for more details.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>FILES</h1><dl>
+<dt>
+<b>/usr/share/groff/1.22.3/font/devpdf/DESC</b></dt>
+<dd>
+Device description file.</dd>
+</dl>
+<dl>
+<dt>
+<b>/usr/share/groff/1.22.3/font/devpdf/</b><i>F</i></dt>
+<dd>
+Font description file for font&#160;<i>F</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>/usr/share/groff/1.22.3/font/devpdf/</b><i>U-F</i></dt>
+<dd>
+Font description file for font&#160;<i>F</i> (using foundry&#160;<i>U</i> rather than the default foundry).</dd>
+</dl>
+<dl>
+<dt>
+<b>/usr/share/groff/1.22.3/font/devpdf/download</b></dt>
+<dd>
+List of downloadable fonts.</dd>
+</dl>
+<dl>
+<dt>
+<b>/usr/share/groff/1.22.3/font/devpdf/Foundry</b></dt>
+<dd>
+A Perl script used during install to locate suitable fonts.</dd>
+</dl>
+<dl>
+<dt>
+<b>/usr/share/groff/1.22.3/font/devpdf/enc/text.enc</b></dt>
+<dd>
+Encoding used for text fonts.</dd>
+</dl>
+<dl>
+<dt>
+<b>/usr/share/groff/1.22.3/tmac/pdf.tmac</b></dt>
+<dd>
+Macros for use with <b>gropdf</b>; automatically loaded by <b>troffrc</b>.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>afmtodit</b>(1), <b>groff</b>(1), <b>grops</b>(1), <b>troff</b>(1), <b>grops</b>(1), <b>pfbtops</b>(1), <b>groff_out</b>(5), <b>groff_font</b>(5), <b>groff_char</b>(7), <b>groff_tmac</b>(5)</div>
+<div class="section">
+<h1>LICENSE</h1> Copyright &#169; 2011-2014 Free Software Foundation, Inc.<div style="height: 1.00em;">
+&#160;</div>
+Permission is granted to make and distribute verbatim copies of this manual provided the copyright notice and this permission notice are preserved on all copies.<div style="height: 1.00em;">
+&#160;</div>
+Permission is granted to copy and distribute modified versions of this manual under the conditions for verbatim copying, provided that the entire resulting derived work is distributed under the terms of a permission notice identical to this one.<div style="height: 1.00em;">
+&#160;</div>
+Permission is granted to copy and distribute translations of this manual into another language, under the above conditions for modified versions, except that this permission notice may be included in translations approved by the Free Software Foundation instead of in the original English.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+4 November 2014</td>
+<td class="foot-os">
+Groff Version 1.22.3</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

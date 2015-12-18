@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+GET_ROBUST_LIST(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+GET_ROBUST_LIST(2)</td>
+<td class="head-vol">
+Linux System Calls</td>
+<td class="head-rtitle">
+GET_ROBUST_LIST(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> get_robust_list, set_robust_list - get/set list of robust futexes</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;linux/futex.h&gt;</b> <b>#include &lt;sys/types.h&gt;</b> <b>#include &lt;syscall.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>long get_robust_list(int </b><i>pid</i><b>, struct robust_list_head **</b><i>head_ptr</i><b>,</b><br/>
+<b>                     size_t *</b><i>len_ptr</i><b>);</b><br/>
+<b>long set_robust_list(struct robust_list_head *</b><i>head</i><b>, size_t </b><i>len</i><b>);</b><br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<i>Note</i>: There are no glibc wrappers for these system calls; see NOTES.</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The robust futex implementation needs to maintain per-thread lists of robust futexes which are unlocked when the thread exits. These lists are managed in user space; the kernel is notified about only the location of the head of the list.<div style="height: 1.00em;">
+&#160;</div>
+The <b>get_robust_list</b>() system call returns the head of the robust futex list of the thread whose thread ID is specified in <i>pid</i>. If <i>pid</i> is 0, the head of the list for the calling thread is returned. The list head is stored in the location pointed to by <i>head_ptr</i>. The size of the object pointed to by <i>**head_ptr</i> is stored in <i>len_ptr</i>.<div style="height: 1.00em;">
+&#160;</div>
+The <b>set_robust_list</b>() system call requests the kernel to record the head of the list of robust futexes owned by the calling thread. The <i>head</i> argument is the list head to record. The <i>len</i> argument should be <i>sizeof(*head)</i>.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> The <b>set_robust_list</b>() and <b>get_robust_list</b>() system calls return zero when the operation is successful, an error code otherwise.</div>
+<div class="section">
+<h1>ERRORS</h1> The <b>set_robust_list</b>() system call can fail with the following error:<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>len</i> does not match the size of structure <b>struct robust_list_head</b> expected by kernel.</dd>
+</dl>
+<div class="spacer">
+</div>
+The <b>get_robust_list</b>() system call can fail with the following errors:<dl>
+<dt>
+<b>EPERM</b></dt>
+<dd>
+The calling process does not have permission to see the robust futex list of the thread with the thread ID <i>pid</i>, and does not have the <b>CAP_SYS_PTRACE</b> capability.</dd>
+</dl>
+<dl>
+<dt>
+<b>ESRCH</b></dt>
+<dd>
+No thread with the thread ID <i>pid</i> could be found.</dd>
+</dl>
+<dl>
+<dt>
+<b>EFAULT</b></dt>
+<dd>
+The head of the robust futex list can't be stored at the location <i>head</i>.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>VERSIONS</h1> These system calls were added in Linux 2.6.17.</div>
+<div class="section">
+<h1>NOTES</h1> These system calls are not needed by normal applications. No support for them is provided in glibc. In the unlikely event that you want to call them directly, use <b>syscall</b>(2).<div style="height: 1.00em;">
+&#160;</div>
+A thread can have only one robust futex list; therefore applications that wish to use this functionality should use the robust mutexes provided by glibc.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>futex</b>(2)<div style="height: 1.00em;">
+&#160;</div>
+<i>Documentation/robust-futexes.txt</i> and <i>Documentation/robust-futex-ABI.txt</i> in the Linux kernel source tree</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-01-22</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

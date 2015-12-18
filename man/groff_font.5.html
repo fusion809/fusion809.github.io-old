@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+GROFF_FONT(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+GROFF_FONT(5)</td>
+<td class="head-vol">
+File Formats Manual</td>
+<td class="head-rtitle">
+GROFF_FONT(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> groff_font - format of groff device and font description files</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The groff font format is roughly a superset of the ditroff font format. The font files for device <i>name</i> are stored in a directory <b>dev</b><i>name</i>. There are two types of file: a device description file called <b>DESC</b> and for each font&#160;<i>F</i> a font file called&#160;<i>F</i>. These are text files; unlike the ditroff font format, there is no associated binary format.<div class="subsection">
+<h2>DESC file format</h2> The DESC file can contain the following types of line as shown below. Later entries in the file override previous values.<div class="spacer">
+</div>
+Empty lines are ignored.<dl>
+<dt>
+<b>charset</b></dt>
+<dd>
+This line and everything following in the file are ignored. It is allowed for the sake of backwards compatibility.</dd>
+</dl>
+<dl>
+<dt>
+<b>family </b><i>fam</i></dt>
+<dd>
+The default font family is <i>fam</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>fonts </b><i>n F1 F2 F3 ... Fn</i></dt>
+<dd>
+Fonts <i>F1</i>, ..., <i>Fn</i> are mounted in the font positions <i>m</i>+1, ..., <i>m</i>+<i>n</i> where <i>m</i> is the number of styles. This command may extend over more than one line. A font name of&#160;<b>0</b> causes no font to be mounted on the corresponding font position.</dd>
+</dl>
+<dl>
+<dt>
+<b>hor </b><i>n</i></dt>
+<dd>
+The horizontal resolution is <i>n</i>&#160;machine units.</dd>
+</dl>
+<dl>
+<dt>
+<b>image_generator </b><i>string</i></dt>
+<dd>
+Needed for <b>grohtml</b> only. It specifies the program to generate PNG images from PostScript input. Under GNU/Linux this is usually <i>gs</i> but under other systems (notably cygwin) it might be set to another name.</dd>
+</dl>
+<dl>
+<dt>
+<b>paperlength </b><i>n</i></dt>
+<dd>
+The physical vertical dimension of the output medium in machine units. This isn't used by <b>troff</b> itself but by output devices. Deprecated. Use <b>papersize</b> instead.</dd>
+</dl>
+<dl>
+<dt>
+<b>papersize </b><i>string</i></dt>
+<dd>
+Select a paper size. Valid values for <i>string</i> are the ISO paper types A0&#8211;A7, B0&#8211;B7, C0&#8211;C7, D0&#8211;D7, DL, and the US paper types letter, legal, tabloid, ledger, statement, executive, com10, and monarch. Case is not significant for <i>string</i> if it holds predefined paper types. Alternatively, <i>string</i> can be a file name (e.g. &#8216;/etc/papersize&#8217;); if the file can be opened, <b>groff</b> reads the first line and tests for the above paper sizes. Finally, <i>string</i> can be a custom paper size in the format <i>length</i><b>,</b><i>width</i> (no spaces before and after the comma). Both <i>length</i> and <i>width</i> must have a unit appended; valid values are &#8216;i&#8217; for inches, &#8216;c&#8217; for centimeters, &#8216;p&#8217; for points, and &#8216;P&#8217; for picas. Example: <b>12c,235p</b>. An argument which starts with a digit is always treated as a custom paper format. <b>papersize</b> sets both the vertical and horizontal dimension of the output medium.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+More than one argument can be specified; <b>groff</b> scans from left to right and uses the first valid paper specification.</dd>
+</dl>
+<dl>
+<dt>
+<b>paperwidth </b><i>n</i></dt>
+<dd>
+The physical horizontal dimension of the output medium in machine units. Deprecated. Use <b>papersize</b> instead. This isn't used by <b>troff</b> itself but by output devices.</dd>
+</dl>
+<dl>
+<dt>
+<b>pass_filenames</b></dt>
+<dd>
+Make troff tell the driver the source file name being processed. This is achieved by another tcommand: <b>F</b>&#160;<i>filename</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>postpro </b><i>program</i></dt>
+<dd>
+Use <i>program</i> as the postprocessor.</dd>
+</dl>
+<dl>
+<dt>
+<b>prepro </b><i>program</i></dt>
+<dd>
+Call <i>program</i> as a preprocessor.</dd>
+</dl>
+<dl>
+<dt>
+<b>print </b><i>program</i></dt>
+<dd>
+Use <i>program</i> as the spooler program for printing. If omitted, the <b>-l</b> and <b>-L</b> options of <b>groff</b> are ignored.</dd>
+</dl>
+<dl>
+<dt>
+<b>res </b><i>n</i></dt>
+<dd>
+There are <i>n</i> machine units per inch.</dd>
+</dl>
+<dl>
+<dt>
+<b>sizes </b><i>s1 s2 ... sn </i><b>0</b></dt>
+<dd>
+This means that the device has fonts at <i>s1</i>, <i>s2</i>, ..., <i>sn</i> scaled points. The list of sizes must be terminated by a <b>0</b>. Each <i>si</i> can also be a range of sizes <i>m</i>&#8211;<i>n</i>. The list can extend over more than one line.</dd>
+</dl>
+<dl>
+<dt>
+<b>sizescale </b><i>n</i></dt>
+<dd>
+The scale factor for point sizes. By default this has a value of 1. One <i>scaled point</i> is equal to one point/<i>n</i>. The arguments to the <b>unitwidth</b> and <b>sizes</b> commands are given in scaled points.</dd>
+</dl>
+<dl>
+<dt>
+<b>styles </b><i>S1 S2 ... Sm</i></dt>
+<dd>
+The first <i>m</i> font positions are associated with styles <i>S1</i>, ..., <i>Sm</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>tcommand</b></dt>
+<dd>
+This means that the postprocessor can handle the <b>t</b> and&#160;<b>u</b> output commands.</dd>
+</dl>
+<dl>
+<dt>
+<b>unicode</b></dt>
+<dd>
+Indicate that the output device supports the complete Unicode repertoire. Useful only for devices which produce <i>character entities</i> instead of glyphs.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+If <b>unicode</b> is present, no <b>charset</b> section is required in the font description files since the Unicode handling built into <b>groff</b> is used. However, if there are entries in a <b>charset</b> section, they either override the default mappings for those particular characters or add new mappings (normally for composite characters).</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+This is used for <b>-Tutf8</b>, <b>-Thtml</b>, and <b>-Txhtml</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>unitwidth </b><i>n</i></dt>
+<dd>
+Quantities in the font files are given in machine units for fonts whose point size is <i>n</i>&#160;scaled points.</dd>
+</dl>
+<dl>
+<dt>
+<b>unscaled_charwidths</b></dt>
+<dd>
+Make the font handling module always return unscaled glyph widths. Needed for the <b>grohtml</b> device.</dd>
+</dl>
+<dl>
+<dt>
+<b>use_charnames_in_special</b></dt>
+<dd>
+This command indicates that troff should encode named glyphs inside special commands.</dd>
+</dl>
+<dl>
+<dt>
+<b>vert </b><i>n</i></dt>
+<dd>
+The vertical resolution is <i>n</i>&#160;machine units.</dd>
+</dl>
+<div class="spacer">
+</div>
+The <b>res</b>, <b>unitwidth</b>, <b>fonts</b>, and <b>sizes</b> lines are compulsory. Not all commands in the DESC file are used by <b>troff</b> itself; some of the keywords (or even additional ones) are used by postprocessors to store arbitrary information about the device.<div class="spacer">
+</div>
+Here a list of obsolete keywords which are recognized by <b>groff</b> but completely ignored: <b>spare1</b>, <b>spare2</b>, <b>biggestfont</b>.</div>
+<div class="subsection">
+<h2>Font file format</h2> A font file has two sections; empty lines are ignored in both of them.<div class="spacer">
+</div>
+The first section is a sequence of lines each containing a sequence of blank delimited words; the first word in the line is a key, and subsequent words give a value for that key.<dl>
+<dt>
+<b>ligatures </b><i>lig1 lig2 ... lign [</i><b>0</b><i>]</i></dt>
+<dd>
+Glyphs <i>lig1</i>, <i>lig2</i>, ..., <i>lign</i> are ligatures; possible ligatures are <b>ff</b>, <b>fi</b>, <b>fl</b>, <b>ffi</b>, and <b>ffl</b>. For backwards compatibility, the list of ligatures may be terminated with a&#160;<b>0</b>. The list of ligatures may not extend over more than one line.</dd>
+</dl>
+<dl>
+<dt>
+<b>name </b><i>F</i></dt>
+<dd>
+The name of the font is&#160;<i>F</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>slant </b><i>n</i></dt>
+<dd>
+The glyphs of the font have a slant of <i>n</i>&#160;degrees. (Positive means forward.)</dd>
+</dl>
+<dl>
+<dt>
+<b>spacewidth </b><i>n</i></dt>
+<dd>
+The normal width of a space is&#160;<i>n</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>special</b></dt>
+<dd>
+The font is <i>special</i>; this means that when a glyph is requested that is not present in the current font, it is searched for in any special fonts that are mounted.</dd>
+</dl>
+<div class="spacer">
+</div>
+Other commands are ignored by <b>troff</b> but may be used by postprocessors to store arbitrary information about the font in the font file.<div class="spacer">
+</div>
+The first section can contain comments which start with the <b>#</b> character and extend to the end of a line.<div class="spacer">
+</div>
+The second section contains one or two subsections. It must contain a <i>charset</i> subsection and it may also contain a <i>kernpairs</i> subsection. These subsections can appear in any order. Each subsection starts with a word on a line by itself.<div class="spacer">
+</div>
+The word <b>charset</b> starts the charset subsection. The <b>charset</b> line is followed by a sequence of lines. Each line gives information for one glyph. A line comprises a number of fields separated by blanks or tabs. The format is<dl>
+<dt>
+</dt>
+<dd>
+<i>name metrics type code</i> [<i>entity_name</i>] [<b>--</b> <i>comment</i>]</dd>
+</dl>
+<div class="spacer">
+</div>
+<i>name</i> identifies the glyph: if <i>name</i> is a single glyph <i>c</i> then it corresponds to the groff input character <i>c</i>; if it is of the form <b>\</b><i>c</i> where c is a single character, then it corresponds to the special character <b>\[</b><i>c</i><b>];</b> otherwise it corresponds to the groff input character <b>\[</b><i>name</i><b>].</b> If it is exactly two characters <i>xx</i> it can be entered as <b>\(</b><i>xx.</i> Note that single-letter special characters can't be accessed as <b>\</b><i>c;</i> the only exception is &#8216;\-&#8217; which is identical to &#8216;\[-]&#8217;. The name <b>---</b> is special and indicates that the glyph is unnamed; such glyphs can only be used by means of the <b>\N</b> escape sequence in <b>troff</b>.<div class="spacer">
+</div>
+The <i>type</i> field gives the glyph type:<dl>
+<dt>
+1</dt>
+<dd>
+means the glyph has a descender, for example, &#8216;p&#8217;;</dd>
+</dl>
+<dl>
+<dt>
+2</dt>
+<dd>
+means the glyph has an ascender, for example, &#8216;b&#8217;;</dd>
+</dl>
+<dl>
+<dt>
+3</dt>
+<dd>
+means the glyph has both an ascender and a descender, for example, &#8216;(&#8217;.</dd>
+</dl>
+<div class="spacer">
+</div>
+The <i>code</i> field gives the code which the postprocessor uses to print the glyph. The glyph can also be input to groff using this code by means of the <b>\N</b> escape sequence. The code can be any integer. If it starts with a&#160;<b>0</b> it is interpreted as octal; if it starts with <b>0x</b> or <b>0X</b> it is interpreted as hexadecimal. Note, however, that the <b>\N</b> escape sequence only accepts a decimal integer.<div class="spacer">
+</div>
+The <i>entity_name</i> field gives an ASCII string identifying the glyph which the postprocessor uses to print that glyph. This field is optional and is currently used by <b>grops</b> to build sub-encoding arrays for PS fonts containing more than 256 glyphs. (It has also been used for <b>grohtml</b>'s entity names but for efficiency reasons this data is now compiled directly into <b>grohtml</b>.)<div class="spacer">
+</div>
+Anything on the line after the encoding field or &#8216;--&#8217; are ignored.<div class="spacer">
+</div>
+The <i>metrics</i> field has the form (in one line; it is broken here for the sake of readability):<dl>
+<dt>
+</dt>
+<dd>
+<i>width</i>[<b>,</b><i><b>height</b></i>[<b>,</b><i><b>depth</b></i>[<b>,</b><i><b>italic-correction</b></i><div style="height: 0.00em;">
+&#160;</div>
+[<b>,</b><i><b>left-italic-correction</b></i>[<b>,</b><i><b>subscript-correction</b></i><b>]]]]]</b></dd>
+</dl>
+<div class="spacer">
+</div>
+There must not be any spaces between these subfields. Missing subfields are assumed to be&#160;0. The subfields are all decimal integers. Since there is no associated binary format, these values are not required to fit into a variable of type <b>char</b> as they are in ditroff. The <i>width</i> subfields gives the width of the glyph. The <i>height</i> subfield gives the height of the glyph (upwards is positive); if a glyph does not extend above the baseline, it should be given a zero height, rather than a negative height. The <i>depth</i> subfield gives the depth of the glyph, that is, the distance below the lowest point below the baseline to which the glyph extends (downwards is positive); if a glyph does not extend below above the baseline, it should be given a zero depth, rather than a negative depth. The <i>italic-correction</i> subfield gives the amount of space that should be added after the glyph when it is immediately to be followed by a glyph from a roman font. The <i>left-italic-correction</i> subfield gives the amount of space that should be added before the glyph when it is immediately to be preceded by a glyph from a roman font. The <i>subscript-correction</i> gives the amount of space that should be added after a glyph before adding a subscript. This should be less than the italic correction.<div class="spacer">
+</div>
+A line in the charset section can also have the format<dl>
+<dt>
+</dt>
+<dd>
+<i>name <b>&quot;</b></i></dd>
+</dl>
+<div class="spacer">
+</div>
+This indicates that <i>name</i> is just another name for the glyph mentioned in the preceding line.<div class="spacer">
+</div>
+The word <b>kernpairs</b> starts the kernpairs section. This contains a sequence of lines of the form:<dl>
+<dt>
+</dt>
+<dd>
+<i>c1 c2 n</i></dd>
+</dl>
+<div class="spacer">
+</div>
+This means that when glyph <i>c1</i> appears next to glyph <i>c2</i> the space between them should be increased by&#160;<i>n</i>. Most entries in kernpairs section have a negative value for&#160;<i>n</i>.</div>
+</div>
+<div class="section">
+<h1>FILES</h1><dl>
+<dt>
+<b>/usr/share/groff/1.22.3/font/dev</b><i>name</i><b>/DESC</b></dt>
+<dd>
+Device description file for device <i>name</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>/usr/share/groff/1.22.3/font/dev</b><i>name</i><b>/</b><i>F</i></dt>
+<dd>
+Font file for font&#160;<i>F</i> of device <i>name</i>.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>groff_out</b>(5), <b>troff</b>(1), <b>addftinfo</b>(1), <b>afmtodit</b>(1)<div class="spacer">
+</div>
+A man-page <i>name</i>(<i>n</i>) of section <i>n</i> can be viewed either with<div style="margin-left: 5.00ex;">
+$ <b>man</b><i> n name</i></div>
+for text mode or<div style="margin-left: 5.00ex;">
+$ <b>groffer </b><i>n</i><b>name&quot;</b></div>
+for graphical mode (default is PDF mode).</div>
+<div class="section">
+<h1>COPYING</h1> Copyright &#169; 1989-2014 Free Software Foundation, Inc.<div style="height: 1.00em;">
+&#160;</div>
+This file is part of groff (GNU roff), which is a free software project.<div style="height: 1.00em;">
+&#160;</div>
+You can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or (at your option) any later version.<div style="height: 1.00em;">
+&#160;</div>
+You should have received a copy of the GNU General Public License along with this program.  If not, see <a class="link-ext" href="http://www.gnu.org/licenses/gpl-2.0.html">GPL2</a></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+4 November 2014</td>
+<td class="foot-os">
+Groff Version 1.22.3</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

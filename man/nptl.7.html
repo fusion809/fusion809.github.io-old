@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+NPTL(7)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+NPTL(7)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+NPTL(7)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> nptl - Native POSIX Threads Library</div>
+<div class="section">
+<h1>DESCRIPTION</h1> NPTL (Native POSIX Threads Library) is the GNU C library POSIX threads implementation that is used on modern Linux systems.<div class="subsection">
+<h2>NPTL and signals</h2> NPTL makes internal use of the first two real-time signals (signal numbers 32 and 33). One of these signals is used to support thread cancellation and POSIX timers (see <b>timer_create</b>(2)); the other is used as part of a mechanism that ensures all threads in a process always have the same UIDs and GIDs, as required by POSIX. These signals cannot be used in applications.<div style="height: 1.00em;">
+&#160;</div>
+To prevent accidental use of these signals in applications, which might interfere with the operation of the NPTL implementation, various glibc library functions and system call wrapper functions attempt to hide these signals from applications, as follows:<dl>
+<dt>
+*</dt>
+<dd>
+<b>SIGRTMIN</b> is defined with the value 34 (rather than 32).</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+The <b>sigwaitinfo</b>(2), <b>sigtimedwait</b>(2), and <b>sigwait</b>(3) interfaces silently ignore requests to wait for these two signals if they are specified in the signal set argument of these calls.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+The <b>sigprocmask</b>(2) and <b>pthread_sigmask</b>(3) interfaces silently ignore attempts to block these two signals.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+The <b>sigaction</b>(2), <b>pthread_kill</b>(3), and <b>pthread_sigqueue</b>(3) interfaces fail with the error <b>EINVAL</b> (indicating an invalid signal number) if these signals are specified.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+<b>sigfillset</b>(3) does not include these two signals when it creates a full signal set.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>NPTL and process credential changes</h2> At the Linux kernel level, credentials (user and group IDs) are a per-thread attribute. However, POSIX requires that all of the POSIX threads in a process have the same credentials. To accommodate this requirement, the NPTL implementation wraps all of the system calls that change process credentials with functions that, in addition to invoking the underlying system call, arrange for all other threads in the process to also change their credentials.<div style="height: 1.00em;">
+&#160;</div>
+The implementation of each of these system calls involves the use of a real-time signal that is sent (using <b>tgkill</b>(2)) to each of the other threads that must change its credentials. Before sending these signals, the thread that is changing credentials saves the new credential(s) and records the system call being employed in a global buffer. A signal handler in the receiving thread(s) fetches this information and then uses the same system call to change its credentials.<div style="height: 1.00em;">
+&#160;</div>
+Wrapper functions employing this technique are provided for <b>setgid</b>(2), <b>setuid</b>(2), <b>setegid</b>(2), <b>seteuid</b>(2), <b>setregid</b>(2), <b>setreuid</b>(2), <b>setresgid</b>(2), <b>setresuid</b>(2), and <b>setgroups</b>(2).</div>
+</div>
+<div class="section">
+<h1>CONFORMING TO</h1> For details of the conformance of NPTL to the POSIX standard, see <b>pthreads</b>(7).</div>
+<div class="section">
+<h1>NOTES</h1> POSIX says that any thread in any process with access to the memory containing a process-shared (<b>PTHREAD_PROCESS_SHARED</b>) mutex can operate on that mutex. However, on 64-bit x86 systems, the mutex definition for x86-64 is incompatible with the mutex definition for i386, meaning that 32-bit and 64-bit binaries can't share mutexes on x86-64 systems.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>credentials</b>(7), <b>pthreads</b>(7), <b>signal</b>(7), <b>standards</b>(7)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-08-08</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

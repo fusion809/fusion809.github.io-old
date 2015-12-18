@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+PTHREAD_ATFORK(3P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+PTHREAD_ATFORK(3P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+PTHREAD_ATFORK(3P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> pthread_atfork &#8212; register fork handlers</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;pthread.h&gt;<div class="spacer">
+</div>
+int pthread_atfork(void (*<i>prepare</i>)(void), void (*<i>parent</i>)(void),<br/>
+    void (*<i>child</i>)(void));<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <i>pthread_atfork</i>() function shall declare fork handlers to be called before and after  <i>fork</i>(), in the context of the thread that called  <i>fork</i>(). The <i>prepare</i> fork handler shall be called before  <i>fork</i>() processing commences. The <i>parent</i> fork handle shall be called after  <i>fork</i>() processing completes in the parent process. The <i>child</i> fork handler shall be called after  <i>fork</i>() processing completes in the child process. If no handling is desired at one or more of these three points, the corresponding fork handler address(es) may be set to NULL.<div class="spacer">
+</div>
+The order of calls to  <i>pthread_atfork</i>() is significant. The <i>parent</i> and <i>child</i> fork handlers shall be called in the order in which they were established by calls to  <i>pthread_atfork</i>(). The <i>prepare</i> fork handlers shall be called in the opposite order.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> Upon successful completion,  <i>pthread_atfork</i>() shall return a value of zero; otherwise, an error number shall be returned to indicate the error.</div>
+<div class="section">
+<h1>ERRORS</h1> The  <i>pthread_atfork</i>() function shall fail if:<dl>
+<dt>
+<b>ENOMEM</b></dt>
+<dd>
+Insufficient table space exists to record the fork handler addresses.</dd>
+</dl>
+<div class="spacer">
+</div>
+The  <i>pthread_atfork</i>() function shall not return an error code of <b>[EINTR]</b>.<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>EXAMPLES</h1> None.</div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> None.</div>
+<div class="section">
+<h1>RATIONALE</h1> There are at least two serious problems with the semantics of  <i>fork</i>() in a multi-threaded program. One problem has to do with state (for example, memory) covered by mutexes. Consider the case where one thread has a mutex locked and the state covered by that mutex is inconsistent while another thread calls  <i>fork</i>(). In the child, the mutex is in the locked state (locked by a nonexistent thread and thus can never be unlocked). Having the child simply reinitialize the mutex is unsatisfactory since this approach does not resolve the question about how to correct or otherwise deal with the inconsistent state in the child.<div class="spacer">
+</div>
+It is suggested that programs that use  <i>fork</i>() call an <i>exec</i> function very soon afterwards in the child process, thus resetting all states. In the meantime, only a short list of async-signal-safe library routines are promised to be available.<div class="spacer">
+</div>
+Unfortunately, this solution does not address the needs of multi-threaded libraries. Application programs may not be aware that a multi-threaded library is in use, and they feel free to call any number of library routines between the  <i>fork</i>() and <i>exec</i> calls, just as they always have. Indeed, they may be extant single-threaded programs and cannot, therefore, be expected to obey new restrictions imposed by the threads library.<div class="spacer">
+</div>
+On the other hand, the multi-threaded library needs a way to protect its internal state during  <i>fork</i>() in case it is re-entered later in the child process. The problem arises especially in multi-threaded I/O libraries, which are almost sure to be invoked between the  <i>fork</i>() and <i>exec</i> calls to effect I/O redirection. The solution may require locking mutex variables during  <i>fork</i>(), or it may entail simply resetting the state in the child after the  <i>fork</i>() processing completes.<div class="spacer">
+</div>
+The  <i>pthread_atfork</i>() function was intended to provide multi-threaded libraries with a means to protect themselves from innocent application programs that call  <i>fork</i>(), and to provide multi-threaded application programs with a standard mechanism for protecting themselves from  <i>fork</i>() calls in a library routine or the application itself.<div class="spacer">
+</div>
+The expected usage was that the prepare handler would acquire all mutex locks and the other two fork handlers would release them.<div class="spacer">
+</div>
+For example, an application could have supplied a prepare routine that acquires the necessary mutexes the library maintains and supplied child and parent routines that release those mutexes, thus ensuring that the child would have got a consistent snapshot of the state of the library (and that no mutexes would have been left stranded). This is good in theory, but in reality not practical. Each and every mutex and lock in the process must be located and locked. Every component of a program including third-party components must participate and they must agree who is responsible for which mutex or lock. This is especially problematic for mutexes and locks in dynamically allocated memory. All mutexes and locks internal to the implementation must be locked, too. This possibly delays the thread calling  <i>fork</i>() for a long time or even indefinitely since uses of these synchronization objects may not be under control of the application. A final problem to mention here is the problem of locking streams. At least the streams under control of the system (like <i>stdin</i>, <i>stdout</i>, <i>stderr</i>) must be protected by locking the stream with  <i>flockfile</i>(). But the application itself could have done that, possibly in the same thread calling  <i>fork</i>(). In this case, the process will deadlock.<div class="spacer">
+</div>
+Alternatively, some libraries might have been able to supply just a <i>child</i> routine that reinitializes the mutexes in the library and all associated states to some known value (for example, what it was when the image was originally executed). This approach is not possible, though, because implementations are allowed to fail <i>*_init</i>() and <i>*_destroy</i>() calls for mutexes and locks if the mutex or lock is still locked. In this case, the <i>child</i> routine is not able to reinitialize the mutexes and locks.<div class="spacer">
+</div>
+When  <i>fork</i>() is called, only the calling thread is duplicated in the child process. Synchronization variables remain in the same state in the child as they were in the parent at the time  <i>fork</i>() was called. Thus, for example, mutex locks may be held by threads that no longer exist in the child process, and any associated states may be inconsistent. The intention was that the parent process could have avoided this by explicit code that acquires and releases locks critical to the child via  <i>pthread_atfork</i>(). In addition, any critical threads would have needed to be recreated and reinitialized to the proper state in the child (also via  <i>pthread_atfork</i>()).<div class="spacer">
+</div>
+A higher-level package may acquire locks on its own data structures before invoking lower-level packages. Under this scenario, the order specified for fork handler calls allows a simple rule of initialization for avoiding package deadlock: a package initializes all packages on which it depends before it calls the  <i>pthread_atfork</i>() function for itself.<div class="spacer">
+</div>
+As explained, there is no suitable solution for functionality which requires non-atomic operations to be protected through mutexes and locks. This is why the POSIX.1 standard since the 1996 release requires that the child process after  <i>fork</i>() in a multi-threaded process only calls async-signal-safe interfaces.</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> None.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i><i>atexit</i>()</i>, <i><i>exec</i></i>, <i><i>fork</i>()</i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i><b>&lt;pthread.h&gt;</b></i>, <i><b>&lt;sys_types.h&gt;</b></i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

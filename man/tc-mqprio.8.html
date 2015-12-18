@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+MQPRIO(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+MQPRIO(8)</td>
+<td class="head-vol">
+Linux</td>
+<td class="head-rtitle">
+MQPRIO(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> MQPRIO - Multiqueue Priority Qdisc (Offloaded Hardware QOS)</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>tc qdisc ... dev</b> dev <b>( parent</b> classid <b>| root) [ handle</b> major: <b>] mqprio [ numtc</b> tcs <b>] [ map</b> P0 P1 P2... <b>] [ queues</b> count1@offset1 count2@offset2 ... <b>] [ hw</b> 1|0 <b>]</b><div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The MQPRIO qdisc is a simple queuing discipline that allows mapping traffic flows to hardware queue ranges using priorities and a configurable priority to traffic class mapping. A traffic class in this context is a set of contiguous qdisc classes which map 1:1 to a set of hardware exposed queues.<div style="height: 1.00em;">
+&#160;</div>
+By default the qdisc allocates a pfifo qdisc (packet limited first in, first out queue) per TX queue exposed by the lower layer device. Other queuing disciplines may be added subsequently. Packets are enqueued using the <b>map</b> parameter and hashed across the indicated queues in the <b>offset</b> and <b>count.</b> By default these parameters are configured by the hardware driver to match the hardware QOS structures.<div style="height: 1.00em;">
+&#160;</div>
+Enabled hardware can provide hardware QOS with the ability to steer traffic flows to designated traffic classes provided by this qdisc. Configuring the hardware based QOS mechanism is outside the scope of this qdisc. Tools such as <b>lldpad</b> and <b>ethtool</b> exist to provide this functionality. Also further qdiscs may be added to the classes of MQPRIO to create more complex configurations.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>ALGORITHM</h1> On creation with 'tc qdisc add', eight traffic classes are created mapping priorities 0..7 to traffic classes 0..7 and priorities greater than 7 to traffic class 0. This requires base driver support and the creation will fail on devices that do not support hardware QOS schemes.<div style="height: 1.00em;">
+&#160;</div>
+These defaults can be overridden using the qdisc parameters. Providing the 'hw 0' flag allows software to run without hardware coordination.<div style="height: 1.00em;">
+&#160;</div>
+If hardware coordination is being used and arguments are provided that the hardware can not support then an error is returned. For many users hardware defaults should work reasonably well.<div style="height: 1.00em;">
+&#160;</div>
+As one specific example numerous Ethernet cards support the 802.1Q link strict priority transmission selection algorithm (TSA). MQPRIO enabled hardware in conjunction with the classification methods below can provide hardware offloaded support for this TSA.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>CLASSIFICATION</h1> Multiple methods are available to set the SKB priority which MQPRIO uses to select which traffic class to enqueue the packet.<dl>
+<dt>
+From user space</dt>
+<dd>
+A process with sufficient privileges can encode the destination class directly with SO_PRIORITY, see <b>socket(7).</b></dd>
+</dl>
+<dl>
+<dt>
+with iptables/nftables</dt>
+<dd>
+An iptables/nftables rule can be created to match traffic flows and set the priority. <b>iptables(8)</b></dd>
+</dl>
+<dl>
+<dt>
+with net_prio cgroups</dt>
+<dd>
+The net_prio cgroup can be used to set the priority of all sockets belong to an application. See kernel and cgroup documentation for details.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>QDISC PARAMETERS</h1><dl>
+<dt>
+num_tc</dt>
+<dd>
+Number of traffic classes to use upto 16 classes supported.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+map</dt>
+<dd>
+The priority to traffic class map. Maps priorities 0..15 to a specified traffic class.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+queues</dt>
+<dd>
+Provide count and offset of queue range for each traffic class. In the format, <b>count@offset.</b> Queue ranges for each traffic classes cannot overlap and must be a contiguous range of queues.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+hw</dt>
+<dd>
+Set to <b>1</b> to use hardware QOS defaults. Set to <b>0</b> to override hardware defaults with user specified values.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>AUTHORS</h1> John Fastabend, &lt;john.r.fastabend@intel.com&gt;</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+24 Sept 2013</td>
+<td class="foot-os">
+iproute2</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

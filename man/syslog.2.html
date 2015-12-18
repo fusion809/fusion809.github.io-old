@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SYSLOG(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SYSLOG(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+SYSLOG(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> syslog, klogctl - read and/or clear kernel message ring buffer; set console_loglevel</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+<b>int syslog(int </b><i>type</i><b>, char *</b><i>bufp</i><b>, int </b><i>len</i><b>);</b> <b>                /* No wrapper provided in glibc */</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+/* The glibc interface */<div style="height: 0.00em;">
+&#160;</div>
+<b>#include &lt;sys/klog.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>int klogctl(int </b><i>type</i><b>, char *</b><i>bufp</i><b>, int </b><i>len</i><b>);</b><br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <i>Note</i>: Probably, you are looking for the C library function <b>syslog</b>(), which talks to <b>syslogd</b>(8); see <b>syslog</b>(3) for details.<div style="height: 1.00em;">
+&#160;</div>
+This page describes the kernel <b>syslog</b>() system call, which is used to control the kernel <i>printk</i>() buffer; the glibc wrapper function for the system call is called <b>klogctl</b>().<div class="subsection">
+<h2>The kernel log buffer</h2> The kernel has a cyclic buffer of length <b>LOG_BUF_LEN</b> in which messages given as arguments to the kernel function <b>printk</b>() are stored (regardless of their log level). In early kernels, <b>LOG_BUF_LEN</b> had the value 4096; from kernel 1.3.54, it was 8192; from kernel 2.1.113, it was 16384; since kernel 2.4.23/2.6, the value is a kernel configuration option (<b>CONFIG_LOG_BUF_SHIFT</b>, default value dependent on the architecture). Since Linux 2.6.6, the size can be queried with command type 10 (see below).</div>
+<div class="subsection">
+<h2>Commands</h2> The  <i>type</i> argument determines the action taken by this function. The list below specifies the values for <i>type</i>. The symbolic names are defined in the kernel source, but are not exported to user space; you will either need to use the numbers, or define the names yourself.<dl>
+<dt>
+<b>SYSLOG_ACTION_CLOSE</b> (0)</dt>
+<dd>
+Close the log. Currently a NOP.</dd>
+</dl>
+<dl>
+<dt>
+<b>SYSLOG_ACTION_OPEN</b> (1)</dt>
+<dd>
+Open the log. Currently a NOP.</dd>
+</dl>
+<dl>
+<dt>
+<b>SYSLOG_ACTION_READ</b> (2)</dt>
+<dd>
+Read from the log. The call waits until the kernel log buffer is nonempty, and then reads at most  <i>len</i> bytes into the buffer pointed to by <i>bufp</i>. The call returns the number of bytes read. Bytes read from the log disappear from the log buffer: the information can be read only once. This is the function executed by the kernel when a user program reads <i>/proc/kmsg</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>SYSLOG_ACTION_READ_ALL</b> (3)</dt>
+<dd>
+Read all messages remaining in the ring buffer, placing them in the buffer pointed to by <i>bufp</i>. The call reads the last  <i>len</i> bytes from the log buffer (nondestructively), but will not read more than was written into the buffer since the last &quot;clear ring buffer&quot; command (see command 5 below)). The call returns the number of bytes read.</dd>
+</dl>
+<dl>
+<dt>
+<b>SYSLOG_ACTION_READ_CLEAR</b> (4)</dt>
+<dd>
+Read and clear all messages remaining in the ring buffer. The call does precisely the same as for a <i>type</i> of 3, but also executes the &quot;clear ring buffer&quot; command.</dd>
+</dl>
+<dl>
+<dt>
+<b>SYSLOG_ACTION_CLEAR</b> (5)</dt>
+<dd>
+The call executes just the &quot;clear ring buffer&quot; command. The <i>bufp</i> and <i>len</i> arguments are ignored.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+This command does not really clear the ring buffer. Rather, it sets a kernel bookkeeping variable that determines the results returned by commands 3 (<b>SYSLOG_ACTION_READ_ALL</b>) and 4 (<b>SYSLOG_ACTION_READ_CLEAR</b>). This command has no effect on commands 2 (<b>SYSLOG_ACTION_READ</b>) and 9 (<b>SYSLOG_ACTION_SIZE_UNREAD</b>).</dd>
+</dl>
+<dl>
+<dt>
+<b>SYSLOG_ACTION_CONSOLE_OFF</b> (6)</dt>
+<dd>
+The command saves the current value of <i>console_loglevel</i> and then sets <i>console_loglevel</i> to <i>minimum_console_loglevel</i>, so that no messages are printed to the console. Before Linux 2.6.32, the command simply sets <i>console_loglevel</i> to <i>minimum_console_loglevel</i>. See the discussion of <i>/proc/sys/kernel/printk</i>, below.<div style="height: 1.00em;">
+&#160;</div>
+The <i>bufp</i> and <i>len</i> arguments are ignored.</dd>
+</dl>
+<dl>
+<dt>
+<b>SYSLOG_ACTION_CONSOLE_ON</b> (7)</dt>
+<dd>
+If a previous <b>SYSLOG_ACTION_CONSOLE_OFF</b> command has been performed, this command restores <i>console_loglevel</i> to the value that was saved by that command. Before Linux 2.6.32, this command simply sets <i>console_loglevel</i> to <i>default_console_loglevel</i>. See the discussion of <i>/proc/sys/kernel/printk</i>, below.<div style="height: 1.00em;">
+&#160;</div>
+The <i>bufp</i> and <i>len</i> arguments are ignored.</dd>
+</dl>
+<dl>
+<dt>
+<b>SYSLOG_ACTION_CONSOLE_LEVEL</b> (8)</dt>
+<dd>
+The call sets <i>console_loglevel</i> to the value given in <i>len</i>, which must be an integer between 1 and 8 (inclusive). The kernel silently enforces a minimum value of <i>minimum_console_loglevel</i> for <i>len</i>. See the <i>log level</i> section for details. The <i>bufp</i> argument is ignored.</dd>
+</dl>
+<dl>
+<dt>
+<b>SYSLOG_ACTION_SIZE_UNREAD</b> (9) (since Linux 2.4.10)</dt>
+<dd>
+The call returns the number of bytes currently available to be read from the kernel log buffer via command 2 (<b>SYSLOG_ACTION_READ</b>). The <i>bufp</i> and <i>len</i> arguments are ignored.</dd>
+</dl>
+<dl>
+<dt>
+<b>SYSLOG_ACTION_SIZE_BUFFER</b> (10) (since Linux 2.6.6)</dt>
+<dd>
+This command returns the total size of the kernel log buffer. The <i>bufp</i> and <i>len</i> arguments are ignored.</dd>
+</dl>
+<div class="spacer">
+</div>
+All commands except 3 and 10 require privilege. In Linux kernels before 2.6.37, command types 3 and 10 are allowed to unprivileged processes; since Linux 2.6.37, these commands are allowed to unprivileged processes only if <i>/proc/sys/kernel/dmesg_restrict</i> has the value 0. Before Linux 2.6.37, &quot;privileged&quot; means that the caller has the <b>CAP_SYS_ADMIN</b> capability. Since Linux 2.6.37, &quot;privileged&quot; means that the caller has either the <b>CAP_SYS_ADMIN</b> capability (now deprecated for this purpose) or the (new) <b>CAP_SYSLOG</b> capability.</div>
+<div class="subsection">
+<h2>/proc/sys/kernel/printk</h2> <i>/proc/sys/kernel/printk</i> is a writable file containing four integer values that influence kernel <i>printk()</i> behavior when printing or logging error messages. The four values are:<dl>
+<dt>
+<i>console_loglevel</i></dt>
+<dd>
+Only messages with a log level lower than this value will be printed to the console. The default value for this field is <b>DEFAULT_CONSOLE_LOGLEVEL</b> (7), but it is set to 4 if the kernel command line contains the word &quot;quiet&quot;, 10 if the kernel command line contains the word &quot;debug&quot;, and to 15 in case of a kernel fault (the 10 and 15 are just silly, and equivalent to 8). The value of <i>console_loglevel</i> can be set (to a value in the range 1-8) by a <b>syslog</b>() call with a <i>type</i> of 8.</dd>
+</dl>
+<dl>
+<dt>
+<i>default_message_loglevel</i></dt>
+<dd>
+This value will be used as the log level for <i>printk()</i> messages that do not have an explicit level. Up to and including Linux 2.6.38, the hard-coded default value for this field was 4 (<b>KERN_WARNING</b>); since Linux 2.6.39, the default value is a defined by the kernel configuration option <b>CONFIG_DEFAULT_MESSAGE_LOGLEVEL</b>, which defaults to 4.</dd>
+</dl>
+<dl>
+<dt>
+<i>minimum_console_loglevel</i></dt>
+<dd>
+The value in this field is the minimum value to which <i>console_loglevel</i> can be set.</dd>
+</dl>
+<dl>
+<dt>
+<i>default_console_loglevel</i></dt>
+<dd>
+This is the default value for <i>console_loglevel</i>.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>The log level</h2> Every <i>printk</i>() message has its own log level. If the log level is not explicitly specified as part of the message, it defaults to <i>default_message_loglevel</i>. The conventional meaning of the log level is as follows:<div style="height: 1.00em;">
+&#160;</div>
+<table class="tbl">
+<col style="width: 15.00ex;"/>
+<col style="width: 11.00ex;"/>
+<col style="width: 32.00ex;"/>
+<tbody>
+<tr>
+<td>
+Kernel constant</td>
+<td>
+Level value</td>
+<td>
+Meaning</td>
+</tr>
+<tr>
+<td>
+KERN_EMERG</td>
+<td>
+0</td>
+<td>
+System is unusable</td>
+</tr>
+<tr>
+<td>
+KERN_ALERT</td>
+<td>
+1</td>
+<td>
+Action must be taken immediately</td>
+</tr>
+<tr>
+<td>
+KERN_CRIT</td>
+<td>
+2</td>
+<td>
+Critical conditions</td>
+</tr>
+<tr>
+<td>
+KERN_ERR</td>
+<td>
+3</td>
+<td>
+Error conditions</td>
+</tr>
+<tr>
+<td>
+KERN_WARNING</td>
+<td>
+4</td>
+<td>
+Warning conditions</td>
+</tr>
+<tr>
+<td>
+KERN_NOTICE</td>
+<td>
+5</td>
+<td>
+Normal but significant condition</td>
+</tr>
+<tr>
+<td>
+KERN_INFO</td>
+<td>
+6</td>
+<td>
+Informational</td>
+</tr>
+<tr>
+<td>
+KERN_DEBUG</td>
+<td>
+7</td>
+<td>
+Debug-level messages</td>
+</tr>
+</tbody>
+</table>
+<div style="height: 1.00em;">
+&#160;</div>
+The kernel <i>printk()</i> routine will print a message on the console only if it has a log level less than the value of <i>console_loglevel</i>.</div>
+</div>
+<div class="section">
+<h1>RETURN VALUE</h1> For  <i>type</i> equal to 2, 3, or 4, a successful call to <b>syslog</b>() returns the number of bytes read. For  <i>type</i> 9, <b>syslog</b>() returns the number of bytes currently available to be read on the kernel log buffer. For  <i>type</i> 10, <b>syslog</b>() returns the total size of the kernel log buffer. For other values of  <i>type</i>, 0 is returned on success.<div style="height: 1.00em;">
+&#160;</div>
+In case of error, -1 is returned, and  <i>errno</i> is set to indicate the error.</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+Bad arguments (e.g., bad <i>type</i>; or for <i>type</i> 2, 3, or 4, <i>buf</i> is NULL, or <i>len</i> is less than zero; or for <i>type</i> 8, the <i>level</i> is outside the range 1 to 8).</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOSYS</b></dt>
+<dd>
+This <b>syslog</b>() system call is not available, because the kernel was compiled with the <b>CONFIG_PRINTK</b> kernel-configuration option disabled.</dd>
+</dl>
+<dl>
+<dt>
+<b>EPERM</b></dt>
+<dd>
+An attempt was made to change <i>console_loglevel</i> or clear the kernel message ring buffer by a process without sufficient privilege (more precisely: without the <b>CAP_SYS_ADMIN</b> or <b>CAP_SYSLOG</b> capability).</dd>
+</dl>
+<dl>
+<dt>
+<b>ERESTARTSYS</b></dt>
+<dd>
+System call was interrupted by a signal; nothing was read. (This can be seen only during a trace.)</dd>
+</dl>
+</div>
+<div class="section">
+<h1>CONFORMING TO</h1> This system call is Linux-specific and should not be used in programs intended to be portable.</div>
+<div class="section">
+<h1>NOTES</h1> From the very start, people noted that it is unfortunate that a system call and a library routine of the same name are entirely different animals.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>dmesg</b>(1), <b>syslog</b>(3), <b>capabilities</b>(7)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-05-07</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

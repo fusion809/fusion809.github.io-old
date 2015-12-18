@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+FANCONTROL(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+FANCONTROL(8)</td>
+<td class="head-vol">
+System Manager's Manual</td>
+<td class="head-rtitle">
+FANCONTROL(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> fancontrol - automated software based fan speed regulation<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>fancontrol</b> <i>[configfile]</i><div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>fancontrol</b> is a shell script for use with lm_sensors. It reads its configuration from a file, then calculates fan speeds from temperatures and sets the corresponding PWM outputs to the computed values.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>WARNING</h1> Please be careful when using the fan control features of your mainboard, in addition to the risk of burning your CPU, at higher temperatures there will be a higher wearout of your other hardware components, too. So if you plan to use these components in 50 years,  <b>maybe</b> you shouldn't use fancontrol at all.  Also please keep in mind most fans aren't designed to be powered by a PWMed voltage.<div style="height: 1.00em;">
+&#160;</div>
+In practice it doesn't seem to be a major issue, the fans will get slightly warmer, just be sure to have a temperature alarm and/or shutdown call, in case some fan fails, because you probably won't hear it anymore ;)<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>CONFIGURATION</h1> For easy configuration, there's a script named  <b>pwmconfig</b>(8) which lets you interactively write your configuration file for  <b>fancontrol</b>. Alternatively you can write this file yourself using the information from this manpage.<div style="height: 1.00em;">
+&#160;</div>
+Since most of you are going to use <b>pwmconfig</b>(8) script, the config file syntax will be discussed last. First I'm going to describe the various variables available for changing  <b>fancontrol</b>'s behaviour:<div style="height: 1.00em;">
+&#160;</div>
+<dl>
+<dt>
+<b>INTERVAL</b></dt>
+<dd>
+This variable defines at which interval in seconds the main loop of  <b>fancontrol</b> will be executed</dd>
+</dl>
+<dl>
+<dt>
+<b>DEVPATH</b></dt>
+<dd>
+Maps hwmon class devices to physical devices. This lets <b>fancontrol</b> check that the configuration file is still up-to-date.</dd>
+</dl>
+<dl>
+<dt>
+<b>DEVNAME</b></dt>
+<dd>
+Records hwmon class device names. This lets <b>fancontrol</b> check that the configuration file is still up-to-date.</dd>
+</dl>
+<dl>
+<dt>
+<b>FCTEMPS</b></dt>
+<dd>
+Maps PWM outputs to temperature sensors so <b>fancontrol</b> knows which temperature sensors should be used for calculation of new values for the corresponding PWM outputs.</dd>
+</dl>
+<dl>
+<dt>
+<b>FCFANS</b></dt>
+<dd>
+Records the association between a PWM output and a fan input. Then  <b>fancontrol</b> can check the fan speed and restart it if it stops unexpectedly.</dd>
+</dl>
+<dl>
+<dt>
+<b>MINTEMP</b></dt>
+<dd>
+The temperature below which the fan gets switched to minimum speed.</dd>
+</dl>
+<dl>
+<dt>
+<b>MAXTEMP</b></dt>
+<dd>
+The temperature over which the fan gets switched to maximum speed.</dd>
+</dl>
+<dl>
+<dt>
+<b>MINSTART</b></dt>
+<dd>
+Sets the minimum speed at which the fan begins spinning. You should use a safe value to be sure it works, even when the fan gets old.</dd>
+</dl>
+<dl>
+<dt>
+<b>MINSTOP</b></dt>
+<dd>
+The minimum speed at which the fan still spins. Use a safe value here, too.</dd>
+</dl>
+<dl>
+<dt>
+<b>MINPWM</b></dt>
+<dd>
+The PWM value to use when the temperature is below MINTEMP. Typically, this will be either 0 if it is OK for the fan to plain stop, or the same value as MINSTOP if you don't want the fan to ever stop. If this value isn't defined, it defaults to 0 (stopped fan).</dd>
+</dl>
+<dl>
+<dt>
+<b>MAXPWM</b></dt>
+<dd>
+The PWM value to use when the temperature is over MAXTEMP. If this value isn't defined, it defaults to 255 (full speed).</dd>
+</dl>
+<div class="spacer">
+</div>
+The configuration file format is a bit strange:<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+VARIABLE=chip/pwmdev=value chip/pwmdev2=value2<br/>
+VARIABLE2=...<br/>
+</dd>
+</dl>
+<div class="spacer">
+</div>
+Each variable has its own line. The variable name is followed by an equal sign and the device=value pairs. These consist of the path to the pwm output for which the value is valid, equal sign followed by the value and are separated by a blank. Path can be absolute or relative (from /sys/bus/i2c/devices or /sys/class/hwmon depending on the kernel version). Example:<dl>
+<dt>
+</dt>
+<dd>
+MINTEMP=hwmon0/device/pwm1=40 hwmon0/device/pwm2=54</dd>
+</dl>
+<div class="spacer">
+</div>
+You have to play with the temperature values a bit to get happy. For initial setup I recommend using the  <b>pwmconfig</b> script. Small changes can be made by editing the config file directly following the rules above.<div style="height: 1.00em;">
+&#160;</div>
+Upon starting, fancontrol will make sure that all referenced devices do exist and match what they were at configuration time, and that all referenced sysfs files do exist. If not, it will quit immediately, upon the assumption that the configuration file may be out-of-sync with the loaded kernel drivers.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>THE ALGORITHM</h1>  <b>fancontrol</b> first reads its configuration, writes it to arrays and loops its main function.  This function gets the temperatures and fanspeeds from kernel driver files and calculates new speeds depending on temperature changes, but only if the temp is between MINTEMP and MAXTEMP. After that, the new values are written to the PWM outputs. Currently the speed increases quadratically with rising temperature. This way you won't hear your fans most of the time at best.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> pwmconfig(8), sensors(1).<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>AUTHOR</h1> Marius Reiner &lt;marius.reiner@hdev.de&gt;</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+September 2009</td>
+<td class="foot-os">
+lm-sensors 3</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

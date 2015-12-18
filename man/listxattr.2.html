@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+LISTXATTR(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+LISTXATTR(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+LISTXATTR(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> listxattr, llistxattr, flistxattr - list extended attribute names</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;sys/types.h&gt;</b> <b>#include &lt;sys/xattr.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>ssize_t listxattr(const char&#160;*</b><i>path</i><b>, char&#160;*</b><i>list</i><b>, size_t </b><i>size</i><b>);</b><br/>
+<b>ssize_t llistxattr(const char&#160;*</b><i>path</i><b>, char&#160;*</b><i>list</i><b>, size_t </b><i>size</i><b>);</b><br/>
+<b>ssize_t flistxattr(int </b><i>fd</i><b>, char&#160;*</b><i>list</i><b>, size_t </b><i>size</i><b>);</b><br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> Extended attributes are <i>name</i>:<i>value</i> pairs associated with inodes (files, directories, symbolic links, etc.). They are extensions to the normal attributes which are associated with all inodes in the system (i.e., the <b>stat</b>(2) data). A complete overview of extended attributes concepts can be found in <b>xattr</b>(7).<div class="spacer">
+</div>
+<b>listxattr</b>() retrieves the list of extended attribute names associated with the given <i>path</i> in the filesystem. The retrieved list is placed in <i>list</i>, a caller-allocated buffer whose size (in bytes) is specified in the argument <i>size</i>. The list is the set of (null-terminated) names, one after the other. Names of extended attributes to which the calling process does not have access may be omitted from the list. The length of the attribute name <i>list</i> is returned.<div class="spacer">
+</div>
+<b>llistxattr</b>() is identical to <b>listxattr</b>(), except in the case of a symbolic link, where the list of names of extended attributes associated with the link itself is retrieved, not the file that it refers to.<div class="spacer">
+</div>
+<b>flistxattr</b>() is identical to <b>listxattr</b>(), only the open file referred to by <i>fd</i> (as returned by <b>open</b>(2)) is interrogated in place of <i>path</i>.<div class="spacer">
+</div>
+A single extended attribute <i>name</i> is a null-terminated string. The name includes a namespace prefix; there may be several, disjoint namespaces associated with an individual inode.<div style="height: 1.00em;">
+&#160;</div>
+If <i>size</i> is specified as zero, these calls return the current size of the list of extended attribute names (and leave <i>list</i> unchanged). This can be used to determine the size of the buffer that should be supplied in a subsequent call. (But, bear in mind that there is a possibility that the set of extended attributes may change between the two calls, so that it is still necessary to check the return status from the second call.)<div class="subsection">
+<h2>Example</h2> The <i>list</i> of names is returned as an unordered array of null-terminated character strings (attribute names are separated by null bytes ('\0')), like this:<div style="margin-left: 5.00ex;">
+<div class="spacer">
+</div>
+<br/>
+user.name1\0system.name1\0user.name2\0<br/>
+</div>
+<div class="spacer">
+</div>
+Filesystems that implement POSIX ACLs using extended attributes might return a <i>list</i> like this:<div style="margin-left: 5.00ex;">
+<div class="spacer">
+</div>
+<br/>
+system.posix_acl_access\0system.posix_acl_default\0<br/>
+</div>
+</div>
+</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, a nonnegative number is returned indicating the size of the extended attribute name list. On failure, -1 is returned and <i>errno</i> is set appropriately.</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>E2BIG</b></dt>
+<dd>
+The size of the list of attribute names for this file exceeds the system-imposed limit. See BUGS.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTSUP</b></dt>
+<dd>
+Extended attributes are not supported by the filesystem, or are disabled.</dd>
+</dl>
+<dl>
+<dt>
+<b>ERANGE</b></dt>
+<dd>
+The <i>size</i> of the <i>list</i> buffer is too small to hold the result.</dd>
+</dl>
+<div class="spacer">
+</div>
+In addition, the errors documented in <b>stat</b>(2) can also occur.</div>
+<div class="section">
+<h1>VERSIONS</h1> These system calls have been available on Linux since kernel 2.4; glibc support is provided since version 2.3.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> These system calls are Linux-specific.</div>
+<div class="section">
+<h1>EXAMPLE</h1> The following program demonstrates the usage of <b>listxattr</b>() and <b>getxattr</b>(2). For the file whose pathname is provided as a command-line argument, it lists all extended file attributes and their values.<div style="height: 1.00em;">
+&#160;</div>
+To keep the code simple, the program assumes that attribute keys and values are constant during the execution of the program. A production program should expect and handle changes during execution of the program. For example, the number of bytes required for attribute keys might increase between the two calls to <b>listxattr</b>(). An application could handle this possibility using a loop that retries the call (perhaps up to a predetermined maximum number of attempts) with a larger buffer each time it fails with the error <b>ERANGE</b>. Calls to <b>getxattr</b>(2) could be handled similarly.<div style="height: 1.00em;">
+&#160;</div>
+The following output was recorded by first creating a file, setting some extended file attributes, and then listing the attributes with the example program.<div class="subsection">
+<h2>Example output</h2><br/>
+<br/>
+$ <b>touch /tmp/foo</b><br/>
+$ <b>setfattr -n user.fred -v chocolate /tmp/foo</b><br/>
+$ <b>setfattr -n user.frieda -v bar /tmp/foo</b><br/>
+$ <b>setfattr -n user.empty /tmp/foo</b><br/>
+$ <b>./listxattr /tmp/foo</b><br/>
+user.fred: chocolate<br/>
+user.frieda: bar<br/>
+user.empty: &lt;no value&gt;<br/>
+<br/>
+</div>
+<div class="subsection">
+<h2>Program source (listxattr.c)</h2><br/>
+#include &lt;malloc.h&gt;<br/>
+#include &lt;stdio.h&gt;<br/>
+#include &lt;stdlib.h&gt;<br/>
+#include &lt;string.h&gt;<br/>
+#include &lt;sys/types.h&gt;<br/>
+#include &lt;sys/xattr.h&gt;<div class="spacer">
+</div>
+<br/>
+int<br/>
+main(int argc, char *argv[])<br/>
+{<br/>
+    ssize_t buflen, keylen, vallen;<br/>
+    char *buf, *key, *val;<div class="spacer">
+</div>
+<br/>
+    if (argc != 2) {<br/>
+        fprintf(stderr, &quot;Usage: %s path\n&quot;, argv[0]);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    /*<br/>
+     * Determine the length of the buffer needed.<br/>
+     */<br/>
+    buflen = listxattr(argv[1], NULL, 0);<br/>
+    if (buflen == -1) {<br/>
+        perror(&quot;listxattr&quot;);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<br/>
+    if (buflen == 0) {<br/>
+        printf(&quot;%s has no attributes.\n&quot;, argv[1]);<br/>
+        exit(EXIT_SUCCESS);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    /*<br/>
+     * Allocate the buffer.<br/>
+     */<br/>
+    buf = malloc(buflen);<br/>
+    if (buf == NULL) {<br/>
+        perror(&quot;malloc&quot;);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    /*<br/>
+     * Copy the list of attribute keys to the buffer.<br/>
+     */<br/>
+    buflen = listxattr(argv[1], buf, buflen);<br/>
+    if (buflen == -1) {<br/>
+        perror(&quot;listxattr&quot;);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    /*<br/>
+     * Loop over the list of zero terminated strings with the<br/>
+     * attribute keys. Use the remaining buffer length to determine<br/>
+     * the end of the list.<br/>
+     */<br/>
+    key = buf;<br/>
+    while (buflen &gt; 0) {<div class="spacer">
+</div>
+<br/>
+        /*<br/>
+         * Output attribute key.<br/>
+         */<br/>
+        printf(&quot;%s: &quot;, key);<div class="spacer">
+</div>
+<br/>
+        /*<br/>
+         * Determine length of the value.<br/>
+         */<br/>
+        vallen = getxattr(argv[1], key, NULL, 0);<br/>
+        if (vallen == -1)<br/>
+            perror(&quot;getxattr&quot;);<div class="spacer">
+</div>
+<br/>
+        if (vallen &gt; 0) {<div class="spacer">
+</div>
+<br/>
+            /*<br/>
+             * Allocate value buffer.<br/>
+             * One extra byte is needed to append 0x00.<br/>
+             */<br/>
+            val = malloc(vallen + 1);<br/>
+            if (val == NULL) {<br/>
+                perror(&quot;malloc&quot;);<br/>
+                exit(EXIT_FAILURE);<br/>
+            }<div class="spacer">
+</div>
+<br/>
+            /*<br/>
+             * Copy value to buffer.<br/>
+             */<br/>
+            vallen = getxattr(argv[1], key, val, vallen);<br/>
+            if (vallen == -1)<br/>
+                perror(&quot;getxattr&quot;);<br/>
+            else {<br/>
+                /*<br/>
+                 * Output attribute value.<br/>
+                 */<br/>
+                val[vallen] = 0;<br/>
+                printf(&quot;%s&quot;, val);<br/>
+            }<div class="spacer">
+</div>
+<br/>
+            free(val);<br/>
+        } else if (vallen == 0)<br/>
+            printf(&quot;&lt;no value&gt;&quot;);<div class="spacer">
+</div>
+<br/>
+        printf(&quot;\n&quot;);<div class="spacer">
+</div>
+<br/>
+        /*<br/>
+         * Forward to next attribute key.<br/>
+         */<br/>
+        keylen = strlen(key) + 1;<br/>
+        buflen -= keylen;<br/>
+        key += keylen;<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    free(buf);<br/>
+    exit(EXIT_SUCCESS);<br/>
+}<br/>
+</div>
+</div>
+<div class="section">
+<h1>BUGS</h1> As noted in <b>xattr</b>(7), the VFS imposes a limit of 64 kB on the size of the extended attribute name list returned by <b>listxattr</b>(7). If the total size of attribute names attached to a file exceeds this limit, it is no longer possible to retrieve the list of attribute names.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>getfattr</b>(1), <b>setfattr</b>(1), <b>getxattr</b>(2), <b>open</b>(2), <b>removexattr</b>(2), <b>setxattr</b>(2), <b>stat</b>(2), <b>symlink</b>(7), <b>xattr</b>(7)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-05-07</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

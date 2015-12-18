@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+ACCESS(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+ACCESS(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+ACCESS(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> access, faccessat - check user's permissions for a file</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;unistd.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>int access(const char *</b><i>pathname</i><b>, int </b><i>mode</i><b>);</b><div class="spacer">
+</div>
+<br/>
+<b>#include &lt;fcntl.h&gt;           </b>/* Definition of AT_* constants */ <b>#include &lt;unistd.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>int faccessat(int </b><i>dirfd</i><b>, const char *</b><i>pathname</i><b>, int </b><i>mode</i><b>, int </b><i>flags</i><b>);</b><br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Feature Test Macro Requirements for glibc (see <b>feature_test_macros</b>(7)):<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>faccessat</b>():<div style="margin-left: 4.00ex;">
+<dl>
+<dt>
+Since glibc 2.10:</dt>
+<dd>
+_XOPEN_SOURCE&#160;&gt;=&#160;700 || _POSIX_C_SOURCE&#160;&gt;=&#160;200809L</dd>
+</dl>
+<dl>
+<dt>
+Before glibc 2.10:</dt>
+<dd>
+_ATFILE_SOURCE</dd>
+</dl>
+</div>
+<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>access</b>() checks whether the calling process can access the file <i>pathname</i>. If <i>pathname</i> is a symbolic link, it is dereferenced.<div style="height: 1.00em;">
+&#160;</div>
+The <i>mode</i> specifies the accessibility check(s) to be performed, and is either the value <b>F_OK</b>, or a mask consisting of the bitwise OR of one or more of <b>R_OK</b>, <b>W_OK</b>, and <b>X_OK</b>. <b>F_OK</b> tests for the existence of the file. <b>R_OK</b>, <b>W_OK</b>, and <b>X_OK</b> test whether the file exists and grants read, write, and execute permissions, respectively.<div style="height: 1.00em;">
+&#160;</div>
+The check is done using the calling process's <i>real</i> UID and GID, rather than the effective IDs as is done when actually attempting an operation (e.g., <b>open</b>(2)) on the file. Similarly, for the root user, the check uses the set of permitted capabilities rather than the set of effective capabilities; and for non-root users, the check uses an empty set of capabilities.<div style="height: 1.00em;">
+&#160;</div>
+This allows set-user-ID programs and capability-endowed programs to easily determine the invoking user's authority. In other words, <b>access</b>() does not answer the &quot;can I read/write/execute this file?&quot; question. It answers a slightly different question: &quot;(assuming I'm a setuid binary) can <i>the user who invoked me</i> read/write/execute this file?&quot;, which gives set-user-ID programs the possibility to prevent malicious users from causing them to read files which users shouldn't be able to read.<div style="height: 1.00em;">
+&#160;</div>
+If the calling process is privileged (i.e., its real UID is zero), then an <b>X_OK</b> check is successful for a regular file if execute permission is enabled for any of the file owner, group, or other.<div class="subsection">
+<h2>faccessat()</h2> The <b>faccessat</b>() system call operates in exactly the same way as <b>access</b>(), except for the differences described here.<div style="height: 1.00em;">
+&#160;</div>
+If the pathname given in <i>pathname</i> is relative, then it is interpreted relative to the directory referred to by the file descriptor <i>dirfd</i> (rather than relative to the current working directory of the calling process, as is done by <b>access</b>() for a relative pathname).<div style="height: 1.00em;">
+&#160;</div>
+If <i>pathname</i> is relative and <i>dirfd</i> is the special value <b>AT_FDCWD</b>, then <i>pathname</i> is interpreted relative to the current working directory of the calling process (like <b>access</b>()).<div style="height: 1.00em;">
+&#160;</div>
+If <i>pathname</i> is absolute, then <i>dirfd</i> is ignored.<div style="height: 1.00em;">
+&#160;</div>
+<i>flags</i> is constructed by ORing together zero or more of the following values:<dl>
+<dt>
+<b>AT_EACCESS</b></dt>
+<dd>
+Perform access checks using the effective user and group IDs. By default, <b>faccessat</b>() uses the real IDs (like <b>access</b>()).</dd>
+</dl>
+<dl>
+<dt>
+<b>AT_SYMLINK_NOFOLLOW</b></dt>
+<dd>
+If <i>pathname</i> is a symbolic link, do not dereference it: instead return information about the link itself.</dd>
+</dl>
+<div class="spacer">
+</div>
+See <b>openat</b>(2) for an explanation of the need for <b>faccessat</b>().</div>
+</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success (all requested permissions granted, or <i>mode</i> is <b>F_OK</b> and the file exists), zero is returned. On error (at least one bit in <i>mode</i> asked for a permission that is denied, or <i>mode</i> is <b>F_OK</b> and the file does not exist, or some other error occurred), -1 is returned, and <i>errno</i> is set appropriately.</div>
+<div class="section">
+<h1>ERRORS</h1> <b>access</b>() and <b>faccessat</b>() shall fail if:<dl>
+<dt>
+<b>EACCES</b></dt>
+<dd>
+The requested access would be denied to the file, or search permission is denied for one of the directories in the path prefix of <i>pathname</i>. (See also <b>path_resolution</b>(7).)</dd>
+</dl>
+<dl>
+<dt>
+<b>ELOOP</b></dt>
+<dd>
+Too many symbolic links were encountered in resolving <i>pathname</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENAMETOOLONG</b></dt>
+<dd>
+<i>pathname</i> is too long.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOENT</b></dt>
+<dd>
+A component of <i>pathname</i> does not exist or is a dangling symbolic link.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+A component used as a directory in <i>pathname</i> is not, in fact, a directory.</dd>
+</dl>
+<dl>
+<dt>
+<b>EROFS</b></dt>
+<dd>
+Write permission was requested for a file on a read-only filesystem.</dd>
+</dl>
+<div class="spacer">
+</div>
+<b>access</b>() and <b>faccessat</b>() may fail if:<dl>
+<dt>
+<b>EFAULT</b></dt>
+<dd>
+<i>pathname</i> points outside your accessible address space.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>mode</i> was incorrectly specified.</dd>
+</dl>
+<dl>
+<dt>
+<b>EIO</b></dt>
+<dd>
+An I/O error occurred.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOMEM</b></dt>
+<dd>
+Insufficient kernel memory was available.</dd>
+</dl>
+<dl>
+<dt>
+<b>ETXTBSY</b></dt>
+<dd>
+Write access was requested to an executable which is being executed.</dd>
+</dl>
+<div class="spacer">
+</div>
+The following additional errors can occur for <b>faccessat</b>():<dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+<i>dirfd</i> is not a valid file descriptor.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+Invalid flag specified in <i>flags</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+<i>pathname</i> is relative and <i>dirfd</i> is a file descriptor referring to a file other than a directory.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>VERSIONS</h1> <b>faccessat</b>() was added to Linux in kernel 2.6.16; library support was added to glibc in version 2.4.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> <b>access</b>(): SVr4, 4.3BSD, POSIX.1-2001, POSIX.1-2008.<div style="height: 1.00em;">
+&#160;</div>
+<b>faccessat</b>(): POSIX.1-2008.</div>
+<div class="section">
+<h1>NOTES</h1> <b>Warning</b>: Using these calls to check if a user is authorized to, for example, open a file before actually doing so using <b>open</b>(2) creates a security hole, because the user might exploit the short time interval between checking and opening the file to manipulate it. <b>For this reason, the use of this system call should be avoided</b>. (In the example just described, a safer alternative would be to temporarily switch the process's effective user ID to the real ID and then call <b>open</b>(2).)<div class="spacer">
+</div>
+<b>access</b>() always dereferences symbolic links. If you need to check the permissions on a symbolic link, use <b>faccessat</b>(2) with the flag <b>AT_SYMLINK_NOFOLLOW</b>.<div class="spacer">
+</div>
+These calls return an error if any of the access types in <i>mode</i> is denied, even if some of the other access types in <i>mode</i> are permitted.<div class="spacer">
+</div>
+If the calling process has appropriate privileges (i.e., is superuser), POSIX.1-2001 permits an implementation to indicate success for an <b>X_OK</b> check even if none of the execute file permission bits are set. Linux does not do this.<div class="spacer">
+</div>
+A file is accessible only if the permissions on each of the directories in the path prefix of <i>pathname</i> grant search (i.e., execute) access. If any directory is inaccessible, then the <b>access</b>() call will fail, regardless of the permissions on the file itself.<div class="spacer">
+</div>
+Only access bits are checked, not the file type or contents. Therefore, if a directory is found to be writable, it probably means that files can be created in the directory, and not that the directory can be written as a file. Similarly, a DOS file may be found to be &quot;executable,&quot; but the <b>execve</b>(2) call will still fail.<div class="spacer">
+</div>
+These calls may not work correctly on NFSv2 filesystems with UID mapping enabled, because UID mapping is done on the server and hidden from the client, which checks permissions.  (NFS versions 3 and higher perform the check on the server.) Similar problems can occur to FUSE mounts.<div class="subsection">
+<h2>C library/kernel differences</h2> The raw <b>faccessat</b>() system call takes only the first three arguments. The <b>AT_EACCESS</b> and <b>AT_SYMLINK_NOFOLLOW</b> flags are actually implemented within the glibc wrapper function for <b>faccessat</b>(). If either of these flags is specified, then the wrapper function employs <b>fstatat</b>(2) to determine access permissions.</div>
+<div class="subsection">
+<h2>Glibc notes</h2> On older kernels where <b>faccessat</b>() is unavailable (and when the <b>AT_EACCESS</b> and <b>AT_SYMLINK_NOFOLLOW</b> flags are not specified), the glibc wrapper function falls back to the use of <b>access</b>(). When <i>pathname</i> is a relative pathname, glibc constructs a pathname based on the symbolic link in <i>/proc/self/fd</i> that corresponds to the <i>dirfd</i> argument.</div>
+</div>
+<div class="section">
+<h1>BUGS</h1> In kernel 2.4 (and earlier) there is some strangeness in the handling of <b>X_OK</b> tests for superuser. If all categories of execute permission are disabled for a nondirectory file, then the only <b>access</b>() test that returns -1 is when <i>mode</i> is specified as just <b>X_OK</b>; if <b>R_OK</b> or <b>W_OK</b> is also specified in <i>mode</i>, then <b>access</b>() returns 0 for such files. Early 2.6 kernels (up to and including 2.6.3) also behaved in the same way as kernel 2.4.<div style="height: 1.00em;">
+&#160;</div>
+In kernels before 2.6.20, these calls ignored the effect of the <b>MS_NOEXEC</b> flag if it was used to <b>mount</b>(2) the underlying filesystem. Since kernel 2.6.20, the <b>MS_NOEXEC</b> flag is honored.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>chmod</b>(2), <b>chown</b>(2), <b>open</b>(2), <b>setgid</b>(2), <b>setuid</b>(2), <b>stat</b>(2), <b>euidaccess</b>(3), <b>credentials</b>(7), <b>path_resolution</b>(7), <b>symlink</b>(7)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-07-23</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

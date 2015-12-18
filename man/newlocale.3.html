@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+NEWLOCALE(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+NEWLOCALE(3)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+NEWLOCALE(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> newlocale, freelocale - create, modify, and free a locale object</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;locale.h&gt;</b><div class="spacer">
+</div>
+<br/>
+<b>locale_t newlocale(int </b><i>category_mask</i><b>, const char *</b><i>locale</i><b>,</b><br/>
+<b>                   locale_t </b><i>base</i><b>);</b><div class="spacer">
+</div>
+<br/>
+<b>void freelocale(locale_t </b><i>locobj</i><b>);</b><br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Feature Test Macro Requirements for glibc (see <b>feature_test_macros</b>(7)):<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>newlocale</b>(), <b>freelocale</b>():<div style="margin-left: 4.00ex;">
+<dl>
+<dt>
+Since glibc 2.10:</dt>
+<dd>
+_XOPEN_SOURCE&#160;&gt;=&#160;700</dd>
+</dl>
+<dl>
+<dt>
+Before glibc 2.10:</dt>
+<dd>
+_GNU_SOURCE</dd>
+</dl>
+</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The <b>newlocale</b>() function creates a new locale object, or modifies an existing object, returning a reference to the new or modified object as the function result. Whether the call creates a new object or modifies an existing object is determined by the value of <i>base</i>:<dl>
+<dt>
+*</dt>
+<dd>
+If <i>base</i> is <i>(locale_t)&#160;0</i>, a new object is created.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+If <i>base</i> refers to valid existing locale object (i.e., an object returned by a previous call to <b>newlocale</b>() or <b>duplocale</b>(3)), then that object is modified by the call. If the call is successful, the contents of <i>base</i> are unspecified (in particular, the object referred to by <i>base</i> may be freed, and a new object created). Therefore, the caller should ensure that it stops using <i>base</i> before the call to <b>newlocale</b>(), and should subsequently refer to the modified object via the reference returned as the function result. If the call fails, the contents of <i>base</i> remain valid and unchanged.</dd>
+</dl>
+<div class="spacer">
+</div>
+If <i>base</i> is the special locale object <b>LC_GLOBAL_LOCALE</b> (see <b>duplocale</b>(3)), or is not <i>(locale_t)&#160;0</i> and is not a valid locale object handle, the behavior is undefined.<div style="height: 1.00em;">
+&#160;</div>
+The <i>category_mask</i> argument is a bit mask that specifies the locale categories that are to be set in a newly created locale object or modified in an existing object. The mask is constructed by a bitwise OR of the constants <b>LC_ADDRESS_MASK</b>, <b>LC_CTYPE_MASK</b>, <b>LC_COLLATE_MASK</b>, <b>LC_IDENTIFICATION_MASK</b>, <b>LC_MEASUREMENT_MASK</b>, <b>LC_MESSAGES_MASK</b>, <b>LC_MONETARY_MASK</b>, <b>LC_NUMERIC_MASK</b>, <b>LC_NAME_MASK</b>, <b>LC_PAPER_MASK</b>, <b>LC_TELEPHONE_MASK</b>, and <b>LC_TIME_MASK</b>. Alternatively, the mask can be specified as <b>LC_ALL_MASK</b>, which is equivalent to ORing all of the preceding constants.<div style="height: 1.00em;">
+&#160;</div>
+For each category specified in <i>category_mask</i>, the locale data from <i>locale</i> will be used in the object returned by <b>newlocale</b>(). If a new locale object is being created, data for all categories not specified in <i>category_mask</i> is taken from the default (&quot;POSIX&quot;) locale.<div style="height: 1.00em;">
+&#160;</div>
+The following preset values of <i>locale</i> are defined for all categories that can be specified in <i>category_mask</i>:<dl>
+<dt>
+&quot;POSIX&quot;</dt>
+<dd>
+A minimal locale environment for C language programs.</dd>
+</dl>
+<dl>
+<dt>
+&quot;C&quot;</dt>
+<dd>
+Equivalent to &quot;POSIX&quot;.</dd>
+</dl>
+<dl>
+<dt>
+&quot;&quot;</dt>
+<dd>
+An implementation-defined native environment corresponding to the values of the <b>LC_*</b> and <b>LANG</b> environment variables (see <b>locale</b>(7)).</dd>
+</dl>
+<div class="subsection">
+<h2>freelocale()</h2> The <b>freelocale</b>() function deallocates the resources associated with <i>locobj</i>, a locale object previously returned by a call to <b>newlocale</b>() or <b>duplocale</b>(3). If <i>locobj</i> is <b>LC_GLOBAL_LOCALE</b> or is not valid locale object handle, the results are undefined.<div style="height: 1.00em;">
+&#160;</div>
+Once a locale object has been freed, the program should make no further use of it.</div>
+</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, <b>newlocale</b>() returns a handle that can be used in calls to <b>duplocale</b>(3), <b>freelocale</b>(), and other functions that take a <i>locale_t</i> argument. On error, <b>newlocale</b>() returns <i>(locale_t)&#160;0</i>, and sets <i>errno</i> to indicate the cause of the error.</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+One or more bits in <i>category_mask</i> do not correspond to a valid locale category.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>locale</i> is NULL.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOENT</b></dt>
+<dd>
+<i>locale</i> is not a string pointer referring to a valid locale.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOMEM</b></dt>
+<dd>
+Insufficient memory to create a locale object.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>VERSIONS</h1> The <b>newlocale</b>() and <b>freelocale</b>() functions first appeared in version 2.3 of the GNU C library.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> POSIX.1-2008.</div>
+<div class="section">
+<h1>NOTES</h1> Each locale object created by <b>newlocale</b>() should be deallocated using <b>freelocale</b>(3).</div>
+<div class="section">
+<h1>EXAMPLE</h1> The program below takes up to two command-line arguments, which each identify locales. The first argument is required, and is used to set the <b>LC_NUMERIC</b> category in a locale object created using <b>newlocale</b>(). The second command-line argument is optional; if it is present, it is used to set the <b>LC_TIME</b> category of the locale object.<div style="height: 1.00em;">
+&#160;</div>
+Having created and initialized the locale object, the program then applies it using <b>uselocale</b>(3), and then tests the effect of the locale changes by:<dl>
+<dt>
+1.</dt>
+<dd>
+Displaying a floating-point number with a fractional part. This output will be affected by the <b>LC_NUMERIC</b> setting. In many European-language locales, the fractional part of the number is separated from the integer part using a comma, rather than a period.</dd>
+</dl>
+<dl>
+<dt>
+2.</dt>
+<dd>
+Displaying the date. The format and language of the output will be affected by the <b>LC_TIME</b> setting.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<div class="spacer">
+</div>
+The following shell sessions show some example runs of this program.<div style="height: 1.00em;">
+&#160;</div>
+Set the <b>LC_NUMERIC</b> category to <i>fr_FR</i> (French):<br/>
+<div class="spacer">
+</div>
+<br/>
+$ <b>./a.out fr_FR</b><br/>
+123456,789<br/>
+Fri Mar  7 00:25:08 2014<br/>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+Set the <b>LC_NUMERIC</b> category to <i>fr_FR</i> (French), and the <b>LC_TIME</b> category to <i>it_IT</i> (Italian):<br/>
+<div class="spacer">
+</div>
+<br/>
+$ <b>./a.out fr_FR it_IT</b><br/>
+123456,789<br/>
+ven 07 mar 2014 00:26:01 CET<br/>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+Specify the <b>LC_TIME</b> setting as an empty string, which causes the value to be taken from environment variable settings (which, here, specify <i>mi_NZ</i>, New Zealand M&#257;ori):<br/>
+<div class="spacer">
+</div>
+<br/>
+$ LC_ALL=mi_NZ ./a.out fr_FR &quot;&quot;<br/>
+123456,789<br/>
+Te Paraire, te 07 o Pout&#363;-te-rangi, 2014 00:38:44 CET<br/>
+<div class="subsection">
+<h2>Program source</h2><br/>
+#define _XOPEN_SOURCE 700<br/>
+#include &lt;stdio.h&gt;<br/>
+#include &lt;stdlib.h&gt;<br/>
+#include &lt;locale.h&gt;<br/>
+#include &lt;time.h&gt;<div class="spacer">
+</div>
+<br/>
+#define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \<br/>
+                        } while (0)<div class="spacer">
+</div>
+<br/>
+int<br/>
+main(int argc, char *argv[])<br/>
+{<br/>
+    char buf[100];<br/>
+    time_t t;<br/>
+    size_t s;<br/>
+    struct tm *tm;<br/>
+    locale_t loc, nloc;<div class="spacer">
+</div>
+<br/>
+    if (argc &lt; 2) {<br/>
+        fprintf(stderr, &quot;Usage: %s locale1 [locale2]\n&quot;, argv[0]);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    /* Create a new locale object, taking the LC_NUMERIC settings<br/>
+       from the locale specified in argv[1] */<div class="spacer">
+</div>
+<br/>
+    loc = newlocale(LC_NUMERIC_MASK, argv[1], (locale_t) 0);<br/>
+    if (loc == (locale_t) 0)<br/>
+        errExit(&quot;newlocale&quot;);<div class="spacer">
+</div>
+<br/>
+    /* If a second command-line argument was specified, modify the<br/>
+       locale object to take the LC_TIME settings from the locale<br/>
+       specified in argv[2]. We assign the result of this newlocale()<br/>
+       call to 'nloc' rather than 'loc', since in some cases, we might<br/>
+       want to preserve 'loc' if this call fails. */<div class="spacer">
+</div>
+<br/>
+    if (argc &gt; 2) {<br/>
+        nloc = newlocale(LC_TIME_MASK, argv[2], loc);<br/>
+        if (nloc == (locale_t) 0)<br/>
+            errExit(&quot;newlocale&quot;);<br/>
+        loc = nloc;<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    /* Apply the newly created locale to this thread */<div class="spacer">
+</div>
+<br/>
+    uselocale(loc);<div class="spacer">
+</div>
+<br/>
+    /* Test effect of LC_NUMERIC */<div class="spacer">
+</div>
+<br/>
+    printf(&quot;%8.3f\n&quot;, 123456.789);<div class="spacer">
+</div>
+<br/>
+    /* Test effect of LC_TIME */<div class="spacer">
+</div>
+<br/>
+    t = time(NULL);<br/>
+    tm = localtime(&amp;t);<br/>
+    if (tm == NULL)<br/>
+        errExit(&quot;time&quot;);<div class="spacer">
+</div>
+<br/>
+    s = strftime(buf, sizeof(buf), &quot;%c&quot;, tm);<br/>
+    if (s == 0)<br/>
+        errExit(&quot;strftime&quot;);<div class="spacer">
+</div>
+<br/>
+    printf(&quot;%s\n&quot;, buf);<div class="spacer">
+</div>
+<br/>
+    /* Free the locale object */<div class="spacer">
+</div>
+<br/>
+    freelocale(loc);<div class="spacer">
+</div>
+<br/>
+    exit(EXIT_SUCCESS);<br/>
+}<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>locale</b>(1), <b>duplocale</b>(3), <b>setlocale</b>(3), <b>uselocale</b>(3), <b>locale</b>(5), <b>locale</b>(7)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2014-05-28</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

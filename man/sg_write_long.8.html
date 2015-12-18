@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SG_WRITE_LONG(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SG_WRITE_LONG(8)</td>
+<td class="head-vol">
+SG3_UTILS</td>
+<td class="head-rtitle">
+SG_WRITE_LONG(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sg_write_long - send SCSI WRITE LONG command</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>sg_write_long</b> [ <i>--16</i>] [<i>--cor_dis</i>] [<i>--help</i>] [<i>--in=IF</i>] [ <i>--lba=LBA</i>] [<i>--pblock</i>] [<i>--verbose</i>] [ <i>--version</i>] [<i>--wr_uncor</i>] [<i>--xfer_len=BTL</i>]  <i>DEVICE</i></div>
+<div class="section">
+<h1>DESCRIPTION</h1> Send the SCSI WRITE LONG (10 or 16 byte) command to  <i>DEVICE</i>. The buffer to be written to the  <i>DEVICE</i> is filled with <b>0xff</b> bytes or read from the  <i>IF</i> file. This buffer includes the logical data (e.g. 512 bytes) and the ECC bytes.<div class="spacer">
+</div>
+This utility can be used to generate a MEDIUM ERROR at a specific logical block address. This can be useful for testing error handling. Prior to such a test, the <b>sg_dd</b> utility could be used to copy the original contents of the logical block address to some safe location. After the test the <b>sg_dd</b> utility could be used to write back the original contents of the logical block address. An alternate strategy would be to read the &quot;long&quot; contents of the logical block address with <b>sg_read_long</b> utility prior to testing and restore it with this utility after testing.<div class="spacer">
+</div>
+<b>Take care:</b> If recoverable errors are being injected (e.g. only one or a few bits changed so that the ECC is able to correct the data) then care should be taken with the settings in the &quot;read write error recovery&quot; mode page. Specifically if the ARRE (for reads) and/or AWRE (for writes) are set then recovered errors will cause the lba to be reassigned (and the old location to be added to the grown defect list (PLIST)). This is not easily reversed and uses (one of the finite number of) the spare sectors set aside for this purpose. If in doubt it is probably safest to clear the ARRE and AWRE bits. These bits can be checked and modified with the sdparm utility.  For example: &quot;sdparm -c AWRE,ARRE /dev/sda&quot; will clear the bits until the disk is power cycled.</div>
+<div class="section">
+<h1>OPTIONS</h1> Arguments to long options are mandatory for short options as well.<dl>
+<dt>
+<b>-S</b>, <b>--16</b></dt>
+<dd>
+send a SCSI WRITE LONG (16) command to <i>DEVICE</i>. The default action (in the absence of this option) is to send a SCSI WRITE LONG (10) command.</dd>
+</dl>
+<dl>
+<dt>
+<b>-c</b>, <b>--cor_dis</b></dt>
+<dd>
+sets the correction disabled (i.e 'COR_DIS') bit. This inhibits various other mechanisms such as automatic block reallocation, error recovery and various informational exception conditions being triggered. This bit is relatively new in SBC-3 .</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>, <b>--help</b></dt>
+<dd>
+output the usage message then exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-i</b>, <b>--in</b>=<i>IF</i></dt>
+<dd>
+read data (binary) from file named <i>IF</i> and use it for the SCSI WRITE LONG command. If  <i>IF</i> is &quot;-&quot; then stdin is read. If this option is not given then 0xff bytes are used as fill.</dd>
+</dl>
+<dl>
+<dt>
+<b>-l</b>, <b>--lba</b>=<i>LBA</i></dt>
+<dd>
+where <i>LBA</i> is the logical block address of the sector to overwrite. Defaults to lba 0 which is a dangerous block to overwrite on a disk that is in use. Assumed to be in decimal unless prefixed with '0x' or has a trailing 'h'. If  <i>LBA</i> is larger than can fit in 32 bits then the  <i>--16</i> option should be used.</dd>
+</dl>
+<dl>
+<dt>
+<b>-p</b>, <b>--pblock</b></dt>
+<dd>
+sets the physical block (i.e 'PBLOCK') bit. This instructs <i>DEVICE</i> to use the given data (unless  <i>--wr_uncor</i> is also given) to write to the physical block specified by  <i>LBA</i>. The default action is to write to the logical block corresponding to the given lba. This bit is relatively new in SBC-3 .</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b>, <b>--verbose</b></dt>
+<dd>
+increase the degree of verbosity (debug messages).</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>, <b>--version</b></dt>
+<dd>
+output version string then exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-w</b>, <b>--wr_uncor</b></dt>
+<dd>
+sets the &quot;write uncorrected&quot; (i.e 'WR_UNCOR') bit. This instructs the  <i>DEVICE</i> to flag the given lba (or the physical block that contains it if  <i>--pblock</i> is also given) as having an unrecoverable error associated with it. Note: no data is transferred to  <i>DEVICE</i>, other than the command (i.e. the cdb). In the absence of this option, the default action is to use the provided data or 0xff bytes ( <i>--xfer_len=BTL</i> in length) and write it to <i>DEVICE</i>. This bit is relatively new in SBC-3 .</dd>
+</dl>
+<dl>
+<dt>
+<b>-x</b>, <b>--xfer_len</b>=<i>BTL</i></dt>
+<dd>
+where <i>BTL</i> is the byte transfer length (default to 520). If the given value (or the default) does not match the &quot;long&quot; block size of the device, nothing is written to  <i>DEVICE</i> and the appropriate xfer_len value may be deduced from the error response which is printed (to stderr).</dd>
+</dl>
+</div>
+<div class="section">
+<h1>NOTES</h1> Various numeric arguments (e.g.  <i>LBA</i>) may include multiplicative suffixes or be given in hexadecimal. See the &quot;NUMERIC ARGUMENTS&quot; section in the sg3_utils(8) man page.<div class="spacer">
+</div>
+The 10 byte SCSI WRITE LONG command limits the logical block address to a 32 bit quantity. For larger LBAs use the  <i>--16</i> option for the SCSI WRITE LONG (16) command.</div>
+<div class="section">
+<h1>EXAMPLES</h1> This section outlines setting up a block with corrupted data, checking the error condition, then restoring useful contents to that sector.<div class="spacer">
+</div>
+First, if the data in a sector is important, save it with the sg_read_long utility:<div class="spacer">
+</div>
+<br/>
+  sg_read_long --lba=0x1234 --out=0x1234_1.img -x <i>BTL</i> /dev/sda<div class="spacer">
+</div>
+This utility may need to be executed several time in order to determine what the correct value for  <i>BTL</i> is. Next use this utility to &quot;corrupt&quot; that sector. That might be done with:<div class="spacer">
+</div>
+<br/>
+  sg_write_long --lba=0x1234 -x <i>BTL</i> /dev/sda<div class="spacer">
+</div>
+This will write a sector (and ECC data) of 0xff bytes. Some disks may reject this (at least one of the author's does). Another approach is to copy the 0x1234_1.img file (to 0x1234_2.img in this example) and change some values with a hex editor. Then write the changed image with:<div class="spacer">
+</div>
+<br/>
+  sg_write_long --lba=0x1234 --in=0x1234_2.img -x <i>BTL</i> /dev/sda<div class="spacer">
+</div>
+Yet another approach is to use the <i>--wr_uncor</i> option, if supported:<div class="spacer">
+</div>
+<br/>
+  sg_write_long --lba=0x1234 --wr_uncor /dev/sda<div class="spacer">
+</div>
+Next we use the sg_dd utility to check that the sector is corrupted. Here is an example:<div class="spacer">
+</div>
+<br/>
+  sg_dd if=/dev/sda blk_sgio=1 skip=0x1234 of=. bs=512 count=1 verbose=4<div class="spacer">
+</div>
+Notice that the &quot;blk_sgio=1&quot; option is given. This is to make sure that the sector is read (and no others) and the error is fully reported. The &quot;blk_sgio=1&quot; option causes the SG_IO ioctl to be used by sg_dd rather than the block subsystem.<div class="spacer">
+</div>
+Finally we should restore sector 0x1234 to a non-corrupted state. A sector full of zeros could be written with:<div class="spacer">
+</div>
+<br/>
+  sg_dd if=/dev/zero of=/dev/sda blk_sgio=1 seek=0x1234 bs=512 count=1<div class="spacer">
+</div>
+This will result in a sector (block) with 512 bytes of 0x0 without a MEDIUM ERROR since the ECC and associated data will be regenerated and thus well formed. The 'blk_sgio=1' option is even more important in this case as it may stop the block subsystem doing a read before write (since the read will most likely fail). Another approach is to write back the original contents:<div class="spacer">
+</div>
+<br/>
+  sg_write_long --lba=0x1234 --in=0x1234_1.img -x <i>BTL</i> /dev/sda</div>
+<div class="section">
+<h1>EXIT STATUS</h1> The exit status of sg_write_long is 0 when it is successful. Otherwise see the sg3_utils(8) man page.</div>
+<div class="section">
+<h1>AUTHORS</h1> Written by Saeed Bishara. Further work by Douglas Gilbert.</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Report bugs to &lt;dgilbert at interlog dot com&gt;.</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright &#169; 2004-2013 Douglas Gilbert<div style="height: 0.00em;">
+&#160;</div>
+This software is distributed under the GPL version 2. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>sg_read_long, sg_dd (both in sg3_utils), sdparm(sdparm)</b></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+February 2013</td>
+<td class="foot-os">
+sg3_utils-1.36</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

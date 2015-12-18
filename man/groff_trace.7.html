@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+GROFF_TRACE(7)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+GROFF_TRACE(7)</td>
+<td class="head-vol">
+Miscellaneous Information Manual</td>
+<td class="head-rtitle">
+GROFF_TRACE(7)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> groff_trace - groff macro package trace.tmac</div>
+<div class="section">
+<h1>SYNOPSIS</h1> [<i>options</i> <i>...</i>] [<i>files</i> <i>...</i>]</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The <i>trace</i> macro package of <b>groff</b>(1) can be a valuable tool for debugging documents written in the roff formatting language. A call stack trace is protocolled on standard error, this is, a diagnostic message is emitted on entering and exiting of a macro call. This greatly eases to track down an error in some macro.<div class="spacer">
+</div>
+This tracing process is activated by specifying the groff or troff command line option <b>-m&#160;trace</b>. This works also with the <b>groffer</b>(1) viewer program. A finer control can be obtained by including the macro file within the document by the groff macro call <b>.mso&#160;trace.tmac</b>. Only macros that are defined after this line are traced.<div class="spacer">
+</div>
+If command line option <b>-r&#160;trace-full=1</b> is given (or if this register is set in the document), number and string register assignments together with some other requests are traced also.<div class="spacer">
+</div>
+If some other macro package should be traced as well it must be specified after <b>-m&#160;trace</b> on the command line.<div class="spacer">
+</div>
+The macro file <b>trace.tmac</b> is unusual because it does not contain any macros to be called by a user. Instead, the existing macro definition and appending facilities are modified such that they display diagnostic messages.</div>
+<div class="section">
+<h1>EXAMPLES</h1> In the following examples, a roff fragment is fed into groff via standard input. As we are only interested in the diagnostic messages (standard error) on the terminal, the normal formatted output (standard output) is redirected to the nirvana device <i>/dev/null</i>. The resulting diagnostic messages are displayed directly below the corresponding example.<div class="subsection">
+<h2>Command line option</h2> Example:<div style="margin-left: 5.00ex;">
+<div class="spacer">
+</div>
+<br/>
+<i>sh#</i> echo '.<br/>
+&gt; .de test_macro<br/>
+&gt; ..<br/>
+&gt; .test_macro<br/>
+&gt; .test_macro some dummy arguments<br/>
+&gt; ' | groff -m trace &gt; /dev/null<div class="spacer">
+</div>
+<br/>
+*** .de test_macro<br/>
+*** de trace enter: .test_macro<br/>
+*** trace exit: .test_macro<br/>
+*** de trace enter: .test_macro &quot;some&quot; &quot;dummy&quot; &quot;arguments&quot;<br/>
+*** trace exit: .test_macro &quot;some&quot; &quot;dummy&quot; &quot;arguments&quot;<br/>
+</div>
+<div class="spacer">
+</div>
+The entry and the exit of each macro call is displayed on the terminal (standard output) &#8212; together with the arguments (if any).</div>
+<div class="subsection">
+<h2>Nested macro calls</h2> Example:<div style="margin-left: 5.00ex;">
+<div class="spacer">
+</div>
+<br/>
+<i>sh#</i> echo '.<br/>
+&gt; .de child<br/>
+&gt; ..<br/>
+&gt; .de parent<br/>
+&gt; .child<br/>
+&gt; ..<br/>
+&gt; .parent<br/>
+&gt; ' | groff -m trace &gt; /dev/null<div class="spacer">
+</div>
+<br/>
+*** .de child<br/>
+*** .de parent<br/>
+*** de trace enter: .parent<br/>
+ *** de trace enter: .child<br/>
+ *** trace exit: .child<br/>
+*** trace exit: .parent<br/>
+</div>
+<div class="spacer">
+</div>
+This shows that macro calls can be nested. This powerful feature can help to tack down quite complex call stacks.</div>
+<div class="subsection">
+<h2>Activating with .mso</h2> Example:<div style="margin-left: 5.00ex;">
+<div class="spacer">
+</div>
+<br/>
+<i>sh#</i> echo '.<br/>
+&gt; .de before<br/>
+&gt; ..<br/>
+&gt; .mso trace.tmac<br/>
+&gt; .de after<br/>
+&gt; ..<br/>
+&gt; .before<br/>
+&gt; .after<br/>
+&gt; .before<br/>
+&gt; ' | groff &gt; /dev/null<div class="spacer">
+</div>
+<br/>
+*** de trace enter: .after<br/>
+*** trace exit: .after<br/>
+</div>
+<div class="spacer">
+</div>
+Here, the tracing is activated within the document, not by a command line option. As tracing was not active when macro <i>before</i> was defined, no call of this macro is protocolled; on the other hand, the macro <i>after</i> is fully protocolled.</div>
+</div>
+<div class="section">
+<h1>PROBLEMS</h1> Because <b>trace.tmac</b> wraps the <b>.de</b> request (and its cousins), macro arguments are expanded one level more. This causes problems if an argument contains four backslashes or more to prevent too early expansion of the backslash. For example, this macro call<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+.foo \\\\n[bar]<br/>
+</dd>
+</dl>
+<div class="spacer">
+</div>
+normally passes &#8216;\\n[bar]&#8217; to macro &#8216;.foo&#8217;, but with the redefined <b>.de</b> request it passes &#8216;\n[bar]&#8217; instead.<div class="spacer">
+</div>
+The solution to this problem is to use groff's <b>\E</b> escape which is an escape character not interpreted in copy mode, for example<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+.foo \En[bar]<br/>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>FILES</h1> The <i>trace</i> macros are kept in the file <b>trace.tmac</b> located in the <i>tmac directory</i>; see <b>groff_tmac</b>(5) for details.</div>
+<div class="section">
+<h1>ENVIRONMENT</h1><dl>
+<dt>
+<b>$GROFF_TMAC_PATH</b></dt>
+<dd>
+A colon-separated list of additional tmac directories in which to search for macro files; see <b>groff_tmac</b>(5) for details.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1><dl>
+<dt>
+<b>groff</b>(1)</dt>
+<dd>
+An overview of the groff system.</dd>
+</dl>
+<dl>
+<dt>
+<b>troff</b>(1)</dt>
+<dd>
+For details on option <b>-m</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>groffer</b>(1)</dt>
+<dd>
+A viewer program for all kinds of roff documents.</dd>
+</dl>
+<dl>
+<dt>
+<b>groff_tmac</b>(5)</dt>
+<dd>
+A general description of groff macro packages.</dd>
+</dl>
+<dl>
+<dt>
+<b>groff</b>(7)</dt>
+<dd>
+A short reference for the groff formatting language.</dd>
+</dl>
+<div class="spacer">
+</div>
+A complete reference for all parts of the groff system is found in the groff <b>info</b>(1) file.</div>
+<div class="section">
+<h1>COPYING</h1> Copyright &#169; 2002-2014 Free Software Foundation, Inc.<div style="height: 1.00em;">
+&#160;</div>
+This file is part of groff, the GNU roff type-setting system.<div style="height: 1.00em;">
+&#160;</div>
+Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with the Invariant Sections being this .ig-section and AUTHOR, with no Front-Cover Texts, and with no Back-Cover Texts.<div style="height: 1.00em;">
+&#160;</div>
+A copy of the Free Documentation License is included as a file called FDL in the main directory of the groff source package.</div>
+<div class="section">
+<h1>AUTHORS</h1> Written by Bernd Warken</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+4 November 2014</td>
+<td class="foot-os">
+Groff Version 1.22.3</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

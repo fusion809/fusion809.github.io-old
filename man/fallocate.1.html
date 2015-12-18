@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+FALLOCATE(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+FALLOCATE(1)</td>
+<td class="head-vol">
+User Commands</td>
+<td class="head-rtitle">
+FALLOCATE(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> fallocate - preallocate or deallocate space to a file</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>fallocate</b> [<b>-c</b>] [<b>-n</b>] [<b>-p</b>] [<b>-z</b>] [<b>-o</b> <i>offset</i>] <b>-l</b> <i>length</i> <i>filename</i><div class="spacer">
+</div>
+<b>fallocate -d</b> [<b>-o</b> <i>offset</i>] [<b>-l</b> <i>length</i>] <i>filename</i></div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>fallocate</b> is used to manipulate the allocated disk space for a file, either to deallocate or preallocate it.  For filesystems which support the fallocate system call, preallocation is done quickly by allocating blocks and marking them as uninitialized, requiring no IO to the data blocks.  This is much faster than creating a file by filling it with zeros.<div class="spacer">
+</div>
+The exit code returned by <b>fallocate</b> is 0 on success and 1 on failure.</div>
+<div class="section">
+<h1>OPTIONS</h1> The  <i>length</i> and <i>offset</i> arguments may be followed by the multiplicative suffixes KiB (=1024), MiB (=1024*1024), and so on for GiB, TiB, PiB, EiB, ZiB and YiB (the &quot;iB&quot; is optional, e.g., &quot;K&quot; has the same meaning as &quot;KiB&quot;) or the suffixes KB (=1000), MB (=1000*1000), and so on for GB, TB, PB, EB, ZB and YB.<div class="spacer">
+</div>
+The options <b>--collapse-range</b>, <b>--dig-holes</b>, <b>--punch-hole</b> and  <b>--zero-range</b> are mutually exclusive.<dl>
+<dt>
+<b>-c</b>,<b> --collapse-range</b></dt>
+<dd>
+Removes a byte range from a file, without leaving a hole.  The byte range to be collapsed starts at  <i>offset</i> and continues for  <i>length</i> bytes.  At the completion of the operation, the contents of the file starting at the location  <i>offset</i>+<i>length</i> will be appended at the location  <i>offset</i>, and the file will be <i>length</i> bytes smaller.  The option  <b>--keep-size</b> may not be specified for colapse range operation.<div style="height: 1.00em;">
+&#160;</div>
+Available since Linux 3.15 for ext4 (only for extent-based files) and XFS.</dd>
+</dl>
+<dl>
+<dt>
+<b>-d</b>,<b> --dig-holes</b></dt>
+<dd>
+Detect and dig holes.  This makes the file sparse in-place, without using extra disk space.  The minimum size of the hole depends on filesystem I/O block size (usually 4096 bytes).  Also, when using this option,  <b>--keep-size</b> is implied.  If no range is specified by  <b>--offset</b> and <b>--length</b>, then the entire file is analyzed for holes.<div style="height: 1.00em;">
+&#160;</div>
+You can think of this option as doing a &quot;<b>cp --sparse</b>&quot; and then renaming the destination file to the original, without the need for extra disk space.<div style="height: 1.00em;">
+&#160;</div>
+See <b>--punch-hole</b> for a list of supported filesystems.</dd>
+</dl>
+<dl>
+<dt>
+<b>-l</b>,<b> --length </b><i>length</i></dt>
+<dd>
+Specifies the length of the range, in bytes.</dd>
+</dl>
+<dl>
+<dt>
+<b>-n</b>,<b> --keep-size</b></dt>
+<dd>
+Do not modify the apparent length of the file.  This may effectively allocate blocks past EOF, which can be removed with a truncate.</dd>
+</dl>
+<dl>
+<dt>
+<b>-o</b>,<b> --offset </b><i>offset</i></dt>
+<dd>
+Specifies the beginning offset of the range, in bytes.</dd>
+</dl>
+<dl>
+<dt>
+<b>-p</b>,<b> --punch-hole</b></dt>
+<dd>
+Deallocates space (i.e., creates a hole) in the byte range starting at  <i>offset</i> and continuing for <i>length</i> bytes.  Within the specified range, partial filesystem blocks are zeroed, and whole filesystem blocks are removed from the file.  After a successful call, subsequent reads from this range will return zeroes.  This option may not be specified at the same time as  the  <b>--zero-range</b> option. Also, when using this option,  <b>--keep-size</b> is implied.<div style="height: 1.00em;">
+&#160;</div>
+Supported for XFS (since Linux 2.6.38), ext4 (since Linux 3.0), Btrfs (since Linux 3.7) and tmpfs (since Linux 3.5).</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b>,<b> --verbose</b></dt>
+<dd>
+Enable verbose mode.</dd>
+</dl>
+<dl>
+<dt>
+<b>-z</b>,<b> --zero-range</b></dt>
+<dd>
+Zeroes space in the byte range starting at <i>offset</i> and continuing for  <i>length</i> bytes.  Within the specified range, blocks are preallocated for the regions that span the holes in the file.  After a successful call, subsequent reads from this range will return zeroes.<div style="height: 1.00em;">
+&#160;</div>
+Zeroing is done within the filesystem preferably by converting the range into unwritten extents.  This approach means that the specified range will not be physically zeroed out on the device (except for partial blocks at the either end of the range), and I/O is (otherwise) required only to update metadata.<div style="height: 1.00em;">
+&#160;</div>
+Option <b>--keep-size</b> can be specified to prevent file length modification.<div style="height: 1.00em;">
+&#160;</div>
+Available since Linux 3.14 for ext4 (only for extent-based files) and XFS.</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>,<b> --version</b></dt>
+<dd>
+Display version information and exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>,<b> --help</b></dt>
+<dd>
+Display help text and exit.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>AUTHORS</h1> <a class="link-ext" href="sandeen@redhat.com">Eric Sandeen</a><div style="height: 0.00em;">
+&#160;</div>
+<a class="link-ext" href="kzak@redhat.com">Karel Zak</a></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>fallocate</b>(2), <b>posix_fallocate</b>(3), <b>truncate</b>(1)</div>
+<div class="section">
+<h1>AVAILABILITY</h1> The fallocate command is part of the util-linux package and is available from <a class="link-ext" href="ftp://ftp.kernel.org/pub/linux/utils/util-linux/">Linux Kernel Archive</a></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+September 2011</td>
+<td class="foot-os">
+util-linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

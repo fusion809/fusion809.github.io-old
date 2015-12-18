@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SG_DECODE_SENSE(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SG_DECODE_SENSE(8)</td>
+<td class="head-vol">
+SG3_UTILS</td>
+<td class="head-rtitle">
+SG_DECODE_SENSE(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sg_decode_sense - decode SCSI sense data</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>sg_decode_sense</b> [ <i>--binary=FN</i>] [<i>--file=FN</i>] [<i>--help</i>] [ <i>--hex</i>] [<i>--nospace</i>] [<i>--status=SS</i>] [ <i>--verbose</i>] [<i>--version</i>] [<i>--write=WFN</i>] [H1 H2 H3 ...]</div>
+<div class="section">
+<h1>DESCRIPTION</h1> This utility takes SCSI sense data in binary or as a sequence of ASCII hexadecimal bytes and decodes it. The primary reference for the decoding is SPC-3 ANSI INCITS 408-2005 and the most recent draft SPC-4 revision 37 which can be found at http://www.t10.org and other locations on the internet.<div class="spacer">
+</div>
+SCSI sense data is often found in kernel log files as a result of something going wrong but may just be informative. It is often shown as a sequence of hexadecimal bytes, starting with 70, 71, 72, 73, f0 or f1. Sense data could be up to 252 bytes long but typically is much shorter than that, 18 bytes long is often seen and is usually associated with the older &quot;fixed&quot; format sense data.<div class="spacer">
+</div>
+The sense data can be provided on the command line or in a file. If given on the command line the sense data should be a sequence of hexadecimal bytes separated by space. Alternatively a file can be given with the contents in binary or ASCII hexadecimal bytes. The latter form can contain several lines each with none, one or more ASCII hexadecimal bytes separated by space (comma or tab). The hash symbol may appear and it and the rest of the line is ignored making it useful for comments.</div>
+<div class="section">
+<h1>OPTIONS</h1> Arguments to long options are mandatory for short options as well.<dl>
+<dt>
+<b>-b</b>, <b>--binary</b>=<i>FN</i></dt>
+<dd>
+the sense data is read in binary from a file called <i>FN</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>, <b>--help</b></dt>
+<dd>
+output the usage message then exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-H</b>, <b>--hex</b></dt>
+<dd>
+this option is used in conjunction with <i>--write=WFN</i> in order to change the output written to  <i>WFN</i> to lines of ASCII hex bytes suitable for a C language compiler. Each line contains up to 16 bytes (e.g. a line starting with &quot;0x3b,0x07,0x00,0xff&quot;).</dd>
+</dl>
+<dl>
+<dt>
+<b>-f</b>, <b>--file</b>=<i>FN</i></dt>
+<dd>
+the sense data is read in ASCII hexadecimal from a file called <i>FN</i>. The sense data should appear as a sequence of bytes separated by space, comma, tab or newline. Everything from and including a hash symbol to the end of that line is ignored. If  <i>--nospace</i> is set then no separator is required between the ASCII hexadecimal digits in  <i>FN</i> with bytes decoded from pairs of ASCII hexadecimal digits.</dd>
+</dl>
+<dl>
+<dt>
+<b>-n</b>, <b>--nospace</b></dt>
+<dd>
+expect ASCII hexadecimal to be a string of hexadecimal digits with no spaces between them. Bytes are decoded by taking two hexadecimal digits at a time, so an even number of digits is expected. The string of hexadecimal digits may be on the command line (replacing &quot;H1 H2 H3&quot;) or spread across multiple lines the  <i>FN</i> given to <i>--file=</i>. On the command line, spaces (or other whitespace characters) between sequences of hexadecimal digits are ignored; the maximum command line hex string is 1023 characters long.</dd>
+</dl>
+<dl>
+<dt>
+<b>-s</b>, <b>--status</b>=<i>SS</i></dt>
+<dd>
+where <i>SS</i> is a SCSI status byte value, given in hexadecimal. The SCSI status byte is related to but distinct from sense data.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b>, <b>--verbose</b></dt>
+<dd>
+increase the degree of verbosity (debug messages).</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>, <b>--version</b></dt>
+<dd>
+output version string then exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-w</b>, <b>--write</b>=<i>WFN</i></dt>
+<dd>
+writes the sense data out to a file called <i>WFN</i>. If necessary <i>WFN</i> is created. If  <i>WFN</i> exists then it is truncated prior to writing the sense data to it. If the  <i>--hex</i> option is also given then ASCII hex is written to  <i>WFN</i> (see the <i>--hex</i> option description); otherwise binary is written to  <i>WFN</i>. This option is a convenience and may be helpful in converting the ASCII hexadecimal representation of sense data (or anything else) into the equivalent binary or a compilable ASCII hex form.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>NOTES</h1> Unlike most utilities in this package, this utility does not access a SCSI device (logical unit). This utility accesses a library associated with this package. Amongst other things the library decodes SCSI sense data.<div class="spacer">
+</div>
+T10 defined SCSI command names given a CDB can be decoded using the sg_raw utility with the '-vvv' option.</div>
+<div class="section">
+<h1>EXAMPLES</h1> Sense data is often printed out in kernel logs and sometimes on the command line when verbose or debug flags are given. It will be at least 8 bytes long, often 18 bytes long but may be longer. A sense data string might look like this:<div class="spacer">
+</div>
+f0 00 03 00 00 12 34 0a  00 00 00 00 11 00 00 00<div style="height: 0.00em;">
+&#160;</div>
+00 00<div class="spacer">
+</div>
+Cut and paste it after the sg_decode_sense command:<div class="spacer">
+</div>
+<br/>
+  sg_decode_sense f0 00 03 00 00 12 34 0a 00 00 00 00 11 00 00 00 00 00<div class="spacer">
+</div>
+and for this sense data the output should look like this:<div class="spacer">
+</div>
+<br/>
+ Fixed format, current;  Sense key: Medium Error<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+ Additional sense: Unrecovered read error<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  Info fld=0x1234 [4660]<div class="spacer">
+</div>
+For a medium error the Info field is the logical block address (LBA) of the lowest numbered block that the associated SCSI command was not able to read (verify or write).</div>
+<div class="section">
+<h1>EXIT STATUS</h1> The exit status of sg_decode_sense is 0 when it is successful. Otherwise see the sg3_utils(8) man page.</div>
+<div class="section">
+<h1>AUTHORS</h1> Written by Douglas Gilbert.</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Report bugs to &lt;dgilbert at interlog dot com&gt;.</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright &#169; 2010-2014 Douglas Gilbert<div style="height: 0.00em;">
+&#160;</div>
+This software is distributed under a FreeBSD license. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>sg_requests,sg_raw(sg3_utils)</b></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+August 2014</td>
+<td class="foot-os">
+sg3_utils-1.40</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

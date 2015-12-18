@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+MKFIFO(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+MKFIFO(3)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+MKFIFO(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> mkfifo, mkfifoat - make a FIFO special file (a named pipe)</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;sys/types.h&gt;</b> <b>#include &lt;sys/stat.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>int mkfifo(const char *</b><i>pathname</i><b>, mode_t </b><i>mode</i><b>);</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>#include &lt;fcntl.h&gt;           </b>/* Definition of AT_* constants */ <b>#include &lt;sys/stat.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>int mkfifoat(int </b><i>dirfd</i><b>, const char *</b><i>pathname</i><b>, mode_t </b><i>mode</i><b>);</b><br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Feature Test Macro Requirements for glibc (see <b>feature_test_macros</b>(7)):<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>mkfifoat</b>():<div style="margin-left: 4.00ex;">
+<dl>
+<dt>
+Since glibc 2.10:</dt>
+<dd>
+_XOPEN_SOURCE&#160;&gt;=&#160;700 || _POSIX_C_SOURCE&#160;&gt;=&#160;200809L</dd>
+</dl>
+<dl>
+<dt>
+Before glibc 2.10:</dt>
+<dd>
+_ATFILE_SOURCE</dd>
+</dl>
+</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>mkfifo</b>() makes a FIFO special file with name  <i>pathname</i>.  <i>mode</i> specifies the FIFO's permissions. It is modified by the process's  <b>umask</b> in the usual way: the permissions of the created file are  <b>(</b><i>mode</i><b> &amp; ~umask)</b>.<div class="spacer">
+</div>
+A FIFO special file is similar to a pipe, except that it is created in a different way. Instead of being an anonymous communications channel, a FIFO special file is entered into the filesystem by calling <b>mkfifo</b>().<div class="spacer">
+</div>
+Once you have created a FIFO special file in this way, any process can open it for reading or writing, in the same way as an ordinary file. However, it has to be open at both ends simultaneously before you can proceed to do any input or output operations on it. Opening a FIFO for reading normally blocks until some other process opens the same FIFO for writing, and vice versa. See <b>fifo</b>(7) for nonblocking handling of FIFO special files.<div class="subsection">
+<h2>mkfifoat()</h2> The <b>mkfifoat</b>() function operates in exactly the same way as <b>mkfifo</b>(), except for the differences described here.<div style="height: 1.00em;">
+&#160;</div>
+If the pathname given in <i>pathname</i> is relative, then it is interpreted relative to the directory referred to by the file descriptor <i>dirfd</i> (rather than relative to the current working directory of the calling process, as is done by <b>mkfifo</b>() for a relative pathname).<div style="height: 1.00em;">
+&#160;</div>
+If <i>pathname</i> is relative and <i>dirfd</i> is the special value <b>AT_FDCWD</b>, then <i>pathname</i> is interpreted relative to the current working directory of the calling process (like <b>mkfifo</b>()).<div style="height: 1.00em;">
+&#160;</div>
+If <i>pathname</i> is absolute, then <i>dirfd</i> is ignored.</div>
+</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success <b>mkfifo</b>() and <b>mkfifoat</b>() return 0. In the case of an error, -1 is returned (in which case,  <i>errno</i> is set appropriately).</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>EACCES</b></dt>
+<dd>
+One of the directories in <i>pathname</i> did not allow search (execute) permission.</dd>
+</dl>
+<dl>
+<dt>
+<b>EDQUOT</b></dt>
+<dd>
+The user's quota of disk blocks or inodes on the filesystem has been exhausted.</dd>
+</dl>
+<dl>
+<dt>
+<b>EEXIST</b></dt>
+<dd>
+<i>pathname</i> already exists. This includes the case where <i>pathname</i> is a symbolic link, dangling or not.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENAMETOOLONG</b></dt>
+<dd>
+Either the total length of <i>pathname</i> is greater than  <b>PATH_MAX</b>, or an individual filename component has a length greater than  <b>NAME_MAX</b>. In the GNU system, there is no imposed limit on overall filename length, but some filesystems may place limits on the length of a component.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOENT</b></dt>
+<dd>
+A directory component in <i>pathname</i> does not exist or is a dangling symbolic link.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOSPC</b></dt>
+<dd>
+The directory or filesystem has no room for the new file.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+A component used as a directory in <i>pathname</i> is not, in fact, a directory.</dd>
+</dl>
+<dl>
+<dt>
+<b>EROFS</b></dt>
+<dd>
+<i>pathname</i> refers to a read-only filesystem.</dd>
+</dl>
+<div class="spacer">
+</div>
+The following additional errors can occur for <b>mkfifoat</b>():<dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+<i>dirfd</i> is not a valid file descriptor.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+<i>pathname</i> is a relative path and <i>dirfd</i> is a file descriptor referring to a file other than a directory.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>VERSIONS</h1> <b>mkfifoat</b>() was added to glibc in version 2.4. It is implemented using <b>mknodat</b>(2), available on Linux since kernel 2.6.16.</div>
+<div class="section">
+<h1>ATTRIBUTES</h1> For an explanation of the terms used in this section, see <b>attributes</b>(7).<table class="tbl">
+<col style="width: 22.00ex;"/>
+<col style="width: 13.00ex;"/>
+<col style="width: 5.00ex;"/>
+<tbody>
+<tr>
+<td>
+Interface</td>
+<td>
+Attribute</td>
+<td>
+Value</td>
+</tr>
+<tr>
+<td>
+mkfifo (), mkfifoat ()</td>
+<td>
+Thread safety</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section">
+<h1>CONFORMING TO</h1> <b>mkfifo</b>(): POSIX.1-2001, POSIX.1-2008.<div style="height: 1.00em;">
+&#160;</div>
+<b>mkfifoat</b>(): POSIX.1-2008.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>mkfifo</b>(1), <b>close</b>(2), <b>open</b>(2), <b>read</b>(2), <b>stat</b>(2), <b>umask</b>(2), <b>write</b>(2), <b>fifo</b>(7)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-03-02</td>
+<td class="foot-os">
+GNU</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

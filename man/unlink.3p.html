@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+UNLINK(3P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+UNLINK(3P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+UNLINK(3P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> unlink, unlinkat &#8212; remove a directory entry relative to directory file descriptor</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;unistd.h&gt;<div class="spacer">
+</div>
+int unlink(const char *<i>path</i>);<br/>
+int unlinkat(int <i>fd</i>, const char *<i>path</i>, int <i>flag</i>);<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <i>unlink</i>() function shall remove a link to a file. If <i>path</i> names a symbolic link,  <i>unlink</i>() shall remove the symbolic link named by <i>path</i> and shall not affect any file or directory named by the contents of the symbolic link. Otherwise,  <i>unlink</i>() shall remove the link named by the pathname pointed to by <i>path</i> and shall decrement the link count of the file referenced by the link.<div class="spacer">
+</div>
+When the file's link count becomes 0 and no process has the file open, the space occupied by the file shall be freed and the file shall no longer be accessible. If one or more processes have the file open when the last link is removed, the link shall be removed before  <i>unlink</i>() returns, but the removal of the file contents shall be postponed until all references to the file are closed.<div class="spacer">
+</div>
+The <i>path</i> argument shall not name a directory unless the process has appropriate privileges and the implementation supports using  <i>unlink</i>() on directories.<div class="spacer">
+</div>
+Upon successful completion,  <i>unlink</i>() shall mark for update the last data modification and last file status change timestamps of the parent directory. Also, if the file's link count is not 0, the last file status change timestamp of the file shall be marked for update.<div class="spacer">
+</div>
+The  <i>unlinkat</i>() function shall be equivalent to the  <i>unlink</i>() or  <i>rmdir</i>() function except in the case where <i>path</i> specifies a relative path. In this case the directory entry to be removed is determined relative to the directory associated with the file descriptor <i>fd</i> instead of the current working directory. If the file descriptor was opened without O_SEARCH, the function shall check whether directory searches are permitted using the current permissions of the directory underlying the file descriptor. If the file descriptor was opened with O_SEARCH, the function shall not perform the check.<div class="spacer">
+</div>
+Values for <i>flag</i> are constructed by a bitwise-inclusive OR of flags from the following list, defined in <i>&lt;fcntl.h&gt;</i>:<dl>
+<dt>
+AT_REMOVEDIR</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+Remove the directory entry specified by <i>fd</i> and <i>path</i> as a directory, not a normal file.</dd>
+</dl>
+<div class="spacer">
+</div>
+If  <i>unlinkat</i>() is passed the special value AT_FDCWD in the <i>fd</i> parameter, the current working directory shall be used and the behavior shall be identical to a call to  <i>unlink</i>() or  <i>rmdir</i>() respectively, depending on whether or not the AT_REMOVEDIR bit is set in <i>flag</i>.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> Upon successful completion, these functions shall return 0. Otherwise, these functions shall return &#8722;1 and set <i>errno</i> to indicate the error. If &#8722;1 is returned, the named file shall not be changed.</div>
+<div class="section">
+<h1>ERRORS</h1> These functions shall fail and shall not unlink the file if:<dl>
+<dt>
+<b>EACCES</b></dt>
+<dd>
+Search permission is denied for a component of the path prefix, or write permission is denied on the directory containing the directory entry to be removed.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBUSY</b></dt>
+<dd>
+The file named by the <i>path</i> argument cannot be unlinked because it is being used by the system or another process and the implementation considers this an error.</dd>
+</dl>
+<dl>
+<dt>
+<b>ELOOP</b></dt>
+<dd>
+A loop exists in symbolic links encountered during resolution of the <i>path</i> argument.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENAMETOOLONG</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The length of a component of a pathname is longer than {NAME_MAX}.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOENT</b></dt>
+<dd>
+A component of <i>path</i> does not name an existing file or <i>path</i> is an empty string.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+A component of the path prefix names an existing file that is neither a directory nor a symbolic link to a directory, or the <i>path</i> argument contains at least one non-&lt;slash&gt; character and ends with one or more trailing &lt;slash&gt; characters and the last pathname component names an existing file that is neither a directory nor a symbolic link to a directory.</dd>
+</dl>
+<dl>
+<dt>
+<b>EPERM</b></dt>
+<dd>
+The file named by <i>path</i> is a directory, and either the calling process does not have appropriate privileges, or the implementation prohibits using  <i>unlink</i>() on directories.</dd>
+</dl>
+<dl>
+<dt>
+<b>EPERM</b> or <b>EACCES</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The S_ISVTX flag is set on the directory containing the file referred to by the <i>path</i> argument and the process does not satisfy the criteria specified in the Base Definitions volume of POSIX.1&#8208;2008, <i>Section 4.2</i>, <i>Directory Protection</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>EROFS</b></dt>
+<dd>
+The directory entry to be unlinked is part of a read-only file system.</dd>
+</dl>
+<div class="spacer">
+</div>
+The  <i>unlinkat</i>() function shall fail if:<dl>
+<dt>
+<b>EACCES</b></dt>
+<dd>
+<i>fd</i> was not opened with O_SEARCH and the permissions of the directory underlying <i>fd</i> do not permit directory searches.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+The <i>path</i> argument does not specify an absolute path and the <i>fd</i> argument is neither AT_FDCWD nor a valid file descriptor open for reading or searching.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+The <i>path</i> argument is not an absolute path and <i>fd</i> is a file descriptor associated with a non-directory file.</dd>
+</dl>
+<dl>
+<dt>
+<b>EEXIST</b> or <b>ENOTEMPTY</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The <i>flag</i> parameter has the AT_REMOVEDIR bit set and the <i>path</i> argument names a directory that is not an empty directory, or there are hard links to the directory other than dot or a single entry in dot-dot.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+The <i>flag</i> parameter has the AT_REMOVEDIR bit set and <i>path</i> does not name a directory.</dd>
+</dl>
+<div class="spacer">
+</div>
+These functions may fail and not unlink the file if:<dl>
+<dt>
+<b>EBUSY</b></dt>
+<dd>
+The file named by <i>path</i> is a named STREAM.</dd>
+</dl>
+<dl>
+<dt>
+<b>ELOOP</b></dt>
+<dd>
+More than {SYMLOOP_MAX} symbolic links were encountered during resolution of the <i>path</i> argument.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENAMETOOLONG</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The length of a pathname exceeds {PATH_MAX}, or pathname resolution of a symbolic link produced an intermediate result with a length that exceeds {PATH_MAX}.</dd>
+</dl>
+<dl>
+<dt>
+<b>ETXTBSY</b></dt>
+<dd>
+The entry to be unlinked is the last directory entry to a pure procedure (shared text) file that is being executed.<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<div class="spacer">
+</div>
+The  <i>unlinkat</i>() function may fail if:<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+The value of the <i>flag</i> argument is not valid.</dd>
+</dl>
+<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>EXAMPLES</h1><div class="subsection">
+<h2>Removing a Link to a File</h2> The following example shows how to remove a link to a file named <b>/home/cnd/mod1</b> by removing the entry named <b>/modules/pass1</b>.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>#include &lt;unistd.h&gt;</b><div class="spacer">
+</div>
+char *path = &quot;/modules/pass1&quot;;<br/>
+int   status;<br/>
+...<br/>
+status = unlink(path);<br/>
+</div>
+</div>
+<div class="subsection">
+<h2>Checking for an Error</h2> The following example fragment creates a temporary password lock file named <b>LOCKFILE</b>, which is defined as <b>/etc/ptmp</b>, and gets a file descriptor for it. If the file cannot be opened for writing,  <i>unlink</i>() is used to remove the link between the file descriptor and <b>LOCKFILE</b>.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>#include &lt;sys/types.h&gt;</b><br/>
+<b>#include &lt;stdio.h&gt;</b><br/>
+<b>#include &lt;fcntl.h&gt;</b><br/>
+<b>#include &lt;errno.h&gt;</b><br/>
+<b>#include &lt;unistd.h&gt;</b><br/>
+<b>#include &lt;sys/stat.h&gt;</b><div class="spacer">
+</div>
+#define LOCKFILE &quot;/etc/ptmp&quot;<div class="spacer">
+</div>
+int pfd;  /* Integer for file descriptor returned by open call. */<br/>
+FILE *fpfd;  /* File pointer for use in putpwent(). */<br/>
+...<br/>
+/* Open password Lock file. If it exists, this is an error. */<br/>
+if ((pfd = open(LOCKFILE, O_WRONLY| O_CREAT | O_EXCL, S_IRUSR<br/>
+    | S_IWUSR | S_IRGRP | S_IROTH)) == -1)  {<br/>
+    fprintf(stderr, &quot;Cannot open /etc/ptmp. Try again later.\n&quot;);<br/>
+    exit(1);<br/>
+}<div class="spacer">
+</div>
+/* Lock file created; proceed with fdopen of lock file so that<br/>
+   putpwent() can be used.<br/>
+ */<br/>
+if ((fpfd = fdopen(pfd, &quot;w&quot;)) == NULL) {<br/>
+    close(pfd);<br/>
+    unlink(LOCKFILE);<br/>
+    exit(1);<br/>
+}<br/>
+</div>
+</div>
+<div class="subsection">
+<h2>Replacing Files</h2> The following example fragment uses  <i>unlink</i>() to discard links to files, so that they can be replaced with new versions of the files. The first call removes the link to <b>LOCKFILE</b> if an error occurs. Successive calls remove the links to <b>SAVEFILE</b> and <b>PASSWDFILE</b> so that new links can be created, then removes the link to <b>LOCKFILE</b> when it is no longer needed.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>#include &lt;sys/types.h&gt;</b><br/>
+<b>#include &lt;stdio.h&gt;</b><br/>
+<b>#include &lt;fcntl.h&gt;</b><br/>
+<b>#include &lt;errno.h&gt;</b><br/>
+<b>#include &lt;unistd.h&gt;</b><br/>
+<b>#include &lt;sys/stat.h&gt;</b><div class="spacer">
+</div>
+#define LOCKFILE &quot;/etc/ptmp&quot;<br/>
+#define PASSWDFILE &quot;/etc/passwd&quot;<br/>
+#define SAVEFILE &quot;/etc/opasswd&quot;<br/>
+...<br/>
+/* If no change was made, assume error and leave passwd unchanged. */<br/>
+if (!valid_change) {<br/>
+    fprintf(stderr, &quot;Could not change password for user %s\n&quot;, user);<br/>
+    unlink(LOCKFILE);<br/>
+    exit(1);<br/>
+}<div class="spacer">
+</div>
+/* Change permissions on new password file. */<br/>
+chmod(LOCKFILE, S_IRUSR | S_IRGRP | S_IROTH);<div class="spacer">
+</div>
+/* Remove saved password file. */<br/>
+unlink(SAVEFILE);<div class="spacer">
+</div>
+/* Save current password file. */<br/>
+link(PASSWDFILE, SAVEFILE);<div class="spacer">
+</div>
+/* Remove current password file. */<br/>
+unlink(PASSWDFILE);<div class="spacer">
+</div>
+/* Save new password file as current password file. */<br/>
+link(LOCKFILE,PASSWDFILE);<div class="spacer">
+</div>
+/* Remove lock file. */<br/>
+unlink(LOCKFILE);<div class="spacer">
+</div>
+exit(0);<br/>
+</div>
+</div>
+</div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> Applications should use  <i>rmdir</i>() to remove a directory.</div>
+<div class="section">
+<h1>RATIONALE</h1> Unlinking a directory is restricted to the superuser in many historical implementations for reasons given in  <i>link</i>() (see also  <i>rename</i>()).<div class="spacer">
+</div>
+The meaning of <b>[EBUSY]</b> in historical implementations is ``mount point busy''. Since this volume of POSIX.1&#8208;2008 does not cover the system administration concepts of mounting and unmounting, the description of the error was changed to ``resource busy''. (This meaning is used by some device drivers when a second process tries to open an exclusive use device.) The wording is also intended to allow implementations to refuse to remove a directory if it is the root or current working directory of any process.<div class="spacer">
+</div>
+The standard developers reviewed TR 24715&#8208;2006 and noted that LSB-conforming implementations may return <b>[EISDIR]</b> instead of <b>[EPERM]</b> when unlinking a directory. A change to permit this behavior by changing the requirement for <b>[EPERM]</b> to <b>[EPERM]</b> or <b>[EISDIR]</b> was considered, but decided against since it would break existing strictly conforming and conforming applications. Applications written for portability to both POSIX.1&#8208;2008 and the LSB should be prepared to handle either error code.<div class="spacer">
+</div>
+The purpose of the  <i>unlinkat</i>() function is to remove directory entries in directories other than the current working directory without exposure to race conditions. Any part of the path of a file could be changed in parallel to a call to  <i>unlink</i>(), resulting in unspecified behavior. By opening a file descriptor for the target directory and using the  <i>unlinkat</i>() function it can be guaranteed that the removed directory entry is located relative to the desired directory.</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> None.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i><i>close</i>()</i>, <i><i>link</i>()</i>, <i><i>remove</i>()</i>, <i><i>rename</i>()</i>, <i><i>rmdir</i>()</i>, <i><i>symlink</i>()</i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i>Section 4.2</i>, <i>Directory Protection</i>, <i><b>&lt;fcntl.h&gt;</b></i>, <i><b>&lt;unistd.h&gt;</b></i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

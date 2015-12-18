@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SET_THREAD_AREA(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SET_THREAD_AREA(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+SET_THREAD_AREA(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> set_thread_area - set a GDT entry for thread-local storage</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;linux/unistd.h&gt;</b> <b>#include &lt;asm/ldt.h&gt;</b><div class="spacer">
+</div>
+<br/>
+<b>int get_thread_area(struct user_desc *</b><i>u_info</i><b>);</b><br/>
+<b>int set_thread_area(struct user_desc *</b><i>u_info</i><b>);</b><br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<i>Note</i>: There are no glibc wrappers for these system calls; see NOTES.</div>
+<div class="section">
+<h1>DESCRIPTION</h1> Linux dedicates three global descriptor table (GDT) entries for thread-local storage. For more information about the GDT, see the Intel Software Developer's Manual or the AMD Architecture Programming Manual.<div style="height: 1.00em;">
+&#160;</div>
+Both of these system calls take an argument that is a pointer to a structure of the following type:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+struct user_desc {<br/>
+    unsigned int  entry_number;<br/>
+    unsigned long base_addr;<br/>
+    unsigned int  limit;<br/>
+    unsigned int  seg_32bit:1;<br/>
+    unsigned int  contents:2;<br/>
+    unsigned int  read_exec_only:1;<br/>
+    unsigned int  limit_in_pages:1;<br/>
+    unsigned int  seg_not_present:1;<br/>
+    unsigned int  useable:1; };<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>get_thread_area</b>() reads the GDT entry indicated by <i>u_info-&gt;entry_number</i> and fills in the rest of the fields in <i>u_info</i>.<div style="height: 1.00em;">
+&#160;</div>
+<b>set_thread_area</b>() sets a TLS entry in the GDT.<div class="spacer">
+</div>
+The TLS array entry set by <b>set_thread_area</b>() corresponds to the value of <i>u_info-&gt;entry_number</i> passed in by the user. If this value is in bounds, <b>set_thread_area</b>() writes the TLS descriptor pointed to by <i>u_info</i> into the thread's TLS array.<div class="spacer">
+</div>
+When <b>set_thread_area</b>() is passed an <i>entry_number</i> of -1, it searches for a free TLS entry. If <b>set_thread_area</b>() finds a free TLS entry, the value of <i>u_info-&gt;entry_number</i> is set upon return to show which entry was changed.<div class="spacer">
+</div>
+A <i>user_desc</i> is considered &quot;empty&quot; if <i>read_exec_only</i> and <i>seg_not_present</i> are set to 1 and all of the other fields are 0. If an &quot;empty&quot; descriptor is passed to <b>set_thread_area,</b> the corresponding TLS entry will be cleared. See BUGS for additional details.<div class="spacer">
+</div>
+Since Linux 3.19, <b>set_thread_area</b>() cannot be used to write non-present segments, 16-bit segments, or code segments, although clearing a segment is still acceptable.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> These system calls return 0 on success, and -1 on failure, with <i>errno</i> set appropriately.</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>EFAULT</b></dt>
+<dd>
+<i>u_info</i> is an invalid pointer.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>u_info-&gt;entry_number</i> is out of bounds.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOSYS</b></dt>
+<dd>
+<b>get_thread_area</b>(2) or <b>set_thread_area</b>(2) was invoked as a 64-bit system call.</dd>
+</dl>
+<dl>
+<dt>
+<b>ESRCH</b></dt>
+<dd>
+(<b>set_thread_area</b>()) A free TLS entry could not be located.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>VERSIONS</h1> <b>set_thread_area</b>() first appeared in Linux 2.5.29. <b>get_thread_area</b>() first appeared in Linux 2.5.32.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> <b>set_thread_area</b>() is Linux-specific and should not be used in programs that are intended to be portable.</div>
+<div class="section">
+<h1>NOTES</h1> Glibc does not provide wrappers for these system calls, since they are generally intended for use only by threading libraries. In the unlikely event that you want to call them directly, use <b>syscall</b>(2).<div class="spacer">
+</div>
+<b>arch_prctl</b>(2) can interfere with <b>set_thread_area</b>(2). See <b>arch_prctl</b>(2) for more details. This is not normally a problem, as <b>arch_prctl</b>(2) is normally used only by 64-bit programs.</div>
+<div class="section">
+<h1>BUGS</h1> On 64-bit kernels before Linux 3.19, one of the padding bits in <i>user_desc</i>, if set, would prevent the descriptor from being considered empty (see <b>modify_ldt</b>(2)). As a result, the only reliable way to clear a TLS entry is to use <b>memset</b>(3) to zero the entire <i>user_desc</i> structure, including padding bits, and then to set the <i>read_exec_only</i> and <i>seg_not_present</i> bits. On Linux 3.19, a <i>user_desc</i> consisting entirely of zeros except for <i>entry_number</i> will also be interpreted as a request to clear a TLS entry, but this behaved differently on older kernels.<div class="spacer">
+</div>
+Prior to Linux 3.19, the DS and ES segment registers must not reference TLS entries.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>arch_prctl</b>(2), <b>modify_ldt</b>(2)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-02-21</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

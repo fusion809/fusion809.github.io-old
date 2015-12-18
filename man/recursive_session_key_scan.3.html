@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+RECURSIVE_KEY_SCAN(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+RECURSIVE_KEY_SCAN(3)</td>
+<td class="head-vol">
+Linux Key Utility Calls</td>
+<td class="head-rtitle">
+RECURSIVE_KEY_SCAN(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> recursive_key_scan - Apply a function to all keys in a keyring tree<div style="height: 0.00em;">
+&#160;</div>
+recursive_session_key_scan - Apply a function to all keys in the session keyring tree</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;keyutils.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>typedef int (*</b><i>recursive_key_scanner_t</i><b>)(key_serial_t </b><i>parent</i><b>,</b><br/>
+<b>    key_serial_t </b><i>key</i><b>, char *</b><i>desc</i><b>, int </b><i>desc_len</i><b>, void *</b><i>data</i><b>);</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>long recursive_key_scan(key_serial_t </b><i>keyring</i><b>,</b><br/>
+<b>    recursive_key_scanner_t </b><i>func</i><b>, void *</b><i>data</i><b>);</b><div style="height: 0.00em;">
+&#160;</div>
+<br/>
+<b>long recursive_session_key_scan(recursive_key_scanner_t </b><i>func</i><b>,</b><br/>
+<b>    void *</b><i>data</i><b>);</b></div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>recursive_key_scan</b>() performs a depth-first recursive scan of the specified <i>keyring</i> tree and applies <i>func</i> to every link found in the accessible keyrings in that tree. <i>data</i> is passed to each invocation of func.<div class="spacer">
+</div>
+The return values of <i>func</i> are summed and returned as the overall return value.  Errors are ignored. Inaccessible keyrings are not scanned, but links to them are still passed to func.<div class="spacer">
+</div>
+<b>recursive_session_key_scan</b>() works exactly like <i>recursive_key_scan</i>() with the caller's session keyring specified as the starting keyring.<div class="spacer">
+</div>
+The callback function is called for each link found in all the keyrings in the nominated tree and so may be called multiple times for a particular key if that key has multiple links to it.<div class="spacer">
+</div>
+The callback function is passed the following parameters:<dl>
+<dt>
+<b>parent</b></dt>
+<dd>
+The keyring containing the link or 0 for the initial key.</dd>
+</dl>
+<dl>
+<dt>
+<b>key</b></dt>
+<dd>
+The key to which the link points.</dd>
+</dl>
+<dl>
+<dt>
+<b>desc</b> and <b>desc_len</b></dt>
+<dd>
+A pointer to the raw description and its length as retrieved with <i>keyctl_describe_alloc</i>(). These will be NULL and -1 respectively if the description couldn't be retrieved and errno will retain the error from <i>keyctl_describe_alloc</i>().</dd>
+</dl>
+<dl>
+<dt>
+<b>data</b></dt>
+<dd>
+The data passed to the scanner function.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>RETURN VALUE</h1> These functions return the sum of the results of the callback functions they invoke.</div>
+<div class="section">
+<h1>ERRORS</h1> Ignored.</div>
+<div class="section">
+<h1>LINKING</h1> When linking, <b>-lkeyutils</b> should be specified to the linker.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>keyctl</b>(3), <b>keyctl_describe_alloc</b>(3)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+10 Mar 2011</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

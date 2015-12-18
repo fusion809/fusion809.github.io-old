@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+GETC_UNLOCKED(3P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+GETC_UNLOCKED(3P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+GETC_UNLOCKED(3P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> getc_unlocked, getchar_unlocked, putc_unlocked, putchar_unlocked &#8212; stdio with explicit client locking</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;stdio.h&gt;<div class="spacer">
+</div>
+int getc_unlocked(FILE *<i>stream</i>);<br/>
+int getchar_unlocked(void);<br/>
+int putc_unlocked(int <i>c</i>, FILE *<i>stream</i>);<br/>
+int putchar_unlocked(int <i>c</i>);<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> Versions of the functions  <i>getc</i>(),  <i>getchar</i>(),  <i>putc</i>(), and  <i>putchar</i>() respectively named  <i>getc_unlocked</i>(),  <i>getchar_unlocked</i>(),  <i>putc_unlocked</i>(), and  <i>putchar_unlocked</i>() shall be provided which are functionally equivalent to the original versions, with the exception that they are not required to be implemented in a thread-safe manner. They may only safely be used within a scope protected by  <i>flockfile</i>() (or  <i>ftrylockfile</i>()) and  <i>funlockfile</i>(). These functions may safely be used in a multi-threaded program if and only if they are called while the invoking thread owns the (<b>FILE *</b>) object, as is the case after a successful call to the  <i>flockfile</i>() or  <i>ftrylockfile</i>() functions.<div class="spacer">
+</div>
+If  <i>getc_unlocked</i>() or  <i>putc_unlocked</i>() are implemented as macros they may evaluate <i>stream</i> more than once, so the <i>stream</i> argument should never be an expression with side-effects.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> See <i><i>getc</i>()</i>, <i><i>getchar</i>()</i>, <i><i>putc</i>()</i>, and <i><i>putchar</i>()</i>.</div>
+<div class="section">
+<h1>ERRORS</h1> See <i><i>getc</i>()</i>, <i><i>getchar</i>()</i>, <i><i>putc</i>()</i>, and <i><i>putchar</i>()</i>.<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>EXAMPLES</h1> None.</div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> Since they may be implemented as macros,  <i>getc_unlocked</i>() and  <i>putc_unlocked</i>() may treat incorrectly a <i>stream</i> argument with side-effects. In particular,  <i>getc_unlocked</i>(*f++) and  <i>putc_unlocked</i>(c,*f++) do not necessarily work as expected. Therefore, use of these functions in such situations should be preceded by the following statement as appropriate:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>#undef getc_unlocked</b><br/>
+<b>#undef putc_unlocked</b><br/>
+</div>
+</div>
+<div class="section">
+<h1>RATIONALE</h1> Some I/O functions are typically implemented as macros for performance reasons (for example,  <i>putc</i>() and  <i>getc</i>()). For safety, they need to be synchronized, but it is often too expensive to synchronize on every character. Nevertheless, it was felt that the safety concerns were more important; consequently, the  <i>getc</i>(),  <i>getchar</i>(),  <i>putc</i>(), and  <i>putchar</i>() functions are required to be thread-safe. However, unlocked versions are also provided with names that clearly indicate the unsafe nature of their operation but can be used to exploit their higher performance. These unlocked versions can be safely used only within explicitly locked program regions, using exported locking primitives. In particular, a sequence such as:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>flockfile(fileptr);</b><br/>
+<b>putc_unlocked('1', fileptr);</b><br/>
+<b>putc_unlocked('\n', fileptr);</b><br/>
+<b>fprintf(fileptr, &quot;Line 2\n&quot;);</b><br/>
+<b>funlockfile(fileptr);</b><br/>
+</div>
+<div class="spacer">
+</div>
+<div style="height: 0.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+is permissible, and results in the text sequence:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>1</b><br/>
+<b>Line 2</b><br/>
+</div>
+<div class="spacer">
+</div>
+being printed without being interspersed with output from other threads.<div class="spacer">
+</div>
+It would be wrong to have the standard names such as  <i>getc</i>(),  <i>putc</i>(), and so on, map to the ``faster, but unsafe'' rather than the ``slower, but safe'' versions. In either case, you would still want to inspect all uses of  <i>getc</i>(),  <i>putc</i>(), and so on, by hand when converting existing code. Choosing the safe bindings as the default, at least, results in correct code and maintains the ``atomicity at the function'' invariant. To do otherwise would introduce gratuitous synchronization errors into converted code. Other routines that modify the <i>stdio</i> (<b>FILE *</b>) structures or buffers are also safely synchronized.<div class="spacer">
+</div>
+Note that there is no need for functions of the form  <i>getc_locked</i>(),  <i>putc_locked</i>(), and so on, since this is the functionality of  <i>getc</i>(),  <i>putc</i>(), <i>et al</i>. It would be inappropriate to use a feature test macro to switch a macro definition of  <i>getc</i>() between  <i>getc_locked</i>() and  <i>getc_unlocked</i>(), since the ISO&#160;C standard requires an actual function to exist, a function whose behavior could not be changed by the feature test macro. Also, providing both the  <i>xxx_locked</i>() and  <i>xxx_unlocked</i>() forms leads to the confusion of whether the suffix describes the behavior of the function or the circumstances under which it should be used.<div class="spacer">
+</div>
+Three additional routines,  <i>flockfile</i>(),  <i>ftrylockfile</i>(), and  <i>funlockfile</i>() (which may be macros), are provided to allow the user to delineate a sequence of I/O statements that are executed synchronously.<div class="spacer">
+</div>
+The  <i>ungetc</i>() function is infrequently called relative to the other functions/macros so no unlocked variation is needed.</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> None.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i>Section 2.5</i>, <i>Standard I/O Streams</i>, <i><i>flockfile</i>()</i>, <i><i>getc</i>()</i>, <i><i>getchar</i>()</i>, <i><i>putc</i>()</i>, <i><i>putchar</i>()</i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i><b>&lt;stdio.h&gt;</b></i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

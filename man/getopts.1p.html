@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+GETOPTS(1P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+GETOPTS(1P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+GETOPTS(1P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> getopts &#8212; parse utility options</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+getopts <i>optstring name </i><b>[</b><i>arg</i>...<b>]</b><br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The <i>getopts</i> utility shall retrieve options and option-arguments from a list of parameters. It shall support the Utility Syntax Guidelines 3 to 10, inclusive, described in the Base Definitions volume of POSIX.1&#8208;2008, <i>Section 12.2</i>, <i>Utility Syntax Guidelines</i>.<div class="spacer">
+</div>
+Each time it is invoked, the <i>getopts</i> utility shall place the value of the next option in the shell variable specified by the <i>name</i> operand and the index of the next argument to be processed in the shell variable <i>OPTIND</i>. Whenever the shell is invoked, <i>OPTIND</i> shall be initialized to 1.<div class="spacer">
+</div>
+When the option requires an option-argument, the <i>getopts</i> utility shall place it in the shell variable <i>OPTARG</i>. If no option was found, or if the option that was found does not have an option-argument, <i>OPTARG</i> shall be unset.<div class="spacer">
+</div>
+If an option character not contained in the <i>optstring</i> operand is found where an option character is expected, the shell variable specified by <i>name</i> shall be set to the &lt;question-mark&gt; (<b>'?'</b>) character. In this case, if the first character in <i>optstring</i> is a &lt;colon&gt; (<b>':'</b>), the shell variable <i>OPTARG</i> shall be set to the option character found, but no output shall be written to standard error; otherwise, the shell variable <i>OPTARG</i> shall be unset and a diagnostic message shall be written to standard error. This condition shall be considered to be an error detected in the way arguments were presented to the invoking application, but shall not be an error in <i>getopts</i> processing.<div class="spacer">
+</div>
+If an option-argument is missing:<dl>
+<dt>
+ *</dt>
+<dd>
+If the first character of <i>optstring</i> is a &lt;colon&gt;, the shell variable specified by <i>name</i> shall be set to the &lt;colon&gt; character and the shell variable <i>OPTARG</i> shall be set to the option character found.</dd>
+</dl>
+<dl>
+<dt>
+ *</dt>
+<dd>
+Otherwise, the shell variable specified by <i>name</i> shall be set to the &lt;question-mark&gt; character, the shell variable <i>OPTARG</i> shall be unset, and a diagnostic message shall be written to standard error. This condition shall be considered to be an error detected in the way arguments were presented to the invoking application, but shall not be an error in <i>getopts</i> processing; a diagnostic message shall be written as stated, but the exit status shall be zero.</dd>
+</dl>
+<div class="spacer">
+</div>
+When the end of options is encountered, the <i>getopts</i> utility shall exit with a return value greater than zero; the shell variable <i>OPTIND</i> shall be set to the index of the first operand, or the value <b>&quot;$#&quot;</b>+1 if there are no operands; the <i>name</i> variable shall be set to the &lt;question-mark&gt; character. Any of the following shall identify the end of options: the first <b>&quot;&#8722;&#8722;&quot;</b> argument that is not an option-argument, finding an argument that is not an option-argument and does not begin with a <b>'&#8722;'</b>, or encountering an error.<div class="spacer">
+</div>
+The shell variables <i>OPTIND</i> and <i>OPTARG</i> shall be local to the caller of <i>getopts</i> and shall not be exported by default.<div class="spacer">
+</div>
+The shell variable specified by the <i>name</i> operand, <i>OPTIND</i>, and <i>OPTARG</i> shall affect the current shell execution environment; see <i>Section 2.12</i>, <i>Shell Execution Environment</i>.<div class="spacer">
+</div>
+If the application sets <i>OPTIND</i> to the value 1, a new set of parameters can be used: either the current positional parameters or new <i>arg</i> values. Any other attempt to invoke <i>getopts</i> multiple times in a single shell execution environment with parameters (positional parameters or <i>arg</i> operands) that are not the same in all invocations, or with an <i>OPTIND</i> value modified to be a value other than 1, produces unspecified results.</div>
+<div class="section">
+<h1>OPTIONS</h1> None.</div>
+<div class="section">
+<h1>OPERANDS</h1> The following operands shall be supported:<dl>
+<dt>
+<i>optstring</i></dt>
+<dd>
+A string containing the option characters recognized by the utility invoking <i>getopts</i>. If a character is followed by a &lt;colon&gt;, the option shall be expected to have an argument, which should be supplied as a separate argument. Applications should specify an option character and its option-argument as separate arguments, but <i>getopts</i> shall interpret the characters following an option character requiring arguments as an argument whether or not this is done. An explicit null option-argument need not be recognized if it is not supplied as a separate argument when <i>getopts</i> is invoked. (See also the  <i>getopt</i>() function defined in the System Interfaces volume of POSIX.1&#8208;2008.) The characters &lt;question-mark&gt; and &lt;colon&gt; shall not be used as option characters by an application. The use of other option characters that are not alphanumeric produces unspecified results. If the option-argument is not supplied as a separate argument from the option character, the value in <i>OPTARG</i> shall be stripped of the option character and the <b>'&#8722;'</b>. The first character in <i>optstring</i> determines how <i>getopts</i> behaves if an option character is not known or an option-argument is missing.</dd>
+</dl>
+<dl>
+<dt>
+<i>name</i></dt>
+<dd>
+The name of a shell variable that shall be set by the <i>getopts</i> utility to the option character that was found.</dd>
+</dl>
+<div class="spacer">
+</div>
+The <i>getopts</i> utility by default shall parse positional parameters passed to the invoking shell procedure. If <i>arg</i>s are given, they shall be parsed instead of the positional parameters.</div>
+<div class="section">
+<h1>STDIN</h1> Not used.</div>
+<div class="section">
+<h1>INPUT FILES</h1> None.</div>
+<div class="section">
+<h1>ENVIRONMENT VARIABLES</h1> The following environment variables shall affect the execution of <i>getopts</i>:<dl>
+<dt>
+<i>LANG</i></dt>
+<dd>
+Provide a default value for the internationalization variables that are unset or null. (See the Base Definitions volume of POSIX.1&#8208;2008, <i>Section 8.2</i>, <i>Internationalization Variables</i> for the precedence of internationalization variables used to determine the values of locale categories.)</dd>
+</dl>
+<dl>
+<dt>
+<i>LC_ALL</i></dt>
+<dd>
+If set to a non-empty string value, override the values of all the other internationalization variables.</dd>
+</dl>
+<dl>
+<dt>
+<i>LC_CTYPE</i></dt>
+<dd>
+Determine the locale for the interpretation of sequences of bytes of text data as characters (for example, single-byte as opposed to multi-byte characters in arguments and input files).</dd>
+</dl>
+<dl>
+<dt>
+<i>LC_MESSAGES</i></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+Determine the locale that should be used to affect the format and contents of diagnostic messages written to standard error.</dd>
+</dl>
+<dl>
+<dt>
+<i>NLSPATH</i></dt>
+<dd>
+Determine the location of message catalogs for the processing of <i>LC_MESSAGES</i>.</dd>
+</dl>
+<dl>
+<dt>
+<i>OPTIND</i></dt>
+<dd>
+This variable shall be used by the <i>getopts</i> utility as the index of the next argument to be processed.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ASYNCHRONOUS EVENTS</h1> Default.</div>
+<div class="section">
+<h1>STDOUT</h1> Not used.</div>
+<div class="section">
+<h1>STDERR</h1> Whenever an error is detected and the first character in the <i>optstring</i> operand is not a &lt;colon&gt; (<b>':'</b>), a diagnostic message shall be written to standard error with the following information in an unspecified format:<dl>
+<dt>
+ *</dt>
+<dd>
+The invoking program name shall be identified in the message. The invoking program name shall be the value of the shell special parameter 0 (see <i>Section 2.5.2</i>, <i>Special Parameters</i>) at the time the <i>getopts</i> utility is invoked. A name equivalent to:</dd>
+</dl>
+<div style="margin-left: 4.00ex;">
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>basename &quot;$0&quot;</b><br/>
+</div>
+<div class="spacer">
+</div>
+may be used.</div>
+<dl>
+<dt>
+ *</dt>
+<dd>
+If an option is found that was not specified in <i>optstring</i>, this error is identified and the invalid option character shall be identified in the message.</dd>
+</dl>
+<dl>
+<dt>
+ *</dt>
+<dd>
+If an option requiring an option-argument is found, but an option-argument is not found, this error shall be identified and the invalid option character shall be identified in the message.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>OUTPUT FILES</h1> None.</div>
+<div class="section">
+<h1>EXTENDED DESCRIPTION</h1> None.</div>
+<div class="section">
+<h1>EXIT STATUS</h1> The following exit values shall be returned:<dl>
+<dt>
+&#8194;0</dt>
+<dd>
+An option, specified or unspecified by <i>optstring</i>, was found.</dd>
+</dl>
+<dl>
+<dt>
+&gt;0</dt>
+<dd>
+The end of options was encountered or an error occurred.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>CONSEQUENCES OF ERRORS</h1> Default.<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> Since <i>getopts</i> affects the current shell execution environment, it is generally provided as a shell regular built-in. If it is called in a subshell or separate utility execution environment, such as one of the following:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>(getopts abc value &quot;$@&quot;)</b><br/>
+<b>nohup getopts ...</b><br/>
+<b>find . &#8722;exec getopts ... \;</b><br/>
+</div>
+<div class="spacer">
+</div>
+it does not affect the shell variables in the caller's environment.<div class="spacer">
+</div>
+Note that shell functions share <i>OPTIND</i> with the calling shell even though the positional parameters are changed. If the calling shell and any of its functions uses <i>getopts</i> to parse arguments, the results are unspecified.</div>
+<div class="section">
+<h1>EXAMPLES</h1> The following example script parses and displays its arguments:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>aflag=</b><br/>
+<b>bflag=</b><br/>
+<b>while getopts ab: name</b><br/>
+<b>do</b><br/>
+<b>    case $name in</b><br/>
+<b>    a)    aflag=1;;</b><br/>
+<b>    b)    bflag=1</b><br/>
+<b>          bval=&quot;$OPTARG&quot;;;</b><br/>
+<b>    ?)   printf &quot;Usage: %s: [&#8722;a] [&#8722;b value] args\n&quot; $0</b><br/>
+<b>          exit 2;;</b><br/>
+<b>    esac</b><br/>
+<b>done</b><br/>
+<b>if [ ! &#8722;z &quot;$aflag&quot; ]; then</b><br/>
+<b>    printf &quot;Option &#8722;a specified\n&quot;</b><br/>
+<b>fi</b><br/>
+<b>if [ ! &#8722;z &quot;$bflag&quot; ]; then</b><br/>
+<b>    printf 'Option &#8722;b &quot;%s&quot; specified\n' &quot;$bval&quot;</b><br/>
+<b>fi</b><br/>
+<b>shift $(($OPTIND &#8722; 1))</b><br/>
+<b>printf &quot;Remaining arguments are: %s\n$*&quot;</b><br/>
+</div>
+</div>
+<div class="section">
+<h1>RATIONALE</h1> The <i>getopts</i> utility was chosen in preference to the System V <i>getopt</i> utility because <i>getopts</i> handles option-arguments containing &lt;blank&gt; characters.<div class="spacer">
+</div>
+The <i>OPTARG</i> variable is not mentioned in the ENVIRONMENT VARIABLES section because it does not affect the execution of <i>getopts</i>; it is one of the few ``output-only'' variables used by the standard utilities.<div class="spacer">
+</div>
+The &lt;colon&gt; is not allowed as an option character because that is not historical behavior, and it violates the Utility Syntax Guidelines. The &lt;colon&gt; is now specified to behave as in the KornShell version of the <i>getopts</i> utility; when used as the first character in the <i>optstring</i> operand, it disables diagnostics concerning missing option-arguments and unexpected option characters. This replaces the use of the <i>OPTERR</i> variable that was specified in an early proposal.<div class="spacer">
+</div>
+The formats of the diagnostic messages produced by the <i>getopts</i> utility and the  <i>getopt</i>() function are not fully specified because implementations with superior (``friendlier'') formats objected to the formats used by some historical implementations. The standard developers considered it important that the information in the messages used be uniform between <i>getopts</i> and  <i>getopt</i>(). Exact duplication of the messages might not be possible, particularly if a utility is built on another system that has a different  <i>getopt</i>() function, but the messages must have specific information included so that the program name, invalid option character, and type of error can be distinguished by a user.<div class="spacer">
+</div>
+Only a rare application program intercepts a <i>getopts</i> standard error message and wants to parse it. Therefore, implementations are free to choose the most usable messages they can devise. The following formats are used by many historical implementations:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>&quot;%s: illegal option &#8722;&#8722; %c\n&quot;, &lt;</b><i>program name</i><b>&gt;, &lt;</b><i>option character</i><b>&gt;</b><div class="spacer">
+</div>
+&quot;%s: option requires an argument &#8722;&#8722; %c\n&quot;, &lt;<i>program name</i>&gt;, \<br/>
+    &lt;<i>option character</i>&gt;<br/>
+</div>
+<div class="spacer">
+</div>
+Historical shells with built-in versions of  <i>getopt</i>() or <i>getopts</i> have used different formats, frequently not even indicating the option character found in error.</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> None.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i>Section 2.5.2</i>, <i>Special Parameters</i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i>Chapter 8</i>, <i>Environment Variables</i>, <i>Section 12.2</i>, <i>Utility Syntax Guidelines</i><div class="spacer">
+</div>
+The System Interfaces volume of POSIX.1&#8208;2008, <i><i>getopt</i>()</i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

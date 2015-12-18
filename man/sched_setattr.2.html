@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SCHED_SETATTR(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SCHED_SETATTR(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+SCHED_SETATTR(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sched_setattr, sched_getattr - set and get scheduling policy and attributes</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;sched.h&gt;</b><div class="spacer">
+</div>
+<br/>
+<b>int sched_setattr(pid_t </b><i>pid</i><b>, struct sched_attr *</b><i>attr</i><b>,</b><br/>
+<b>                  unsigned int </b><i>flags</i><b>);</b><div class="spacer">
+</div>
+<br/>
+<b>int sched_getattr(pid_t </b><i>pid</i><b>, struct sched_attr *</b><i>attr</i><b>,</b><br/>
+<b>                  unsigned int </b><i>size</i><b>, unsigned int </b><i>flags</i><b>);</b><br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1><div class="subsection">
+<h2>sched_setattr()</h2> The <b>sched_setattr</b>() system call sets the scheduling policy and associated attributes for the thread whose ID is specified in <i>pid</i>. If <i>pid</i> equals zero, the scheduling policy and attributes of the calling thread will be set.<div style="height: 1.00em;">
+&#160;</div>
+Currently, Linux supports the following &quot;normal&quot; (i.e., non-real-time) scheduling policies as values that may be specified in <i>policy</i>:<dl>
+<dt>
+<b>SCHED_OTHER</b></dt>
+<dd>
+the standard round-robin time-sharing policy;</dd>
+</dl>
+<dl>
+<dt>
+<b>SCHED_BATCH</b></dt>
+<dd>
+for &quot;batch&quot; style execution of processes; and</dd>
+</dl>
+<dl>
+<dt>
+<b>SCHED_IDLE</b></dt>
+<dd>
+for running <i>very</i> low priority background jobs.</dd>
+</dl>
+<div class="spacer">
+</div>
+Various &quot;real-time&quot; policies are also supported, for special time-critical applications that need precise control over the way in which runnable threads are selected for execution. For the rules governing when a process may use these policies, see <b>sched</b>(7). The real-time policies that may be specified in <i>policy</i> are:<dl>
+<dt>
+<b>SCHED_FIFO</b></dt>
+<dd>
+a first-in, first-out policy; and</dd>
+</dl>
+<dl>
+<dt>
+<b>SCHED_RR</b></dt>
+<dd>
+a round-robin policy.</dd>
+</dl>
+<div class="spacer">
+</div>
+Linux also provides the following policy:<dl>
+<dt>
+<b>SCHED_DEADLINE</b></dt>
+<dd>
+a deadline scheduling policy; see <b>sched</b>(7) for details.</dd>
+</dl>
+<div class="spacer">
+</div>
+The <i>attr</i> argument is a pointer to a structure that defines the new scheduling policy and attributes for the specified thread. This structure has the following form:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<br/>
+struct sched_attr {<br/>
+    u32 size;              /* Size of this structure */<br/>
+    u32 sched_policy;      /* Policy (SCHED_*) */<br/>
+    u64 sched_flags;       /* Flags */<br/>
+    s32 sched_nice;        /* Nice value (SCHED_OTHER,<br/>
+                              SCHED_BATCH) */<br/>
+    u32 sched_priority;    /* Static priority (SCHED_FIFO,<br/>
+                              SCHED_RR) */<br/>
+    /* Remaining fields are for SCHED_DEADLINE */<br/>
+    u64 sched_runtime;<br/>
+    u64 sched_deadline;<br/>
+    u64 sched_period;<br/>
+};<br/>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+The fields of this structure are as follows:<dl>
+<dt>
+<b>size</b></dt>
+<dd>
+This field should be set to the size of the structure in bytes, as in <i>sizeof(struct sched_attr)</i>. If the provided structure is smaller than the kernel structure, any additional fields are assumed to be '0'. If the provided structure is larger than the kernel structure, the kernel verifies that all additional fields are 0; if they are not, <b>sched_setattr</b>() fails with the error <b>E2BIG</b> and updates <i>size</i> to contain the size of the kernel structure.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+The above behavior when the size of the user-space <i>sched_attr</i> structure does not match the size of the kernel structure allows for future extensibility of the interface. Malformed applications that pass oversize structures won't break in the future if the size of the kernel <i>sched_attr</i> structure is increased. In the future, it could also allow applications that know about a larger user-space <i>sched_attr</i> structure to determine whether they are running on an older kernel that does not support the larger structure.</dd>
+</dl>
+<dl>
+<dt>
+<i>sched_policy</i></dt>
+<dd>
+This field specifies the scheduling policy, as one of the <b>SCHED_*</b> values listed above.</dd>
+</dl>
+<dl>
+<dt>
+<i>sched_flags</i></dt>
+<dd>
+This field contains flags controlling scheduling behavior. Only one such flag is currently defined: <b>SCHED_FLAG_RESET_ON_FORK</b>. As a result of including this flag, children created by <b>fork</b>(2) do not inherit privileged scheduling policies. See <b>sched</b>(7) for details.</dd>
+</dl>
+<dl>
+<dt>
+<i>sched_nice</i></dt>
+<dd>
+This field specifies the nice value to be set when specifying <i>sched_policy</i> as <b>SCHED_OTHER</b> or <b>SCHED_BATCH</b>. The nice value is a number in the range -20 (high priority) to +19 (low priority); see <b>setpriority</b>(2).</dd>
+</dl>
+<dl>
+<dt>
+<i>sched_priority</i></dt>
+<dd>
+This field specifies the static priority to be set when specifying <i>sched_policy</i> as <b>SCHED_FIFO</b> or <b>SCHED_RR</b>. The allowed range of priorities for these policies can be determined using <b>sched_get_priority_min</b>(2) and <b>sched_get_priority_max</b>(2). For other policies, this field must be specified as 0.</dd>
+</dl>
+<dl>
+<dt>
+<i>sched_runtime</i></dt>
+<dd>
+This field specifies the &quot;Runtime&quot; parameter for deadline scheduling. The value is expressed in nanoseconds. This field, and the next two fields, are used only for <b>SCHED_DEADLINE</b> scheduling; for further details, see <b>sched</b>(7).</dd>
+</dl>
+<dl>
+<dt>
+<i>sched_deadline</i></dt>
+<dd>
+This field specifies the &quot;Deadline&quot; parameter for deadline scheduling. The value is expressed in nanoseconds.</dd>
+</dl>
+<dl>
+<dt>
+<i>sched_period</i></dt>
+<dd>
+This field specifies the &quot;Period&quot; parameter for deadline scheduling. The value is expressed in nanoseconds.</dd>
+</dl>
+<div class="spacer">
+</div>
+The <i>flags</i> argument is provided to allow for future extensions to the interface; in the current implementation it must be specified as 0.</div>
+<div class="subsection">
+<h2>sched_getattr()</h2> The <b>sched_getattr</b>() system call fetches the scheduling policy and the associated attributes for the thread whose ID is specified in <i>pid</i>. If <i>pid</i> equals zero, the scheduling policy and attributes of the calling thread will be retrieved.<div style="height: 1.00em;">
+&#160;</div>
+The <i>size</i> argument should be set to the size of the <i>sched_attr</i> structure as known to user space. The value must be at least as large as the size of the initially published <i>sched_attr</i> structure, or the call fails with the error <b>EINVAL</b>.<div style="height: 1.00em;">
+&#160;</div>
+The retrieved scheduling attributes are placed in the fields of the <i>sched_attr</i> structure pointed to by <i>attr</i>. The kernel sets <i>attr.size</i> to the size of its <i>sched_attr</i> structure.<div style="height: 1.00em;">
+&#160;</div>
+If the caller-provided <i>attr</i> buffer is larger than the kernel's <i>sched_attr</i> structure, the additional bytes in the user-space structure are not touched. If the caller-provided structure is smaller than the kernel <i>sched_attr</i> structure and the kernel needs to return values outside the provided space, <b>sched_getattr</b>() fails with the error <b>E2BIG</b>. As with <b>sched_setattr</b>(), these semantics allow for future extensibility of the interface.<div style="height: 1.00em;">
+&#160;</div>
+The <i>flags</i> argument is provided to allow for future extensions to the interface; in the current implementation it must be specified as 0.</div>
+</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, <b>sched_setattr</b>() and <b>sched_getattr</b>() return 0. On error, -1 is returned, and <i>errno</i> is set to indicate the cause of the error.</div>
+<div class="section">
+<h1>ERRORS</h1> <b>sched_getattr</b>() and <b>sched_setattr</b>() can both fail for the following reasons:<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>attr</i> is NULL; or <i>pid</i> is negative; or <i>flags</i> is not zero.</dd>
+</dl>
+<dl>
+<dt>
+<b>ESRCH</b></dt>
+<dd>
+The thread whose ID is <i>pid</i> could not be found.</dd>
+</dl>
+<div class="spacer">
+</div>
+In addition, <b>sched_getattr</b>() can fail for the following reasons:<dl>
+<dt>
+<b>E2BIG</b></dt>
+<dd>
+The buffer specified by <i>size</i> and <i>attr</i> is too small.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>size</i> is invalid; that is, it is smaller than the initial version of the <i>sched_attr</i> structure (48 bytes) or larger than the system page size.</dd>
+</dl>
+<div class="spacer">
+</div>
+In addition, <b>sched_setattr</b>() can fail for the following reasons:<dl>
+<dt>
+<b>E2BIG</b></dt>
+<dd>
+The buffer specified by <i>size</i> and <i>attr</i> is larger than the kernel structure, and one or more of the excess bytes is nonzero.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBUSY</b></dt>
+<dd>
+<b>SCHED_DEADLINE</b> admission control failure, see <b>sched</b>(7).</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>attr.sched_policy</i> is not one of the recognized policies; <i>attr.sched_flags</i> contains a flag other than <b>SCHED_FLAG_RESET_ON_FORK</b>; or <i>attr.sched_priority</i> is invalid; or <i>attr.sched_policy</i> is <b>SCHED_DEADLINE</b> and the deadline scheduling parameters in <i>attr</i> are invalid.</dd>
+</dl>
+<dl>
+<dt>
+<b>EPERM</b></dt>
+<dd>
+The caller does not have appropriate privileges.</dd>
+</dl>
+<dl>
+<dt>
+<b>EPERM</b></dt>
+<dd>
+The caller's CPU affinity mask does not include all CPUs in the system (see <b>sched_setaffinity</b>(2)).</dd>
+</dl>
+</div>
+<div class="section">
+<h1>VERSIONS</h1> These system calls first appeared in Linux 3.14.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> These system calls are nonstandard Linux extensions.</div>
+<div class="section">
+<h1>NOTES</h1> <b>sched_setattr</b>() provides a superset of the functionality of <b>sched_setscheduler</b>(2), <b>sched_setparam</b>(2), <b>nice</b>(2), and (other than the ability to set the priority of all processes belonging to a specified user or all processes in a specified group) <b>setpriority</b>(2). Analogously, <b>sched_getattr</b>() provides a superset of the functionality of <b>sched_getscheduler</b>(2), <b>sched_getparam</b>(2), and (partially) <b>getpriority</b>(2).</div>
+<div class="section">
+<h1>BUGS</h1> In Linux versions up to 3.15, <b>sched_settattr</b>() failed with the error <b>EFAULT</b> instead of <b>E2BIG</b> for the case described in ERRORS.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>chrt</b>(1), <b>nice</b>(2), <b>sched_get_priority_max</b>(2), <b>sched_get_priority_min</b>(2), <b>sched_getaffinity</b>(2), <b>sched_getscheduler</b>(2), <b>sched_getparam</b>(2), <b>sched_rr_get_interval</b>(2), <b>sched_setaffinity</b>(2), <b>sched_setscheduler</b>(2), <b>sched_setparam</b>(2), <b>sched_yield</b>(2), <b>setpriority</b>(2), <b>pthread_getschedparam</b>(3), <b>pthread_setschedparam</b>(3), <b>pthread_setschedprio</b>(3), <b>capabilities</b>(7), <b>cpuset</b>(7), <b>sched</b>(7)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-07-23</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

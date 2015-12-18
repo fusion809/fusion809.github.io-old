@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+DUP(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+DUP(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+DUP(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> dup, dup2, dup3 - duplicate a file descriptor</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;unistd.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>int dup(int </b><i>oldfd</i><b>);</b><br/>
+<b>int dup2(int </b><i>oldfd</i><b>, int </b><i>newfd</i><b>);</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>#define _GNU_SOURCE</b>             /* See feature_test_macros(7) */<br/>
+<b>#include &lt;fcntl.h&gt;</b>              /* Obtain O_* constant definitions */ <b>#include &lt;unistd.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>int dup3(int </b><i>oldfd</i><b>, int </b><i>newfd</i><b>, int </b><i>flags</i><b>);</b><br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The <b>dup</b>() system call creates a copy of the file descriptor <i>oldfd</i>, using the lowest-numbered unused descriptor for the new descriptor.<div style="height: 1.00em;">
+&#160;</div>
+After a successful return, the old and new file descriptors may be used interchangeably. They refer to the same open file description (see <b>open</b>(2)) and thus share file offset and file status flags; for example, if the file offset is modified by using <b>lseek</b>(2) on one of the descriptors, the offset is also changed for the other.<div style="height: 1.00em;">
+&#160;</div>
+The two descriptors do not share file descriptor flags (the close-on-exec flag). The close-on-exec flag (<b>FD_CLOEXEC</b>; see <b>fcntl</b>(2)) for the duplicate descriptor is off.<div class="subsection">
+<h2>dup2()</h2> The <b>dup2</b>() system call performs the same task as <b>dup</b>(), but instead of using the lowest-numbered unused file descriptor, it uses the descriptor number specified in <i>newfd</i>. If the descriptor <i>newfd</i> was previously open, it is silently closed before being reused.<div style="height: 1.00em;">
+&#160;</div>
+The steps of closing and reusing the file descriptor <i>newfd</i> are performed <i>atomically</i>. This is important, because trying to implement equivalent functionality using <b>close</b>(2) and <b>dup</b>() would be subject to race conditions, whereby <i>newfd</i> might be reused between the two steps. Such reuse could happen because the main program is interrupted by a signal handler that allocates a file descriptor, or because a parallel thread allocates a file descriptor.<div style="height: 1.00em;">
+&#160;</div>
+Note the following points:<dl>
+<dt>
+*</dt>
+<dd>
+If <i>oldfd</i> is not a valid file descriptor, then the call fails, and <i>newfd</i> is not closed.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+If <i>oldfd</i> is a valid file descriptor, and <i>newfd</i> has the same value as <i>oldfd</i>, then <b>dup2</b>() does nothing, and returns <i>newfd</i>.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>dup3()</h2> <b>dup3</b>() is the same as <b>dup2</b>(), except that:<dl>
+<dt>
+*</dt>
+<dd>
+The caller can force the close-on-exec flag to be set for the new file descriptor by specifying <b>O_CLOEXEC</b> in <i>flags</i>. See the description of the same flag in <b>open</b>(2) for reasons why this may be useful.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+If <i>oldfd</i> equals <i>newfd</i>, then <b>dup3</b>() fails with the error <b>EINVAL</b>.</dd>
+</dl>
+</div>
+</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, these system calls return the new descriptor. On error, -1 is returned, and <i>errno</i> is set appropriately.</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+<i>oldfd</i> isn't an open file descriptor.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+<i>newfd</i> is out of the allowed range for file descriptors (see the discussion of <b>RLIMIT_NOFILE</b> in <b>getrlimit</b>(2)).</dd>
+</dl>
+<dl>
+<dt>
+<b>EBUSY</b></dt>
+<dd>
+(Linux only) This may be returned by <b>dup2</b>() or <b>dup3</b>() during a race condition with <b>open</b>(2) and <b>dup</b>().</dd>
+</dl>
+<dl>
+<dt>
+<b>EINTR</b></dt>
+<dd>
+The <b>dup2</b>() or <b>dup3</b>() call was interrupted by a signal; see <b>signal</b>(7).</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+(<b>dup3</b>()) <i>flags</i> contain an invalid value.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+(<b>dup3</b>()) <i>oldfd</i> was equal to <i>newfd</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>EMFILE</b></dt>
+<dd>
+The process already has the maximum number of file descriptors open and tried to open a new one (see the discussion of <b>RLIMIT_NOFILE</b> in <b>getrlimit</b>(2)).</dd>
+</dl>
+</div>
+<div class="section">
+<h1>VERSIONS</h1> <b>dup3</b>() was added to Linux in version 2.6.27; glibc support is available starting with version 2.9.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> <b>dup</b>(), <b>dup2</b>(): POSIX.1-2001, POSIX.1-2008, SVr4, 4.3BSD.<div style="height: 1.00em;">
+&#160;</div>
+<b>dup3</b>() is Linux-specific.</div>
+<div class="section">
+<h1>NOTES</h1> The error returned by <b>dup2</b>() is different from that returned by <b>fcntl(</b>..., <b>F_DUPFD</b>, ...<b>)</b> when <i>newfd</i> is out of range. On some systems, <b>dup2</b>() also sometimes returns <b>EINVAL</b> like <b>F_DUPFD</b>.<div style="height: 1.00em;">
+&#160;</div>
+If <i>newfd</i> was open, any errors that would have been reported at <b>close</b>(2) time are lost. If this is of concern, then&#8212;unless the program is single-threaded and does not allocate file descriptors in signal handlers&#8212;the correct approach is <i>not</i> to close <i>newfd</i> before calling <b>dup2</b>(), because of the race condition described above. Instead, code something like the following could be used:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    /* Obtain a duplicate of 'newfd' that can subsequently<br/>
+       be used to check for close() errors; an EBADF error<br/>
+       means that 'newfd' was not open. */<div class="spacer">
+</div>
+<br/>
+    tmpfd = dup(newfd);<br/>
+    if (tmpfd == -1 &amp;&amp; errno != EBADF) {<br/>
+        /* Handle unexpected dup() error */<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    /* Atomically duplicate 'oldfd' on 'newfd' */<div class="spacer">
+</div>
+<br/>
+    if (dup2(oldfd, newfd) == -1) {<br/>
+        /* Handle dup2() error */<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    /* Now check for close() errors on the file originally<br/>
+       referred to by 'newfd' */<div class="spacer">
+</div>
+<br/>
+    if (tmpfd != -1) {<br/>
+        if (close(tmpfd) == -1) {<br/>
+            /* Handle errors from close */<br/>
+        }<br/>
+    }<br/>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>close</b>(2), <b>fcntl</b>(2), <b>open</b>(2)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-08-08</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

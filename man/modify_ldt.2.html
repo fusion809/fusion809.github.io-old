@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+MODIFY_LDT(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+MODIFY_LDT(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+MODIFY_LDT(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> modify_ldt - get or set a per-process LDT entry</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;sys/types.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>int modify_ldt(int </b><i>func</i><b>, void *</b><i>ptr</i><b>, unsigned long </b><i>bytecount</i><b>);</b><br/>
+<div class="spacer">
+</div>
+<i>Note</i>: There is no glibc wrapper for this system call; see NOTES.</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>modify_ldt</b>() reads or writes the local descriptor table (LDT) for a process. The LDT is an array of segment descriptors that can be referenced by user code. Linux allows processes to configure a per-process (actually per-mm) LDT. For more information about the LDT, see the Intel Software Developer's Manual or the AMD Architecture Programming Manual.<div class="spacer">
+</div>
+When <i>func</i> is 0, <b>modify_ldt</b>() reads the LDT into the memory pointed to by <i>ptr</i>. The number of bytes read is the smaller of <i>bytecount</i> and the actual size of the LDT, although the kernel may act as though the LDT is padded with additional trailing zero bytes. On success, <b>modify_ldt</b>() will return the number of bytes read.<div class="spacer">
+</div>
+When <i>func</i> is 1 or 0x11, <b>modify_ldt</b>() modifies the LDT entry indicated by <i>ptr-&gt;entry_number</i>. <i>ptr</i> points to a <i>user_desc</i> structure and <i>bytecount</i> must equal the size of this structure.<div style="height: 1.00em;">
+&#160;</div>
+The <i>user_desc</i> structure is defined in  <i>&lt;asm/ldt.h&gt;</i> as:<br/>
+<div class="spacer">
+</div>
+<br/>
+struct user_desc {<br/>
+    unsigned int  entry_number;<br/>
+    unsigned long base_addr;<br/>
+    unsigned int  limit;<br/>
+    unsigned int  seg_32bit:1;<br/>
+    unsigned int  contents:2;<br/>
+    unsigned int  read_exec_only:1;<br/>
+    unsigned int  limit_in_pages:1;<br/>
+    unsigned int  seg_not_present:1;<br/>
+    unsigned int  useable:1;<br/>
+};<br/>
+<br/>
+<div class="spacer">
+</div>
+In Linux 2.4 and earlier, this structure was named <i>modify_ldt_ldt_s</i>.<div class="spacer">
+</div>
+The <i>contents</i> field is the segment type (data, expand-down data, non-conforming code, or conforming code). The other fields match their descriptions in the CPU manual, although <b>modify_ldt</b>() cannot set the hardware-defined &quot;accessed&quot; bit described in the CPU manual.<div class="spacer">
+</div>
+A <i>user_desc</i> is considered &quot;empty&quot; if <i>read_exec_only</i> and <i>seg_not_present</i> are set to 1 and all of the other fields are 0. An LDT entry can be cleared by setting it to an &quot;empty&quot; <i>user_desc</i> or, if <i>func</i> is 1, by setting both <i>base</i> and <i>limit</i> to 0.<div class="spacer">
+</div>
+A conforming code segment (i.e., one with <i>contents==3</i>) will be rejected if <i>func</i> is 1 or if <i>seg_not_present</i> is 0.<div class="spacer">
+</div>
+When <i>func</i> is 2, <b>modify_ldt</b>() will read zeros. This appears to be a leftover from Linux 2.4.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, <b>modify_ldt</b>() returns either the actual number of bytes read (for reading) or 0 (for writing). On failure, <b>modify_ldt</b>() returns -1 and sets <i>errno</i> to indicate the error.</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>EFAULT</b></dt>
+<dd>
+<i>ptr</i> points outside the address space.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>ptr</i> is 0, or <i>func</i> is 1 and <i>bytecount</i> is not equal to the size of the structure <i>user_desc</i>, or <i>func</i> is 1 or 0x11 and the new LDT entry has invalid values.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOSYS</b></dt>
+<dd>
+<i>func</i> is neither 0, 1, 2, nor 0x11.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>CONFORMING TO</h1> This call is Linux-specific and should not be used in programs intended to be portable.</div>
+<div class="section">
+<h1>NOTES</h1> Glibc does not provide a wrapper for this system call; call it using <b>syscall</b>(2).<div class="spacer">
+</div>
+<b>modify_ldt</b>() should not be used for thread-local storage, as it slows down context switches and only supports a limited number of threads. Threading libraries should use <b>set_thread_area</b>(2) or <b>arch_prctl</b>(2) instead, except on extremely old kernels that do not support those system calls.<div class="spacer">
+</div>
+The normal use for <b>modify_ldt</b>(2) is to run legacy 16-bit or segmented 32-bit code. Not all kernels allow 16-bit segments to be installed, however.<div class="spacer">
+</div>
+Even on 64-bit kernels, <b>modify_ldt</b>(2) cannot be used to create a long mode (i.e., 64-bit) code segment. The undocumented field &quot;lm&quot; in <i>user_desc</i> is not useful, and, despite its name, does not result in a long mode segment.</div>
+<div class="section">
+<h1>BUGS</h1> On 64-bit kernels before Linux 3.19, setting the &quot;lm&quot; bit in <i>user_desc</i> prevents the descriptor from being considered empty. Keep in mind that the &quot;lm&quot; bit does not exist in the 32-bit headers, but these buggy kernels will still notice the bit even when set in a 32-bit process.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>arch_prctl</b>(2), <b>set_thread_area</b>(2), <b>vm86</b>(2)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-02-21</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

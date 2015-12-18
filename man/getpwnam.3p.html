@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+GETPWNAM(3P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+GETPWNAM(3P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+GETPWNAM(3P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> getpwnam, getpwnam_r &#8212; search user database for a name</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;pwd.h&gt;<div class="spacer">
+</div>
+struct passwd *getpwnam(const char *<i>name</i>);<br/>
+int getpwnam_r(const char *<i>name</i>, struct passwd *<i>pwd</i>, char *<i>buffer</i>,<br/>
+    size_t <i>bufsize</i>, struct passwd **<i>result</i>);<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <i>getpwnam</i>() function shall search the user database for an entry with a matching <i>name</i>.<div class="spacer">
+</div>
+The  <i>getpwnam</i>() function need not be thread-safe.<div class="spacer">
+</div>
+Applications wishing to check for error situations should set <i>errno</i> to 0 before calling  <i>getpwnam</i>(). If  <i>getpwnam</i>() returns a null pointer and <i>errno</i> is non-zero, an error occurred.<div class="spacer">
+</div>
+The  <i>getpwnam_r</i>() function shall update the <b>passwd</b> structure pointed to by <i>pwd</i> and store a pointer to that structure at the location pointed to by <i>result</i>. The structure shall contain an entry from the user database with a matching <i>name</i>. Storage referenced by the structure is allocated from the memory provided with the <i>buffer</i> parameter, which is <i>bufsize</i> bytes in size. A call to <i>sysconf</i>(_SC_GETPW_R_SIZE_MAX) returns either &#8722;1 without changing <i>errno</i> or an initial value suggested for the size of this buffer. A null pointer shall be returned at the location pointed to by <i>result</i> on error or if the requested entry is not found.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> The  <i>getpwnam</i>() function shall return a pointer to a <b>struct passwd</b> with the structure as defined in <i>&lt;pwd.h&gt;</i> with a matching entry if found. A null pointer shall be returned if the requested entry is not found, or an error occurs. On error, <i>errno</i> shall be set to indicate the error.<div class="spacer">
+</div>
+The application shall not modify the structure to which the return value points, nor any storage areas pointed to by pointers within the structure. The returned pointer, and pointers within the structure, might be invalidated or the structure or the storage areas might be overwritten by a subsequent call to  <i>getpwent</i>(),  <i>getpwnam</i>(), or  <i>getpwuid</i>().<div class="spacer">
+</div>
+The  <i>getpwnam_r</i>() function shall return zero on success or if the requested entry was not found and no error has occurred. If an error has occurred, an error number shall be returned to indicate the error.</div>
+<div class="section">
+<h1>ERRORS</h1> These functions may fail if:<dl>
+<dt>
+<b>EIO</b></dt>
+<dd>
+An I/O error has occurred.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINTR</b></dt>
+<dd>
+A signal was caught during  <i>getpwnam</i>().</dd>
+</dl>
+<dl>
+<dt>
+<b>EMFILE</b></dt>
+<dd>
+All file descriptors available to the process are currently open.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENFILE</b></dt>
+<dd>
+The maximum allowable number of files is currently open in the system.</dd>
+</dl>
+<div class="spacer">
+</div>
+The  <i>getpwnam_r</i>() function may fail if:<dl>
+<dt>
+<b>ERANGE</b></dt>
+<dd>
+Insufficient storage was supplied via <i>buffer</i> and <i>bufsize</i> to contain the data to be referenced by the resulting <b>passwd</b> structure.</dd>
+</dl>
+<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>EXAMPLES</h1> Note that <i>sysconf</i>(_SC_GETPW_R_SIZE_MAX) may return &#8722;1 if there is no hard limit on the size of the buffer needed to store all the groups returned. This example shows how an application can allocate a buffer of sufficient size to work with  <i>getpwnam_r</i>().<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>long int initlen = sysconf(_SC_GETPW_R_SIZE_MAX);</b><br/>
+<b>size_t len;</b><br/>
+<b>if (initlen == &#8722;1)</b><br/>
+<b>    /* Default initial length. */</b><br/>
+<b>    len = 1024;</b><br/>
+<b>else</b><br/>
+<b>    len = (size_t) initlen;</b><br/>
+<b>struct passwd result;</b><br/>
+<b>struct passwd *resultp;</b><br/>
+<b>char *buffer = malloc(len);</b><br/>
+<b>if (buffer == NULL)</b><br/>
+<b>    ...handle error...</b><br/>
+<b>int e;</b><br/>
+<b>while ((e = getpwnam_r(&quot;someuser&quot;, &amp;result, buffer, len, &amp;resultp))</b><br/>
+<b>        == ERANGE)</b><br/>
+<b>    {</b><br/>
+<b>    size_t newlen = 2 * len;</b><br/>
+<b>    if (newlen &lt; len)</b><br/>
+<b>        ...handle error...</b><br/>
+<b>    len = newlen;</b><br/>
+<b>    char *newbuffer = realloc(buffer, len);</b><br/>
+<b>    if (newbuffer == NULL)</b><br/>
+<b>        ...handle error...</b><br/>
+<b>    buffer = newbuffer;</b><br/>
+<b>    }</b><br/>
+<b>if (e != 0)</b><br/>
+<b>    ...handle error...</b><br/>
+<b>free (buffer);</b><br/>
+</div>
+<div class="subsection">
+<h2>Getting an Entry for the Login Name</h2> The following example uses the  <i>getlogin</i>() function to return the name of the user who logged in; this information is passed to the  <i>getpwnam</i>() function to get the user database entry for that user.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>#include &lt;sys/types.h&gt;</b><br/>
+<b>#include &lt;pwd.h&gt;</b><br/>
+<b>#include &lt;unistd.h&gt;</b><br/>
+<b>#include &lt;stdio.h&gt;</b><br/>
+<b>#include &lt;stdlib.h&gt;</b><br/>
+<b>...</b><br/>
+<b>char *lgn;</b><br/>
+<b>struct passwd *pw;</b><br/>
+<b>...</b><br/>
+<b>if ((lgn = getlogin()) == NULL || (pw = getpwnam(lgn)) == NULL) {</b><br/>
+<b>    fprintf(stderr, &quot;Get of user information failed.\n&quot;); exit(1);</b><br/>
+<b>}</b><br/>
+<b>...</b><br/>
+</div>
+</div>
+</div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> Three names associated with the current process can be determined: <i>getpwuid</i>(<i>geteuid</i>()) returns the name associated with the effective user ID of the process;  <i>getlogin</i>() returns the name associated with the current login activity; and <i>getpwuid</i>(<i>getuid</i>()) returns the name associated with the real user ID of the process.<div class="spacer">
+</div>
+The  <i>getpwnam_r</i>() function is thread-safe and returns values in a user-supplied buffer instead of possibly using a static data area that may be overwritten by each call.<div class="spacer">
+</div>
+Portable applications should take into account that it is usual for an implementation to return &#8722;1 from  <i>sysconf</i>() indicating that there is no maximum for _SC_GETPW_R_SIZE_MAX.</div>
+<div class="section">
+<h1>RATIONALE</h1> None.</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> None.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i><i>getpwuid</i>()</i>, <i><i>sysconf</i>()</i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i><b>&lt;pwd.h&gt;</b></i>, <i><b>&lt;sys_types.h&gt;</b></i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

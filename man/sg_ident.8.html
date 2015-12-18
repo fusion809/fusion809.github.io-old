@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SG_IDENT(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SG_IDENT(8)</td>
+<td class="head-vol">
+SG3_UTILS</td>
+<td class="head-rtitle">
+SG_IDENT(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sg_ident - send SCSI REPORT/SET IDENTIFYING INFORMATION command</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>sg_ident</b> [ <i>--ascii</i>] [<i>--clear</i>] [<i>--help</i>] [<i>--itype=IT</i>] [ <i>--raw</i>] [<i>--set</i>] [<i>--verbose</i>] [<i>--version</i>]  <i>DEVICE</i></div>
+<div class="section">
+<h1>DESCRIPTION</h1> Send a SCSI REPORT IDENTIFYING INFORMATION or SET IDENTIFYING INFORMATION command to  <i>DEVICE</i>. Prior to SPC-4 (revision 7) these commands were called REPORT DEVICE IDENTIFIER and SET DEVICE IDENTIFIER respectively. SCSI devices that support these two commands allow users to write (set) identifying information and report it back at some later time. The information is persistent (i.e. stored on some non-volatile medium within the SCSI device that will survive a power outage).<div class="spacer">
+</div>
+Typically the space allocated for the information is limited: SPC-4 (revision 7) states that for information type 0, the minimum length is 64 bytes and the maximum is 512 bytes. For other information types (1 to 126 inclusive) the maximum length is 256 bytes. Also information types 1 to 126 (inclusive) should contain a null terminated UTF-8 string. The author has seen older disks that only support 16 bytes.<div class="spacer">
+</div>
+The default action when no options are given is to invoke the Report Identifying Information command with the information type defaulting to zero. Error reports are sent to stderr. By default the information is shown in ASCII-HEX (up to 16 bytes per line) with an ASCII representation to the right with dots replacing non printable characters.</div>
+<div class="section">
+<h1>OPTIONS</h1> Arguments to long options are mandatory for short options as well.<dl>
+<dt>
+<b>-A</b>, <b>--ascii</b></dt>
+<dd>
+invokes the Report Identifying Information command and if anything is found interprets it as ASCII (or UTF-8 depending on the locale) and prints the information to stdout.</dd>
+</dl>
+<dl>
+<dt>
+<b>-C</b>, <b>--clear</b></dt>
+<dd>
+invokes the Set Identifying Information command with an information length of zero. This has the effect of clearing the existing information.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>, <b>--help</b></dt>
+<dd>
+output the usage message then exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-i</b>, <b>--itype</b>=<i>IT</i></dt>
+<dd>
+where <i>IT</i> is the information type. Defaults to zero. The maximum value is 127 which is special and cannot be used with  <i>--set</i> or  <i>--clear</i>. The information type of 127 (if supported) causes the REPORT IDENTIFYING INFORMATION command to respond with a list of available information types and their maximum lengths in bytes. The odd numbered information types between 3 and 125 (inclusive) are not to be used (as they clash with the SCC-2 standard).</dd>
+</dl>
+<dl>
+<dt>
+<b>-r</b>, <b>--raw</b></dt>
+<dd>
+invokes the Report Identifying information command and if anything is found sends the information (which may be binary) to stdout. Nothing else is sent to stdout however error reports, if any, are sent to stderr.</dd>
+</dl>
+<dl>
+<dt>
+<b>-S</b>, <b>--set</b></dt>
+<dd>
+first reads stdin until an EOF is detected then invokes the Set Identifying Information command to set what has been fetched from stdin as the information. The amount of data read must be between 1 and 512 bytes length (inclusive).</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b>, <b>--verbose</b></dt>
+<dd>
+increase the level of verbosity, (i.e. debug output).</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>, <b>--version</b></dt>
+<dd>
+print the version string and then exit.</dd>
+</dl>
+<div class="spacer">
+</div>
+This utility permits users to write their own identifying information to their SCSI devices. There are several other types of descriptors (or designators) that the user cannot change. These include the SCSI INQUIRY command with its standard vendor and product identification strings and the product revision level; plus the large amount of information provided by the &quot;Device Identification&quot; VPD page (see sg_vpd). There is also the READ MEDIA SERIAL NUMBER command (see sg_rmsn). The MMC-4 command set for CD and DVDs has a &quot;media serial number&quot; feature (0x109) [and a &quot;logical unit serial number&quot; feature]. These can be viewed with the sg_get_config utility.</div>
+<div class="section">
+<h1>EXAMPLES</h1> First, to see if there is an existing information whose format is unknown (for information type 0), use no options:<div class="spacer">
+</div>
+<br/>
+  # sg_ident /dev/sdb<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   00     31 32 33 34 35 36 37 38  39 30          1234567890<div class="spacer">
+</div>
+If it is ASCII then it can printed as such:<div class="spacer">
+</div>
+<br/>
+  # sg_ident --ascii /dev/sdb<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  1234567890<div class="spacer">
+</div>
+The information can be copied to a file, cleared and then re-asserted with this sequence:<div class="spacer">
+</div>
+<br/>
+  # sg_ident --raw /dev/sdb &gt; t<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  # sg_ident --clear /dev/sdb<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  # cat t | sg_ident --set /dev/sdb</div>
+<div class="section">
+<h1>EXIT STATUS</h1> The exit status of sg_ident is 0 when it is successful. Otherwise see the sg3_utils(8) man page.</div>
+<div class="section">
+<h1>AUTHORS</h1> Written by Douglas Gilbert.</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Report bugs to &lt;dgilbert at interlog dot com&gt;.</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright &#169; 2005-2012 Douglas Gilbert<div style="height: 0.00em;">
+&#160;</div>
+This software is distributed under a FreeBSD license. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>sg_vpd(sg3_utils), sg_rmsn(sg3_utils), sg_get_config(sg3_utils)</b></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+November 2012</td>
+<td class="foot-os">
+sg3_utils-1.35</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

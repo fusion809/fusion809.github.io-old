@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+GETDELIM(3P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+GETDELIM(3P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+GETDELIM(3P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> getdelim, getline &#8212; read a delimited record from <i>stream</i></div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;stdio.h&gt;<div class="spacer">
+</div>
+ssize_t getdelim(char **restrict <i>lineptr</i>, size_t *restrict <i>n</i>,<br/>
+    int <i>delimiter</i>, FILE *restrict <i>stream</i>);<br/>
+ssize_t getline(char **restrict <i>lineptr</i>, size_t *restrict <i>n</i>,<br/>
+    FILE *restrict <i>stream</i>);<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <i>getdelim</i>() function shall read from <i>stream</i> until it encounters a character matching the <i>delimiter</i> character. The <i>delimiter</i> argument is an <b>int</b>, the value of which the application shall ensure is a character representable as an <b>unsigned char</b> of equal value that terminates the read process. If the <i>delimiter</i> argument has any other value, the behavior is undefined.<div class="spacer">
+</div>
+The application shall ensure that <i>*lineptr</i> is a valid argument that could be passed to the  <i>free</i>() function. If <i>*n</i> is non-zero, the application shall ensure that <i>*lineptr</i> either points to an object of size at least <i>*n</i> bytes, or is a null pointer.<div class="spacer">
+</div>
+The size of the object pointed to by <i>*lineptr</i> shall be increased to fit the incoming line, if it isn't already large enough, including room for the delimiter and a terminating NUL. The characters read, including any delimiter, shall be stored in the string pointed to by the <i>lineptr</i> argument, and a terminating NUL added when the delimiter or end of file is encountered.<div class="spacer">
+</div>
+The  <i>getline</i>() function shall be equivalent to the  <i>getdelim</i>() function with the <i>delimiter</i> character equal to the &lt;newline&gt; character.<div class="spacer">
+</div>
+The  <i>getdelim</i>() and  <i>getline</i>() functions may mark the last data access timestamp of the file associated with <i>stream</i> for update. The last data access timestamp shall be marked for update by the first successful execution of  <i>fgetc</i>(),  <i>fgets</i>(),  <i>fread</i>(),  <i>fscanf</i>(),  <i>getc</i>(),  <i>getchar</i>(),  <i>getdelim</i>(),  <i>getline</i>(),  <i>gets</i>(), or  <i>scanf</i>() using <i>stream</i> that returns data not supplied by a prior call to  <i>ungetc</i>().</div>
+<div class="section">
+<h1>RETURN VALUE</h1> Upon successful completion, the  <i>getline</i>() and  <i>getdelim</i>() functions shall return the number of characters written into the buffer, including the delimiter character if one was encountered before EOF, but excluding the terminating NUL character. If no characters were read, and the end-of-file indicator for the stream is set, or if the stream is at end-of-file, the end-of-file indicator for the stream shall be set and the function shall return &#8722;1. If an error occurs, the error indicator for the stream shall be set, and the function shall return &#8722;1 and set <i>errno</i> to indicate the error.</div>
+<div class="section">
+<h1>ERRORS</h1> For the conditions under which the  <i>getdelim</i>() and  <i>getline</i>() functions shall fail and may fail, refer to <i><i>fgetc</i>()</i>.<div class="spacer">
+</div>
+In addition, these functions shall fail if:<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+<i>lineptr</i> or <i>n</i> is a null pointer.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOMEM</b></dt>
+<dd>
+Insufficient memory is available.</dd>
+</dl>
+<div class="spacer">
+</div>
+These functions may fail if:<dl>
+<dt>
+<b>EOVERFLOW</b></dt>
+<dd>
+More than {SSIZE_MAX} characters were read without encountering the <i>delimiter</i> character.</dd>
+</dl>
+<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>EXAMPLES</h1><div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>#include &lt;stdio.h&gt;</b><br/>
+<b>#include &lt;stdlib.h&gt;</b><div class="spacer">
+</div>
+int main(void)<br/>
+{<br/>
+    FILE *fp;<br/>
+    char *line = NULL;<br/>
+    size_t len = 0;<br/>
+    ssize_t read;<br/>
+    fp = fopen(&quot;/etc/motd&quot;, &quot;r&quot;);<br/>
+    if (fp == NULL)<br/>
+        exit(1);<br/>
+    while ((read = getline(&amp;line, &amp;len, fp)) != -1) {<br/>
+        printf(&quot;Retrieved line of length %zu :\n&quot;, read);<br/>
+        printf(&quot;%s&quot;, line);<br/>
+    }<br/>
+    if (ferror(fp)) {<br/>
+        /* handle error */<br/>
+    }<br/>
+    free(line);<br/>
+    fclose(fp);<br/>
+    return 0;<br/>
+}<br/>
+</div>
+</div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> Setting <i>*lineptr</i> to a null pointer and <i>*n</i> to zero are allowed and a recommended way to start parsing a file.<div class="spacer">
+</div>
+The  <i>ferror</i>() or  <i>feof</i>() functions should be used to distinguish between an error condition and an end-of-file condition.<div class="spacer">
+</div>
+Although a NUL terminator is always supplied after the line, note that <i>strlen</i>(*<i>lineptr</i>) will be smaller than the return value if the line contains embedded NUL characters.</div>
+<div class="section">
+<h1>RATIONALE</h1> These functions are widely used to solve the problem that the  <i>fgets</i>() function has with long lines. The functions automatically enlarge the target buffers if needed. These are especially useful since they reduce code needed for applications.</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> None.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i>Section 2.5</i>, <i>Standard I/O Streams</i>, <i><i>fgetc</i>()</i>, <i><i>fgets</i>()</i>, <i><i>free</i>()</i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i><b>&lt;stdio.h&gt;</b></i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

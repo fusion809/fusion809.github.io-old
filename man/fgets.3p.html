@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+FGETS(3P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+FGETS(3P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+FGETS(3P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> fgets &#8212; get a string from a stream</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;stdio.h&gt;<div class="spacer">
+</div>
+char *fgets(char *restrict <i>s</i>, int <i>n</i>, FILE *restrict <i>stream</i>);<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The functionality described on this reference page is aligned with the ISO&#160;C standard. Any conflict between the requirements described here and the ISO&#160;C standard is unintentional. This volume of POSIX.1&#8208;2008 defers to the ISO&#160;C standard.<div class="spacer">
+</div>
+The  <i>fgets</i>() function shall read bytes from <i>stream</i> into the array pointed to by <i>s</i>, until <i>n</i>&#8722;1 bytes are read, or a &lt;newline&gt; is read and transferred to <i>s</i>, or an end-of-file condition is encountered. The string is then terminated with a null byte.<div class="spacer">
+</div>
+The  <i>fgets</i>() function may mark the last data access timestamp of the file associated with <i>stream</i> for update. The last data access timestamp shall be marked for update by the first successful execution of  <i>fgetc</i>(),  <i>fgets</i>(),  <i>fread</i>(),  <i>fscanf</i>(),  <i>getc</i>(),  <i>getchar</i>(),  <i>getdelim</i>(),  <i>getline</i>(),  <i>gets</i>(), or  <i>scanf</i>() using <i>stream</i> that returns data not supplied by a prior call to  <i>ungetc</i>().</div>
+<div class="section">
+<h1>RETURN VALUE</h1> Upon successful completion,  <i>fgets</i>() shall return <i>s</i>. If the stream is at end-of-file, the end-of-file indicator for the stream shall be set and  <i>fgets</i>() shall return a null pointer. If a read error occurs, the error indicator for the stream shall be set,  <i>fgets</i>() shall return a null pointer, and shall set <i>errno</i> to indicate the error.</div>
+<div class="section">
+<h1>ERRORS</h1> Refer to <i><i>fgetc</i>()</i>.<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>EXAMPLES</h1><div class="subsection">
+<h2>Reading Input</h2> The following example uses  <i>fgets</i>() to read lines of input. It assumes that the file it is reading is a text file and that lines in this text file are no longer than 16384 (or {LINE_MAX} if it is less than 16384 on the implementation where it is running) bytes long. (Note that the standard utilities have no line length limit if <i>sysconf</i>(_SC_LINE_MAX) returns &#8722;1 without setting <i>errno</i>. This example assumes that <i>sysconf</i>(_SC_LINE_MAX) will not fail.)<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>#include &lt;limits.h&gt;</b><br/>
+<b>#include &lt;stdio.h&gt;</b><br/>
+<b>#include &lt;unistd.h&gt;</b><br/>
+<b>#define MYLIMIT 16384</b><div class="spacer">
+</div>
+char *line;<br/>
+int line_max;<br/>
+if (LINE_MAX &gt;= MYLIMIT) {<br/>
+    // Use maximum line size of MYLIMIT. If LINE_MAX is<br/>
+    // bigger than our limit, sysconf() can't report a<br/>
+    // smaller limit.<br/>
+    line_max = MYLIMIT;<br/>
+} else {<br/>
+    long limit = sysconf(_SC_LINE_MAX);<br/>
+    line_max = (limit &lt; 0 || limit &gt; MYLIMIT) ? MYLIMIT : (int)limit;<br/>
+}<div class="spacer">
+</div>
+// line_max + 1 leaves room for the null byte added by fgets().<br/>
+line = malloc(line_max + 1);<br/>
+if (line == NULL) {<br/>
+    // out of space<br/>
+    ...<br/>
+    return error;<br/>
+}<div class="spacer">
+</div>
+while (fgets(line, line_max + 1, fp) != NULL) {<br/>
+    // Verify that a full line has been read ...<br/>
+    // If not, report an error or prepare to treat the<br/>
+    // next time through the loop as a read of a<br/>
+    // continuation of the current line.<br/>
+    ...<br/>
+    // Process line ...<br/>
+    ...<br/>
+}<br/>
+free(line);<br/>
+...<br/>
+</div>
+</div>
+</div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> None.</div>
+<div class="section">
+<h1>RATIONALE</h1> None.</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> None.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i>Section 2.5</i>, <i>Standard I/O Streams</i>, <i><i>fgetc</i>()</i>, <i><i>fopen</i>()</i>, <i><i>fread</i>()</i>, <i><i>fscanf</i>()</i>, <i><i>getc</i>()</i>, <i><i>getchar</i>()</i>, <i><i>getdelim</i>()</i>, <i><i>gets</i>()</i>, <i><i>ungetc</i>()</i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i><b>&lt;stdio.h&gt;</b></i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

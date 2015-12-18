@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SG_COPY_RESULTS(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SG_COPY_RESULTS(8)</td>
+<td class="head-vol">
+SG3_UTILS</td>
+<td class="head-rtitle">
+SG_COPY_RESULTS(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sg_copy_results - send SCSI RECEIVE COPY RESULTS command (XCOPY related)</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>sg_copy_results</b> [ <i>--failed</i>|<i>--params</i>|<i>--receive</i>|<i>--status</i>] [ <i>--help</i>] [<i>--hex</i>] [<i>--list_id=ID</i>] [<i>--readonly</i>] [ <i>--verbose</i>] [<i>--version</i>] [<i>--xfer_len=BTL</i>] <i>DEVICE</i></div>
+<div class="section">
+<h1>DESCRIPTION</h1> This utility is designed to query the status of the SCSI Extended Copy (XCOPY) facility (see SPC-3 revision 23 sections 6.3 and 6.17), present in some modern storage arrays. This utility sends a SCSI RECEIVE COPY RESULTS command to the given  <i>DEVICE</i> and displays the response.<div class="spacer">
+</div>
+During the draft stages of SPC-4 the T10 committee has expanded the XCOPY command so that it now has two variants: &quot;LID1&quot; (for a List Identifier length of 1 byte) and &quot;LID4&quot; (for a List Identifier length of 4 bytes). This utility supports the older, LID1 variant which is also found in SPC-3 and earlier. While the LID1 variant in SPC-4 is command level (binary) compatible with XCOPY as defined in SPC-3, some of the command naming has changed. This utility uses the older, SPC-3 XCOPY names.<div class="spacer">
+</div>
+The command has four distinct modes of operation, distinguished by the service action field:<dl>
+<dt>
+<b>COPY STATUS  [SPC-4: RECEIVE COPY STATUS(LID1)]</b></dt>
+<dd>
+Displays the current status of the EXTENDED COPY command identified by the list id field.</dd>
+</dl>
+<dl>
+<dt>
+<b>RECEIVE DATA  [SPC-4: RECEIVE COPY DATA(LID1)]</b></dt>
+<dd>
+Return the held data read by the EXTENDED COPY command identified by the list id field. This option is only meaningful if the respective segment descriptor are supported.</dd>
+</dl>
+<dl>
+<dt>
+<b>OPERATING PARAMETERS  [SPC-4: RECEIVE COPY OPERATING PARAMETERS]</b></dt>
+<dd>
+Return copy manager operating parameters. This option is also useful to determine if the SCSI Extended Copy facility is supported.</dd>
+</dl>
+<dl>
+<dt>
+<b>FAILED SEGMENT DETAILS  [SPC-4: RECEIVE COPY FAILURE DETAILS(LID1)]</b></dt>
+<dd>
+Return copy target device sense data and other information about any failed segments.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>OPTIONS</h1> Arguments to long options are mandatory for short options as well.<dl>
+<dt>
+<b>-f</b>, <b>--failed</b></dt>
+<dd>
+sets the service action field to FAILED SEGMENT DETAILS [4].</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>, <b>--help</b></dt>
+<dd>
+output the usage message then exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-H</b>, <b>--hex</b></dt>
+<dd>
+prints out the response buffer in hex.</dd>
+</dl>
+<dl>
+<dt>
+<b>-l</b>, <b>--list_id</b>=<i>ID</i></dt>
+<dd>
+sets the list identifier field to <i>ID</i> (default: 0).</dd>
+</dl>
+<dl>
+<dt>
+<b>-p</b>, <b>--params</b></dt>
+<dd>
+sets the service action field to OPERATING PARAMETERS [3]. This is the default.</dd>
+</dl>
+<dl>
+<dt>
+<b>-R</b>, <b>--readonly</b></dt>
+<dd>
+open the <i>DEVICE</i> read-only (e.g. in Unix with the O_RDONLY flag). The default is to open it read-write.</dd>
+</dl>
+<dl>
+<dt>
+<b>-r</b>, <b>--receive</b></dt>
+<dd>
+sets the service action field to RECEIVE DATA [1].</dd>
+</dl>
+<dl>
+<dt>
+<b>-s</b>, <b>--status</b></dt>
+<dd>
+sets the service action field to COPY STATUS [0].</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b>, <b>--verbose</b></dt>
+<dd>
+increase the level of verbosity, (i.e. debug output).</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>, <b>--version</b></dt>
+<dd>
+print the version string and then exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-x</b>, <b>--xfer_len</b>=<i>BTL</i></dt>
+<dd>
+sets the allocation length field to <i>BTL</i>. It is the byte transfer length and is the maximum (byte) size of the response.  <i>BTL</i> must be less than 10000 and defaults to 520.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>NOTES</h1> Decoding of  <i>RECEIVE DATA</i> service action is not implemented.<div class="spacer">
+</div>
+In a similar way the functionality of sg_xcopy has been ported to the more general ddpt utility (and package), the functionality of this utility has been ported to the ddptctl utility.</div>
+<div class="section">
+<h1>EXAMPLES</h1> Query the operating parameters for a device:<div class="spacer">
+</div>
+# sg_copy_results -p /dev/sdo<div style="height: 0.00em;">
+&#160;</div>
+Receive copy results (report operating parameters):<br/>
+    Supports no list identifier: no<br/>
+    Maximum target descriptor count: 2<br/>
+    Maximum segment descriptor count: 1<br/>
+    Maximum descriptor list length: 92 bytes<br/>
+    Maximum segment length: 33553920 bytes<br/>
+    Inline data not supported<br/>
+    Held data limit: 0 bytes<br/>
+    Maximum stream device transfer size: 0 bytes<br/>
+    Total concurrent copies: 0<br/>
+    Maximum concurrent copies: 255<br/>
+    Data segment granularity: 512 bytes<br/>
+    Inline data granularity: 1 bytes<br/>
+    Held data granularity: 1 bytes<br/>
+    Implemented descriptor list:<br/>
+        Segment descriptor 0x02: Copy from block device to block device<br/>
+        Target descriptor 0xe4: Identification descriptor<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>EXIT STATUS</h1> The exit status of sg_copy_results is 0 when it is successful. Otherwise see the sg3_utils(8) man page.</div>
+<div class="section">
+<h1>AUTHORS</h1> Written by Douglas Gilbert.</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Report bugs to &lt;dgilbert at interlog dot com&gt;.</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright &#169; 2012-2014 Hannes Reinecke and Douglas Gilbert<div style="height: 0.00em;">
+&#160;</div>
+This software is distributed under a FreeBSD license. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>sg_xcopy(sg3_utils), ddpt,ddptctl(ddpt)</b></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+September 2014</td>
+<td class="foot-os">
+sg3_utils-1.40</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

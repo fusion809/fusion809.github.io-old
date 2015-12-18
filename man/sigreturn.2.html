@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SIGRETURN(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SIGRETURN(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+SIGRETURN(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sigreturn, rt_sigreturn - return from signal handler and cleanup stack frame</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>int sigreturn(...);</b></div>
+<div class="section">
+<h1>DESCRIPTION</h1> If the Linux kernel determines that an unblocked signal is pending for a process, then, at the next transition back to user mode in that process (e.g., upon return from a system call or when the process is rescheduled onto the CPU), it saves various pieces of process context (processor status word, registers, signal mask, and signal stack settings) into the user-space stack.<div style="height: 1.00em;">
+&#160;</div>
+The kernel also arranges that, during the transition back to user mode, the signal handler is called, and that, upon return from the handler, control passes to a piece of user-space code commonly called the &quot;signal trampoline&quot;. The signal trampoline code in turn calls <b>sigreturn</b>().<div style="height: 1.00em;">
+&#160;</div>
+This <b>sigreturn</b>() call undoes everything that was done&#8212;changing the process's signal mask, switching signal stacks (see <b>sigaltstack</b>(2))&#8212;in  order to invoke the signal handler. It restores the process's signal mask, switches stacks, and restores the process's context (processor flags and registers, including the stack pointer and instruction pointer), so that the process resumes execution at the point where it was interrupted by the signal.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> <b>sigreturn</b>() never returns.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> Many UNIX-type systems have a <b>sigreturn</b>() system call or near equivalent. However, this call is not specified in POSIX, and details of its behavior vary across systems.</div>
+<div class="section">
+<h1>NOTES</h1> <b>sigreturn</b>() exists only to allow the implementation of signal handlers. It should <b>never</b> be called directly. Details of the arguments (if any) passed to <b>sigreturn</b>() vary depending on the architecture.<div style="height: 1.00em;">
+&#160;</div>
+Once upon a time, UNIX systems placed the signal trampoline code onto the user stack. Nowadays, pages of the user stack are protected so as to disallow code execution. Thus, on contemporary Linux systems, depending on the architecture, the signal trampoline code lives either in the <b>vdso</b>(7) or in the C library. In the latter case, the C library supplies the location of the trampoline code using the <i>sa_restorer</i> field of the <i>sigaction</i> structure that is passed to <b>sigaction</b>(2), and sets the <b>SA_RESTORER</b> flag in the <i>sa_flags</i> field.<div style="height: 1.00em;">
+&#160;</div>
+The saved process context information is placed in a <i>ucontext_t</i> structure (see <i>&lt;sys/ucontext.h&gt;</i>). That structure is visible within the signal handler as the third argument of a handler established with the <b>SA_SIGINFO</b> flag.<div style="height: 1.00em;">
+&#160;</div>
+On some other UNIX systems, the operation of the signal trampoline differs a little. In particular, on some systems, upon transitioning back to user mode, the kernel passes control to the trampoline (rather than the signal handler), and the trampoline code calls the signal handler (and then calls <b>sigreturn</b>() once the handler returns).<div class="subsection">
+<h2>C library/kernel differences</h2> The original Linux system call was named <b>sigreturn</b>(). However, with the addition of real-time signals in Linux 2.2, a new system call, <b>rt_sigreturn</b>() was added to support an enlarged <i>sigset_t</i> type. The GNU C library hides these details from us, transparently employing <b>rt_sigreturn</b>() when the kernel provides it.</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>kill</b>(2), <b>restart_syscall</b>(2), <b>sigaltstack</b>(2), <b>signal</b>(2), <b>getcontext</b>(3), <b>signal</b>(7)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-07-23</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+FSYNC(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+FSYNC(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+FSYNC(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> fsync, fdatasync - synchronize a file's in-core state with storage device</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;unistd.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<b>int fsync(int </b><i>fd</i><b>);</b><div style="height: 1.00em;">
+&#160;</div>
+<b>int fdatasync(int </b><i>fd</i><b>);</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Feature Test Macro Requirements for glibc (see <b>feature_test_macros</b>(7)):<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>fsync</b>(): _BSD_SOURCE || _XOPEN_SOURCE<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+         || /* since glibc 2.8: */ _POSIX_C_SOURCE&#160;&gt;=&#160;200112L<div style="height: 0.00em;">
+&#160;</div>
+<b>fdatasync</b>(): _POSIX_C_SOURCE&#160;&gt;=&#160;199309L || _XOPEN_SOURCE&#160;&gt;=&#160;500</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>fsync</b>() transfers (&quot;flushes&quot;) all modified in-core data of (i.e., modified buffer cache pages for) the file referred to by the file descriptor <i>fd</i> to the disk device (or other permanent storage device) so that all changed information can be retrieved even after the system crashed or was rebooted. This includes writing through or flushing a disk cache if present. The call blocks until the device reports that the transfer has completed. It also flushes metadata information associated with the file (see <b>stat</b>(2)).<div style="height: 1.00em;">
+&#160;</div>
+Calling <b>fsync</b>() does not necessarily ensure that the entry in the directory containing the file has also reached disk. For that an explicit <b>fsync</b>() on a file descriptor for the directory is also needed.<div style="height: 1.00em;">
+&#160;</div>
+<b>fdatasync</b>() is similar to <b>fsync</b>(), but does not flush modified metadata unless that metadata is needed in order to allow a subsequent data retrieval to be correctly handled. For example, changes to <i>st_atime</i> or <i>st_mtime</i> (respectively, time of last access and time of last modification; see <b>stat</b>(2)) do not require flushing because they are not necessary for a subsequent data read to be handled correctly. On the other hand, a change to the file size (<i>st_size</i>, as made by say <b>ftruncate</b>(2)), would require a metadata flush.<div style="height: 1.00em;">
+&#160;</div>
+The aim of <b>fdatasync</b>() is to reduce disk activity for applications that do not require all metadata to be synchronized with the disk.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, these system calls return zero. On error, -1 is returned, and <i>errno</i> is set appropriately.</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+<i>fd</i> is not a valid open file descriptor.</dd>
+</dl>
+<dl>
+<dt>
+<b>EIO</b></dt>
+<dd>
+An error occurred during synchronization.</dd>
+</dl>
+<dl>
+<dt>
+<b>EROFS</b>, <b>EINVAL</b></dt>
+<dd>
+<i>fd</i> is bound to a special file which does not support synchronization.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>CONFORMING TO</h1> POSIX.1-2001, POSIX.1-2008, 4.3BSD.</div>
+<div class="section">
+<h1>AVAILABILITY</h1> On POSIX systems on which <b>fdatasync</b>() is available, <b>_POSIX_SYNCHRONIZED_IO</b> is defined in <i>&lt;unistd.h&gt;</i> to a value greater than 0. (See also <b>sysconf</b>(3).)</div>
+<div class="section">
+<h1>NOTES</h1> On some UNIX systems (but not Linux), <i>fd</i> must be a <i>writable</i> file descriptor.<div style="height: 1.00em;">
+&#160;</div>
+In Linux 2.2 and earlier, <b>fdatasync</b>() is equivalent to <b>fsync</b>(), and so has no performance advantage.<div style="height: 1.00em;">
+&#160;</div>
+The <b>fsync</b>() implementations in older kernels and lesser used filesystems does not know how to flush disk caches. In these cases disk caches need to be disabled using <b>hdparm</b>(8) or <b>sdparm</b>(8) to guarantee safe operation.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>bdflush</b>(2), <b>open</b>(2), <b>sync</b>(2), <b>sync_file_range</b>(2), <b>hdparm</b>(8), <b>mount</b>(8), <b>sync</b>(1)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-08-08</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

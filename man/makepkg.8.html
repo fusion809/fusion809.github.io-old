@@ -1,589 +1,255 @@
-<!-- Creator     : groff version 1.22.3 -->
-<!-- CreationDate: Tue Dec  1 23:27:01 2015 -->
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
-<meta name="generator" content="groff -Thtml, see www.gnu.org">
-<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
-<meta name="Content-Style" content="text/css">
-<style type="text/css">
-       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
-       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
-       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
-       h1      { text-align: center }
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
 </style>
-<title>MAKEPKG</title>
-
+<title>
+MAKEPKG(8)</title>
 </head>
 <body>
-
-<h1 align="center">MAKEPKG</h1>
-
-<a href="#NAME">NAME</a><br>
-<a href="#SYNOPSIS">SYNOPSIS</a><br>
-<a href="#DESCRIPTION">DESCRIPTION</a><br>
-<a href="#OPTIONS">OPTIONS</a><br>
-<a href="#ADDITIONAL FEATURES">ADDITIONAL FEATURES</a><br>
-<a href="#ENVIRONMENT VARIABLES">ENVIRONMENT VARIABLES</a><br>
-<a href="#CONFIGURATION">CONFIGURATION</a><br>
-<a href="#SEE ALSO">SEE ALSO</a><br>
-<a href="#BUGS">BUGS</a><br>
-<a href="#AUTHORS">AUTHORS</a><br>
-
-<hr>
-
-
-<h2>NAME
-<a name="NAME"></a>
-</h2>
-
-
-<p style="margin-left:11%; margin-top: 1em">makepkg &minus;
-package build utility</p>
-
-<h2>SYNOPSIS
-<a name="SYNOPSIS"></a>
-</h2>
-
-
-<p style="margin-left:11%; margin-top: 1em"><i>makepkg</i>
-[options] [ENVVAR=value] [ENVVAR+=value] ...</p>
-
-<h2>DESCRIPTION
-<a name="DESCRIPTION"></a>
-</h2>
-
-
-<p style="margin-left:11%; margin-top: 1em"><i>makepkg</i>
-is a script to automate the building of packages. The
-requirements for using the script are a build&minus;capable
-*nix platform and a custom build script for each package you
-wish to build (known as a PKGBUILD). See <b>PKGBUILD</b>(5)
-for details on creating your own build scripts.</p>
-
-<p style="margin-left:11%; margin-top: 1em">The advantage
-to a script&minus;based build is that the work is only done
-once. Once you have the build script for a package,
-<i>makepkg</i> will do the rest: download and validate
-source files, check dependencies, configure the
-build&minus;time settings, build the package, install the
-package into a temporary root, make customizations, generate
-meta&minus;info, and package the whole thing up for pacman
-to use.</p>
-
-
-<p style="margin-left:17%; margin-top: 1em"><b><big>Note</big></b>
-<i><br>
-makepkg</i> uses your current locale by default and does not
-unset it when building packages. If you wish to share your
-build output with others when seeking help or for other
-purposes, you may wish to run &quot;LC_ALL=C makepkg&quot;
-so your logs and output are not localized.</p>
-
-<h2>OPTIONS
-<a name="OPTIONS"></a>
-</h2>
-
-
-
-<p style="margin-left:11%; margin-top: 1em"><b><big>&minus;A,
-&minus;&minus;ignorearch</big></b></p>
-
-<p style="margin-left:17%;"><big>Ignore a missing or
-incomplete arch field in the build script. This is for
-rebuilding packages from source when the PKGBUILD may be
-slightly outdated and not updated with an arch=('yourarch')
-field.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;c,
-&minus;&minus;clean</b></big></p>
-
-<p style="margin-left:17%;"><big>Clean up leftover work
-files and directories after a successful build.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;&minus;config</b>
-&lt;file&gt;</big></p>
-
-<p style="margin-left:17%;"><big>Use an alternate
-configuration file instead of the /etc/makepkg.conf
-default.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;d,
-&minus;&minus;nodeps</b></big></p>
-
-<p style="margin-left:17%;"><big>Do not perform any
-dependency checks. This will let you override and ignore any
-dependencies required. There is a good chance this option
-will break the build process if all of the dependencies are
-not installed.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;e,
-&minus;&minus;noextract</b></big></p>
-
-<p style="margin-left:17%;"><big>Do not extract source
-files or run the prepare() function (if present); use
-whatever source already exists in the $srcdir/ directory.
-This is handy if you want to go into $srcdir/ and manually
-patch or tweak code, then make a package out of the result.
-Keep in mind that creating a patch may be a better solution
-to allow others to use your PKGBUILD.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;&minus;verifysource</b></big></p>
-
-<p style="margin-left:17%;"><big>For each source file in
-the source array of PKGBUILD, download the file if required
-and perform the integrity checks. No extraction or build is
-performed. Dependencies specified in the PKGBUILD will not
-be handled unless &minus;&minus;syncdeps is used. Useful for
-performing subsequent offline builds.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;f,
-&minus;&minus;force</b></big></p>
-
-<p style="margin-left:17%;"><big>makepkg will not build a
-package if a built package already exists in the PKGDEST
-(set in <b>makepkg.conf</b>(5)) directory, which may default
-to the current directory. This allows the built package to
-be overwritten.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;g,
-&minus;&minus;geninteg</b></big></p>
-
-<p style="margin-left:17%;"><big>For each source file in
-the source array of PKGBUILD, download the file if required
-and generate integrity checks. The integrity checks
-generated are determined by the checks present in the
-PKGBUILD, falling back to the value of the INTEGRITY_CHECK
-array in makepkg.conf(5) if these are absent This output can
-be redirected into your PKGBUILD for source validation using
-&quot;makepkg &minus;g &gt;&gt; PKGBUILD&quot;.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;&minus;skipinteg</b></big></p>
-
-<p style="margin-left:17%;"><big>Do not perform any
-integrity checks (checksum and PGP) on source
-files.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;&minus;skipchecksums</b></big></p>
-
-<p style="margin-left:17%;"><big>Do not verify checksums of
-source files.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;&minus;skippgpcheck</b></big></p>
-
-<p style="margin-left:17%;"><big>Do not verify PGP
-signatures of source files.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;h,
-&minus;&minus;help</b></big></p>
-
-<p style="margin-left:17%;"><big>Output syntax and command
-line options.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;&minus;holdver</b></big></p>
-
-<p style="margin-left:17%;"><big>When using VCS sources
-(<b>PKGBUILD</b>(5)) any currently checked out source will
-not be updated to the latest revision.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;i,
-&minus;&minus;install</b></big></p>
-
-<p style="margin-left:17%;"><big>Install or upgrade the
-package after a successful build using
-<b>pacman</b>(8).</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;L,
-&minus;&minus;log</b></big></p>
-
-<p style="margin-left:17%;"><big>Enable makepkg build
-logging. This will use the <b>tee</b> program to send output
-of the build() function to both the console and to a text
-file in the build directory named
-pkgname&minus;pkgver&minus;pkgrel&minus;arch.log. As
-mentioned above, the build log will be localized so you may
-want to set your locale accordingly if sharing the log
-output with others.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;m,
-&minus;&minus;nocolor</b></big></p>
-
-<p style="margin-left:17%;"><big>Disable color in output
-messages.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;o,
-&minus;&minus;nobuild</b></big></p>
-
-<p style="margin-left:17%;"><big>Download and extract
-files, run the prepare() function, but do not build them.
-Useful with the <i>&minus;&minus;noextract</i> option if you
-wish to tweak the files in $srcdir/ before
-building.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;p</b>
-&lt;buildscript&gt;</big></p>
-
-<p style="margin-left:17%;"><big>Read the package script
-buildscript instead of the PKGBUILD default; see
-<b>PKGBUILD</b>(5). The buildscript must be located in the
-directory makepkg is called from.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;r,
-&minus;&minus;rmdeps</b></big></p>
-
-<p style="margin-left:17%;"><big>Upon successful build,
-remove any dependencies installed by makepkg during
-dependency auto&minus;resolution and installation when using
-&minus;s.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;R,
-&minus;&minus;repackage</b></big></p>
-
-<p style="margin-left:17%;"><big>Repackage contents of the
-package without rebuilding the package. This is useful if
-you forgot, for example, a dependency or install file in
-your PKGBUILD and the build itself will not
-change.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;s,
-&minus;&minus;syncdeps</b></big></p>
-
-<p style="margin-left:17%;"><big>Install missing
-dependencies using pacman. When build&minus;time or
-run&minus;time dependencies are not found, pacman will try
-to resolve them. If successful, the missing packages will be
-downloaded and installed.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;S,
-&minus;&minus;source</b></big></p>
-
-<p style="margin-left:17%;"><big>Do not actually build the
-package, but build a source&minus;only tarball that does not
-include sources that can be fetched via a download URL. This
-is useful for passing a single tarball to another program
-such as a chroot, remote builder, or a tarball upload.
-Because integrity checks are verified, all source files of
-the package need to be present or downloadable.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;V,
-&minus;&minus;version</b></big></p>
-
-<p style="margin-left:17%;"><big>Display version
-information.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;C,
-&minus;&minus;cleanbuild</b></big></p>
-
-<p style="margin-left:17%;"><big>Remove the $srcdir before
-building the package.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;&minus;allsource</b></big></p>
-
-<p style="margin-left:17%;"><big>Do not actually build the
-package, but build a source&minus;only tarball that includes
-all sources, including those that are normally downloaded
-via makepkg. This is useful for passing a single tarball to
-another program such as a chroot or remote builder. It will
-also satisfy requirements of the GPL when distributing
-binary packages.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;&minus;pkg</b>
-&lt;list&gt;</big></p>
-
-<p style="margin-left:17%;"><big>Only build listed packages
-from a split package. Multiple packages should be comma
-separated in the list. This option can be specified multiple
-times.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;&minus;check</b></big></p>
-
-<p style="margin-left:17%;"><big>Run the check() function
-in the PKGBUILD, overriding the setting in
-<b>makepkg.conf</b>(5).</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;&minus;noarchive</b></big></p>
-
-<p style="margin-left:17%;"><big>Do not create the archive
-at the end of the build process. This can be useful to test
-the package() function or if your target distribution does
-not use pacman.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;&minus;nocheck</b></big></p>
-
-<p style="margin-left:17%;"><big>Do not run the check()
-function in the PKGBUILD or handle the
-checkdepends.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;&minus;noprepare</b></big></p>
-
-<p style="margin-left:17%;"><big>Do not run the prepare()
-function in the PKGBUILD.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;&minus;sign</b></big></p>
-
-<p style="margin-left:17%;"><big>Sign the resulting package
-with gpg, overriding the setting in
-<b>makepkg.conf</b>(5).</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;&minus;nosign</b></big></p>
-
-<p style="margin-left:17%;"><big>Do not create a signature
-for the built package.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;&minus;key</b>
-&lt;key&gt;</big></p>
-
-<p style="margin-left:17%;"><big>Specify a key to use when
-signing packages, overriding the GPGKEY setting in
-<b>makepkg.conf</b>(5). If not specified in either location,
-the default key from the keyring will be used.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;&minus;noconfirm</b></big></p>
-
-<p style="margin-left:17%;"><big>(Passed to pacman) Prevent
-pacman from waiting for user input before proceeding with
-operations.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;&minus;needed</b></big></p>
-
-<p style="margin-left:17%;"><big>(Passed to pacman) Tell
-pacman not to reinstall a target if it is already
-up&minus;to&minus;date. (used with <i>&minus;i</i> /
-<i>&minus;&minus;install</i>).</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;&minus;asdeps</b></big></p>
-
-<p style="margin-left:17%;"><big>(Passed to pacman) Install
-packages as non&minus;explicitly installed (used with
-<i>&minus;i</i> / <i>&minus;&minus;install</i>).</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>&minus;&minus;noprogressbar</b></big></p>
-
-<p style="margin-left:17%;"><big>(Passed to pacman) Prevent
-pacman from displaying a progress bar; useful if you are
-redirecting makepkg output to file.</big></p>
-
-<h2>ADDITIONAL FEATURES
-<a name="ADDITIONAL FEATURES"></a>
-</h2>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big>makepkg
-supports building development versions of packages without
-having to manually update the pkgver in the PKGBUILD. This
-was formerly done using the separate utility
-<i>versionpkg</i>. See <b>PKGBUILD</b>(5) for details on how
-to set up a development PKGBUILD.</big></p>
-
-<h2>ENVIRONMENT VARIABLES
-<a name="ENVIRONMENT VARIABLES"></a>
-</h2>
-
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>PACMAN</b></big></p>
-
-<p style="margin-left:17%;"><big>The command that will be
-used to check for missing dependencies and to install and
-remove packages. Pacman&rsquo;s <i>&minus;Qq</i>,
-<i>&minus;Rns</i>, <i>&minus;S</i>, <i>&minus;T</i>, and
-<i>&minus;U</i> operations must be supported by this
-command. If the variable is not set or empty, makepkg will
-fall back to &lsquo;pacman&rsquo;.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>MAKEPKG_CONF=</b>&quot;/path/to/file&quot;</big></p>
-
-<p style="margin-left:17%;"><big>Use an alternate config
-file instead of the /etc/makepkg.conf default.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>PKGDEST=</b>&quot;/path/to/directory&quot;</big></p>
-
-<p style="margin-left:17%;"><big>Directory where the
-resulting packages will be stored. Overrides the
-corresponding value defined in
-<b>makepkg.conf</b>(5).</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>SRCDEST=</b>&quot;/path/to/directory&quot;</big></p>
-
-<p style="margin-left:17%;"><big>Directory where the
-downloaded sources will be stored. Overrides the
-corresponding value defined in
-<b>makepkg.conf</b>(5).</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>SRCPKGDEST=</b>&quot;/path/to/directory&quot;</big></p>
-
-<p style="margin-left:17%;"><big>Directory where source
-package files will be stored. Overrides the corresponding
-value defined in <b>makepkg.conf</b>(5).</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>LOGDEST=</b>&quot;/path/to/directory&quot;</big></p>
-
-<p style="margin-left:17%;"><big>Directory where generated
-log files will be stored. Overrides the corresponding value
-defined in <b>makepkg.conf</b>(5).</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>PACKAGER=</b>&quot;John
-Doe &lt;john@doe.com&gt;&quot;</big></p>
-
-<p style="margin-left:17%;"><big>String to identify the
-creator of the resulting package. Overrides the
-corresponding value defined in
-<b>makepkg.conf</b>(5).</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>BUILDDIR=</b>&quot;/path/to/directory&quot;</big></p>
-
-<p style="margin-left:17%;"><big>Directory where the
-package will be built. Overrides the corresponding value
-defined in <b>makepkg.conf</b>(5).</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>CARCH=</b>&quot;(i686|x86_64)&quot;</big></p>
-
-<p style="margin-left:17%;"><big>Force build for a specific
-architecture. Useful for cross&minus;compiling. Overrides
-the corresponding value defined in
-<b>makepkg.conf</b>(5).</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>PKGEXT=</b>&quot;.pkg.tar.gz&quot;,
-<b>SRCEXT=</b>&quot;.src.tar.gz&quot;</big></p>
-
-<p style="margin-left:17%;"><big>Sets the compression used
-when making compiled or source packages. Overrides the
-corresponding value defined in
-<b>makepkg.conf</b>(5).</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>GNUPGHOME=</b>&quot;/path/to/directory&quot;</big></p>
-
-<p style="margin-left:17%;"><big>Directory where the gpg
-keyring for signing the built package is stored.</big></p>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>GPGKEY=</b>&quot;keyid&quot;</big></p>
-
-<p style="margin-left:17%;"><big>Specify a key to use when
-signing packages, overriding the GPGKEY setting in
-<b>makepkg.conf</b>(5)</big></p>
-
-<h2>CONFIGURATION
-<a name="CONFIGURATION"></a>
-</h2>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big>See
-<b>makepkg.conf</b>(5) for more details on configuring
-makepkg using the <i>makepkg.conf</i> file.</big></p>
-
-<h2>SEE ALSO
-<a name="SEE ALSO"></a>
-</h2>
-
-
-
-<p style="margin-left:11%; margin-top: 1em"><big><b>makepkg.conf</b>(5),
-<b>PKGBUILD</b>(5), <b>pacman</b>(8)</big></p>
-
-<p style="margin-left:11%; margin-top: 1em"><big>See the
-pacman website at https://www.archlinux.org/pacman/ for
-current information on pacman and its related
-tools.</big></p>
-
-<h2>BUGS
-<a name="BUGS"></a>
-</h2>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big>Bugs? You
-must be kidding; there are no bugs in this software. But if
-we happen to be wrong, send us an email with as much detail
-as possible to pacman&minus;dev@archlinux.org.</big></p>
-
-<h2>AUTHORS
-<a name="AUTHORS"></a>
-</h2>
-
-
-<p style="margin-left:11%; margin-top: 1em"><big>Current
-maintainers:</big></p>
-
-<p style="margin-left:17%; margin-top: 1em"><big>&bull;
-Allan McRae &lt;allan@archlinux.org&gt;</big></p>
-
-<p style="margin-left:17%; margin-top: 1em"><big>&bull;
-Andrew Gregory &lt;andrew.gregory.8@gmail.com&gt;</big></p>
-
-<p style="margin-left:17%; margin-top: 1em"><big>&bull; Dan
-McGee &lt;dan@archlinux.org&gt;</big></p>
-
-<p style="margin-left:17%; margin-top: 1em"><big>&bull;
-Dave Reisner &lt;dreisner@archlinux.org&gt;</big></p>
-
-<p style="margin-left:11%; margin-top: 1em"><big>Past major
-contributors:</big></p>
-
-<p style="margin-left:17%; margin-top: 1em"><big>&bull;
-Judd Vinet &lt;jvinet@zeroflux.org&gt;</big></p>
-
-<p style="margin-left:17%; margin-top: 1em"><big>&bull;
-Aurelien Foret &lt;aurelien@archlinux.org&gt;</big></p>
-
-<p style="margin-left:17%; margin-top: 1em"><big>&bull;
-Aaron Griffin &lt;aaron@archlinux.org&gt;</big></p>
-
-<p style="margin-left:17%; margin-top: 1em"><big>&bull;
-Xavier Chantry &lt;shiningxc@gmail.com&gt;</big></p>
-
-<p style="margin-left:17%; margin-top: 1em"><big>&bull;
-Nagy Gabor &lt;ngaba@bibl.u&minus;szeged.hu&gt;</big></p>
-
-<p style="margin-left:11%; margin-top: 1em"><big>For
-additional contributors, use git shortlog &minus;s on the
-pacman.git repository.</big></p>
-<hr>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+MAKEPKG(8)</td>
+<td class="head-vol">
+Pacman Manual</td>
+<td class="head-rtitle">
+MAKEPKG(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> makepkg - package build utility</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <i>makepkg</i> [options]</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <i>makepkg</i> is a script to automate the building of packages. The requirements for using the script are a build-capable \*nix platform and a custom build script for each package you wish to build (known as a PKGBUILD). See <b>PKGBUILD</b>(5) for details on creating your own build scripts.<div style="height: 1.00em;">
+&#160;</div>
+The advantage to a script-based build is that the work is only done once. Once you have the build script for a package, <i>makepkg</i> will do the rest: download and validate source files, check dependencies, configure the build-time settings, build the package, install the package into a temporary root, make customizations, generate meta-info, and package the whole thing up for pacman to use.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<div style="height: 0.00em;">
+&#160;</div>
+<b>Note</b><div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<i>makepkg</i> uses your current locale by default and does not unset it when building packages. If you wish to share your build output with others when seeking help or for other purposes, you may wish to run &quot;LC_ALL=C makepkg&quot; so your logs and output are not localized.<div style="height: 0.50em;">
+&#160;</div>
+</div>
+</div>
+<div class="section">
+<h1>OPTIONS</h1>  <b>--asroot</b><div style="margin-left: 4.00ex;">
+Allow makepkg to run as root. This is for security purposes as it is normally dangerous to do so. This will also disable use of fakeroot and sudo.</div>
+<div class="spacer">
+</div>
+<b>-A, --ignorearch</b><div style="margin-left: 4.00ex;">
+Ignore a missing or incomplete arch field in the build script. This is for rebuilding packages from source when the PKGBUILD may be slightly outdated and not updated with an arch=('yourarch') field.</div>
+<div class="spacer">
+</div>
+<b>-c, --clean</b><div style="margin-left: 4.00ex;">
+Clean up leftover work files and directories after a successful build.</div>
+<div class="spacer">
+</div>
+<b>--config</b> &lt;file&gt;<div style="margin-left: 4.00ex;">
+Use an alternate config file instead of the /etc/makepkg.conf default.</div>
+<div class="spacer">
+</div>
+<b>-d, --nodeps</b><div style="margin-left: 4.00ex;">
+Do not perform any dependency checks. This will let you override and ignore any dependencies required. There is a good chance this option will break the build process if all of the dependencies are not installed.</div>
+<div class="spacer">
+</div>
+<b>-e, --noextract</b><div style="margin-left: 4.00ex;">
+Do not extract source files; use whatever source already exists in the src/ directory. This is handy if you want to go into src/ and manually patch or tweak code, then make a package out of the result. Keep in mind that creating a patch may be a better solution to allow others to use your PKGBUILD.</div>
+<div class="spacer">
+</div>
+<b>-f, --force</b><div style="margin-left: 4.00ex;">
+makepkg will not build a package if a built package already exists in the PKGDEST (set in  <b>makepkg.conf</b>(5)) directory, which may default to the current directory. This allows the built package to be overwritten.</div>
+<div class="spacer">
+</div>
+<b>--forcever</b><div style="margin-left: 4.00ex;">
+This is a hidden option that should  <b>not</b> be used unless you really know what you are doing. makepkg uses this internally when calling itself to set the new development pkgver of the package.</div>
+<div class="spacer">
+</div>
+<b>-g, --geninteg</b><div style="margin-left: 4.00ex;">
+For each source file in the source array of PKGBUILD, download the file if required and generate integrity checks. The integrity checks generated are determined by the checks present in the PKGBUILD, falling back to the value of the INTEGRITY_CHECK array in makepkg.conf(5) if these are absent This output can be redirected into your PKGBUILD for source validation using &quot;makepkg -g &gt;&gt; PKGBUILD&quot;.</div>
+<div class="spacer">
+</div>
+<b>--skipinteg</b><div style="margin-left: 4.00ex;">
+Do not perform any integrity checks (checksum and PGP) on source files.</div>
+<div class="spacer">
+</div>
+<b>--skipchecksums</b><div style="margin-left: 4.00ex;">
+Do not verify checksums of source files.</div>
+<div class="spacer">
+</div>
+<b>--skippgpcheck</b><div style="margin-left: 4.00ex;">
+Do not verify PGP signatures of source files.</div>
+<div class="spacer">
+</div>
+<b>-h, --help</b><div style="margin-left: 4.00ex;">
+Output syntax and command line options.</div>
+<div class="spacer">
+</div>
+<b>--holdver</b><div style="margin-left: 4.00ex;">
+Useful when building development versions of packages. Prevents makepkg from automatically bumping the pkgver to the latest revision number in the package&#8217;s development tree.</div>
+<div class="spacer">
+</div>
+<b>-i, --install</b><div style="margin-left: 4.00ex;">
+Install or upgrade the package after a successful build using  <b>pacman</b>(8).</div>
+<div class="spacer">
+</div>
+<b>-L, --log</b><div style="margin-left: 4.00ex;">
+Enable makepkg build logging. This will use the  <b>tee</b> program to send output of the build() function to both the console and to a text file in the build directory named pkgname-pkgver-pkgrel-arch.log. As mentioned above, the build log will be localized so you may want to set your locale accordingly if sharing the log output with others.</div>
+<div class="spacer">
+</div>
+<b>-m, --nocolor</b><div style="margin-left: 4.00ex;">
+Disable color in output messages.</div>
+<div class="spacer">
+</div>
+<b>-o, --nobuild</b><div style="margin-left: 4.00ex;">
+Download and extract files only, but do not build them. Useful with the  <i>--noextract</i> option if you wish to tweak the files in src/ before building.</div>
+<div class="spacer">
+</div>
+<b>-p</b> &lt;buildscript&gt;<div style="margin-left: 4.00ex;">
+Read the package script buildscript instead of the PKGBUILD default; see  <b>PKGBUILD</b>(5).</div>
+<div class="spacer">
+</div>
+<b>-r, --rmdeps</b><div style="margin-left: 4.00ex;">
+Upon successful build, remove any dependencies installed by makepkg during dependency auto-resolution and installation when using -s.</div>
+<div class="spacer">
+</div>
+<b>-R, --repackage</b><div style="margin-left: 4.00ex;">
+Repackage contents of the package without rebuilding the package. This is useful if you forgot a depend or install file in your PKGBUILD and the build itself will not change.</div>
+<div class="spacer">
+</div>
+<b>-s, --syncdeps</b><div style="margin-left: 4.00ex;">
+Install missing dependencies using pacman. When build-time or run-time dependencies are not found, pacman will try to resolve them. If successful, the missing packages will be downloaded and installed.</div>
+<div class="spacer">
+</div>
+<b>-S, --source</b><div style="margin-left: 4.00ex;">
+Do not actually build the package, but build a source-only tarball that does not include sources that can be fetched via a download URL. This is useful for passing a single tarball to another program such as a chroot, remote builder, or a tarball upload. Because integrity checks are verified, all source files of the package need to be present or downloadable.</div>
+<div class="spacer">
+</div>
+<b>--allsource</b><div style="margin-left: 4.00ex;">
+Do not actually build the package, but build a source-only tarball that includes all sources, including those that are normally download via makepkg. This is useful for passing a single tarball to another program such as a chroot or remote builder. It will also satisfy requirements of the GPL when distributing binary packages.</div>
+<div class="spacer">
+</div>
+<b>--pkg &lt;list&gt;</b><div style="margin-left: 4.00ex;">
+Only build listed packages from a split package.</div>
+<div class="spacer">
+</div>
+<b>--check</b><div style="margin-left: 4.00ex;">
+Run the check() function in the PKGBUILD, overriding the setting in  <b>makepkg.conf</b>(5).</div>
+<div class="spacer">
+</div>
+<b>--nocheck</b><div style="margin-left: 4.00ex;">
+Do not run the check() function in the PKGBUILD or handle the checkdepends.</div>
+<div class="spacer">
+</div>
+<b>--sign</b><div style="margin-left: 4.00ex;">
+Sign the resulting package with gpg, overriding the setting in  <b>makepkg.conf</b>(5).</div>
+<div class="spacer">
+</div>
+<b>--nosign</b><div style="margin-left: 4.00ex;">
+Do not create a signature for the built package.</div>
+<div class="spacer">
+</div>
+<b>--key</b> &lt;key&gt;<div style="margin-left: 4.00ex;">
+Specify a key to use when signing packages, overriding the GPGKEY setting in  <b>makepkg.conf</b>(5). If not specified in either location, the default key from the keyring will be used.</div>
+<div class="spacer">
+</div>
+<b>--noconfirm</b><div style="margin-left: 4.00ex;">
+(Passed to pacman) Prevent pacman from waiting for user input before proceeding with operations.</div>
+<div class="spacer">
+</div>
+<b>--noprogressbar</b><div style="margin-left: 4.00ex;">
+(Passed to pacman) Prevent pacman from displaying a progress bar; useful if you are redirecting makepkg output to file.</div>
+</div>
+<div class="section">
+<h1>ADDITIONAL FEATURES</h1> makepkg supports building development versions of packages without having to manually update the pkgver in the PKGBUILD. This was formerly done using the separate utility  <i>versionpkg</i>. See <b>PKGBUILD</b>(5) for details on how to set up a development PKGBUILD.</div>
+<div class="section">
+<h1>ENVIRONMENT VARIABLES</h1>  <b>PACMAN</b><div style="margin-left: 4.00ex;">
+The command that will be used to check for missing dependencies and to install and remove packages. Pacman&#8217;s -Qq, -Rns, -S, -T, and -U operations must be supported by this command. If the variable is not set or empty, makepkg will fall back to &#8216;pacman&#8217;.</div>
+<div class="spacer">
+</div>
+<b>PKGDEST=</b>&quot;/path/to/folder&quot;<div style="margin-left: 4.00ex;">
+Folder where the resulting packages will be stored. Overrides the corresponding value defined in  <b>makepkg.conf</b>(5).</div>
+<div class="spacer">
+</div>
+<b>SRCDEST=</b>&quot;/path/to/folder&quot;<div style="margin-left: 4.00ex;">
+Folder where the downloaded sources will be stored. Overrides the corresponding value defined in  <b>makepkg.conf</b>(5).</div>
+<div class="spacer">
+</div>
+<b>BUILDDIR=</b>&quot;/path/to/folder&quot;<div style="margin-left: 4.00ex;">
+Folder where the package will be built. Overrides the corresponding value defined in  <b>makepkg.conf</b>(5).</div>
+</div>
+<div class="section">
+<h1>CONFIGURATION</h1> See  <b>makepkg.conf</b>(5) for more details on configuring makepkg using the <i>makepkg.conf</i> file.</div>
+<div class="section">
+<h1>SEE ALSO</h1>  <b>makepkg.conf</b>(5), <b>PKGBUILD</b>(5), <b>pacman</b>(8)<div style="height: 1.00em;">
+&#160;</div>
+See the pacman website at http://www.archlinux.org/pacman/ for current information on pacman and its related tools.</div>
+<div class="section">
+<h1>BUGS</h1> Bugs? You must be kidding, there are no bugs in this software. But if we happen to be wrong, send us an email with as much detail as possible to pacman-dev@archlinux.org.</div>
+<div class="section">
+<h1>AUTHORS</h1> Current maintainers:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Allan McRae &lt;allan@archlinux.org&gt;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Dan McGee &lt;dan@archlinux.org&gt;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Dave Reisner &lt;dreisner@archlinux.org&gt;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+Past major contributors:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Judd Vinet &lt;jvinet@zeroflux.org&gt;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Aurelien Foret &lt;aurelien@archlinux.org&gt;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Aaron Griffin &lt;aaron@archlinux.org&gt;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Xavier Chantry &lt;shiningxc@gmail.com&gt;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;Nagy Gabor &lt;ngaba@bibl.u-szeged.hu&gt;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+For additional contributors, use git shortlog -s on the pacman.git repository.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-12-03</td>
+<td class="foot-os">
+Pacman 4.0.3</td>
+</tr>
+</table>
+</div>
 </body>
 </html>
+

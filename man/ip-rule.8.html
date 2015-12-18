@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+IP-RULE(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+IP-RULE(8)</td>
+<td class="head-vol">
+Linux</td>
+<td class="head-rtitle">
+IP-RULE(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> ip-rule - routing policy database management</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+<b>ip</b> [ <i>OPTIONS</i> ] <b>rule</b>  { <i>COMMAND</i> |  <b>help</b> }<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>ip rule</b>  [ <b>list</b> | <b>add</b> | <b>del</b> | <b>flush</b> ] <i>SELECTOR ACTION</i><div style="height: 1.00em;">
+&#160;</div>
+<i>SELECTOR</i> := [  <b>from</b> <i>PREFIX</i> ] [  <b>to</b> <i>PREFIX</i> ] [  <b>tos</b> <i>TOS</i> ] [  <b>fwmark</b> <i>FWMARK[/MASK]</i> ] [  <b>iif</b> <i>STRING</i> ] [  <b>oif</b> <i>STRING</i> ] [  <b>pref</b> <i>NUMBER</i> ]<div style="height: 1.00em;">
+&#160;</div>
+<i>ACTION</i> := [  <b>table</b> <i>TABLE_ID</i> ] [  <b>nat</b> <i>ADDRESS</i> ] [  <b>prohibit</b> | <b>reject</b> | <b>unreachable</b> ] [ <b>realms</b> [<i>SRCREALM</i>/]<i>DSTREALM</i> ] <i>SUPPRESSOR</i><div style="height: 1.00em;">
+&#160;</div>
+<i>SUPPRESSOR</i> := [  <b>suppress_prefixlength</b> <i>NUMBER</i> ] [  <b>suppress_ifgroup</b> <i>GROUP</i> ]<div style="height: 1.00em;">
+&#160;</div>
+<i>TABLE_ID</i> := [  <b>local</b> | <b>main</b> | <b>default</b> | <i>NUMBER</i> ]<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <i>ip rule</i> manipulates rules in the routing policy database control the route selection algorithm.<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+Classic routing algorithms used in the Internet make routing decisions based only on the destination address of packets (and in theory, but not in practice, on the TOS field).<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+In some circumstances we want to route packets differently depending not only on destination addresses, but also on other packet fields: source address, IP protocol, transport protocol ports or even packet payload. This task is called 'policy routing'.<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+To solve this task, the conventional destination based routing table, ordered according to the longest match rule, is replaced with a 'routing policy database' (or RPDB), which selects routes by executing some set of rules.<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+Each policy routing rule consists of a <b>selector</b> and an <b>action predicate.</b> The RPDB is scanned in order of decreasing priority. The selector of each rule is applied to {source address, destination address, incoming interface, tos, fwmark} and, if the selector matches the packet, the action is performed.  The action predicate may return with success. In this case, it will either give a route or failure indication and the RPDB lookup is terminated. Otherwise, the RPDB program continues with the next rule.<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+Semantically, the natural action is to select the nexthop and the output device.<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+At startup time the kernel configures the default RPDB consisting of three rules:<div style="height: 1.00em;">
+&#160;</div>
+<dl>
+<dt>
+1.</dt>
+<dd>
+Priority: 0, Selector: match anything, Action: lookup routing table <b>local</b> (ID 255). The <b>local</b> table is a special routing table containing high priority control routes for local and broadcast addresses.<div style="height: 1.00em;">
+&#160;</div>
+Rule 0 is special. It cannot be deleted or overridden.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+2.</dt>
+<dd>
+Priority: 32766, Selector: match anything, Action: lookup routing table <b>main</b> (ID 254). The <b>main</b> table is the normal routing table containing all non-policy routes. This rule may be deleted and/or overridden with other ones by the administrator.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+3.</dt>
+<dd>
+Priority: 32767, Selector: match anything, Action: lookup routing table <b>default</b> (ID 253). The <b>default</b> table is empty.  It is reserved for some post-processing if no previous default rules selected the packet. This rule may also be deleted.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<div class="spacer">
+</div>
+Each RPDB entry has additional attributes.  F.e. each rule has a pointer to some routing table.  NAT and masquerading rules have an attribute to select new IP address to translate/masquerade.  Besides that, rules have some optional attributes, which routes have, namely <b>realms</b>. These values do not override those contained in the routing tables.  They are only used if the route did not select any attributes.<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+The RPDB may contain rules of the following types:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 5.00ex;">
+<b>unicast</b> - the rule prescribes to return the route found in the routing table referenced by the rule.<div style="height: 1.00em;">
+&#160;</div>
+<b>blackhole</b> - the rule prescribes to silently drop the packet.<div style="height: 1.00em;">
+&#160;</div>
+<b>unreachable</b> - the rule prescribes to generate a 'Network is unreachable' error.<div style="height: 1.00em;">
+&#160;</div>
+<b>prohibit</b> - the rule prescribes to generate 'Communication is administratively prohibited' error.<div style="height: 1.00em;">
+&#160;</div>
+<b>nat</b> - the rule prescribes to translate the source address of the IP packet into some other value.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<dl>
+<dt>
+<b>ip rule add - insert a new rule</b></dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>ip rule delete - delete a rule</b></dt>
+<dd>
+</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+<b>type</b><i> TYPE </i><b>(default)</b></dt>
+<dd>
+the type of this rule.  The list of valid types was given in the previous subsection.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>from</b><i> PREFIX</i></dt>
+<dd>
+select the source prefix to match.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>to</b><i> PREFIX</i></dt>
+<dd>
+select the destination prefix to match.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>iif</b><i> NAME</i></dt>
+<dd>
+select the incoming device to match.  If the interface is loopback, the rule only matches packets originating from this host.  This means that you may create separate routing tables for forwarded and local packets and, hence, completely segregate them.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>oif</b><i> NAME</i></dt>
+<dd>
+select the outgoing device to match.  The outgoing interface is only available for packets originating from local sockets that are bound to a device.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>tos</b><i> TOS</i></dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>dsfield</b><i> TOS</i></dt>
+<dd>
+select the TOS value to match.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>fwmark</b><i> MARK</i></dt>
+<dd>
+select the <b>fwmark</b> value to match.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>priority</b><i> PREFERENCE</i></dt>
+<dd>
+the priority of this rule.  Each rule should have an explicitly set <i>unique</i> priority value. The options preference and order are synonyms with priority.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>table</b><i> TABLEID</i></dt>
+<dd>
+the routing table identifier to lookup if the rule selector matches. It is also possible to use lookup instead of table.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>suppress_prefixlength</b><i> NUMBER</i></dt>
+<dd>
+reject routing decisions that have a prefix length of NUMBER or less.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>suppress_ifgroup</b><i> GROUP</i></dt>
+<dd>
+reject routing decisions that use a device belonging to the interface group GROUP.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>realms</b><i> FROM/TO</i></dt>
+<dd>
+Realms to select if the rule matched and the routing table lookup succeeded.  Realm <i>TO</i> is only used if the route did not select any realm.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>nat</b><i> ADDRESS</i></dt>
+<dd>
+The base of the IP address block to translate (for source addresses). The <i>ADDRESS</i> may be either the start of the block of NAT addresses (selected by NAT routes) or a local host address (or even zero). In the last case the router does not translate the packets, but masquerades them to this address. Using map-to instead of nat means the same thing.<div style="height: 1.00em;">
+&#160;</div>
+<b>Warning:</b> Changes to the RPDB made with these commands do not become active immediately.  It is assumed that after a script finishes a batch of updates, it flushes the routing cache with <b>ip route flush cache</b>.</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>ip rule flush - also dumps all the deleted rules.</b></dt>
+<dd>
+This command has no arguments.</dd>
+</dl>
+<dl>
+<dt>
+<b>ip rule show - list rules</b></dt>
+<dd>
+This command has no arguments. The options list or lst are synonyms with show.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ip</b>(8)<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>AUTHOR</h1> Original Manpage by Michail Litvak &lt;mci@owl.openwall.com&gt;</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+20 Dec 2011</td>
+<td class="foot-os">
+iproute2</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+AIO_WRITE(3P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+AIO_WRITE(3P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+AIO_WRITE(3P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> aio_write &#8212; asynchronous write to a file</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;aio.h&gt;<div class="spacer">
+</div>
+int aio_write(struct aiocb *<i>aiocbp</i>);<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <i>aio_write</i>() function shall write  <i>aiocbp</i>-&gt;<i>aio_nbytes</i> to the file associated with  <i>aiocbp</i>-&gt;<i>aio_fildes</i> from the buffer pointed to by  <i>aiocbp</i>-&gt;<i>aio_buf</i>. The function shall return when the write request has been initiated or, at a minimum, queued to the file or device.<div class="spacer">
+</div>
+If prioritized I/O is supported for this file, then the asynchronous operation shall be submitted at a priority equal to a base scheduling priority minus  <i>aiocbp</i>-&gt;<i>aio_reqprio</i>. If Thread Execution Scheduling is not supported, then the base scheduling priority is that of the calling process;<div style="height: 0.00em;">
+&#160;</div>
+otherwise, the base scheduling priority is that of the calling thread.<div class="spacer">
+</div>
+The <i>aiocbp</i> argument may be used as an argument to  <i>aio_error</i>() and  <i>aio_return</i>() in order to determine the error status and return status, respectively, of the asynchronous operation while it is proceeding.<div class="spacer">
+</div>
+The <i>aiocbp</i> argument points to an <b>aiocb</b> structure. If the buffer pointed to by  <i>aiocbp</i>-&gt;<i>aio_buf</i> or the control block pointed to by <i>aiocbp</i> becomes an illegal address prior to asynchronous I/O completion, then the behavior is undefined.<div class="spacer">
+</div>
+If O_APPEND is not set for the file descriptor <i>aio_fildes</i>, then the requested operation shall take place at the absolute position in the file as given by <i>aio_offset</i>, as if  <i>lseek</i>() were called immediately prior to the operation with an <i>offset</i> equal to <i>aio_offset</i> and a <i>whence</i> equal to SEEK_SET. If O_APPEND is set for the file descriptor, or if <i>aio_fildes</i> is associated with a device that is incapable of seeking, write operations append to the file in the same order as the calls were made, except under circumstances described in <i>Section 2.8.2</i>, <i>Asynchronous I/O</i>. After a successful call to enqueue an asynchronous I/O operation, the value of the file offset for the file is unspecified.<div class="spacer">
+</div>
+The <i>aio_sigevent</i> member specifies the notification which occurs when the request is completed.<div class="spacer">
+</div>
+The <i>aiocbp</i>-&gt;<i>aio_lio_opcode</i> field shall be ignored by  <i>aio_write</i>().<div class="spacer">
+</div>
+Simultaneous asynchronous operations using the same <i>aiocbp</i> produce undefined results.<div class="spacer">
+</div>
+If synchronized I/O is enabled on the file associated with  <i>aiocbp</i>-&gt;<i>aio_fildes</i>, the behavior of this function shall be according to the definitions of synchronized I/O data integrity completion, and synchronized I/O file integrity completion.<div class="spacer">
+</div>
+For any system action that changes the process memory space while an asynchronous I/O is outstanding to the address range being changed, the result of that action is undefined.<div class="spacer">
+</div>
+For regular files, no data transfer shall occur past the offset maximum established in the open file description associated with  <i>aiocbp</i>-&gt;<i>aio_fildes</i>.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> The  <i>aio_write</i>() function shall return the value zero if the I/O operation is successfully queued; otherwise, the function shall return the value &#8722;1 and set <i>errno</i> to indicate the error.</div>
+<div class="section">
+<h1>ERRORS</h1> The  <i>aio_write</i>() function shall fail if:<dl>
+<dt>
+<b>EAGAIN</b></dt>
+<dd>
+The requested asynchronous I/O operation was not queued due to system resource limitations.</dd>
+</dl>
+<div class="spacer">
+</div>
+Each of the following conditions may be detected synchronously at the time of the call to  <i>aio_write</i>(), or asynchronously. If any of the conditions below are detected synchronously, the  <i>aio_write</i>() function shall return &#8722;1 and set <i>errno</i> to the corresponding value. If any of the conditions below are detected asynchronously, the return status of the asynchronous operation shall be set to &#8722;1, and the error status of the asynchronous operation is set to the corresponding value.<dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+The <i>aiocbp</i>-&gt;<i>aio_fildes</i> argument is not a valid file descriptor open for writing.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+The file offset value implied by <i>aiocbp</i>-&gt;<i>aio_offset</i> would be invalid,<div style="height: 0.00em;">
+&#160;</div>
+<i>aiocbp</i>-&gt;<i>aio_reqprio</i> is not a valid value, or  <i>aiocbp</i>-&gt;<i>aio_nbytes</i> is an invalid value.</dd>
+</dl>
+<div class="spacer">
+</div>
+In the case that the  <i>aio_write</i>() successfully queues the I/O operation, the return status of the asynchronous operation shall be one of the values normally returned by the  <i>write</i>() function call. If the operation is successfully queued but is subsequently canceled or encounters an error, the error status for the asynchronous operation contains one of the values normally set by the  <i>write</i>() function call, or one of the following:<dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+The <i>aiocbp</i>-&gt;<i>aio_fildes</i> argument is not a valid file descriptor open for writing.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+The file offset value implied by <i>aiocbp</i>-&gt;<i>aio_offset</i> would be invalid.</dd>
+</dl>
+<dl>
+<dt>
+<b>ECANCELED</b></dt>
+<dd>
+The requested I/O was canceled before the I/O completed due to an explicit  <i>aio_cancel</i>() request.</dd>
+</dl>
+<div class="spacer">
+</div>
+The following condition may be detected synchronously or asynchronously:<dl>
+<dt>
+<b>EFBIG</b></dt>
+<dd>
+The file is a regular file, <i>aiobcp</i>-&gt;<i>aio_nbytes</i> is greater than 0, and the starting offset in  <i>aiobcp</i>-&gt;<i>aio_offset</i> is at or beyond the offset maximum in the open file description associated with  <i>aiocbp</i>-&gt;<i>aio_fildes</i>.</dd>
+</dl>
+<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>EXAMPLES</h1> None.</div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> None.</div>
+<div class="section">
+<h1>RATIONALE</h1> None.</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> None.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i>Section 2.8.2</i>, <i>Asynchronous I/O</i>, <i><i>aio_cancel</i>()</i>, <i><i>aio_error</i>()</i>, <i><i>aio_read</i>()</i>, <i><i>aio_return</i>()</i>, <i><i>close</i>()</i>, <i><i>exec</i></i>, <i><i>exit</i>()</i>, <i><i>fork</i>()</i>, <i><i>lio_listio</i>()</i>, <i><i>lseek</i>()</i>, <i><i>write</i>()</i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i><b>&lt;aio.h&gt;</b></i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

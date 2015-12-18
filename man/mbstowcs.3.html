@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+MBSTOWCS(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+MBSTOWCS(3)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+MBSTOWCS(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> mbstowcs - convert a multibyte string to a wide-character string</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;stdlib.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>size_t mbstowcs(wchar_t *</b><i>dest</i><b>, const char *</b><i>src</i><b>, size_t </b><i>n</i><b>);</b><br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> If <i>dest</i> is not NULL, the <b>mbstowcs</b>() function converts the multibyte string <i>src</i> to a wide-character string starting at <i>dest</i>. At most <i>n</i> wide characters are written to <i>dest</i>. The conversion starts in the initial state. The conversion can stop for three reasons:<dl>
+<dt>
+1.</dt>
+<dd>
+An invalid multibyte sequence has been encountered. In this case, <i>(size_t)&#160;-1</i> is returned.</dd>
+</dl>
+<dl>
+<dt>
+2.</dt>
+<dd>
+<i>n</i> non-L'\0' wide characters have been stored at <i>dest</i>. In this case, the number of wide characters written to <i>dest</i> is returned, but the shift state at this point is lost.</dd>
+</dl>
+<dl>
+<dt>
+3.</dt>
+<dd>
+The multibyte string has been completely converted, including the terminating null wide character ('\0'). In this case, the number of wide characters written to <i>dest</i>, excluding the terminating null wide character, is returned.</dd>
+</dl>
+<div class="spacer">
+</div>
+The programmer must ensure that there is room for at least <i>n</i> wide characters at <i>dest</i>.<div class="spacer">
+</div>
+If <i>dest</i> is NULL, <i>n</i> is ignored, and the conversion proceeds as above, except that the converted wide characters are not written out to memory, and that no length limit exists.<div class="spacer">
+</div>
+In order to avoid the case 2 above, the programmer should make sure <i>n</i> is greater than or equal to <i>mbstowcs(NULL,src,0)+1</i>.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> The <b>mbstowcs</b>() function returns the number of wide characters that make up the converted part of the wide-character string, not including the terminating null wide character. If an invalid multibyte sequence was encountered, <i>(size_t)&#160;-1</i> is returned.</div>
+<div class="section">
+<h1>ATTRIBUTES</h1> For an explanation of the terms used in this section, see <b>attributes</b>(7).<table class="tbl">
+<col style="width: 11.00ex;"/>
+<col style="width: 13.00ex;"/>
+<col style="width: 5.00ex;"/>
+<tbody>
+<tr>
+<td>
+Interface</td>
+<td>
+Attribute</td>
+<td>
+Value</td>
+</tr>
+<tr>
+<td>
+mbstowcs ()</td>
+<td>
+Thread safety</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section">
+<h1>CONFORMING TO</h1> POSIX.1-2001, POSIX.1-2008, C99.</div>
+<div class="section">
+<h1>NOTES</h1> The behavior of <b>mbstowcs</b>() depends on the <b>LC_CTYPE</b> category of the current locale.<div class="spacer">
+</div>
+The function <b>mbsrtowcs</b>(3) provides a better interface to the same functionality.</div>
+<div class="section">
+<h1>EXAMPLE</h1> The program below illustrates the use of <b>mbstowcs</b>(), as well as some of the wide character classification functions. An example run is the following:<br/>
+<div class="spacer">
+</div>
+<br/>
+$ ./t_mbstowcs de_DE.UTF-8 Gr&#252;&#223;e!<br/>
+Length of source string (excluding terminator):<br/>
+    8 bytes<br/>
+    6 multibyte characters<div class="spacer">
+</div>
+<br/>
+Wide character string is: Gr&#252;&#223;e! (6 characters)<br/>
+    G alpha upper<br/>
+    r alpha lower<br/>
+    &#252; alpha lower<br/>
+    &#223; alpha lower<br/>
+    e alpha lower<br/>
+    ! !alpha<br/>
+<br/>
+<div class="subsection">
+<h2>Program source</h2><br/>
+#include &lt;locale.h&gt;<br/>
+#include &lt;wchar.h&gt;<br/>
+#include &lt;stdio.h&gt;<br/>
+#include &lt;string.h&gt;<br/>
+#include &lt;stdlib.h&gt;<div class="spacer">
+</div>
+<br/>
+int<br/>
+main(int argc, char *argv[])<br/>
+{<br/>
+    size_t mbslen;      /* Number of multibyte characters in source */<br/>
+    wchar_t *wcs;       /* Pointer to converted wide character string */<br/>
+    wchar_t *wp;<div class="spacer">
+</div>
+<br/>
+    if (argc &lt; 3) {<br/>
+        fprintf(stderr, &quot;Usage: %s &lt;locale&gt; &lt;string&gt;\n&quot;, argv[0]);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    /* Apply the specified locale */<div class="spacer">
+</div>
+<br/>
+    if (setlocale(LC_ALL, argv[1]) == NULL) {<br/>
+        perror(&quot;setlocale&quot;);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    /* Calculate the length required to hold argv[2] converted to<br/>
+       a wide character string */<div class="spacer">
+</div>
+<br/>
+    mbslen = mbstowcs(NULL, argv[2], 0);<br/>
+    if (mbslen == (size_t) -1) {<br/>
+        perror(&quot;mbstowcs&quot;);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    /* Describe the source string to the user */<div class="spacer">
+</div>
+<br/>
+    printf(&quot;Length of source string (excluding terminator):\n&quot;);<br/>
+    printf(&quot;    %zu bytes\n&quot;, strlen(argv[2]));<br/>
+    printf(&quot;    %zu multibyte characters\n\n&quot;, mbslen);<div class="spacer">
+</div>
+<br/>
+    /* Allocate wide character string of the desired size.  Add 1<br/>
+       to allow for terminating null wide character (L'\0'). */<div class="spacer">
+</div>
+<br/>
+    wcs = calloc(mbslen + 1, sizeof(wchar_t));<br/>
+    if (wcs == NULL) {<br/>
+        perror(&quot;calloc&quot;);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    /* Convert the multibyte character string in argv[2] to a<br/>
+       wide character string */<div class="spacer">
+</div>
+<br/>
+    if (mbstowcs(wcs, argv[2], mbslen + 1) == (size_t) -1) {<br/>
+        perror(&quot;mbstowcs&quot;);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    printf(&quot;Wide character string is: %ls (%zu characters)\n&quot;,<br/>
+            wcs, mbslen);<div class="spacer">
+</div>
+<br/>
+    /* Now do some inspection of the classes of the characters in<br/>
+       the wide character string */<div class="spacer">
+</div>
+<br/>
+    for (wp = wcs; *wp != 0; wp++) {<br/>
+        printf(&quot;    %lc &quot;, (wint_t) *wp);<div class="spacer">
+</div>
+<br/>
+        if (!iswalpha(*wp))<br/>
+            printf(&quot;!&quot;);<br/>
+        printf(&quot;alpha &quot;);<div class="spacer">
+</div>
+<br/>
+        if (iswalpha(*wp)) {<br/>
+            if (iswupper(*wp))<br/>
+                printf(&quot;upper &quot;);<div class="spacer">
+</div>
+<br/>
+            if (iswlower(*wp))<br/>
+                printf(&quot;lower &quot;);<br/>
+        }<div class="spacer">
+</div>
+<br/>
+        putchar('\n');<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    exit(EXIT_SUCCESS);<br/>
+}<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>mblen</b>(3), <b>mbsrtowcs</b>(3), <b>mbtowc</b>(3), <b>wctomb</b>(3), <b>wcstombs</b>(3)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-08-08</td>
+<td class="foot-os">
+GNU</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

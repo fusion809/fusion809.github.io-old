@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+GROFF_MAN(7)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+GROFF_MAN(7)</td>
+<td class="head-vol">
+Miscellaneous Information Manual</td>
+<td class="head-rtitle">
+GROFF_MAN(7)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> groff_man - groff man macros to support generation of man pages</div>
+<div class="section">
+<h1>SYNOPSIS</h1> [<i>options</i> <i>...</i>] [<i>files</i> <i>...</i>] [<i>options</i> <i>...</i>] [<i>files</i> <i>...</i>]</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The <b>man</b> macros used to generate <i>man&#160;pages</i> with <i>groff</i> were written by James Clark. This document provides a brief summary of the use of each macro in that package.</div>
+<div class="section">
+<h1>OPTIONS</h1> The <b>man</b> macros understand the following command line options (which define various registers).<dl>
+<dt>
+<b>-rcR=1</b></dt>
+<dd>
+This option (the default if in nroff mode) creates a single, very long page instead of multiple pages. Say <b>-rcR=0</b> to disable it.</dd>
+</dl>
+<dl>
+<dt>
+<b>-rC1</b></dt>
+<dd>
+If more than one manual page is given on the command line, number the pages continuously, rather than starting each at&#160;1.</dd>
+</dl>
+<dl>
+<dt>
+<b>-rD1</b></dt>
+<dd>
+Double-sided printing. Footers for even and odd pages are formatted differently.</dd>
+</dl>
+<dl>
+<dt>
+<b>-rFT=</b><i>dist</i></dt>
+<dd>
+Set distance of the footer relative to the bottom of the page if negative or relative to the top if positive. The default is -0.5i.</dd>
+</dl>
+<dl>
+<dt>
+<b>-rHY=</b><i>flags</i></dt>
+<dd>
+Set hyphenation flags. Possible values are 1&#160;to hyphenate without restrictions, 2&#160;to not hyphenate the last word on a page, 4&#160;to not hyphenate the last two characters of a word, and 8&#160;to not hyphenate the first two characters of a word. These values are additive; the default is&#160;14.</dd>
+</dl>
+<dl>
+<dt>
+<b>-rIN=</b><i>width</i></dt>
+<dd>
+Set body text indentation to <i>width</i>. The default is 7n for <i>nroff</i>, 7.2n for <i>troff</i>. For <i>nroff</i>, this value should always be an integer multiple of unit &#8216;n&#8217; to get consistent indentation.</dd>
+</dl>
+<dl>
+<dt>
+<b>-rLL=</b><i>line-length</i></dt>
+<dd>
+Set line length. If this option is not given, the line length is set to respect any value set by a prior &#8216;.ll&#8217; request (which <i>must</i> be in effect when the &#8216;.TH&#8217; macro is invoked), if this differs from the built-in default for the formatter; otherwise it defaults to 78n in <i>nroff</i> mode and 6.5i in <i>troff</i> mode.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+Note that the use of a &#8216;.ll&#8217; request to initialize the line length is supported for backward compatibility with some versions of the <b>man</b> program; direct initialization of the &#8216;LL&#8217; register should <i>always</i> be preferred to the use of such a request. In particular, note that a &#8216;.ll&#160;65n&#8217; request does <i>not</i> preserve the normal <i>nroff</i> default line length, (the <b>man</b> default initialization to 78n prevails), whereas, the &#8216;-rLL=65n&#8217; option, or an equivalent &#8216;.nr&#160;LL&#160;65n&#8217; request preceding the use of the &#8216;TH&#8217; macro, <i>does</i> set a line length of 65n.</dd>
+</dl>
+<dl>
+<dt>
+<b>-rLT=</b><i>title-length</i></dt>
+<dd>
+Set title length. If this option is not given, the title length defaults to the line length.</dd>
+</dl>
+<dl>
+<dt>
+<b>-rP</b><i>nnn</i></dt>
+<dd>
+Enumeration of pages start with <i>nnn</i> rather than with&#160;1.</dd>
+</dl>
+<dl>
+<dt>
+<b>-rS</b><i>xx</i></dt>
+<dd>
+Base document font size is <i>xx</i> points (<i>xx</i> can be 10, 11, or&#160;12) rather than 10&#160;points.</dd>
+</dl>
+<dl>
+<dt>
+<b>-rSN=</b><i>width</i></dt>
+<dd>
+Set sub-subheading indentation to <i>width</i>. The default is 3n.</dd>
+</dl>
+<dl>
+<dt>
+<b>-rX</b><i>nnn</i></dt>
+<dd>
+After page&#160;<i>nnn</i>, number pages as <i>nnn</i>a, <i>nnn</i>b, <i>nnn</i>c, etc. For example, the option &#8216;-rX2&#8217; produces the following page numbers: 1, 2, 2a, 2b, 2c, etc.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>USAGE</h1> This section describes the available macros for manual pages. For further customization, put additional macros and requests into the file <b>man.local</b>, which is loaded immediately after the <b>man</b> package.<dl>
+<dt>
+<b>.EX</b></dt>
+<dd>
+<b>.EE</b> Example/End Example. After <b>.EX</b>, filling is disabled and the font is set to constant-width. This is useful for formatting code, command, and configuration-file examples. The <b>EE</b> macro restores filling and restores the previous font.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+These macros are defined on many (but not all) legacy Unix systems running classic troff. To be certain your page will be portable to those systems, copy their definitions from the <b>an-ext.tmac</b> file of a <b>groff</b> installation.</dd>
+</dl>
+<dl>
+<dt>
+<b>.HP</b><i> [nnn]</i></dt>
+<dd>
+Set up a paragraph with hanging left indentation. The indentation is set to <i>nnn</i> if that argument is supplied (the default unit is &#8216;n&#8217; if omitted), otherwise it is set to the previous indentation value specified with <b>.TP</b>, <b>.IP</b>, or <b>.HP</b> (or to the default value if none of them have been used yet). Font size and face are reset to its default values. The following paragraph illustrates the effect of this macro with hanging indentation set to&#160;4 (enclosed by <b>.RS</b> and <b>.RE</b> to set the left margin temporarily to the current indentation):</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<div class="spacer">
+</div>
+<div style="margin-left: 4.00ex;text-indent: -4.00ex;" class="spacer">
+This is a paragraph following an invocation of the <b>HP</b> macro. As you can see, it produces a paragraph where all lines but the first are indented.</div>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+Use of this presentation-level macro is deprecated. While it is universally portable to legacy Unix systems, a hanging indentation cannot be expressed naturally under HTML, and many HTML-based manual viewers simply interpret it as a starter for a normal paragraph. Thus, any information or distinction you tried to express with the indentation may be lost.</dd>
+</dl>
+<dl>
+<dt>
+<b>.IP</b><i> [designator] [nnn]</i></dt>
+<dd>
+Set up an indented paragraph, using <i>designator</i> as a tag to mark its beginning. The indentation is set to <i>nnn</i> if that argument is supplied (the default unit is &#8216;n&#8217; if omitted), otherwise it is set to the previous indentation value specified with <b>.TP</b>, <b>.IP</b>, or <b>.HP</b> (or to the default value if none of them have been used yet). Font size and face of the paragraph (but not the designator) are reset to its default values.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+To start an indented paragraph with a particular indentation but without a designator, use &#8216;&quot;&quot;&#8217; (two doublequotes) as the second argument.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+For example, the following paragraphs were all set up with bullets as the designator, using &#8216;.IP&#160;\(bu&#160;4&#8217;. The whole block has been enclosed with <b>.RS</b> and <b>.RE</b> to set the left margin temporarily to the current indentation value.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+&#8226;</dt>
+<dd>
+<b>IP</b> is one of the three macros used in the <b>man</b> package to format lists.</dd>
+</dl>
+<dl>
+<dt>
+&#8226;</dt>
+<dd>
+<b>HP</b> is another. This macro produces a paragraph with a left hanging indentation.</dd>
+</dl>
+<dl>
+<dt>
+&#8226;</dt>
+<dd>
+<b>TP</b> is another. This macro produces an unindented label followed by an indented paragraph.</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>.LP</b></dt>
+<dd>
+<b>.PP</b> <b>.P</b> These macros are mutual aliases. Any of them causes a line break at the current position, followed by a vertical space downwards by the amount specified by the <b>PD</b> macro. The font size and shape are reset to the default value (normally 10pt Roman). Finally, the current left margin and the indentation is reset to the default values.</dd>
+</dl>
+<dl>
+<dt>
+<b>.RE</b><i> [nnn]</i></dt>
+<dd>
+This macro moves the left margin back to level <i>nnn</i>, restoring the previous left margin. If no argument is given, it moves one level back. The first level (i.e., no call to <b>.RS</b> yet) has number&#160;1, and each call to <b>.RS</b> increases the level by&#160;1.</dd>
+</dl>
+<dl>
+<dt>
+<b>.RS</b><i> [nnn]</i></dt>
+<dd>
+This macro moves the left margin to the right by the value <i>nnn</i> if specified (default unit is &#8216;n&#8217;); otherwise it is set to the previous indentation value specified with <b>.TP</b>, <b>.IP</b>, or <b>.HP</b> (or to the default value if none of them have been used yet). The indentation value is then set to the default.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+Calls to the <b>RS</b> macro can be nested.</dd>
+</dl>
+<dl>
+<dt>
+<b>.SH</b><i> [text for a heading]</i></dt>
+<dd>
+Set up an unnumbered section heading sticking out to the left. Prints out all the text following <b>.SH</b> up to the end of the line (or the text in the next input line if there is no argument to <b>.SH</b>) in bold face (or the font specified by the string <b>HF</b>), one size larger than the base document size. Additionally, the left margin and the indentation for the following text is reset to the default values.</dd>
+</dl>
+<dl>
+<dt>
+<b>.SS</b><i> [text for a heading]</i></dt>
+<dd>
+Set up a secondary, unnumbered section heading. Prints out all the text following <b>.SS</b> up to the end of the line (or the text in the next input line if there is no argument to <b>.SS</b>) in bold face (or the font specified by the string <b>HF</b>), at the same size as the base document size. Additionally, the left margin and the indentation for the following text is reset to the default values.</dd>
+</dl>
+<dl>
+<dt>
+<b>.TH</b><i> title section [extra1] [extra2] [extra3]</i></dt>
+<dd>
+Set the title of the <i>man&#160;page</i> to <i>title</i> and the section to <i>section</i>, which must take on a value between 1 and&#160;8. The value <i>section</i> may also have a string appended, e.g. &#8216;.pm&#8217;, to indicate a specific subsection of the <i>man&#160;pages</i>. Both <i>title</i> and <i>section</i> are positioned at the left and right in the header line (with <i>section</i> in parentheses immediately appended to <i>title</i>. <i>extra1</i> is positioned in the middle of the footer line. <i>extra2</i> is positioned at the left in the footer line (or at the left on even pages and at the right on odd pages if double-sided printing is active). <i>extra3</i> is centered in the header line.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+For HTML output, headers and footers are completely suppressed.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+Additionally, this macro starts a new page; the new line number is&#160;1 again (except if the &#8216;-rC1&#8217; option is given on the command line) -- this feature is intended only for formatting multiple <i>man&#160;pages</i>; a single <i>man&#160;page</i> should contain exactly one <b>TH</b> macro at the beginning of the file.</dd>
+</dl>
+<dl>
+<dt>
+<b>.TP</b><i> [nnn]</i></dt>
+<dd>
+Set up an indented paragraph with label. The indentation is set to <i>nnn</i> if that argument is supplied (the default unit is &#8216;n&#8217; if omitted), otherwise it is set to the previous indentation value specified with <b>.TP</b>, <b>.IP</b>, or <b>.HP</b> (or to the default value if none of them have been used yet).</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+The first input line of text following this macro is interpreted as a string to be printed flush-left, as it is appropriate for a label. It is not interpreted as part of a paragraph, so there is no attempt to fill the first line with text from the following input lines. Nevertheless, if the label is not as wide as the indentation the paragraph starts at the same line (but indented), continuing on the following lines. If the label is wider than the indentation the descriptive part of the paragraph begins on the line following the label, entirely indented. Note that neither font shape nor font size of the label is set to a default value; on the other hand, the rest of the text has default font settings.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+The <b>TP</b> macro is the macro used for the explanations you are just reading.</dd>
+</dl>
+<dl>
+<dt>
+<b>.TQ</b></dt>
+<dd>
+The <b>TQ</b> macro sets up header continuation for a <b>TP</b> macro. With it, you can stack up any number of labels (such as in a glossary, or list of commands) before beginning the indented paragraph. For an example, look up the documentation of the <b>LP</b>, <b>PP</b>, and <b>P</b> macros.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+This macro is not defined on legacy Unix systems running classic troff. To be certain your page will be portable to those systems, copy its definition from the <b>an-ext.tmac</b> file of a <b>groff</b> installation.</dd>
+</dl>
+<div class="spacer">
+</div>
+To summarize, the following macros cause a line break with the insertion of vertical space (which amount can be changed with the <b>PD</b> macro): <b>SH</b>, <b>SS</b>, <b>TP</b>, <b>TQ</b>, <b>LP</b> (<b>PP</b>, <b>P</b>), <b>IP</b>, and <b>HP</b>. The macros <b>RS</b>, <b>RE</b>, <b>EX</b>, and <b>EE</b> also cause a break but no insertion of vertical space.</div>
+<div class="section">
+<h1>MACROS TO SET FONTS</h1> The standard font is Roman; the default text size is 10&#160;point.<dl>
+<dt>
+<b>.B</b><i> [text]</i></dt>
+<dd>
+Causes <i>text</i> to appear in bold face. If no text is present on the line where the macro is called the text of the next input line appears in bold face.</dd>
+</dl>
+<dl>
+<dt>
+<b>.BI </b><i>text</i></dt>
+<dd>
+Causes text on the same line to appear alternately in bold face and italic. The text must be on the same line as the macro call. Thus</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+.BI this &quot;word and&quot; that</dd>
+</dl>
+<div class="spacer">
+</div>
+would cause &#8216;this&#8217; and &#8216;that&#8217; to appear in bold face, while &#8216;word and&#8217; appears in italics.</div>
+<dl>
+<dt>
+<b>.BR </b><i>text</i></dt>
+<dd>
+Causes text on the same line to appear alternately in bold face and roman. The text must be on the same line as the macro call.</dd>
+</dl>
+<dl>
+<dt>
+<b>.I</b><i> [text]</i></dt>
+<dd>
+Causes <i>text</i> to appear in italic. If no text is present on the line where the macro is called the text of the next input line appears in italic.</dd>
+</dl>
+<dl>
+<dt>
+<b>.IB </b><i>text</i></dt>
+<dd>
+Causes text to appear alternately in italic and bold face. The text must be on the same line as the macro call.</dd>
+</dl>
+<dl>
+<dt>
+<b>.IR </b><i>text</i></dt>
+<dd>
+Causes text on the same line to appear alternately in italic and roman. The text must be on the same line as the macro call.</dd>
+</dl>
+<dl>
+<dt>
+<b>.RB </b><i>text</i></dt>
+<dd>
+Causes text on the same line to appear alternately in roman and bold face. The text must be on the same line as the macro call.</dd>
+</dl>
+<dl>
+<dt>
+<b>.RI </b><i>text</i></dt>
+<dd>
+Causes text on the same line to appear alternately in roman and italic. The text must be on the same line as the macro call.</dd>
+</dl>
+<dl>
+<dt>
+<b>.SB</b><i> [text]</i></dt>
+<dd>
+Causes the text on the same line or the text on the next input line to appear in boldface font, one point size smaller than the default font.</dd>
+</dl>
+<dl>
+<dt>
+<b>.SM</b><i> [text]</i></dt>
+<dd>
+Causes the text on the same line or the text on the next input line to appear in a font that is one point size smaller than the default font.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>MACROS TO DESCRIBE HYPERLINKS AND EMAIL ADDRESSES</h1> The following macros are not defined on legacy Unix systems running classic troff. To be certain your page will be portable to those systems, copy their definitions from the <b>an-ext.tmac</b> file of a <b>groff</b> installation.<div class="spacer">
+</div>
+Using these macros helps ensure that you get hyperlinks when your manual page is rendered in a browser or other program that is Web-enabled.<dl>
+<dt>
+<b>.MT</b><i> address</i></dt>
+<dd>
+<b>.ME</b><i> [punctuation]</i> Wrap an email address. The argument of <b>.MT</b> is the address; text following, until <b>.ME</b>, is a name to be associated with the address. Any argument to the <b>ME</b> macro is pasted to the end of the link text. On a device that is not a browser,</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+contact<br/>
+.MT fred.foonly@\:fubar.net<br/>
+Fred Foonly<br/>
+.ME<br/>
+for more information<br/>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+usually displays like this: &#8220;contact Fred Foonly &lt;fred.foonly@fubar.net&gt; for more information&#8221;.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+The use of <b>\:</b> to insert hyphenless breakpoints is a groff extension and can be omitted.</dd>
+</dl>
+<dl>
+<dt>
+<b>.UR</b><i> URL</i></dt>
+<dd>
+<b>.UE</b><i> [punctuation]</i> Wrap a World Wide Web hyperlink. The argument to <b>.UR</b> is the URL; thereafter, lines until <b>.UE</b> are collected and used as the link text. Any argument to the <b>UE</b> macro is pasted to the end of the text. On a device that is not a browser,</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+this is a link to<br/>
+.UR http://\:randomsite.org/\:fubar<br/>
+some random site<br/>
+.UE ,<br/>
+given as an example<br/>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+usually displays like this: &#8220;this is a link to some random site &lt;http://randomsite.org/fubar&gt;, given as an example&#8221;.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+The use of <b>\:</b> to insert hyphenless breakpoints is a groff extension and can be omitted.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>MACROS TO DESCRIBE COMMAND SYNOPSES</h1> The following macros are not defined on legacy Unix systems running classic troff. To be certain your page will be portable to those systems, copy their definitions from the <b>an-ext.tmac</b> file of a <b>groff</b> installation.<div class="spacer">
+</div>
+These macros are a convenience for authors. They also assist automated translation tools and help browsers in recognizing command synopses and treating them differently from running text.<dl>
+<dt>
+<b>.OP</b><i> key value</i></dt>
+<dd>
+Describe an optional command argument. The arguments of this macro are set surrounded by option braces in the default Roman font; the first argument is printed with a bold face, while the second argument is typeset as italic.</dd>
+</dl>
+<dl>
+<dt>
+<b>.SY</b><i> command</i></dt>
+<dd>
+Begin synopsis. Takes a single argument, the name of a command. Text following, until closed by <b>.YS</b>, is set with a hanging indentation with the width of <i>command</i> plus a space. This produces the traditional look of a Unix command synopsis.</dd>
+</dl>
+<dl>
+<dt>
+<b>.YS</b></dt>
+<dd>
+This macro restores normal indentation at the end of a command synopsis.</dd>
+</dl>
+<div class="spacer">
+</div>
+Here is a real example:<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+.SY groff<br/>
+.OP \-abcegiklpstzCEGNRSUVXZ<br/>
+.OP \-d cs<br/>
+.OP \-f fam<br/>
+.OP \-F dir<br/>
+.OP \-I dir<br/>
+.OP \-K arg<br/>
+.OP \-L arg<br/>
+.OP \-m name<br/>
+.OP \-M dir<br/>
+.OP \-n num<br/>
+.OP \-o list<br/>
+.OP \-P arg<br/>
+.OP \-r cn<br/>
+.OP \-T dev<br/>
+.OP \-w name<br/>
+.OP \-W name<br/>
+.RI [ file<br/>
+.IR .\|.\|. ]<br/>
+.YS<br/>
+</dd>
+</dl>
+<div class="spacer">
+</div>
+produces the following output:<div style="margin-left: 5.00ex;">
+<div class="spacer">
+</div>
+[<span class="opt"><b>-abcegiklpstzCEGNRSUVXZ</b>]</span> [<span class="opt"><b>-d</b> <i>cs</i>]</span> [<span class="opt"><b>-f</b> <i>fam</i>]</span> [<span class="opt"><b>-F</b> <i>dir</i>]</span> [<span class="opt"><b>-I</b> <i>dir</i>]</span> [<span class="opt"><b>-K</b> <i>arg</i>]</span> [<span class="opt"><b>-L</b> <i>arg</i>]</span> [<span class="opt"><b>-m</b> <i>name</i>]</span> [<span class="opt"><b>-M</b> <i>dir</i>]</span> [<span class="opt"><b>-n</b> <i>num</i>]</span> [<span class="opt"><b>-o</b> <i>list</i>]</span> [<span class="opt"><b>-P</b> <i>arg</i>]</span> [<span class="opt"><b>-r</b> <i>cn</i>]</span> [<span class="opt"><b>-T</b> <i>dev</i>]</span> [<span class="opt"><b>-w</b> <i>name</i>]</span> [<span class="opt"><b>-W</b> <i>name</i>]</span> [<i>file</i> <i>...</i>]</div>
+<div class="spacer">
+</div>
+If necessary, you might use <b>br</b> requests to control line breaking. You can insert plain text as well; this looks like the traditional (unornamented) syntax for a required command argument or filename.</div>
+<div class="section">
+<h1>MISCELLANEOUS</h1> The default indentation is 7.2n in troff mode and 7n in nroff mode except for <b>grohtml</b>, which ignores indentation.<dl>
+<dt>
+<b>.AT</b><i> [system [release]]</i></dt>
+<dd>
+Alter the footer for use with AT&amp;T <i>man&#160;pages</i>. This command exists only for compatibility; don't use it. See the <i>groff</i> info manual for more.</dd>
+</dl>
+<dl>
+<dt>
+<b>.BT</b></dt>
+<dd>
+Print the footer string. Redefine this macro to get control of the footer.</dd>
+</dl>
+<dl>
+<dt>
+<b>.DT</b></dt>
+<dd>
+Set tabs every 0.5&#160;inches. Since this macro is always called during a <b>TH</b> macro, it makes sense to call it only if the tab positions have been changed.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+Use of this presentation-level macro is deprecated. It translates poorly to HTML, under which exact whitespace control and tabbing are not readily available. Thus, information or distinctions that you use <b>.DT</b> to express are likely to be lost. If you feel tempted to use it, you should probably be composing a table using <b>tbl</b>(1) markup instead.</dd>
+</dl>
+<dl>
+<dt>
+<b>.PD</b><i> [nnn]</i></dt>
+<dd>
+Adjust the empty space before a new paragraph or section. The optional argument gives the amount of space (default unit is &#8216;v&#8217;); without parameter, the value is reset to its default value (1&#160;line in nroff mode, 0.4v&#160;otherwise). This affects the macros <b>SH</b>, <b>SS</b>, <b>TP</b>, <b>LP</b> (resp. <b>PP</b> and <b>P</b>), <b>IP</b>, and <b>HP</b>.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+Use of this presentation-level macro is deprecated. It translates poorly to HTML, under which exact control of inter-paragraph spacing is not readily available. Thus, information or distinctions that you use <b>.PD</b> to express are likely to be lost.</dd>
+</dl>
+<dl>
+<dt>
+<b>.PT</b></dt>
+<dd>
+Print the header string. Redefine this macro to get control of the header.</dd>
+</dl>
+<dl>
+<dt>
+<b>.UC</b><i> [version]</i></dt>
+<dd>
+Alter the footer for use with BSD <i>man&#160;pages</i>. This command exists only for compatibility; don't use it. See the <i>groff</i> info manual for more.</dd>
+</dl>
+<div class="spacer">
+</div>
+The following strings are defined:<dl>
+<dt>
+<b>\*R</b></dt>
+<dd>
+The &#8216;registered&#8217; sign.</dd>
+</dl>
+<dl>
+<dt>
+<b>\*S</b></dt>
+<dd>
+Switch back to the default font size.</dd>
+</dl>
+<dl>
+<dt>
+<b>\*(lq</b></dt>
+<dd>
+<b>\*(rq</b> Left and right quote. This is equal to &#8216;\(lq&#8217; and &#8216;\(rq\[cq], respectively.</dd>
+</dl>
+<dl>
+<dt>
+<b>\*(HF</b></dt>
+<dd>
+The typeface used to print headings and subheadings. The default is &#8216;B&#8217;.</dd>
+</dl>
+<dl>
+<dt>
+<b>\*(Tm</b></dt>
+<dd>
+The &#8216;trademark&#8217; sign.</dd>
+</dl>
+<div class="spacer">
+</div>
+If a preprocessor like <b>tbl</b> or <b>eqn</b> is needed, it has become common to make the first line of the <i>man&#160;page</i> look like this:<div class="spacer">
+</div>
+<div style="margin-left: 5.00ex;">
+<b>'\&quot;&#160;</b><i>word</i></div>
+<div class="spacer">
+</div>
+Note the single space character after the double quote. <i>word</i> consists of letters for the needed preprocessors: &#8216;e&#8217; for <b>eqn</b>, &#8216;r&#8217; for <b>refer</b>, and &#8216;t&#8217; for <b>tbl</b>. Modern implementations of the <b>man</b> program read this first line and automatically call the right preprocessor(s).</div>
+<div class="section">
+<h1>PORTABILITY AND TROFF REQUESTS</h1> Since the <b>man</b> macros consist of groups of <i>groff</i> requests, one can, in principle, supplement the functionality of the <b>man</b> macros with individual <i>groff</i> requests where necessary. See the <i>groff</i> info pages for a complete reference of all requests.<div class="spacer">
+</div>
+Note, however, that using raw troff requests is likely to make your page render poorly on the (increasingly common) class of viewers that render it to HTML. Troff requests make implicit assumptions about things like character and page sizes that may break in an HTML environment; also, many of these viewers don't interpret the full troff vocabulary, a problem that can lead to portions of your text being silently dropped.<div class="spacer">
+</div>
+For portability to modern viewers, it is best to write your page entirely in the requests described on this page. Further, it is best to completely avoid those we have described as &#8216;presentation-level&#8217; (<b>.HP</b>, <b>.PD</b>, and <b>.DT</b>).<div class="spacer">
+</div>
+The macros we have described as extensions (<b>.EX</b>/<b>.EE</b>, <b>.SY</b>/<b>.OP</b>/<b>.YS</b>, <b>.UR</b>/<b>.UE</b>, and <b>.MT</b>/<b>.ME</b>) should be used with caution, as they may not yet be built in to some viewer that is important to your audience. If in doubt, copy the implementation onto your page.</div>
+<div class="section">
+<h1>FILES</h1><dl>
+<dt>
+<b>man.tmac</b></dt>
+<dd>
+<b>an.tmac</b> These are wrapper files to call <b>andoc.tmac</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>andoc.tmac</b></dt>
+<dd>
+Use this file in case you don't know whether the <b>man</b> macros or the <b>mdoc</b> package should be used. Multiple man pages (in either format) can be handled.</dd>
+</dl>
+<dl>
+<dt>
+<b>an-old.tmac</b></dt>
+<dd>
+Most <b>man</b> macros are contained in this file.</dd>
+</dl>
+<dl>
+<dt>
+<b>an-ext.tmac</b></dt>
+<dd>
+The extension macro definitions for <b>.SY</b>, <b>.OP</b>, <b>.YS</b>, <b>.TQ</b>, <b>.EX/.EE</b>, <b>.UR/.UE</b>, and <b>.MT/.ME</b> are contained in this file. It is written in classic troff, and released for free re-use, and not copylefted; manual page authors concerned about portability to legacy Unix systems are encouraged to copy these definitions into their pages, and maintainers of troff or its workalikes are encouraged to re-use them.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+Note that the definitions for these macros are read after the call of <b>TH</b>, so they will replace macros of the same names given at the beginning of your file. If you must use your own definitions for these macros, they must be given after calling <b>TH</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>man.local</b></dt>
+<dd>
+Local changes and customizations should be put into this file.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>tbl</b>(1), <b>eqn</b>(1), <b>refer</b>(1), <b>man</b>(1), <b>man</b>(7), <b>groff_mdoc</b>(7)</div>
+<div class="section">
+<h1>COPYING</h1> Copyright &#169; 1999-2014 Free Software Foundation, Inc.<div style="height: 1.00em;">
+&#160;</div>
+Permission is granted to make and distribute verbatim copies of this manual provided the copyright notice and this permission notice are preserved on all copies.<div style="height: 1.00em;">
+&#160;</div>
+Permission is granted to copy and distribute modified versions of this manual under the conditions for verbatim copying, provided that the entire resulting derived work is distributed under the terms of a permission notice identical to this one.<div style="height: 1.00em;">
+&#160;</div>
+Permission is granted to copy and distribute translations of this manual into another language, under the above conditions for modified versions, except that this permission notice may be included in translations approved by the Free Software Foundation instead of in the original English.</div>
+<div class="section">
+<h1>AUTHORS</h1> This manual page was originally written for the Debian GNU/Linux system by Susan G. Kleinmann<div style="height: 1.00em;">
+&#160;</div>
+It was corrected and updated by Werner Lemberg<div style="height: 1.00em;">
+&#160;</div>
+The extension macros were documented (and partly designed) by Eric S. Raymond he also wrote the portability advice.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+4 November 2014</td>
+<td class="foot-os">
+Groff Version 1.22.3</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

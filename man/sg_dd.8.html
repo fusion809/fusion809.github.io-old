@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SG_DD(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SG_DD(8)</td>
+<td class="head-vol">
+SG3_UTILS</td>
+<td class="head-rtitle">
+SG_DD(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sg_dd - copy data to and from files and devices, especially SCSI devices</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>sg_dd</b> [ <i>bs=BS</i>] [<i>conv=CONV</i>] [<i>count=COUNT</i>] [<i>ibs=BS</i>] [ <i>if=IFILE</i>] [<i>iflag=FLAGS</i>] [<i>obs=BS</i>] [<i>of=OFILE</i>] [ <i>oflag=FLAGS</i>] [<i>seek=SEEK</i>] [<i>skip=SKIP</i>] [<i>--help</i>] [ <i>--version</i>]<div class="spacer">
+</div>
+[<i>blk_sgio=</i>{0|1}] [<i>bpt=BPT</i>] [<i>cdbsz=</i>{6|10|12|16}] [ <i>coe=</i>{0|1|2|3}] [<i>coe_limit=CL</i>] [<i>dio=</i>{0|1}] [ <i>odir=</i>{0|1}] [<i>of2=OFILE2</i>] [<i>retries=RETR</i>] [<i>sync=</i>{0|1}] [ <i>time=</i>{0|1}] [<i>verbose=VERB</i>] [<i>-V</i>]</div>
+<div class="section">
+<h1>DESCRIPTION</h1> Copy data to and from any files. Specialized for &quot;files&quot; that are Linux SCSI generic (sg) devices, raw devices or other devices that support the SG_IO ioctl (which are only found in the lk 2.6 series). Similar syntax and semantics to <b>dd(1)</b> command.<div class="spacer">
+</div>
+The first group in the synopsis above are &quot;standard&quot; Unix <b>dd(1)</b> operands. The second group are extra options added by this utility. Both groups are defined below.<div class="spacer">
+</div>
+This utility is only supported on Linux whereas most other utilities in the sg3_utils package have been ported to other operating systems. A utility called &quot;ddpt&quot; has similar syntax and functionality to sg_dd. ddpt drops some Linux specific features while adding some other generic features. This allows ddpt to be ported to other operating systems.</div>
+<div class="section">
+<h1>OPTIONS</h1><dl>
+<dt>
+<b>blk_sgio</b>={0|1}</dt>
+<dd>
+when set to 0, block devices (e.g. /dev/sda) are treated like normal files (i.e. <b>read(2)</b> and <b>write(2)</b> are used for IO). When set to 1, block devices are assumed to accept the SG_IO ioctl and SCSI commands are issued for IO. This is only supported for 2.6 series kernels. Note that ATAPI devices (e.g. cd/dvd players) use the SCSI command set but ATA disks do not (unless there is a protocol conversion as often occurs in the USB mass storage class). If the input or output device is a block device partition (e.g. /dev/sda3) then setting this option causes the partition information to be ignored (since access is directly to the underlying device). Default is 0. See the 'sgio' flag.</dd>
+</dl>
+<dl>
+<dt>
+<b>bpt</b>=<i>BPT</i></dt>
+<dd>
+each IO transaction will be made using <i>BPT</i> blocks (or less if near the end of the copy). Default is 128 for block sizes less that 2048 bytes, otherwise the default is 32. So for bs=512 the reads and writes will each convey 64 KiB of data by default (less if near the end of the transfer or memory restrictions). When cd/dvd drives are accessed, the block size is typically 2048 bytes and bpt defaults to 32 which again implies 64 KiB transfers. The block layer when the blk_sgio=1 option is used has relatively low upper limits for transfer sizes (compared to sg device nodes, see /sys/block/&lt;dev_name&gt;/queue/max_sectors_kb ).</dd>
+</dl>
+<dl>
+<dt>
+<b>bs</b>=<i>BS</i></dt>
+<dd>
+where <i>BS</i> <b>must</b> be the block size of the physical device (if either the input or output files are accessed via SCSI commands). Note that this differs from <b>dd(1)</b> which permits  <i>BS</i> to be an integral multiple. Default is 512 which is usually correct for disks but incorrect for cdroms (which normally have 2048 byte blocks). For this utility the maximum size of each individual IO operation is  <i>BS</i> * <i>BPT</i> bytes.</dd>
+</dl>
+<dl>
+<dt>
+<b>cdbsz</b>={6|10|12|16}</dt>
+<dd>
+size of SCSI READ and/or WRITE commands issued on sg device names (or block devices when 'iflag=sgio' and/or 'oflag=sgio' is given). Default is 10 byte SCSI command blocks (unless calculations indicate that a 4 byte block number may be exceeded or  <i>BPT</i> is greater than 16 bits (65535), in which case it defaults to 16 byte SCSI commands).</dd>
+</dl>
+<dl>
+<dt>
+<b>coe</b>={0|1|2|3}</dt>
+<dd>
+set to 1 or more for continue on error. Only applies to errors on sg devices or block devices with the 'sgio' flag set. Thus errors on other files will stop sg_dd. Default is 0 which implies stop on any error. See the 'coe' flag for more information.</dd>
+</dl>
+<dl>
+<dt>
+<b>coe_limit</b>=<i>CL</i></dt>
+<dd>
+where <i>CL</i> is the maximum number of consecutive bad blocks stepped over (due to &quot;coe&gt;0&quot;) on reads before the copy terminates. This only applies when  <i>IFILE</i> is accessed via the SG_IO ioctl. The default is 0 which is interpreted as no limit. This option is meant to stop the copy soon after unrecorded media is detected while still offering &quot;continue on error&quot; capability.</dd>
+</dl>
+<dl>
+<dt>
+<b>conv</b>=<b>sparse</b></dt>
+<dd>
+see the CONVERSIONS section below.</dd>
+</dl>
+<dl>
+<dt>
+<b>count</b>=<i>COUNT</i></dt>
+<dd>
+copy <i>COUNT</i> blocks from <i>IFILE</i> to <i>OFILE</i>. Default is the minimum (of  <i>IFILE</i> and <i>OFILE</i>) number of blocks that sg devices report from SCSI READ CAPACITY commands or that block devices (or their partitions) report. Normal files are not probed for their size. If  <i>skip=SKIP</i> or <i>skip=SEEK</i> are given and the count is derived (i.e. not explicitly given) then the derived count is scaled back so that the copy will not overrun the device. If the file name is a block device partition and  <i>COUNT</i> is not given then the size of the partition rather than the size of the whole device is used. If  <i>COUNT</i> is not given (or  <i>count=-1</i>) and cannot be derived then an error message is issued and no copy takes place.</dd>
+</dl>
+<dl>
+<dt>
+<b>dio</b>={0|1}</dt>
+<dd>
+default is 0 which selects indirect (buffered) IO on sg devices. Value of 1 attempts direct IO which, if not available, falls back to indirect IO and notes this at completion. If direct IO is selected and /proc/scsi/sg/allow_dio has the value of 0 then a warning is issued (and indirect IO is performed). For finer grain control use 'iflag=dio' or 'oflag=dio'.</dd>
+</dl>
+<dl>
+<dt>
+<b>ibs</b>=<i>BS</i></dt>
+<dd>
+if given must be the same as <i>BS</i> given to 'bs=' option.</dd>
+</dl>
+<dl>
+<dt>
+<b>if</b>=<i>IFILE</i></dt>
+<dd>
+read from <i>IFILE</i> instead of stdin. If <i>IFILE</i> is '-' then stdin is read. Starts reading at the beginning of  <i>IFILE</i> unless <i>SKIP</i> is given.</dd>
+</dl>
+<dl>
+<dt>
+<b>iflag</b>=<i>FLAGS</i></dt>
+<dd>
+where <i>FLAGS</i> is a comma separated list of one or more flags outlined below.  These flags are associated with  <i>IFILE</i> and are ignored when  <i>IFILE</i> is stdin.</dd>
+</dl>
+<dl>
+<dt>
+<b>obs</b>=<i>BS</i></dt>
+<dd>
+if given must be the same as <i>BS</i> given to 'bs=' option.</dd>
+</dl>
+<dl>
+<dt>
+<b>odir</b>={0|1}</dt>
+<dd>
+when set to one opens block devices (e.g. /dev/sda) with the O_DIRECT flag. User memory buffers are aligned to the page size when set. The default is 0 (i.e. the O_DIRECT flag is not used). Has no effect on sg, normal or raw files. If blk_sgio is also set then both are honoured: block devices are opened with the O_DIRECT flag and SCSI commands are issued via the SG_IO ioctl.</dd>
+</dl>
+<dl>
+<dt>
+<b>of</b>=<i>OFILE</i></dt>
+<dd>
+write to <i>OFILE</i> instead of stdout. If <i>OFILE</i> is '-' then writes to stdout.  If  <i>OFILE</i> is /dev/null then no actual writes are performed. If  <i>OFILE</i> is '.' (period) then it is treated the same way as /dev/null (this is a shorthand notation). If  <i>OFILE</i> exists then it is _not_ truncated; it is overwritten from the start of  <i>OFILE</i> unless 'oflag=append' or  <i>SEEK</i> is given.</dd>
+</dl>
+<dl>
+<dt>
+<b>of2</b>=<i>OFILE2</i></dt>
+<dd>
+write output to <i>OFILE2</i>. The default action is not to do this additional write (i.e. when this option is not given).  <i>OFILE2</i> is assumed to be a normal file or a fifo (i.e. a named pipe).  <i>OFILE2</i> is opened for writing, created if necessary, and closed at the end of the transfer. If  <i>OFILE2</i> is a fifo (named pipe) then some other command should be consuming that data (e.g. 'md5sum OFILE2'), otherwise this utility will block.</dd>
+</dl>
+<dl>
+<dt>
+<b>oflag</b>=<i>FLAGS</i></dt>
+<dd>
+where <i>FLAGS</i> is a comma separated list of one or more flags outlined below.  These flags are associated with  <i>OFILE</i> and are ignored when  <i>OFILE</i> is /dev/null, '.' (period), or stdout.</dd>
+</dl>
+<dl>
+<dt>
+<b>retries</b>=<i>RETR</i></dt>
+<dd>
+sometimes retries at the host are useful, for example when there is a transport error. When  <i>RETR</i> is greater than zero then SCSI READs and WRITEs are retried on error,  <i>RETR</i> times. Default value is zero.</dd>
+</dl>
+<dl>
+<dt>
+<b>seek</b>=<i>SEEK</i></dt>
+<dd>
+start writing <i>SEEK</i> bs-sized blocks from the start of <i>OFILE</i>. Default is block 0 (i.e. start of file).</dd>
+</dl>
+<dl>
+<dt>
+<b>skip</b>=<i>SKIP</i></dt>
+<dd>
+start reading <i>SKIP</i> bs-sized blocks from the start of <i>IFILE</i>. Default is block 0 (i.e. start of file).</dd>
+</dl>
+<dl>
+<dt>
+<b>sync</b>={0|1}</dt>
+<dd>
+when 1, does SYNCHRONIZE CACHE command on <i>OFILE</i> at the end of the transfer. Only active when  <i>OFILE</i> is a sg device file name or a block device and 'blk_sgio=1' is given.</dd>
+</dl>
+<dl>
+<dt>
+<b>time</b>={0|1}</dt>
+<dd>
+when 1, times transfer and does throughput calculation, outputting the results (to stderr) at completion. When 0 (default) doesn't perform timing.</dd>
+</dl>
+<dl>
+<dt>
+<b>verbose</b>=<i>VERB</i></dt>
+<dd>
+as <i>VERB</i> increases so does the amount of debug output sent to stderr. Default value is zero which yields the minimum amount of debug output. A value of 1 reports extra information that is not repetitive. A value 2 reports cdbs and responses for SCSI commands that are not repetitive (i.e. other that READ and WRITE). Error processing is not considered repetitive. Values of 3 and 4 yield output for all SCSI commands (and Unix read() and write() calls) so there can be a lot of output. This only occurs for scsi generic (sg) devices and block devices when the 'blk_sgio=1' option is set.</dd>
+</dl>
+<dl>
+<dt>
+<b>--help</b></dt>
+<dd>
+outputs usage message and exits.</dd>
+</dl>
+<dl>
+<dt>
+<b>--version</b></dt>
+<dd>
+outputs version number information and exits.</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b></dt>
+<dd>
+outputs version number information and exits.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>CONVERSIONS</h1> One or more conversions can be given to the &quot;conv=&quot; option. If more than one is given, they should be comma separated. sg_dd does not perform the traditional dd conversions (e.g. ASCII to EBCDIC). Recently added conversions overlap somewhat with the flags so some conversions are now supported by sg_dd.<dl>
+<dt>
+noerror</dt>
+<dd>
+this conversion is very close to &quot;iflag=coe&quot; and is treated as such. See the &quot;coe&quot; flag. Note that an error on  <i>OFILE</i> will stop the copy.</dd>
+</dl>
+<dl>
+<dt>
+notrunc</dt>
+<dd>
+this conversion is accepted for compatibilty with dd and ignored since the default action of this utility is not to truncate  <i>OFILE</i>.</dd>
+</dl>
+<dl>
+<dt>
+null</dt>
+<dd>
+has no affect, just a placeholder.</dd>
+</dl>
+<dl>
+<dt>
+sparse</dt>
+<dd>
+FreeBSD supports &quot;conv=sparse&quot; so the same syntax is supported in sg_dd. See &quot;sparse&quot; in the FLAGS sections for more information.</dd>
+</dl>
+<dl>
+<dt>
+sync</dt>
+<dd>
+is ignored by sg_dd. With dd it means supply zero fill (rather than skip) and is typically used like this &quot;conv=noerror,sync&quot; to have the same functionality as sg_dd's &quot;iflag=coe&quot;.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>FLAGS</h1> Here is a list of flags and their meanings:<dl>
+<dt>
+append</dt>
+<dd>
+causes the O_APPEND flag to be added to the open of <i>OFILE</i>. For regular files this will lead to data appended to the end of any existing data. Cannot be used together with the  <i>seek=SEEK</i> option as they conflict. The default action of this utility is to overwrite any existing data from the beginning of the file or, if  <i>SEEK</i> is given, starting at block  <i>SEEK</i>. Note that attempting to 'append' to a device file (e.g. a disk) will usually be ignored or may cause an error to be reported.</dd>
+</dl>
+<dl>
+<dt>
+coe</dt>
+<dd>
+continue on error. Only active for sg devices and block devices that have the 'sgio' flag set. 'iflag=coe oflag=coe' and 'coe=1' are equivalent. Use this flag twice (e.g. 'iflag=coe,coe') to have the same action as the 'coe=2'. A medium, hardware or blank check error while reading will re-read blocks prior to the bad block, then try to recover the bad block, supplying zeros if that fails, and finally reread the blocks after the bad block. A medium, hardware or blank check error while writing is noted and ignored. The recovery of the bad block when reading uses the SCSI READ LONG command if 'coe' given twice or more (also with the command line option 'coe=2'). Further, the READ LONG will set its CORRCT bit if 'coe' given thrice. SCSI disks may automatically try and remap faulty sectors (see the AWRE and ARRE in the read write error recovery mode page (the sdparm utility can access and possibly change these attributes)). Errors occurring on other files types will stop sg_dd. Error messages are sent to stderr. This flag is similar<br/>
+ o 'conv=noerror,sync' in the <b>dd(1)</b> utility. See note about READ LONG below.</dd>
+</dl>
+<dl>
+<dt>
+dio</dt>
+<dd>
+request the sg device node associated with this flag does direct IO. If direct IO is not available, falls back to indirect IO and notes this at completion. If direct IO is selected and /proc/scsi/sg/allow_dio has the value of 0 then a warning is issued (and indirect IO is performed).</dd>
+</dl>
+<dl>
+<dt>
+direct</dt>
+<dd>
+causes the O_DIRECT flag to be added to the open of <i>IFILE</i> and/or  <i>OFILE</i>. This flag requires some memory alignment on IO. Hence user memory buffers are aligned to the page size. Has no effect on sg, normal or raw files. If 'iflag=sgio' and/or 'oflag=sgio' is also set then both are honoured: block devices are opened with the O_DIRECT flag and SCSI commands are issued via the SG_IO ioctl.</dd>
+</dl>
+<dl>
+<dt>
+dpo</dt>
+<dd>
+set the DPO bit (disable page out) in SCSI READ and WRITE commands. Not supported for 6 byte cdb variants of READ and WRITE. Indicates that data is unlikely to be required to stay in device (e.g. disk) cache. May speed media copy and/or cause a media copy to have less impact on other device users.</dd>
+</dl>
+<dl>
+<dt>
+dsync</dt>
+<dd>
+causes the O_SYNC flag to be added to the open of <i>IFILE</i> and/or  <i>OFILE</i>. The 'd' is prepended to lower confusion with the 'sync=0|1' option which has another action (i.e. a synchronisation to media at the end of the transfer).</dd>
+</dl>
+<dl>
+<dt>
+excl</dt>
+<dd>
+causes the O_EXCL flag to be added to the open of <i>IFILE</i> and/or  <i>OFILE</i>.</dd>
+</dl>
+<dl>
+<dt>
+flock</dt>
+<dd>
+after opening the associated file (i.e. <i>IFILE</i> and/or <i>OFILE</i>) an attempt is made to get an advisory exclusive lock with the flock() system call. The flock arguments are &quot;FLOCK_EX | FLOCK_NB&quot; which will cause the lock to be taken if available else a &quot;temporarily unavailable&quot; error is generated. An exit status of 90 is produced in the latter case and no copy is done.</dd>
+</dl>
+<dl>
+<dt>
+fua</dt>
+<dd>
+causes the FUA (force unit access) bit to be set in SCSI READ and/or WRITE commands. This only has an effect with sg devices or block devices that have the 'sgio' flag set. The 6 byte variants of the SCSI READ and WRITE commands do not support the FUA bit.</dd>
+</dl>
+<dl>
+<dt>
+nocache</dt>
+<dd>
+use posix_fadvise() to advise corresponding file there is no need to fill the file buffer with recently read or written blocks.</dd>
+</dl>
+<dl>
+<dt>
+null</dt>
+<dd>
+has no affect, just a placeholder.</dd>
+</dl>
+<dl>
+<dt>
+sgio</dt>
+<dd>
+causes block devices to be accessed via the SG_IO ioctl rather than standard UNIX read() and write() commands. When the SG_IO ioctl is used the SCSI READ and WRITE commands are used directly to move data. sg devices always use the SG_IO ioctl. This flag offers finer grain control compared to the otherwise identical 'blk_sgio=1' option.</dd>
+</dl>
+<dl>
+<dt>
+sparse</dt>
+<dd>
+after each <i>BS</i> * <i>BPT</i> byte segment is read from the input, it is checked for being all zeros. If so, nothing is written to the output file unless this is the last segment of the transfer. This flag is only active with the oflag option. It cannot be used when the output is not seekable (e.g. stdout). It is ignored if the output file is /dev/null . Note that this utility does not remove the  <i>OFILE</i> prior to starting to write to it. Hence it may be advantageous to manually remove the  <i>OFILE</i> if it is large prior to using oflag=sparse. The last segment is always written so regular files will show the same length and so programs like md5sum and sha1sum will generate the same value regardless of whether oflag=sparse is given or not. This option may be used when the  <i>OFILE</i> is a raw device but is probably only useful if the device is known to contain zeros (e.g. a SCSI disk after a FORMAT command).</dd>
+</dl>
+</div>
+<div class="section">
+<h1>RETIRED OPTIONS</h1> Here are some retired options that are still present:<dl>
+<dt>
+append=0 | 1</dt>
+<dd>
+when set, equivalent to 'oflag=append'. When clear the action is to overwrite the existing file (if it exists); this is the default. See the 'append' flag.</dd>
+</dl>
+<dl>
+<dt>
+fua=0 | 1 | 2 | 3</dt>
+<dd>
+force unit access bit. When 3, fua is set on both <i>IFILE</i> and  <i>OFILE</i>; when 2, fua is set on <i>IFILE</i>;, when 1, fua is set on  <i>OFILE</i>; when 0 (default), fua is cleared on both. See the 'fua' flag.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>NOTES</h1> Block devices (e.g. /dev/sda and /dev/hda) can be given for  <i>IFILE</i>. If neither '-iflag=direct', 'iflag=sgio' nor 'blk_sgio=1' is given then normal block IO involving buffering and caching is performed. If only '-iflag=direct' is given then the buffering and caching is bypassed (this is applicable to both SCSI devices and ATA disks). If 'iflag=sgio' or 'blk_sgio=1' is given then the SG_IO ioctl is used on the given file causing SCSI commands to be sent to the device and that also bypasses most of the actions performed by the block layer (this is only applicable to SCSI devices, not ATA disks). The same applies for block devices given for  <i>OFILE</i>.<div class="spacer">
+</div>
+Various numeric arguments (e.g. <i>SKIP</i>) may include multiplicative suffixes or be given in hexadecimal. See the &quot;NUMERIC ARGUMENTS&quot; section in the sg3_utils(8) man page.<div class="spacer">
+</div>
+The <i>COUNT</i>, <i>SKIP</i> and <i>SEEK</i> arguments can take 64 bit values (i.e. very big numbers). Other values are limited to what can fit in a signed 32 bit number.<div class="spacer">
+</div>
+Data usually gets to the user space in a 2 stage process: first the SCSI adapter DMAs into kernel buffers and then the sg driver copies this data into user memory (write operations reverse this sequence). This is called &quot;indirect IO&quot; and there is a 'dio' option to select &quot;direct IO&quot; which will DMA directly into user memory. Due to some issues &quot;direct IO&quot; is disabled in the sg driver and needs a configuration change to activate it. This is typically done with 'echo 1 &gt; /proc/scsi/sg/allow_dio'.<div class="spacer">
+</div>
+All informative, warning and error output is sent to stderr so that dd's output file can be stdout and remain unpolluted. If no options are given, then the usage message is output and nothing else happens.<div class="spacer">
+</div>
+Even if READ LONG succeeds on a &quot;bad&quot; block when 'coe=2' (or 'coe=3') is given, the recovered data may not be useful. There are no guarantees that the user data will appear &quot;as is&quot; in the first 512 bytes.<div class="spacer">
+</div>
+A raw device must be bound to a block device prior to using sg_dd. See <b>raw(8)</b> for more information about binding raw devices. To be safe, the sg device mapping to SCSI block devices should be checked with 'cat /proc/scsi/scsi', or sg_map before use.<div class="spacer">
+</div>
+Disk partition information can often be found with <b>fdisk(8)</b> [the &quot;-ul&quot; argument is useful in this respect].<div class="spacer">
+</div>
+For sg devices (and block devices when blk_sgio=1 is given) this utility issues SCSI READ and WRITE (SBC) commands which are appropriate for disks and reading from CD/DVD/HD-DVD/BD drives. Those commands are not formatted correctly for tape devices so sg_dd should not be used on tape devices. If the largest block address of the requested transfer exceeds a 32 bit block number (i.e 0xffff) then a warning is issued and the sg device is accessed via SCSI READ(16) and WRITE(16) commands.<div class="spacer">
+</div>
+The attributes of a block device (partition) are ignored when 'blk_sgio=1' is used. Hence the whole device is read (rather than just the second partition) by this invocation:<div class="spacer">
+</div>
+<br/>
+   sg_dd if=/dev/sdb2 blk_sgio=1 of=t bs=512</div>
+<div class="section">
+<h1>EXAMPLES</h1> Looks quite similar in usage to dd:<div class="spacer">
+</div>
+<br/>
+   sg_dd if=/dev/sg0 of=t bs=512 count=1MB<div class="spacer">
+</div>
+This will copy 1 million 512 byte blocks from the device associated with /dev/sg0 (which should have 512 byte blocks) to a file called t. Assuming /dev/sda and /dev/sg0 are the same device then the above is equivalent to:<div class="spacer">
+</div>
+<br/>
+   dd if=/dev/sda iflag=direct of=t bs=512 count=1000000<div class="spacer">
+</div>
+although dd's speed may improve if bs was larger and count was suitably reduced. The use of the 'iflag=direct' option bypasses the buffering and caching that is usually done on a block device.<div class="spacer">
+</div>
+Using a raw device to do something similar on a ATA disk:<div class="spacer">
+</div>
+<br/>
+   raw /dev/raw/raw1 /dev/hda<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   sg_dd if=/dev/raw/raw1 of=t bs=512 count=1MB<div class="spacer">
+</div>
+To copy a SCSI disk partition to an ATA disk partition:<div class="spacer">
+</div>
+<br/>
+   raw /dev/raw/raw2 /dev/hda3<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   sg_dd if=/dev/sg0 skip=10123456 of=/dev/raw/raw2 bs=512<div class="spacer">
+</div>
+This assumes a valid partition is found on the SCSI disk at the given skip block address (past the 5 GB point of that disk) and that the partition goes to the end of the SCSI disk. An explicit count is probably a safer option. The partition is copied to /dev/hda3 which is an offset into the ATA disk /dev/hda . The exact number of blocks read from /dev/sg0 are written to /dev/hda (i.e. no padding).<div class="spacer">
+</div>
+To time a streaming read of the first 1 GB (2 ** 30 bytes) on a disk this utility could be used:<div class="spacer">
+</div>
+<br/>
+   sg_dd if=/dev/sg0 of=/dev/null bs=512 count=2m time=1<div class="spacer">
+</div>
+On completion this will output a line like: &quot;time to transfer data was 18.779506 secs, 57.18 MB/sec&quot;. The &quot;MB/sec&quot; in this case is 1,000,000 bytes per second.<div class="spacer">
+</div>
+The 'of2=' option can be used to copy data and take a md5sum of it without needing to re-read the data:<div class="spacer">
+</div>
+<br/>
+  mkfifo fif<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  md5sum fif &amp;<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  sg_dd if=/dev/sg3 iflag=coe of=sg3.img oflag=sparse of2=fif bs=512<div class="spacer">
+</div>
+This will image /dev/sg3 (e.g. an unmounted disk) and place the contents in the (sparse) file sg3.img . Without re-reading the data it will also perform a md5sum calculation on the image.</div>
+<div class="section">
+<h1>SIGNALS</h1> The signal handling has been borrowed from dd: SIGINT, SIGQUIT and SIGPIPE output the number of remaining blocks to be transferred and the records in + out counts; then they have their default action. SIGUSR1 causes the same information to be output yet the copy continues. All output caused by signals is sent to stderr.</div>
+<div class="section">
+<h1>EXIT STATUS</h1> The exit status of sg_dd is 0 when it is successful. Otherwise see the sg3_utils(8) man page. Since this utility works at a higher level than individual commands, and there are 'coe' and 'retries' flags, individual SCSI command failures do not necessary cause the process to exit.<div class="spacer">
+</div>
+An additional exit status of 90 is generated if the flock flag is given and some other process holds the advisory exclusive lock.</div>
+<div class="section">
+<h1>AUTHORS</h1> Written by Douglas Gilbert and Peter Allworth.</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Report bugs to &lt;dgilbert at interlog dot com&gt;.</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright &#169; 2000-2013 Douglas Gilbert<div style="height: 0.00em;">
+&#160;</div>
+This software is distributed under the GPL version 2. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</div>
+<div class="section">
+<h1>SEE ALSO</h1> There is a web page discussing sg_dd at http://sg.danny.cz/sg/sg_dd.html<div class="spacer">
+</div>
+A POSIX threads version of this utility called <b>sgp_dd</b> is in the sg3_utils package. Another version from that package is called <b>sgm_dd</b> and it uses memory mapped IO to speed transfers from sg devices.<div class="spacer">
+</div>
+The lmbench package contains <b>lmdd</b> which is also interesting. For moving data to and from tapes see <b>dt</b> which is found at http://www.scsifaq.org/RMiller_Tools/index.html<div class="spacer">
+</div>
+To change mode parameters that effect a SCSI device's caching and error recovery see <b>sdparm(sdparm)</b><div class="spacer">
+</div>
+To verify the data on the media or to verify it against some other copy of the data see <b>sg_verify(sg3_utils)</b><div class="spacer">
+</div>
+See also <b>raw(8), dd(1), ddrescue(GNU), ddpt</b></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+June 2013</td>
+<td class="foot-os">
+sg3_utils-1.37</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

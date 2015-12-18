@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+IP-TCP_METRICS(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+IP-TCP_METRICS(8)</td>
+<td class="head-vol">
+Linux</td>
+<td class="head-rtitle">
+IP-TCP_METRICS(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> ip-tcp_metrics - management for TCP Metrics</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+<b>ip</b> [ <i>OPTIONS</i> ] <b>tcp_metrics</b> { <i>COMMAND</i> |  <b>help</b> }<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>ip tcp_metrics</b> { <b>show</b> | <b>flush</b> } <i>SELECTOR</i><div style="height: 1.00em;">
+&#160;</div>
+<b>ip tcp_metrics delete </b>[<b> address </b>] <i>ADDRESS</i><div style="height: 1.00em;">
+&#160;</div>
+<i>SELECTOR</i> :=  [ [ <b>address</b> ]  <i>PREFIX</i> ]<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>ip tcp_metrics</b> is used to manipulate entries in the kernel that keep TCP information for IPv4 and IPv6 destinations. The entries are created when TCP sockets want to share information for destinations and are stored in a cache keyed by the destination address. The saved information may include values for metrics (initially obtained from routes), recent TSVAL for TIME-WAIT recycling purposes, state for the Fast Open feature, etc. For performance reasons the cache can not grow above configured limit and the older entries are replaced with fresh information, sometimes reclaimed and used for new destinations. The kernel never removes entries, they can be flushed only with this tool.<div style="height: 1.00em;">
+&#160;</div>
+<div class="subsection">
+<h2>ip tcp_metrics show - show cached entries</h2><dl>
+<dt>
+<b>address</b><i> PREFIX </i><b>(default)</b></dt>
+<dd>
+IPv4/IPv6 prefix or address. If no prefix is provided all entries are shown.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<div class="spacer">
+</div>
+The output may contain the following information:<div style="height: 1.00em;">
+&#160;</div>
+<b>age</b><i> &lt;S.MMM&gt;</i><b>sec</b> - time after the entry was created, reset or updated with metrics from sockets. The entry is reset and refreshed on use with metrics from route if the metrics are not updated in last hour. Not all cached values reset the age on update.<div style="height: 1.00em;">
+&#160;</div>
+<b>cwnd</b><i> &lt;N&gt;</i> - CWND metric value<div style="height: 1.00em;">
+&#160;</div>
+<b>fo_cookie</b><i> &lt;HEX-STRING&gt;</i> - Cookie value received in SYN-ACK to be used by Fast Open for next SYNs<div style="height: 1.00em;">
+&#160;</div>
+<b>fo_mss</b><i> &lt;N&gt;</i> - MSS value received in SYN-ACK to be used by Fast Open for next SYNs<div style="height: 1.00em;">
+&#160;</div>
+<b>fo_syn_drops</b><i> &lt;N&gt;/&lt;S.MMM&gt;</i><b>sec ago</b> - Number of drops of initial outgoing Fast Open SYNs with data detected by monitoring the received SYN-ACK after SYN retransmission. The seconds show the time after last SYN drop and together with the drop count can be used to disable Fast Open for some time.<div style="height: 1.00em;">
+&#160;</div>
+<b>reordering</b><i> &lt;N&gt;</i> - Reordering metric value<div style="height: 1.00em;">
+&#160;</div>
+<b>rtt</b><i> &lt;N&gt;</i><b>us</b> - RTT metric value<div style="height: 1.00em;">
+&#160;</div>
+<b>rttvar</b><i> &lt;N&gt;</i><b>us</b> - RTTVAR metric value<div style="height: 1.00em;">
+&#160;</div>
+<b>ssthresh</b><i> &lt;SSTHRESH&gt;</i> - SSTHRESH metric value<div style="height: 1.00em;">
+&#160;</div>
+<b>tw_ts</b><i> &lt;TSVAL&gt;/&lt;SEC&gt;</i><b>sec ago</b> - recent TSVAL and the seconds after saving it into TIME-WAIT socket<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="subsection">
+<h2>ip tcp_metrics delete - delete single entry</h2><dl>
+<dt>
+<b>address</b><i> ADDRESS </i><b>(default)</b></dt>
+<dd>
+IPv4/IPv6 address. The address is a required argument.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>ip tcp_metrics flush - flush entries</h2> This command flushes the entries selected by some criteria.<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+This command has the same arguments as <b>show.</b><div style="height: 1.00em;">
+&#160;</div>
+</div>
+</div>
+<div class="section">
+<h1>EXAMPLES</h1> ip tcp_metrics show address 192.168.0.0/24<div style="margin-left: 4.00ex;">
+Shows the entries for destinations from subnet</div>
+<div class="spacer">
+</div>
+ip tcp_metrics show 192.168.0.0/24<div style="margin-left: 4.00ex;">
+The same but address keyword is optional</div>
+<div class="spacer">
+</div>
+ip tcp_metrics<div style="margin-left: 4.00ex;">
+Show all is the default action</div>
+<div class="spacer">
+</div>
+ip tcp_metrics delete 192.168.0.1<div style="margin-left: 4.00ex;">
+Removes the entry for 192.168.0.1 from cache.</div>
+<div class="spacer">
+</div>
+ip tcp_metrics flush 192.168.0.0/24<div style="margin-left: 4.00ex;">
+Removes entries for destinations from subnet</div>
+<div class="spacer">
+</div>
+ip tcp_metrics flush all<div style="margin-left: 4.00ex;">
+Removes all entries from cache</div>
+<div class="spacer">
+</div>
+ip -6 tcp_metrics flush all<div style="margin-left: 4.00ex;">
+Removes all IPv6 entries from cache keeping the IPv4 entries.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ip</b>(8)<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>AUTHOR</h1> Original Manpage by Julian Anastasov &lt;ja@ssi.bg&gt;</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+23 Aug 2012</td>
+<td class="foot-os">
+iproute2</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+IP-NETNS(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+IP-NETNS(8)</td>
+<td class="head-vol">
+Linux</td>
+<td class="head-rtitle">
+IP-NETNS(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> ip-netns - process network namespace management</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+<b>ip</b> [ <i>OPTIONS</i> ] <b>netns</b>  { <i>COMMAND</i> |  <b>help</b> }<div style="height: 1.00em;">
+&#160;</div>
+<b>ip netns</b> { <b>list</b> } <div style="height: 1.00em;">
+&#160;</div>
+<b>ip netns add</b> <i>NETNSNAME</i><div style="height: 1.00em;">
+&#160;</div>
+<b>ip [-all] netns del</b> [ <i>NETNSNAME</i> ]<div style="height: 1.00em;">
+&#160;</div>
+<b>ip netns identify</b> [ <i>PID</i> ]<div style="height: 1.00em;">
+&#160;</div>
+<b>ip netns pids</b> <i>NETNSNAME</i><div style="height: 1.00em;">
+&#160;</div>
+<b>ip [-all] netns exec </b> [ <i>NETNSNAME</i> ] <i>command</i>...<div style="height: 1.00em;">
+&#160;</div>
+<b>ip netns monitor</b><div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> A network namespace is logically another copy of the network stack, with its own routes, firewall rules, and network devices.<div style="height: 1.00em;">
+&#160;</div>
+By convention a named network namespace is an object at <b>/run/netns/</b>NAME that can be opened.  The file descriptor resulting from opening <b>/run/netns/</b>NAME refers to the specified network namespace.  Holding that file descriptor open keeps the network namespace alive.  The file descriptor can be used with the <b>setns(2)</b> system call to change the network namespace associated with a task.<div style="height: 1.00em;">
+&#160;</div>
+For applications that are aware of network namespaces, the convention is to look for global network configuration files first in <b>/etc/netns/</b>NAME<b>/</b> then in <b>/etc/</b>. For example, if you want a different version of <b>/etc/resolv.conf</b> for a network namespace used to isolate your vpn you would name it <b>/etc/netns/myvpn/resolv.conf.</b><div style="height: 1.00em;">
+&#160;</div>
+<b>ip netns exec</b> automates handling of this configuration, file convention for network namespace unaware applications, by creating a mount namespace and bind mounting all of the per network namespace configure files into their traditional location in /etc.<div style="height: 1.00em;">
+&#160;</div>
+<dl>
+<dt>
+<b>ip netns list - show all of the named network namespaces</b></dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+This command displays all of the network namespaces in /run/netns<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>ip netns add NAME - create a new named network namespace</b></dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+If NAME is available in /run/netns/ this command creates a new network namespace and assigns NAME.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>ip [-all] netns delete [ NAME ] - delete the name of a network namespace(s)</b></dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+If NAME is present in /run/netns it is umounted and the mount point is removed.  If this is the last user of the network namespace the network namespace will be freed, otherwise the network namespace persists until it has no more users.  ip netns delete may fail if the mount point is in use in another mount namespace.<div style="height: 1.00em;">
+&#160;</div>
+If <b>-all</b> option was specified then all the network namespace names will be removed.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>ip netns identify [PID] - Report network namespaces names for process</b></dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+This command walks through /run/netns and finds all the network namespace names for network namespace of the specified process, if PID is not specified then the current process will be used.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>ip netns pids NAME - Report processes in the named network namespace</b></dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+This command walks through proc and finds all of the process who have the named network namespace as their primary network namespace.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>ip [-all] netns exec [ NAME ] cmd ... - Run cmd in the named network namespace</b></dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+This command allows applications that are network namespace unaware to be run in something other than the default network namespace with all of the configuration for the specified network namespace appearing in the customary global locations.  A network namespace and bind mounts are used to move files from their network namespace specific location to their default locations without affecting other processes.<div style="height: 1.00em;">
+&#160;</div>
+If <b>-all</b> option was specified then <b>cmd</b> will be executed synchronously on the each named network namespace even if <b>cmd</b> fails on some of them. Network namespace name is printed on each <b>cmd</b> executing.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>ip netns monitor - Report as network namespace names are added and deleted</b></dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+This command watches network namespace name addition and deletion events and prints a line for each event it sees.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>EXAMPLES</h1> ip netns list<div style="margin-left: 5.00ex;">
+Shows the list of current named network namespaces</div>
+<div class="spacer">
+</div>
+ip netns add vpn<div style="margin-left: 5.00ex;">
+Creates a network namespace and names it vpn</div>
+<div class="spacer">
+</div>
+ip netns exec vpn ip link set lo up<div style="margin-left: 5.00ex;">
+Bring up the loopback interface in the vpn network namespace.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ip</b>(8)<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>AUTHOR</h1> Original Manpage by Eric W. Biederman</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+16 Jan 2013</td>
+<td class="foot-os">
+iproute2</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

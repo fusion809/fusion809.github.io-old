@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SYMLINK(3P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SYMLINK(3P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+SYMLINK(3P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> symlink, symlinkat &#8212; make a symbolic link relative to directory file descriptor</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;unistd.h&gt;<div class="spacer">
+</div>
+int symlink(const char *<i>path1</i>, const char *<i>path2</i>);<br/>
+int symlinkat(const char *<i>path1</i>, int <i>fd</i>, const char *<i>path2</i>);<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <i>symlink</i>() function shall create a symbolic link called <i>path2</i> that contains the string pointed to by <i>path1</i> (<i>path2</i> is the name of the symbolic link created, <i>path1</i> is the string contained in the symbolic link).<div class="spacer">
+</div>
+The string pointed to by <i>path1</i> shall be treated only as a character string and shall not be validated as a pathname.<div class="spacer">
+</div>
+If the  <i>symlink</i>() function fails for any reason other than <b>[EIO]</b>, any file named by <i>path2</i> shall be unaffected.<div class="spacer">
+</div>
+If <i>path2</i> names a symbolic link,  <i>symlink</i>() shall fail and set <i>errno</i> to <b>[EEXIST]</b>.<div class="spacer">
+</div>
+The symbolic link's user ID shall be set to the process' effective user ID. The symbolic link's group ID shall be set to the group ID of the parent directory or to the effective group ID of the process. Implementations shall provide a way to initialize the symbolic link's group ID to the group ID of the parent directory. Implementations may, but need not, provide an implementation-defined way to initialize the symbolic link's group ID to the effective group ID of the calling process.<div class="spacer">
+</div>
+The values of the file mode bits for the created symbolic link are unspecified. All interfaces specified by POSIX.1&#8208;2008 shall behave as if the contents of symbolic links can always be read, except that the value of the file mode bits returned in the <i>st_mode</i> field of the <b>stat</b> structure is unspecified.<div class="spacer">
+</div>
+Upon successful completion,  <i>symlink</i>() shall mark for update the last data access, last data modification, and last file status change timestamps of the symbolic link. Also, the last data modification and last file status change timestamps of the directory that contains the new entry shall be marked for update.<div class="spacer">
+</div>
+The  <i>symlinkat</i>() function shall be equivalent to the  <i>symlink</i>() function except in the case where <i>path2</i> specifies a relative path. In this case the symbolic link is created relative to the directory associated with the file descriptor <i>fd</i> instead of the current working directory. If the file descriptor was opened without O_SEARCH, the function shall check whether directory searches are permitted using the current permissions of the directory underlying the file descriptor. If the file descriptor was opened with O_SEARCH, the function shall not perform the check.<div class="spacer">
+</div>
+If  <i>symlinkat</i>() is passed the special value AT_FDCWD in the <i>fd</i> parameter, the current working directory shall be used and the behavior shall be identical to a call to  <i>symlink</i>().</div>
+<div class="section">
+<h1>RETURN VALUE</h1> Upon successful completion, these functions shall return 0. Otherwise, these functions shall return &#8722;1 and set <i>errno</i> to indicate the error.</div>
+<div class="section">
+<h1>ERRORS</h1> These functions shall fail if:<dl>
+<dt>
+<b>EACCES</b></dt>
+<dd>
+Write permission is denied in the directory where the symbolic link is being created, or search permission is denied for a component of the path prefix of <i>path2</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>EEXIST</b></dt>
+<dd>
+The <i>path2</i> argument names an existing file.</dd>
+</dl>
+<dl>
+<dt>
+<b>EIO</b></dt>
+<dd>
+An I/O error occurs while reading from or writing to the file system.</dd>
+</dl>
+<dl>
+<dt>
+<b>ELOOP</b></dt>
+<dd>
+A loop exists in symbolic links encountered during resolution of the <i>path2</i> argument.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENAMETOOLONG</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The length of a component of the pathname specified by the <i>path2</i> argument is longer than {NAME_MAX} or the length of the <i>path1</i> argument is longer than {SYMLINK_MAX}.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOENT</b></dt>
+<dd>
+A component of the path prefix of <i>path2</i> does not name an existing file or <i>path2</i> is an empty string.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOSPC</b></dt>
+<dd>
+The directory in which the entry for the new symbolic link is being placed cannot be extended because no space is left on the file system containing the directory, or the new symbolic link cannot be created because no space is left on the file system which shall contain the link, or the file system is out of file-allocation resources.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+A component of the path prefix of <i>path2</i> names an existing file that is neither a directory nor a symbolic link to a directory.</dd>
+</dl>
+<dl>
+<dt>
+<b>EROFS</b></dt>
+<dd>
+The new symbolic link would reside on a read-only file system.</dd>
+</dl>
+<div class="spacer">
+</div>
+The  <i>symlinkat</i>() function shall fail if:<dl>
+<dt>
+<b>EACCES</b></dt>
+<dd>
+<i>fd</i> was not opened with O_SEARCH and the permissions of the directory underlying <i>fd</i> do not permit directory searches.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+The <i>path2</i> argument does not specify an absolute path and the <i>fd</i> argument is neither AT_FDCWD nor a valid file descriptor open for reading or searching.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+The <i>path2</i> argument is not an absolute path and <i>fd</i> is a file descriptor associated with a non-directory file.</dd>
+</dl>
+<div class="spacer">
+</div>
+These functions may fail if:<dl>
+<dt>
+<b>ELOOP</b></dt>
+<dd>
+More than {SYMLOOP_MAX} symbolic links were encountered during resolution of the <i>path2</i> argument.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENAMETOOLONG</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The length of the <i>path2</i> argument exceeds {PATH_MAX} or pathname resolution of a symbolic link in the <i>path2</i> argument produced an intermediate result with a length that exceeds {PATH_MAX}.</dd>
+</dl>
+<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>EXAMPLES</h1> None.</div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> Like a hard link, a symbolic link allows a file to have multiple logical names. The presence of a hard link guarantees the existence of a file, even after the original name has been removed. A symbolic link provides no such assurance; in fact, the file named by the <i>path1</i> argument need not exist when the link is created. A symbolic link can cross file system boundaries.<div class="spacer">
+</div>
+Normal permission checks are made on each component of the symbolic link pathname during its resolution.</div>
+<div class="section">
+<h1>RATIONALE</h1> The purpose of the  <i>symlinkat</i>() function is to create symbolic links in directories other than the current working directory without exposure to race conditions. Any part of the path of a file could be changed in parallel to a call to  <i>symlink</i>(), resulting in unspecified behavior. By opening a file descriptor for the target directory and using the  <i>symlinkat</i>() function it can be guaranteed that the created symbolic link is located relative to the desired directory.</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> None.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i><i>fdopendir</i>()</i>, <i><i>fstatat</i>()</i>, <i><i>lchown</i>()</i>, <i><i>link</i>()</i>, <i><i>open</i>()</i>, <i><i>readlink</i>()</i>, <i><i>rename</i>()</i>, <i><i>unlink</i>()</i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i><b>&lt;unistd.h&gt;</b></i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

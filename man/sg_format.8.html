@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SG_FORMAT(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SG_FORMAT(8)</td>
+<td class="head-vol">
+SG3_UTILS</td>
+<td class="head-rtitle">
+SG_FORMAT(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sg_format - format, resize or modify protection information of a SCSI disk</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>sg_format</b> [ <i>--cmplst=</i>{0|1}] [<i>--count=COUNT</i>] [<i>--dcrt</i>] [ <i>--early</i>] [<i>--fmtpinfo=FPI</i>] [<i>--format</i>] [ <i>--help</i>] [<i>--ip_def</i>] [<i>--long</i>] [<i>--mode=MP</i>] [ <i>--pfu=PFU</i>] [<i>--pie=PIE</i>] [<i>--pinfo</i>] [<i>--poll=PT</i>] [ <i>--resize</i>] [<i>--rto_req</i>] [<i>--security</i>] [<i>--six</i>] [ <i>--size=SIZE</i>] [<i>--verbose</i>] [<i>--version</i>] [ <i>--wait</i>] <i>DEVICE</i></div>
+<div class="section">
+<h1>DESCRIPTION</h1> Not all SCSI direct access devices need to be formatted and some have vendor specific formatting procedures. SCSI disks with rotating media are probably the largest group that do support a 'standard' format operation. They are typically factory formatted to a block size of 512 bytes with the largest number of blocks that the manufacturer recommends. The manufacturer's recommendation typically leaves aside a certain number of tracks, spread across the media, for reassignment of blocks to logical block addresses during the life of the disk.<div class="spacer">
+</div>
+This utility can format modern SCSI disks and potentially change their block size (if permitted) and the block count (i.e. number of accessible blocks on the media also known as &quot;resizing&quot;). Resizing a disk to less than the manufacturer's recommended block count is sometimes called &quot;short stroking&quot; (see NOTES section). Resizing the block count while not changing the block size may not require a format operation. The SBC-2 standard (see www.t10.org) has obsoleted the &quot;format device&quot; mode page. Many of the low level details found in that mode page are now left up to the discretion of the manufacturer.<div class="spacer">
+</div>
+When this utility is used without options (i.e. it is only given a DEVICE argument) it prints out the existing block size and block count derived from two sources. These two sources are a block descriptor in the response to a MODE SENSE command and the response to a READ CAPACITY command. The reason for this double check is to detect a &quot;format corrupt&quot; state (see NOTES section). This usage will not modify the disk.<div class="spacer">
+</div>
+When this utility is used with the &quot;--format&quot; (or &quot;-F&quot;) option it will attempt to format the given DEVICE. There is a 15 second pause during which time the user is invited thrice (5 seconds apart) to abort sg_format. This occurs just prior the SCSI FORMAT UNIT command being issued. See the NOTES section for more information.<div class="spacer">
+</div>
+Protection information is optional and is made up of one or more protection intervals, each made up of 8 bytes associated with each logical block. Four protection types are defined with protection type 0 being no protection intervals. See the PROTECTION INFORMATION section below for more information.</div>
+<div class="section">
+<h1>OPTIONS</h1> Arguments to long options are mandatory for short options as well. The options are arranged in alphabetical order based on the long option name.<dl>
+<dt>
+<b>-C</b>, <b>--cmplst</b>={0|1}</dt>
+<dd>
+sets the CMPLST (&quot;complete list&quot;) bit in the FORMAT UNIT cdb to 0 or 1. The default is 1 in which case the existing GLIST (grown list) is ignored. If the value is 0 then the existing GLIST is taken into account. See the LISTS section below. In most cases this bit should be left set; some MO disk drives need this bit cleared.</dd>
+</dl>
+<dl>
+<dt>
+<b>-c</b>, <b>--count</b>=<i>COUNT</i></dt>
+<dd>
+where <i>COUNT</i> is the number of blocks to be formatted or media to be resized to. Can be used with either  <i>--format</i> or <i>--resize</i>. With  <i>--format</i> this option need not be given in which case it is assumed to be zero. With  <i>--format</i> the interpretation of <i>COUNT</i> is:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  (<i>COUNT</i> &gt; 0) : only format the first <i>COUNT</i> blocks and READ<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+                CAPACITY will report <i>COUNT</i> blocks after format<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  (<i>COUNT</i> = 0) and block size unchanged : use existing block count<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  (<i>COUNT</i> = 0) and block size changed : recommended maximum block<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+                                       count for new block size<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  (<i>COUNT</i> = -1) : use recommended maximum block count<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  (<i>COUNT</i> &lt; -1) : illegal<div style="height: 0.00em;">
+&#160;</div>
+With <i>--resize</i> this option must be given and <i>COUNT</i> has this interpretation:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  (<i>COUNT</i> &gt; 0) : after resize READ CAPACITY will report <i>COUNT</i><div style="height: 0.00em;">
+&#160;</div>
+<br/>
+                blocks<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  (<i>COUNT</i> = 0) : after resize READ CAPACITY will report 0 blocks<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  (<i>COUNT</i> = -1) : after resize READ CAPACITY will report its<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+                 maximum number of blocks<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  (<i>COUNT</i> &lt; -1) : illegal<div style="height: 0.00em;">
+&#160;</div>
+In both cases if the given <i>COUNT</i> exceeds the maximum number of blocks (for the block size) then the disk reports an error. See NOTES section below.</dd>
+</dl>
+<dl>
+<dt>
+<b>-D</b>, <b>--dcrt</b></dt>
+<dd>
+this option sets the DCRT bit in the FORMAT UNIT command's parameter list header. It will &quot;disable certification&quot;. Certification verifies that blocks are usable during the format process. Using this option may speed the format. The default action of this utility (i.e. when this option is not given) is to clear the DCRT bit thereby requesting &quot;media certification&quot;. When the DCRT bit is set, the FOV bit must also be set hence sg_format does that.</dd>
+</dl>
+<dl>
+<dt>
+<b>-e</b>, <b>--early</b></dt>
+<dd>
+during a format operation, The default action of this utility is to poll the disk every 60 seconds to determine the progress of the format operation until it is finished. When this option is given this utility will exit &quot;early&quot;, that is as soon as the format operation has commenced. Then the user can monitor the progress of the ongoing format operation with other utilities (e.g. sg_turs(8) or sg_requests(8)). This option and  <i>--wait</i> are mutually exclusive.</dd>
+</dl>
+<dl>
+<dt>
+<b>-f</b>, <b>--fmtpinfo</b>=<i>FPI</i></dt>
+<dd>
+sets the FMTPINFO field in the FORMAT UNIT cdb to a value between 0 and 3. The default value is 0. The FMTPINFO field from SBC-3 revision 16 is a 2 bit field (bits 7 and 6 of byte 1 in the cdb). Prior to that it was a single bit field (bit 7 of byte 1 in the cdb) and there was an accompanying bit called RTO_REQ (bit 6 of byte 1 in the cdb). The deprecated options &quot;--pinfo&quot; and &quot;--rto-req&quot; represent the older usage. This option should be used in their place. See the PROTECTION INFORMATION section below for more information.</dd>
+</dl>
+<dl>
+<dt>
+<b>-F</b>, <b>--format</b></dt>
+<dd>
+issue a SCSI FORMAT UNIT command. <b>This will destroy all the data held on the media.</b> This option is required to change the block size of a disk. The user is given a 15 second count down to ponder the wisdom of doing this, during which time control-C (amongst other Unix commands) can be used to kill this process before it does any damage.<div style="height: 0.00em;">
+&#160;</div>
+When used three times (or more) the preliminary MODE SENSE and SELECT commands are bypassed, leaving only the initial INQUIRY and FORMAT UNIT commands. This is for emergency use (e.g. when the MODE SENSE/SELECT commands are not working) and cannot change the logical block size.<div style="height: 0.00em;">
+&#160;</div>
+See NOTES section for implementation details and EXAMPLES section for typical use.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>, <b>--help</b></dt>
+<dd>
+print out the usage information then exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-I</b>, <b>--ip_def</b></dt>
+<dd>
+sets the default Initialization Pattern. Some disks (SSDs) use this to flag that a format should fully provision (i.e. associate a physical block with every logical block). The same disks (SSDs) might thin provision if this option is not given. If this option is given then the  <i>--security</i> option cannot be given.</dd>
+</dl>
+<dl>
+<dt>
+<b>-l</b>, <b>--long</b></dt>
+<dd>
+the default action of this utility is to assume 32 bit logical block addresses. With 512 byte block size this permits more than 2 terabytes (almost 2 ** 41 bytes) on a single disk. This option selects commands and parameters that allow for 64 bit logical block addresses. Specifically this option sets the &quot;longlba&quot; flag in the MODE SENSE (10) command and uses READ CAPACITY (16) rather than READ CAPACITY (10). If this option is not given and READ CAPACITY (10) or MODE SELECT detects a disk the needs more than 32 bits to represent its logical blocks then it is set internally. This option does not set the LONGLIST bit in the FORMAT UNIT command. The LONGLIST bit is set as required depending other parameters (e.g. when '--pie=PIE' is greater than zero).</dd>
+</dl>
+<dl>
+<dt>
+<b>-M</b>, <b>--mode</b>=<i>MP</i></dt>
+<dd>
+<i>MP</i> is a mode page number (0 to 62 inclusive) that will be used for reading and perhaps changing the device logical block size. The default is 1 which is the Read-Write Error Recovery mode page.</dd>
+</dl>
+<dl>
+<dt>
+<b>-P</b>, <b>--pfu</b>=<i>PFU</i></dt>
+<dd>
+sets the &quot;Protection Field Usage&quot; field in the parameter block associated with a FORMAT UNIT command to  <i>PFU</i>. The default value is 0, the only other defined value currently is 1. See the PROTECTION INFORMATION section below for more information.</dd>
+</dl>
+<dl>
+<dt>
+<b>-q</b>, <b>--pie</b>=<i>PIE</i></dt>
+<dd>
+sets the &quot;Protection Interval Exponent&quot; field in the parameter block associated with a FORMAT UNIT command to  <i>PIE</i>. The default value is 0.  <i>PIE</i> can only be non-zero with protection types 2 and 3. The value of 0 is typical for 512 byte blocks; with 4096 byte blocks a value of 3 may be appropriate (i.e. 8 protection intervals interleaved with 4096 bytes of user data). A device may not support any non-zero values. This field first appeared in SBC-3 revision 18.</dd>
+</dl>
+<dl>
+<dt>
+<b>-p</b>, <b>--pinfo</b></dt>
+<dd>
+this option is deprecated, use the <i>--fmtpinfo=FPI</i> option instead. If used, then it sets bit 7 of byte 1 in the FORMAT UNIT cdb and that is equivalent to setting  <i>--fmtpinfo=2</i>. [So if <i>--pinfo</i> is used (plus  <i>--fmtpinfo=FPI</i> and <i>--pfu=PFU</i> are not given or their arguments are 0) then protection type 1 is selected.]</dd>
+</dl>
+<dl>
+<dt>
+<b>-x</b>, <b>--poll</b>=<i>PT</i></dt>
+<dd>
+where <i>PT</i> is the type of poll used. If <i>PT</i> is 0 then a TEST UNIT READY command is used, otherwise a REQUEST SENSE command is used. The default is currently 0 but this will change to 1 in the near future. See the NOTES sections below.</dd>
+</dl>
+<dl>
+<dt>
+<b>-r</b>, <b>--resize</b></dt>
+<dd>
+rather than format the disk, it can be resized. This means changing the number of blocks on the device reported by the READ CAPACITY command. This option should be used with the  <i>--count=COUNT</i> option. The contents of all logical blocks on the media remain unchanged when this option is used. This means that any resize operation can be reversed. This option cannot be used together with either  <i>--format</i> or a  <i>--size=SIZE</i> whose argument is different to the existing block size.</dd>
+</dl>
+<dl>
+<dt>
+<b>-R</b>, <b>--rto_req</b></dt>
+<dd>
+The option is deprecated, use the <i>--fmtpinfo=FPI</i> option instead. If used, then it sets bit 6 of byte 1 in the FORMAT UNIT cdb.</dd>
+</dl>
+<dl>
+<dt>
+<b>-S</b>, <b>--security</b></dt>
+<dd>
+sets the &quot;Security Initialization&quot; (SI) bit in the FORMAT UNIT command's initialization pattern descriptor within the parameter list. According to SBC-3 the default initialization pattern &quot;shall be written using a security erasure write technique&quot;. See the NOTES section on the SCSI SANITIZE command. If this option is given then the  <i>--ip_def</i> option cannot be given.</dd>
+</dl>
+<dl>
+<dt>
+<b>-6</b>, <b>--six</b></dt>
+<dd>
+Use 6 byte variants of MODE SENSE and MODE SELECT. The default action is to use the 10 byte variants. Some MO drives need this option set when doing a format.</dd>
+</dl>
+<dl>
+<dt>
+<b>-s</b>, <b>--size</b>=<i>SIZE</i></dt>
+<dd>
+where <i>SIZE</i> is the block size (i.e. number of bytes in each block) to format the device to. The default value is whatever is currently reported by the block descriptor in a MODE SENSE command. If the block size given by this option is different from the current value then a MODE SELECT command is used to change it prior to the FORMAT UNIT command being started (as recommended in the draft standard). Many SCSI disks have 512 byte sectors by default and allow up to 16 bytes extra in a sector (i.e. 528 byte sectors).  If the given size in unacceptable with the disk, most likely an &quot;Invalid field in parameter list&quot; message will appear in sense data (requires the use of '-v' to decode sense data).</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b>, <b>--verbose</b></dt>
+<dd>
+increase the level of verbosity, (i.e. debug output). &quot;-vvv&quot; gives a lot more debug output.</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>, <b>--version</b></dt>
+<dd>
+print the version string and then exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-w</b>, <b>--wait</b></dt>
+<dd>
+the default format action is to set the &quot;IMMED&quot; bit in the FORMAT UNIT command's (short) parameter header. If this option (i.e.  <i>--wait</i>) is given then the &quot;IMMED&quot; bit is not set. If  <i>--wait</i> is given the FORMAT UNIT command waits until the format operation completes before returning its response. This can be many hours on large disks. This utility sets a 15 hour timeout on such a FORMAT UNIT command! Some recent SSDs go to the other extreme of completing a format operation in 1.5 seconds hence waiting is not an issue.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>LISTS</h1> The SBC-3 draft (revision 36) defines PLIST, CLIST, DLIST and GLIST in section 4.13 on &quot;Medium defects&quot;. Briefly, the PLIST is the &quot;primary&quot; list of manufacturer detected defects, the CLIST (&quot;certification&quot; list) contains those detected during the format operation, the DLIST is a list of defects that can be given to the format operation. The GLIST is the grown list which starts in the format process as CLIST+DLIST and can &quot;grow&quot; later due to automatic reallocation (see the ARRE and AWRE bits in the Read-Write Error Recovery mode page (see sdparm(8))) and use of the SCSI REASSIGN BLOCKS command (see sg_reassign(8)).<div class="spacer">
+</div>
+The CMPLST bit (controlled by the <i>--cmplst=</i>0|1 option) determines whether the existing GLIST, when the format operation is invoked, is taken into account. The sg_format utility sets the FOV bit to zero which causes DPRY=0, so the PLIST is taken into account, and DCRT=0, so the CLIST is generated and used during the format process.<div class="spacer">
+</div>
+The sg_format utility does not permit a user to provide a defect list (i.e. DLIST).</div>
+<div class="section">
+<h1>PROTECTION INFORMATION</h1> Protection Information (PI) is additional information held with logical blocks so that an application and/or host bus adapter can check the correctness of those logical blocks. PI is placed in one or more protection intervals beside each logical block. A protection interval contains 8 bytes made up of a 2 byte &quot;logical block guard&quot; (CRC), a 2 byte &quot;logical block application guard&quot;, and a 4 byte &quot;logical block reference tag&quot;. Devices with 512 byte logical block size typically have one protection interval appended, making its logical block data 520 bytes long. Devices with 4096 byte logical block size often have 8 protection intervals spread across its logical block data for a total size of 4160 bytes. Note that for all other purposes the logical block size is considered to be 512 and 4096 bytes respectively.<div class="spacer">
+</div>
+SBC-3 drafts have added several &quot;protection types&quot; to the PI introduced in the SBC-2 standard. SBC-3 defines 4 protection types (types 0 to 3) with protection type 0 meaning no PI is maintained. While a device may support one or more protection types, it can only be formatted with 1 of the 4. To change a device's protection type, it must be re-formatted. For more information see the Protection Information in section 4.22 of draft SBC-3 revision 36.<div class="spacer">
+</div>
+A device that supports PI information (i.e. supports one or more protection types 1, 2 and 3) sets the &quot;PROTECT&quot; bit in its standard INQUIRY response. It also sets the SPT field in the EXTENDED INQUIRY VPD page response to indicate which protection types it supports. Given PROTECT=1 then SPT=0 implies the device supports PI type 1 only, SPT=1 implies the device supports PI types 1 and 2, and various other non-obvious mappings up to SPT=7 which implies protection types 1, 2 and 3 are supported. The <b>current</b> protection type of a disk can be found in the &quot;P_TYPE&quot; and &quot;PROT_EN&quot; fields in the response of a READ CAPACITY (16) command (e.g. with the 'sg_readcap --long' utility).<div class="spacer">
+</div>
+Given that a device supports a particular protection type, a user can then choose to format that disk with that protection type by setting the &quot;FMTPINFO&quot; and &quot;Protection Field Usage&quot; fields in the FORMAT UNIT command. Those fields correspond to the  <i>--fmtpinfo=FPI</i> and the  <i>--pfu=PFU</i> options in this utility. The list below shows the four protection types followed by the options of this utility needed to select them:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  <b>0</b> : --fmtpinfo=0 --pfu=0<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  <b>1</b> : --fmtpinfo=2 --pfu=0<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  <b>2</b> : --fmtpinfo=3 --pfu=0<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+  <b>3</b> : --fmtpinfo=3 --pfu=1<div style="height: 0.00em;">
+&#160;</div>
+The default value of <i>FPI</i> (in <i>--fmtpinfo=FPI</i>) is 0 and the default value of  <i>PFU</i> (in <i>--pfu=PFU</i>) is 0. So if neither  <i>--fmtpinfo=FPI</i> nor <i>--pfu=PFU</i> are given then protection type 0 (i.e. no protection information) is chosen.</div>
+<div class="section">
+<h1>NOTES</h1> The SBC-2 standard states that the REQUEST SENSE command should be used for obtaining progress indication when the format command is underway. However, tests on a selection of disks shows that TEST UNIT READY commands yield progress indications (but not REQUEST SENSE commands). So the current version of this utility defaults to using TEST UNIT READY commands to poll the disk to find out the progress of the format. The  <i>--poll=PT</i> option has been added to control this.<div class="spacer">
+</div>
+When the <i>--format</i> option is given without the <i>--wait</i> option then the SCSI FORMAT UNIT command is issued with the IMMED bit set which causes the SCSI command to return after it has started the format operation. The  <i>--early</i> option will cause sg_format to exit at that point. Otherwise the  <i>DEVICE</i> is polled every 60 seconds with TEST UNIT READY or REQUEST SENSE commands until it reports an &quot;all clear&quot; (i.e. the format operation has completed). Normally these polling commands will result in a progress indicator (expressed as a percentage) being output to the screen. If the user gets bored watching the progress report then sg_format process can be terminated (e.g. with control-C) without affecting the format operation which continues. However a target or device reset (or a power cycle) will probably cause the device to become &quot;format corrupt&quot;.<div class="spacer">
+</div>
+When the <i>--format</i> and <i>--wait</i> options are both given then this utility may take a long time to return. In this case care should be taken not to send any other SCSI commands to the disk as it may not respond leaving those commands queued behind the active format command. This may cause a timeout in the OS driver (in a lot shorter period than 15 hours applicable to some format operations). This may result in the OS resetting the disk leaving the format operation incomplete. This may leave the disk in a &quot;format corrupt&quot; state requiring another format to remedy the situation.<div class="spacer">
+</div>
+When the block size (i.e. the number of bytes in each block) is changed on a disk two SCSI commands must be sent: a MODE SELECT to change the block size followed by a FORMAT command. If the MODE SELECT command succeeds and the FORMAT fails then the disk may be in a state that the draft standard calls &quot;format corrupt&quot;. A block descriptor in a subsequent MODE SENSE will report the requested new block size while a READ CAPACITY command will report the existing (i.e. different) block size. Alternatively the READ CAPACITY command may fail, reporting the device is not ready, potentially requiring a format. The solution to this situation is to do a format again (and this time the new block size does not have to be given) or change the block size back to the original size.<div class="spacer">
+</div>
+The SBC-2 standard states that the block count can be set back to the manufacturer's maximum recommended value in a format or resize operation. This can be done by placing an address of 0xffffffff (or the 64 bit equivalent) in the appropriate block descriptor field to a MODE SELECT command. In signed (two's complement) arithmetic that value corresponds to the manufacturer's maximum recommended value. To see exactly which SCSI commands are being executed and parameters passed add the &quot;-vvv&quot; option to the sg_format command line.<div class="spacer">
+</div>
+Short stroking is a technique to trade off capacity for performance. Rotating disk performance is usually highest on the outer tracks (i.e. lower logical block addresses) so by resizing or reformatting a disk to a smaller capacity, average performance will usually be increased.<div class="spacer">
+</div>
+Other utilities may be useful in finding information associated with formatting. These include sg_inq(8) to fetch standard INQUIRY information (e.g. the PROTECT bit) and to fetch the EXTENDED INQUIRY VPD page (e.g. RTO and GRD_CHK bits). The sdparm(8) utility can be used to access and potentially change the now obsolete format mode page.<div class="spacer">
+</div>
+scsiformat is another utility available for formatting SCSI disks with Linux. It dates from 1997 (most recent update) and may be useful for disks whose firmware is of that vintage.<div class="spacer">
+</div>
+The <i>COUNT</i> numeric argument may include a multiplicative suffix or be given in hexadecimal. See the &quot;NUMERIC ARGUMENTS&quot; section in the sg3_utils(8) man page.<div class="spacer">
+</div>
+The SCSI SANITIZE command was introduced in SBC-3 revision 27. It is closely related to the ATA sanitize disk feature set and can be used to remove all existing data from a disk. Sanitize is more likely to be implemented on modern disks (including SSDs) than FORMAT UNIT's security initialization feature (see the  <i>--security</i> option) and in some cases much faster.<div class="spacer">
+</div>
+SSDs that support thin provisioning will typically unmap all logical blocks during a format. The reason is to improve the SSD's endurance. Also thin provisioned formats typically complete faster than fully provisioned ones on the same disk (see the  <i>--ip_def</i> option). In either case format operations on SSDs tend to be a lot faster than they are on hard disks with spinning media.</div>
+<div class="section">
+<h1>EXAMPLES</h1> These examples use Linux device names. For suitable device names in other supported Operating Systems see the sg3_utils(8) man page.<div class="spacer">
+</div>
+In the first example below simply find out the existing block count and size derived from two sources: a block descriptor in a MODE SELECT command response and from the response of a READ CAPACITY commands. No changes are made:<div class="spacer">
+</div>
+<br/>
+   # sg_format /dev/sdm<div class="spacer">
+</div>
+Now a simple format, leaving the block count and size as they were previously. The FORMAT UNIT command is executed in IMMED mode and the device is polled every 60 seconds to print out a progress indication:<div class="spacer">
+</div>
+<br/>
+   # sg_format --format /dev/sdm<div class="spacer">
+</div>
+Now the same format, but waiting (passively) until the format operation is complete:<div class="spacer">
+</div>
+<br/>
+   # sg_format --format --wait /dev/sdm<div class="spacer">
+</div>
+Next is a format in which the block size is changed to 520 bytes and the block count is set to the manufacturer's maximum value (for that block size). Note, not all disks support changing the block size:<div class="spacer">
+</div>
+<br/>
+   # sg_format --format --size=520 /dev/sdm<div class="spacer">
+</div>
+Now a resize operation so that only the first 0x10000 (65536) blocks on a disk are accessible. The remaining blocks remain unaltered.<div class="spacer">
+</div>
+<br/>
+   # sg_format --resize --count=0x10000 /dev/sdm<div class="spacer">
+</div>
+Now resize the disk back to its normal (maximum) block count:<div class="spacer">
+</div>
+<br/>
+   # sg_format --resize --count=-1 /dev/sdm<div class="spacer">
+</div>
+One reason to format a SCSI disk is to add protection information. First check which protection types are supported by a disk (by checking the SPT field in the Extended inquiry VPD page together with the Protect bit in the standard inquiry response):<div class="spacer">
+</div>
+<br/>
+   # sg_vpd -p ei -l /dev/sdb<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   extended INQUIRY data VPD page:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+     ACTIVATE_MICROCODE=0<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+     SPT=1 [protection types 1 and 2 supported]<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+     ....<div class="spacer">
+</div>
+Format with type 1 protection:<div class="spacer">
+</div>
+<br/>
+   # sg_format --format --fmtpinfo=2 /dev/sdm<div class="spacer">
+</div>
+After a successful format with type 1 protection, READ CAPACITY(16) should show something like this:<div class="spacer">
+</div>
+<br/>
+   # sg_readcap -l /dev/sdm<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   Read Capacity results:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+      Protection: prot_en=1, p_type=0, p_i_exponent=0 [type 1 protection]<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+      Logical block provisioning: lbpme=0, lbprz=0<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+      ....<div class="spacer">
+</div>
+To format with type 3 protection:<div class="spacer">
+</div>
+<br/>
+   # sg_format --format --fmtpinfo=3 --pfu=1 /dev/sdm<div class="spacer">
+</div>
+For the disk shown above this will probably fail because the Extended inquiry VPD page showed only types 1 and 2 protection are supported.</div>
+<div class="section">
+<h1>EXIT STATUS</h1> The exit status of sg_format is 0 when it is successful. Otherwise see the sg3_utils(8) man page. Unless the  <i>--wait</i> option is given, the exit status may not reflect the success of otherwise of the format. Using sg_turs(8) and sg_readcap(8) after the format operation may be wise.</div>
+<div class="section">
+<h1>AUTHORS</h1> Written by Grant Grundler, James Bottomley and Douglas Gilbert.</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Report bugs to &lt;dgilbert at interlog dot com&gt;.</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright &#169; 2005-2014 Grant Grundler, James Bottomley and Douglas Gilbert<div style="height: 0.00em;">
+&#160;</div>
+This software is distributed under the GPL version 2. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>sg_turs(8), sg_requests(8), sg_inq(8), sg_modes(8), sg_vpd(8),</b> <b>sg_reassign(8), sg_readcap(8), sg3_utils(8),</b> <b>sg_sanitize(8) [all in sg3_utils],</b> <b>sdparm(8), scsiformat (old), hdparm(8)</b></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+July 2014</td>
+<td class="foot-os">
+sg3_utils-1.40</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

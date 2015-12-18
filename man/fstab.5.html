@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+FSTAB(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+FSTAB(5)</td>
+<td class="head-vol">
+File Formats</td>
+<td class="head-rtitle">
+FSTAB(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> fstab - static information about the filesystems</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>/etc/fstab</b></div>
+<div class="section">
+<h1>DESCRIPTION</h1> The file <b>fstab</b> contains descriptive information about the filesystems the system can mount. <b>fstab</b> is only read by programs, and not written; it is the duty of the system administrator to properly create and maintain this file.  The order of records in <b>fstab</b> is important because <b>fsck</b>(8), <b>mount</b>(8), and <b>umount</b>(8) sequentially iterate through <b>fstab</b> doing their thing.<div style="height: 1.00em;">
+&#160;</div>
+Each filesystem is described on a separate line. Fields on each line are separated by tabs or spaces. Lines starting with '#' are comments.  Blank lines are ignored.<div class="spacer">
+</div>
+The following is a typical example of an <b>fstab</b> entry:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 7.00ex;">
+LABEL=t-home2   /home      ext4    defaults,auto_da_alloc      0  2</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>The first field</b> (<i>fs_spec</i>).<div style="margin-left: 5.00ex;">
+This field describes the block special device or remote filesystem to be mounted.<div class="spacer">
+</div>
+For ordinary mounts, it will hold (a link to) a block special device node (as created by <b>mknod</b>(8)) for the device to be mounted, like `/dev/cdrom' or `/dev/sdb7'. For NFS mounts, this field is &lt;host&gt;:&lt;dir&gt;, e.g., `knuth.aeb.nl:/'. For filesystems with no storage, any string can be used, and will show up in <b>df</b>(1) output, for example.  Typical usage is `proc' for procfs; `mem', `none', or `tmpfs' for tmpfs.  Other special filesystems, like udev and sysfs, are typically not listed in <b>fstab</b>.<div class="spacer">
+</div>
+LABEL=&lt;label&gt; or UUID=&lt;uuid&gt; may be given instead of a device name. This is the recommended method, as device names are often a coincidence of hardware detection order, and can change when other disks are added or removed. For example, `LABEL=Boot' or `UUID=3e6be9de-8139-11d1-9106-a43f08d823a6'. (Use a filesystem-specific tool like <b>e2label</b>(8), <b>xfs_admin</b>(8), or <b>fatlabel</b>(8) to set LABELs on filesystems).<div style="height: 1.00em;">
+&#160;</div>
+It's also possible to use PARTUUID= and PARTLABEL=. These partitions identifiers are supported for example for GUID Partition Table (GPT).<div style="height: 1.00em;">
+&#160;</div>
+See <b>mount</b>(8), <b>blkid</b>(8) or <b>lsblk</b>(8) for more details about device identifiers.<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+Note that <b>mount</b>(8) uses UUIDs as strings. The string representation of the UUID should be based on lower case characters.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>The second field</b> (<i>fs_file</i>).<div style="margin-left: 5.00ex;">
+This field describes the mount point for the filesystem.  For swap partitions, this field should be specified as `none'. If the name of the mount point contains spaces these can be escaped as `\040'.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>The third field</b> (<i>fs_vfstype</i>).<div style="margin-left: 5.00ex;">
+This field describes the type of the filesystem.  Linux supports many filesystem types: ext4, xfs, btrfs, f2fs, vfat, ntfs, hfsplus, tmpfs, sysfs, proc, iso9660, udf, squashfs, nfs, cifs, and many more. For more details, see <b>mount</b>(8).<div style="height: 1.00em;">
+&#160;</div>
+An entry <i>swap</i> denotes a file or partition to be used for swapping, cf. <b>swapon</b>(8). An entry <i>none</i> is useful for bind or move mounts.<div style="height: 1.00em;">
+&#160;</div>
+More than one type may be specified in a comma-separated list.<div style="height: 1.00em;">
+&#160;</div>
+<b>mount</b>(8) and <b>umount</b>(8) support filesystem <i>subtypes</i>. The subtype is defined by '.subtype' suffix.  For example 'fuse.sshfs'. It's recommended to use subtype notation rather than add any prefix to the first fstab field (for example 'sshfs#example.com' is deprecated).</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>The fourth field</b> (<i>fs_mntops</i>).<div style="margin-left: 5.00ex;">
+This field describes the mount options associated with the filesystem.<div style="height: 1.00em;">
+&#160;</div>
+It is formatted as a comma-separated list of options. It contains at least the type of mount (<b>ro</b> or <b>rw</b>), plus any additional options appropriate to the filesystem type (including performance-tuning options). For details, see <b>mount</b>(8) or <b>swapon</b>(8).<div style="height: 1.00em;">
+&#160;</div>
+Basic filesystem-independent options are:<dl>
+<dt>
+<b>defaults</b></dt>
+<dd>
+use default options: rw, suid, dev, exec, auto, nouser, and async.</dd>
+</dl>
+<dl>
+<dt>
+<b>noauto</b></dt>
+<dd>
+do not mount when &quot;mount -a&quot; is given (e.g., at boot time)</dd>
+</dl>
+<dl>
+<dt>
+<b>user</b></dt>
+<dd>
+allow a user to mount</dd>
+</dl>
+<dl>
+<dt>
+<b>owner</b></dt>
+<dd>
+allow device owner to mount</dd>
+</dl>
+<dl>
+<dt>
+<b>comment</b></dt>
+<dd>
+or <b>x-&lt;name&gt;</b> for use by fstab-maintaining programs</dd>
+</dl>
+<dl>
+<dt>
+<b>nofail</b></dt>
+<dd>
+do not report errors for this device if it does not exist.</dd>
+</dl>
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>The fifth field</b> (<i>fs_freq</i>).<div style="margin-left: 5.00ex;">
+This field is used by <b>dump</b>(8) to determine which filesystems need to be dumped. Defaults to zero (don't dump) if not present.</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>The sixth field</b> (<i>fs_passno</i>).<div style="margin-left: 5.00ex;">
+This field is used by <b>fsck</b>(8) to determine the order in which filesystem checks are done at boot time.  The root filesystem should be specified with a <i>fs_passno</i> of 1.  Other filesystems should have a <i>fs_passno</i> of 2.  Filesystems within a drive will be checked sequentially, but filesystems on different drives will be checked at the same time to utilize parallelism available in the hardware. Defaults to zero (don't fsck) if not present.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+</div>
+<div class="section">
+<h1>NOTES</h1> The proper way to read records from <b>fstab</b> is to use the routines <b>getmntent</b>(3) or <b>libmount</b>.<div style="height: 1.00em;">
+&#160;</div>
+The keyword <b>ignore</b> as a filesystem type (3rd field) is no longer supported by the pure libmount based mount utility (since util-linux v2.22).<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>FILES</h1> <i>/etc/fstab</i>, <i>&lt;fstab.h&gt;</i></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>findmnt</b>(8), <b>mount</b>(8), <b>swapon</b>(8), <b>fs</b>(5), <b>getmntent</b>(3)</div>
+<div class="section">
+<h1>HISTORY</h1> The ancestor of this <b>fstab</b> file format appeared in 4.0BSD.</div>
+<div class="section">
+<h1>AVAILABILITY</h1> This man page is part of the util-linux package and is available from ftp://ftp.kernel.org/pub/linux/utils/util-linux/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+February 2015</td>
+<td class="foot-os">
+util-linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

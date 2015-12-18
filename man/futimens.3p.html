@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+FUTIMENS(3P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+FUTIMENS(3P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+FUTIMENS(3P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> futimens, utimensat, utimes &#8212; set file access and modification times</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;sys/stat.h&gt;<div class="spacer">
+</div>
+int futimens(int <i>fd</i>, const struct timespec <i>times</i>[2]);<br/>
+int utimensat(int <i>fd</i>, const char *<i>path</i>, const struct timespec <i>times</i>[2],<br/>
+    int <i>flag</i>);<div class="spacer">
+</div>
+#include &lt;sys/time.h&gt;<div class="spacer">
+</div>
+int utimes(const char *<i>path</i>, const struct timeval <i>times</i>[2]);<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <i>futimens</i>() and  <i>utimensat</i>() functions shall set the access and modification times of a file to the values of the <i>times</i> argument. The  <i>futimens</i>() function changes the times of the file associated with the file descriptor <i>fd</i>. The  <i>utimensat</i>() function changes the times of the file pointed to by the <i>path</i> argument, relative to the directory associated with the file descriptor <i>fd</i>. Both functions allow time specifications accurate to the nanosecond.<div class="spacer">
+</div>
+For  <i>futimens</i>() and  <i>utimensat</i>(), the <i>times</i> argument is an array of two <b>timespec</b> structures. The first array member represents the date and time of last access, and the second member represents the date and time of last modification. The times in the <b>timespec</b> structure are measured in seconds and nanoseconds since the Epoch. The file's relevant timestamp shall be set to the greatest value supported by the file system that is not greater than the specified time.<div class="spacer">
+</div>
+If the <i>tv_nsec</i> field of a <b>timespec</b> structure has the special value UTIME_NOW, the file's relevant timestamp shall be set to the greatest value supported by the file system that is not greater than the current time. If the <i>tv_nsec</i> field has the special value UTIME_OMIT, the file's relevant timestamp shall not be changed. In either case, the <i>tv_sec</i> field shall be ignored.<div class="spacer">
+</div>
+If the <i>times</i> argument is a null pointer, both the access and modification timestamps shall be set to the greatest value supported by the file system that is not greater than the current time. If  <i>utimensat</i>() is passed a relative path in the <i>path</i> argument, the file to be used shall be relative to the directory associated with the file descriptor <i>fd</i> instead of the current working directory. If the file descriptor was opened without O_SEARCH, the function shall check whether directory searches are permitted using the current permissions of the directory underlying the file descriptor. If the file descriptor was opened with O_SEARCH, the function shall not perform the check.<div class="spacer">
+</div>
+If  <i>utimensat</i>() is passed the special value AT_FDCWD in the <i>fd</i> parameter, the current working directory shall be used.<div class="spacer">
+</div>
+Only a process with the effective user ID equal to the user ID of the file, or with write access to the file, or with appropriate privileges may use  <i>futimens</i>() or  <i>utimensat</i>() with a null pointer as the <i>times</i> argument or with both <i>tv_nsec</i> fields set to the special value UTIME_NOW. Only a process with the effective user ID equal to the user ID of the file or with appropriate privileges may use  <i>futimens</i>() or  <i>utimensat</i>() with a non-null <i>times</i> argument that does not have both <i>tv_nsec</i> fields set to UTIME_NOW and does not have both <i>tv_nsec</i> fields set to UTIME_OMIT. If both <i>tv_nsec</i> fields are set to UTIME_OMIT, no ownership or permissions check shall be performed for the file, but other error conditions may still be detected (including <b>[EACCES]</b> errors related to the path prefix).<div class="spacer">
+</div>
+Values for the <i>flag</i> argument of  <i>utimensat</i>() are constructed by a bitwise-inclusive OR of flags from the following list, defined in <i>&lt;fcntl.h&gt;</i>:<dl>
+<dt>
+AT_SYMLINK_NOFOLLOW</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+If <i>path</i> names a symbolic link, then the access and modification times of the symbolic link are changed.<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<div class="spacer">
+</div>
+Upon completion,  <i>futimens</i>() and  <i>utimensat</i>() shall mark the last file status change timestamp for update.<div class="spacer">
+</div>
+The  <i>utimes</i>() function shall be equivalent to the  <i>utimensat</i>() function with the special value AT_FDCWD as the <i>fd</i> argument and the <i>flag</i> argument set to zero, except that the <i>times</i> argument is a <b>timeval</b> structure rather than a <b>timespec</b> structure, and accuracy is only to the microsecond, not nanosecond, and rounding towards the nearest second may occur.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> Upon successful completion, these functions shall return 0. Otherwise, these functions shall return &#8722;1 and set <i>errno</i> to indicate the error. If &#8722;1 is returned, the file times shall not be affected.</div>
+<div class="section">
+<h1>ERRORS</h1> These functions shall fail if:<dl>
+<dt>
+<b>EACCES</b></dt>
+<dd>
+The <i>times</i> argument is a null pointer, or both <i>tv_nsec</i> values are UTIME_NOW, and the effective user ID of the process does not match the owner of the file and write access is denied.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+Either of the <i>times</i> argument structures specified a <i>tv_nsec</i> value that was neither UTIME_NOW nor UTIME_OMIT, and was a value less than zero or greater than or equal to 1000 million.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+A new file timestamp would be a value whose <i>tv_sec</i> component is not a value supported by the file system.</dd>
+</dl>
+<dl>
+<dt>
+<b>EPERM</b></dt>
+<dd>
+The <i>times</i> argument is not a null pointer, does not have both <i>tv_nsec</i> fields set to UTIME_NOW, does not have both <i>tv_nsec</i> fields set to UTIME_OMIT, the calling process' effective user ID does not match the owner of the file, and the calling process does not have appropriate privileges.</dd>
+</dl>
+<dl>
+<dt>
+<b>EROFS</b></dt>
+<dd>
+The file system containing the file is read-only.</dd>
+</dl>
+<div class="spacer">
+</div>
+The  <i>futimens</i>() function shall fail if:<dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+The <i>fd</i> argument is not a valid file descriptor.</dd>
+</dl>
+<div class="spacer">
+</div>
+The  <i>utimensat</i>() function shall fail if:<dl>
+<dt>
+<b>EACCES</b></dt>
+<dd>
+<i>fd</i> was not opened with O_SEARCH and the permissions of the directory underlying <i>fd</i> do not permit directory searches.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+The <i>path</i> argument does not specify an absolute path and the <i>fd</i> argument is neither AT_FDCWD nor a valid file descriptor open for reading or searching.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+The <i>path</i> argument is not an absolute path and <i>fd</i> is a file descriptor associated with a non-directory file.</dd>
+</dl>
+<div class="spacer">
+</div>
+The  <i>utimensat</i>() and  <i>utimes</i>() functions shall fail if:<dl>
+<dt>
+<b>EACCES</b></dt>
+<dd>
+Search permission is denied by a component of the path prefix.</dd>
+</dl>
+<dl>
+<dt>
+<b>ELOOP</b></dt>
+<dd>
+A loop exists in symbolic links encountered during resolution of the <i>path</i> argument.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENAMETOOLONG</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The length of a component of a pathname is longer than {NAME_MAX}.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOENT</b></dt>
+<dd>
+A component of <i>path</i> does not name an existing file or <i>path</i> is an empty string.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+A component of the path prefix names an existing file that is neither a directory nor a symbolic link to a directory, or the <i>path</i> argument contains at least one non-&lt;slash&gt; character and ends with one or more trailing &lt;slash&gt; characters and the last pathname component names an existing file that is neither a directory nor a symbolic link to a directory.</dd>
+</dl>
+<div class="spacer">
+</div>
+The  <i>utimensat</i>() and  <i>utimes</i>() functions may fail if:<dl>
+<dt>
+<b>ELOOP</b></dt>
+<dd>
+More than {SYMLOOP_MAX} symbolic links were encountered during resolution of the <i>path</i> argument.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENAMETOOLONG</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The length of a pathname exceeds {PATH_MAX}, or pathname resolution of a symbolic link produced an intermediate result with a length that exceeds {PATH_MAX}.</dd>
+</dl>
+<div class="spacer">
+</div>
+The  <i>utimensat</i>() function may fail if:<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+The value of the <i>flag</i> argument is not valid.</dd>
+</dl>
+<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>EXAMPLES</h1> None.</div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> None.</div>
+<div class="section">
+<h1>RATIONALE</h1> The purpose of the  <i>utimensat</i>() function is to set the access and modification time of files in directories other than the current working directory without exposure to race conditions. Any part of the path of a file could be changed in parallel to a call to  <i>utimes</i>(), resulting in unspecified behavior. By opening a file descriptor for the target directory and using the  <i>utimensat</i>() function it can be guaranteed that the changed file is located relative to the desired directory.<div class="spacer">
+</div>
+The standard developers considered including a special case for the permissions required by  <i>utimensat</i>() when one <i>tv_nsec</i> field is UTIME_NOW and the other is UTIME_OMIT. One possibility would be to include this case in with the cases where <i>times</i> is a null pointer or both fields are UTIME_NOW, where the call is allowed if the process has write permission for the file. However, associating write permission with an update to just the last data access timestamp (which is normally updated by  <i>read</i>()) did not seem appropriate. The other possibility would be to specify that this one case is allowed if the process has read permission, but this was felt to be too great a departure from the  <i>utime</i>() and  <i>utimes</i>() functions on which  <i>utimensat</i>() is based. If an application needs to set the last data access timestamp to the current time for a file on which it has read permission but is not the owner, it can do so by opening the file, reading one or more bytes (or reading a directory entry, if the file is a directory), and then closing it.</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> None.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i><i>read</i>()</i>, <i><i>utime</i>()</i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i><b>&lt;fcntl.h&gt;</b></i>, <i><b>&lt;sys_stat.h&gt;</b></i>, <i><b>&lt;sys_time.h&gt;</b></i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

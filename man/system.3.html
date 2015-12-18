@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SYSTEM(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SYSTEM(3)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+SYSTEM(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> system - execute a shell command</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;stdlib.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>int system(const char *</b><i>command</i><b>);</b><br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The <b>system</b>() library function uses <b>fork</b>(2) to create a child process that executes the shell command specified in <i>command</i> using <b>execl</b>(3) as follows:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    execl(&quot;/bin/sh&quot;, &quot;sh&quot;, &quot;-c&quot;, command, (char *) 0);<div style="height: 1.00em;">
+&#160;</div>
+<b>system</b>() returns after the command has been completed.<div style="height: 1.00em;">
+&#160;</div>
+During execution of the command, <b>SIGCHLD</b> will be blocked, and <b>SIGINT</b> and <b>SIGQUIT</b> will be ignored, in the process that calls <b>system</b>() (these signals will be handled according to their defaults inside the child process that executes <i>command</i>).<div style="height: 1.00em;">
+&#160;</div>
+If <i>command</i> is NULL, then <b>system</b>() returns a status indicating whether a shell is available on the system</div>
+<div class="section">
+<h1>RETURN VALUE</h1> The return value of <b>system</b>() is one of the following:<dl>
+<dt>
+*</dt>
+<dd>
+If <i>command</i> is NULL, then a nonzero value if a shell is available, or 0 if no shell is available.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+If a child process could not be created, or its status could not be retrieved, the return value is -1.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+If a shell could not be executed in the child process, then the return value is as though the child shell terminated by calling <b>_exit</b>(2) with the status 127.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+If all system calls succeed, then the return value is the termination status of the child shell used to execute <i>command</i>. (The termination status of a shell is the termination status of the last command it executes.)</dd>
+</dl>
+<div class="spacer">
+</div>
+In the last two cases, the return value is a &quot;wait status&quot; that can be examined using the macros described in <b>waitpid</b>(2). (i.e., <b>WIFEXITED</b>() <b>WEXITSTATUS</b>() and so on).<div class="spacer">
+</div>
+<b>system</b>() does not affect the wait status of any other children.</div>
+<div class="section">
+<h1>ATTRIBUTES</h1> For an explanation of the terms used in this section, see <b>attributes</b>(7).<table class="tbl">
+<col style="width: 9.00ex;"/>
+<col style="width: 13.00ex;"/>
+<col style="width: 5.00ex;"/>
+<tbody>
+<tr>
+<td>
+Interface</td>
+<td>
+Attribute</td>
+<td>
+Value</td>
+</tr>
+<tr>
+<td>
+system ()</td>
+<td>
+Thread safety</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section">
+<h1>CONFORMING TO</h1> POSIX.1-2001, POSIX.1-2008, C89, C99.</div>
+<div class="section">
+<h1>NOTES</h1> <b>system</b>() provides simplicity and convenience: it handles all of the details of calling <b>fork</b>(2), <b>execl</b>(3), and <b>waitpid</b>(2), as well as the necessary manipulations of signals; in addition, the shell performs the usual substitutions and I/O redirections for <i>command</i>. The main cost of <b>system</b>() is inefficiency: additional system calls are required to create the process that runs the shell and to execute the shell.<div style="height: 1.00em;">
+&#160;</div>
+If the <b>_XOPEN_SOURCE</b> feature test macro is defined (before including <i>any</i> header files), then the macros described in <b>waitpid</b>(2) (<b>WEXITSTATUS</b>(), etc.) are made available when including <i>&lt;stdlib.h&gt;</i>.<div class="spacer">
+</div>
+As mentioned, <b>system</b>() ignores <b>SIGINT</b> and <b>SIGQUIT</b>. This may make programs that call it from a loop uninterruptible, unless they take care themselves to check the exit status of the child. For example:<div style="height: 0.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+<br/>
+    while (something) {<br/>
+        int ret = system(&quot;foo&quot;);<div class="spacer">
+</div>
+<br/>
+        if (WIFSIGNALED(ret) &amp;&amp;<br/>
+            (WTERMSIG(ret) == SIGINT || WTERMSIG(ret) == SIGQUIT))<br/>
+                break;<br/>
+    }<br/>
+<div class="spacer">
+</div>
+Do not use <b>system</b>() from a program with set-user-ID or set-group-ID privileges, because strange values for some environment variables might be used to subvert system integrity. Use the <b>exec</b>(3) family of functions instead, but not <b>execlp</b>(3) or <b>execvp</b>(3). <b>system</b>() will not, in fact, work properly from programs with set-user-ID or set-group-ID privileges on systems on which <i>/bin/sh</i> is bash version 2, since bash 2 drops privileges on startup. (Debian uses a modified bash which does not do this when invoked as <b>sh</b>.)<div class="spacer">
+</div>
+In versions of glibc before 2.1.3, the check for the availability of <i>/bin/sh</i> was not actually performed if <i>command</i> was NULL; instead it was always assumed to be available, and <b>system</b>() always returned 1 in this case. Since glibc 2.1.3, this check is performed because, even though POSIX.1-2001 requires a conforming implementation to provide a shell, that shell may not be available or executable if the calling program has previously called <b>chroot</b>(2) (which is not specified by POSIX.1-2001).<div class="spacer">
+</div>
+It is possible for the shell command to terminate with a status of 127, which yields a <b>system</b>() return value that is indistinguishable from the case where a shell could not be executed in the child process.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>sh</b>(1), <b>sigaction</b>(2), <b>sigprocmask</b>(2), <b>fork</b>(2), <b>wait</b>(2), <b>exec</b>(3), <b>signal</b>(7)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-08-08</td>
+<td class="foot-os">
+</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

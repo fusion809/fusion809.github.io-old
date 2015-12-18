@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+FQ_CoDel(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+FQ_CoDel(8)</td>
+<td class="head-vol">
+Linux</td>
+<td class="head-rtitle">
+FQ_CoDel(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> CoDel - Fair Queuing (FQ) with Controlled Delay (CoDel)</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>tc qdisc ... fq_codel</b> [ <b>limit</b> PACKETS ] [ <b>flows</b> NUMBER ] [ <b>target</b> TIME ] [ <b>interval</b> TIME ] [ <b>quantum</b> BYTES ] [ <b>ecn</b> | <b>noecn</b> ]<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> FQ_Codel (Fair Queuing Controlled Delay) is queuing discipline that combines Fair Queuing with the CoDel AQM scheme. FQ_Codel uses a stochastic model to classify incoming packets into different flows and is used to provide a fair share of the bandwidth to all the flows using the queue. Each such flow is managed by the CoDel queuing discipline. Reordering within a flow is avoided since Codel internally uses a FIFO queue.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>PARAMETERS</h1><div class="subsection">
+<h2>limit</h2> has the same semantics as <b>codel</b> and is the hard limit on the real queue size. When this limit is reached, incoming packets are dropped. Default is 10240 packets.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="subsection">
+<h2>flows</h2> is the number of flows into which the incoming packets are classified. Due to the stochastic nature of hashing, multiple flows may end up being hashed into the same slot. Newer flows have priority over older ones. This parameter can be set only at load time since memory has to be allocated for the hash table. Default value is 1024.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="subsection">
+<h2>target</h2> has the same semantics as <b>codel</b> and is the acceptable minimum standing/persistent queue delay. This minimum delay is identified by tracking the local minimum queue delay that packets experience.  Default value is 5ms.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="subsection">
+<h2>interval</h2> has the same semantics as <b>codel</b> and is used to ensure that the measured minimum delay does not become too stale. The minimum delay must be experienced in the last epoch of length .B interval. It should be set on the order of the worst-case RTT through the bottleneck to give endpoints sufficient time to react.  Default value is 100ms.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="subsection">
+<h2>quantum</h2> is the number of bytes used as 'deficit' in the fair queuing algorithm. Default is set to 1514 bytes which corresponds to the Ethernet MTU plus the hardware header length of 14 bytes.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="subsection">
+<h2>ecn | noecn</h2> has the same semantics as <b>codel</b> and can be used to mark packets instead of dropping them.  If <b>ecn</b> has been enabled, <b>noecn</b> can be used to turn it off and vice-a-versa. Unlike <b>codel, ecn</b> is turned on by default.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+</div>
+<div class="section">
+<h1>EXAMPLES</h1> #tc qdisc add   dev eth0 root fq_codel<div style="height: 0.00em;">
+&#160;</div>
+#tc -s qdisc show<div style="height: 0.00em;">
+&#160;</div>
+qdisc fq_codel 8002: dev eth0 root refcnt 2 limit 10240p flows 1024 quantum 1514<br/>
+ target 5.0ms interval 100.0ms ecn<br/>
+   Sent 428514 bytes 2269 pkt (dropped 0, overlimits 0 requeues 0)<br/>
+   backlog 0b 0p requeues 0<br/>
+    maxpacket 256 drop_overlimit 0 new_flow_count 0 ecn_mark 0<br/>
+    new_flows_len 0 old_flows_len 0<div style="height: 1.00em;">
+&#160;</div>
+#tc qdisc add dev eth0 root fq_codel limit 2000 target 3ms interval 40ms noecn<div style="height: 0.00em;">
+&#160;</div>
+#tc -s qdisc show<div style="height: 0.00em;">
+&#160;</div>
+qdisc fq_codel 8003: dev eth0 root refcnt 2 limit 2000p flows 1024 quantum 1514 target 3.0ms interval 40.0ms<br/>
+ Sent 2588985006 bytes 1783629 pkt (dropped 0, overlimits 0 requeues 34869)<br/>
+ backlog 0b 0p requeues 34869<br/>
+  maxpacket 65226 drop_overlimit 0 new_flow_count 73 ecn_mark 0<br/>
+  new_flows_len 1 old_flows_len 3<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>tc</b>(8), <b>tc-codel</b>(8), <b>tc-red</b>(8)<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>AUTHORS</h1> FQ_CoDel was implemented by Eric Dumazet. This manpage was written by Vijay Subramanian. Please report corrections to the Linux Networking mailing list &lt;netdev@vger.kernel.org&gt;.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+4 June 2012</td>
+<td class="foot-os">
+iproute2</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

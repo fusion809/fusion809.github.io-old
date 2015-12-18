@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+MKDTEMP(3P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+MKDTEMP(3P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+MKDTEMP(3P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> mkdtemp, mkstemp &#8212; create a unique directory or file</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;stdlib.h&gt;<div class="spacer">
+</div>
+char *mkdtemp(char *<i>template</i>);<br/>
+int mkstemp(char *<i>template</i>);<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <i>mkdtemp</i>() function uses the contents of <i>template</i> to construct a unique directory name. The string provided in <i>template</i> shall be a pathname ending with six trailing <b>'X'</b>s. The  <i>mkdtemp</i>() function shall replace each <b>'X'</b> with a character from the portable filename character set. The characters are chosen such that the resulting name does not duplicate the name of an existing file at the time of a call to  <i>mkdtemp</i>(). The unique directory name is used to attempt to create the directory using mode 0700 as modified by the file creation mask.<div class="spacer">
+</div>
+The  <i>mkstemp</i>() function shall replace the contents of the string pointed to by <i>template</i> by a unique pathname, and return a file descriptor for the file open for reading and writing. The  <i>mkstemp</i>() function shall create the file, and obtain a file descriptor for it, as if by a call to:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>open(pathname, O_RDWR|O_CREAT|O_EXCL, S_IRUSR|S_IWUSR)</b><br/>
+</div>
+<div class="spacer">
+</div>
+The function thus prevents any possible race condition between testing whether the file exists and opening it for use. The string in <i>template</i> should look like a pathname with six trailing <b>'X'</b>s;  <i>mkstemp</i>() replaces each <b>'X'</b> with a character from the portable filename character set. The characters are chosen such that the resulting name does not duplicate the name of an existing file at the time of a call to  <i>mkstemp</i>().</div>
+<div class="section">
+<h1>RETURN VALUE</h1> Upon successful completion, the  <i>mkdtemp</i>() function shall return a pointer to the string containing the directory name if it was created. Otherwise, it shall return a null pointer and shall set <i>errno</i> to indicate the error.<div class="spacer">
+</div>
+Upon successful completion, the  <i>mkstemp</i>() function shall return an open file descriptor. Otherwise, it shall return &#8722;1 if no suitable file could be created.</div>
+<div class="section">
+<h1>ERRORS</h1> The  <i>mkdtemp</i>() function shall fail if:<dl>
+<dt>
+<b>EACCES</b></dt>
+<dd>
+Search permission is denied on a component of the path prefix, or write permission is denied on the parent directory of the directory to be created.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+The string pointed to by <i>template</i> does not end in <b>&quot;XXXXXX&quot;</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>ELOOP</b></dt>
+<dd>
+A loop exists in symbolic links encountered during resolution of the path of the directory to be created.</dd>
+</dl>
+<dl>
+<dt>
+<b>EMLINK</b></dt>
+<dd>
+The link count of the parent directory would exceed {LINK_MAX}.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENAMETOOLONG</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The length of a component of a pathname is longer than {NAME_MAX}.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOENT</b></dt>
+<dd>
+A component of the path prefix specified by the <i>template</i> argument does not name an existing directory.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOSPC</b></dt>
+<dd>
+The file system does not contain enough space to hold the contents of the new directory or to extend the parent directory of the new directory.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+A component of the path prefix names an existing file that is neither a directory nor a symbolic link to a directory.</dd>
+</dl>
+<dl>
+<dt>
+<b>EROFS</b></dt>
+<dd>
+The parent directory resides on a read-only file system.</dd>
+</dl>
+<div class="spacer">
+</div>
+The  <i>mkdtemp</i>() function may fail if:<dl>
+<dt>
+<b>ELOOP</b></dt>
+<dd>
+More than {SYMLOOP_MAX} symbolic links were encountered during resolution of the path of the directory to be created.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENAMETOOLONG</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The length of a pathname exceeds {PATH_MAX}, or pathname resolution of a symbolic link produced an intermediate result with a length that exceeds {PATH_MAX}.</dd>
+</dl>
+<div class="spacer">
+</div>
+The error conditions for the  <i>mkstemp</i>() function are defined in <i><i>open</i>()</i>.<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>EXAMPLES</h1><div class="subsection">
+<h2>Generating a Pathname</h2> The following example creates a file with a 10-character name beginning with the characters <b>&quot;file&quot;</b> and opens the file for reading and writing. The value returned as the value of <i>fd</i> is a file descriptor that identifies the file.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>#include &lt;stdlib.h&gt;</b><br/>
+<b>...</b><br/>
+<b>char template[] = &quot;/tmp/fileXXXXXX&quot;;</b><br/>
+<b>int fd;</b><div class="spacer">
+</div>
+fd = mkstemp(template);<br/>
+</div>
+</div>
+</div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> It is possible to run out of letters.<div class="spacer">
+</div>
+The  <i>mkdtemp</i>() and  <i>mkstemp</i>() functions need not check to determine whether the filename part of <i>template</i> exceeds the maximum allowable filename length.</div>
+<div class="section">
+<h1>RATIONALE</h1> None.</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> None.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i><i>getpid</i>()</i>, <i><i>mkdir</i>()</i>, <i><i>open</i>()</i>, <i><i>tmpfile</i>()</i>, <i><i>tmpnam</i>()</i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i><b>&lt;stdlib.h&gt;</b></i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

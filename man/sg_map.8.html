@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SG_MAP(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SG_MAP(8)</td>
+<td class="head-vol">
+SG3_UTILS</td>
+<td class="head-rtitle">
+SG_MAP(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sg_map - displays mapping between Linux sg and other SCSI devices</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>sg_map</b> [ <i>-a</i>] [<i>-h</i>] [<i>-i</i>] [<i>-n</i>] [<i>-scd</i>] [<i>-sd</i>] [ <i>-sr</i>] [<i>-st</i>] [<i>-V</i>] [<i>-x</i>]</div>
+<div class="section">
+<h1>DESCRIPTION</h1> Sometimes it is difficult to determine which SCSI device a sg device name (e.g. /dev/sg0) refers to. This command loops through the sg devices and finds the corresponding SCSI disk, cdrom or tape device name (if any). Scanners are an example of SCSI devices that have no alternate SCSI device name apart from their sg device name.<div class="spacer">
+</div>
+This utility is deprecated and has not been updated for years, only very obvious bugs will be fixed. Unless a very old version of Linux is being used (e.g.  2.4 series or earlier), then please use a utility like lsscsi(8) or the facilities offered by udev(8).</div>
+<div class="section">
+<h1>OPTIONS</h1><dl>
+<dt>
+<b>-a</b></dt>
+<dd>
+assume the sg devices have alphabetical device names and loop through /dev/sga, /dev/sgb, etc. Default is numeric scan. Note that sg device nodes with an alphabetical index have been deprecated since the Linux kernel 2.2 series.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b></dt>
+<dd>
+print usage message then exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-i</b></dt>
+<dd>
+in addition do a standard INQUIRY and output vendor, product and revision strings for devices that are found.</dd>
+</dl>
+<dl>
+<dt>
+<b>-n</b></dt>
+<dd>
+assume the sg devices have numeric device names and loop through /dev/sg0, /dev/sg1, etc. Default is numeric scan</dd>
+</dl>
+<dl>
+<dt>
+<b>-scd</b></dt>
+<dd>
+display mappings to SCSI cdrom device names of the form /dev/scd0, /dev/scd1 etc</dd>
+</dl>
+<dl>
+<dt>
+<b>-sd</b></dt>
+<dd>
+display mappings to SCSI disk device names</dd>
+</dl>
+<dl>
+<dt>
+<b>-sr</b></dt>
+<dd>
+display mappings to SCSI cdrom device names of the form /dev/sr0, /dev/sr1 etc</dd>
+</dl>
+<dl>
+<dt>
+<b>-st</b></dt>
+<dd>
+display mappings to SCSI tape device names</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b></dt>
+<dd>
+print out version string then exit (without further ado).</dd>
+</dl>
+<dl>
+<dt>
+<b>-x</b></dt>
+<dd>
+after each active sg device name is displayed there are five digits: &lt;host_number&gt; &lt;bus&gt; &lt;scsi_id&gt; &lt;lun&gt; &lt;scsi_type&gt;</dd>
+</dl>
+</div>
+<div class="section">
+<h1>NOTES</h1> If no options starting with &quot;-s&quot; are given then the mapping to all SCSI disk, cdrom and tape device names is shown.<div class="spacer">
+</div>
+If the device file system (devfs) is present a line noting this is output. The &quot;native&quot; devfs scsi hierarchy makes the relationship between a sg device name and any corresponding disk, cdrom or tape device name easy to establish. This replaces the need for this command. However many applications will continue to look for Linux SCSI device names in their traditional places. [Devfs supplies a compatibility daemon called devfsd whose default configuration adds back the Linux device names in their traditional positions.<div class="spacer">
+</div>
+Quite often the mapping information can be derived by observing the output of the command: &quot;cat /proc/scsi/scsi&quot;. However if devices have been added since boot this can be deceptive.<div class="spacer">
+</div>
+In the Linux kernel 2.6 series something close to the mapping shown by this utility can be found by analysing sysfs. The main difference is that sysfs analysis will show the mapping between sg nodes and other SCSI device nodes in terms of major and minor numbers. While major 8, minor 16 will usually be /dev/sdb this is not necessarily so. Facilities associated with udev may assign major 8, minor 16 some other device node name. This version of sg_map has been extended to cope with sparse disk device node names of the form &quot;/dev/sd&lt;str&gt;&quot; where &lt;str&gt; can be one of [a-z,aa-zz,aaa-zzz]. See the sg_map26 utility for a more precise way (i.e. less directory scanning) for mapping between sg device names and higher level names; including finding user defined names.<div class="spacer">
+</div>
+This utility was written at a time when hotplugging of SCSI devices was not supported in Linux. It used a simple algorithm to scan sg device nodes in ascending numeric or alphabetical order, stopping after there were 5 consecutive errors.<div class="spacer">
+</div>
+In the Linux kernel 2.6 series, this utility uses sysfs to find which sg device nodes are active and only checks those. Hence there can be large &quot;holes&quot; in the numbering of sg device nodes (e.g. after an adapter has been removed) and still all active sg device nodes will be listed. This utility assumes that sg device nodes are named using the normal conventions and searches from /dev/sg0 to /dev/sg4095 inclusive.</div>
+<div class="section">
+<h1>EXAMPLES</h1> My system has a SCSI disk, a cd writer and a dvd player:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   $ sg_map<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   # Note: the devfs pseudo file system is present<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   /dev/sg0  /dev/sda<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   /dev/sg1  /dev/sr0<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   /dev/sg2  /dev/sr1<div class="spacer">
+</div>
+In order to find which sg device name corresponds to the disk:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   $ sg_map -sd<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   # Note: the devfs pseudo file system is present<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   /dev/sg0  /dev/sda<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   /dev/sg1<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   /dev/sg2<div class="spacer">
+</div>
+The &quot;-x&quot; option gives the following output:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   sg_map -x<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   # Note: the devfs pseudo file system is present<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   /dev/sg0  1 0 1 0  0  /dev/sda<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   /dev/sg1  2 0 4 0  5  /dev/sr0<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   /dev/sg2  2 0 6 0  5  /dev/sr1<div class="spacer">
+</div>
+When a SCSI scanner is added the output becomes:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   $ sg_map<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   # Note: the devfs pseudo file system is present<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   /dev/sg0  /dev/sda<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   /dev/sg1  /dev/sr0<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   /dev/sg2  /dev/sr1<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+   /dev/sg3<div class="spacer">
+</div>
+By process of elimination /dev/sg3 must be the scanner.</div>
+<div class="section">
+<h1>EXIT STATUS</h1> The exit status of sg_map is 0 when it is successful. Otherwise see the sg3_utils(8) man page.</div>
+<div class="section">
+<h1>AUTHOR</h1> Written by Douglas Gilbert</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Report bugs to &lt;dgilbert at interlog dot com&gt;.</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright &#169; 2000-2013 Douglas Gilbert<div style="height: 0.00em;">
+&#160;</div>
+This software is distributed under the GPL version 2. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>sg_map26(8)</b> , <b>scsi_info(8)</b> , <b>scsidev(8)</b> , <b>devfsd(8)</b> , <b>lsscsi(8)</b> , <b>udev(7)</b></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+May 2013</td>
+<td class="foot-os">
+sg3_utils-1.36</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+ematch(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+ematch(8)</td>
+<td class="head-vol">
+Linux</td>
+<td class="head-rtitle">
+ematch(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> ematch - extended matches for use with &quot;basic&quot; or &quot;flow&quot; filters</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>tc filter add .. basic match</b> EXPR <b>.. flowid ..</b><div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<i>EXPR</i> := <i>TERM</i> [ {  <b>and | or</b> } <i>EXPR</i> ]<div style="height: 1.00em;">
+&#160;</div>
+<i>TERM</i> := [ <i><b>not</b></i><b> ] { </b><i><b>MATCH</b></i><b> | '(' </b><i><b>EXPR</b></i><b> ')' } </b><div style="height: 1.00em;">
+&#160;</div>
+<i>MATCH</i> := <i>module</i> '(' <i>ARGS</i> ')' <div style="height: 1.00em;">
+&#160;</div>
+<i>ARGS</i> := <i>ARG1</i> <i>ARG2</i> ..<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>MATCHES</h1><div class="subsection">
+<h2>cmp</h2> Simple comparison ematch: arithmetic compare of packet data to a given value.<div style="height: 1.00em;">
+&#160;</div>
+<i>cmp</i>( <i>ALIGN</i> at <i>OFFSET</i> [ <i>ATTRS</i> ] { <i>eq</i> | <i>lt</i> | <i>gt</i> } <i>VALUE</i> )<div style="height: 1.00em;">
+&#160;</div>
+<i>ALIGN</i> := { <i>u8</i> | <i>u16</i> | <i>u32</i> } <div style="height: 1.00em;">
+&#160;</div>
+<i>ATTRS</i> := [ layer <i>LAYER</i> ] [ mask <i>MASK</i> ] [ trans ]<div style="height: 1.00em;">
+&#160;</div>
+<i>LAYER</i> := { <i>link</i> | <i>network</i> | <i>transport</i> | <i>0..2</i> }<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="subsection">
+<h2>meta</h2> Metadata ematch<div style="height: 1.00em;">
+&#160;</div>
+<i>meta</i>( <i>OBJECT</i> { <i>eq</i> | <i>lt</i> |<i>gt</i> } <i>OBJECT</i> )<div style="height: 1.00em;">
+&#160;</div>
+<i>OBJECT</i> := { <i>META_ID</i> |  <i>VALUE</i> }<div style="height: 1.00em;">
+&#160;</div>
+<i>META_ID</i> := <i>id</i> [ shift <i>SHIFT</i> ] [ mask <i>MASK</i> ]<div style="height: 1.00em;">
+&#160;</div>
+<dl>
+<dt>
+meta attributes:</dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>random</b> 32 bit random value<div style="height: 1.00em;">
+&#160;</div>
+<b>loadavg_1</b> Load average in last 5 minutes<div style="height: 1.00em;">
+&#160;</div>
+<b>nf_mark</b> Netfilter mark<div style="height: 1.00em;">
+&#160;</div>
+<b>vlan</b> Vlan tag<div style="height: 1.00em;">
+&#160;</div>
+<b>sk_rcvbuf</b> Receive buffer size<div style="height: 1.00em;">
+&#160;</div>
+<b>sk_snd_queue</b> Send queue length<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<div class="spacer">
+</div>
+A full list of meta attributes can be obtained via<div style="height: 1.00em;">
+&#160;</div>
+# tc filter add dev eth1 basic match 'meta(list)'<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="subsection">
+<h2>nbyte</h2> match packet data byte sequence<div style="height: 1.00em;">
+&#160;</div>
+<i>nbyte</i>( <i>NEEDLE</i> at <i>OFFSET</i> [ layer <i>LAYER</i> ] )<div style="height: 1.00em;">
+&#160;</div>
+<i>NEEDLE</i> := { <i>string</i> | <i>c-escape-sequence</i>  } <div style="height: 1.00em;">
+&#160;</div>
+<i>OFFSET</i> := <i>int</i><div style="height: 1.00em;">
+&#160;</div>
+<i>LAYER</i> := { <i>link</i> | <i>network</i> | <i>transport</i> | <i>0..2</i> }<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="subsection">
+<h2>u32</h2> u32 ematch<div style="height: 1.00em;">
+&#160;</div>
+<i>u32</i>( <i>ALIGN</i> <i>VALUE</i> <i>MASK</i> at [ nexthdr+ ] <i>OFFSET</i> )<div style="height: 1.00em;">
+&#160;</div>
+<i>ALIGN</i> := { <i>u8</i> | <i>u16</i> | <i>u32</i> }<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="subsection">
+<h2>ipset</h2> test packet against ipset membership<div style="height: 1.00em;">
+&#160;</div>
+<i>ipset</i>( <i>SETNAME</i> <i>FLAGS</i> )<div style="height: 1.00em;">
+&#160;</div>
+<i>SETNAME</i> := <i>string</i><div style="height: 1.00em;">
+&#160;</div>
+<i>FLAGS</i> := { <i>FLAG</i> [, <i>FLAGS</i>] }<div style="height: 1.00em;">
+&#160;</div>
+The flag options are the same as those used by the iptables &quot;set&quot; match.<div style="height: 1.00em;">
+&#160;</div>
+When using the ipset ematch with the &quot;ip_set_hash:net,iface&quot; set type, the interface can be queried using &quot;src,dst (source ip address, outgoing interface) or &quot;src,src&quot; (source ip address, incoming interface) syntax.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+</div>
+<div class="section">
+<h1>CAVEATS</h1> The ematch syntax uses '(' and ')' to group expressions. All braces need to be escaped properly to prevent shell commandline from interpreting these directly.<div style="height: 1.00em;">
+&#160;</div>
+When using the ipset ematch with the &quot;ifb&quot; device, the outgoing device will be the ifb device itself, e.g. &quot;ifb0&quot;. The original interface (i.e. the device the packet arrived on) is treated as the incoming interface.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>EXAMPLE &amp; USAGE</h1> # tc filter add .. basic match ...<div style="height: 1.00em;">
+&#160;</div>
+# 'cmp(u16 at 3 layer 2 mask 0xff00 gt 20)'<div style="height: 1.00em;">
+&#160;</div>
+# 'meta(nfmark gt 24)' and 'meta(tcindex mask 0xf0 eq 0xf0)'<div style="height: 1.00em;">
+&#160;</div>
+# 'nbyte(&quot;ababa&quot; at 12 layer 1)'<div style="height: 1.00em;">
+&#160;</div>
+# 'u32(u16 0x1122 0xffff at nexthdr+4)'<div style="height: 1.00em;">
+&#160;</div>
+Check if packet source ip address is member of set named <b>bulk</b>:<div style="height: 1.00em;">
+&#160;</div>
+# 'ipset(bulk src)'<div style="height: 1.00em;">
+&#160;</div>
+Check if packet source ip and the interface the packet arrived on is member of &quot;hash:net,iface&quot; set named <b>interactive</b>:<div style="height: 1.00em;">
+&#160;</div>
+# 'ipset(interactive src,src)'<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>AUTHOR</h1> The extended match infrastructure was added by Thomas Graf.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+6 August 2012</td>
+<td class="foot-os">
+iproute2</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

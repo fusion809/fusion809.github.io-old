@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SG_WRITE_BUFFER(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SG_WRITE_BUFFER(8)</td>
+<td class="head-vol">
+SG3_UTILS</td>
+<td class="head-rtitle">
+SG_WRITE_BUFFER(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sg_write_buffer - send SCSI WRITE BUFFER commands</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>sg_write_buffer</b> [ <i>--bpw=CS</i>] [<i>--help</i>] [<i>--id=ID</i>] [<i>--in=FILE</i>] [ <i>--length=LEN</i>] [<i>--mode=MO</i>] [<i>--offset=OFF</i>] [ <i>--raw</i>] [<i>--skip=SKIP</i>] [<i>--specific=MS</i>] [ <i>--timeout=TO</i>] [<i>--verbose</i>] [<i>--version</i>] <i>DEVICE</i></div>
+<div class="section">
+<h1>DESCRIPTION</h1> Sends one or more SCSI WRITE BUFFER commands to  <i>DEVICE</i>, along with data provided by the user. In some cases no data is required, or data can be read from the file given in the  <i>--in=FILE</i> option, or data is read from stdin when either  <i>--raw</i> or <i>--in=-</i> is given.<div class="spacer">
+</div>
+Some WRITE BUFFER command variants do not have associated data to send to the device. For example &quot;activate_mc&quot; activates deferred microcode that was sent via prior WRITE BUFFER commands. There is a different method used to download microcode to SES devices, see the sg_ses_microcode utility.</div>
+<div class="section">
+<h1>OPTIONS</h1> Arguments to long options are mandatory for short options as well.<dl>
+<dt>
+<b>-b</b>, <b>--bpw</b>=<i>CS</i></dt>
+<dd>
+where <i>CS</i> is the chunk size in bytes. This will be the maximum number of bytes sent per WRITE BUFFER command. So if  <i>CS</i> is less than the effective length then multiple WRITE BUFFER commands are sent, each taking the next chunk from the read data and increasing the buffer offset field in the WRITE BUFFER command by the appropriate amount. The default is a chunk size of 0 which is interpreted as a very large number hence only one WRITE BUFFER command will be sent. This option should only be used with modes that &quot;download microcode, with offsets ...&quot;; namely either mode 0x6, 0x7, 0xd or 0xe.<div style="height: 0.00em;">
+&#160;</div>
+The number in <i>CS</i> can optionally be followed by &quot;,act&quot; or &quot;,activate&quot;. In this case after WRITE BUFFER commands have been sent until the effective length is exhausted another WRITE BUFFER command with its mode set to &quot;Activate deferred microcode mode&quot; [mode 0xf] is sent.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>, <b>--help</b></dt>
+<dd>
+output the usage message then exit. If used multiple times also prints the mode names and their acronyms.</dd>
+</dl>
+<dl>
+<dt>
+<b>-i</b>, <b>--id</b>=<i>ID</i></dt>
+<dd>
+this option sets the buffer id field in the cdb. <i>ID</i> is a value between 0 (default) and 255 inclusive.</dd>
+</dl>
+<dl>
+<dt>
+<b>-I</b>, <b>--in</b>=<i>FILE</i></dt>
+<dd>
+read data from file <i>FILE</i> that will be sent with the WRITE BUFFER command.  If  <i>FILE</i> is '-' then stdin is read until an EOF is detected (this is the same action as  <i>--raw</i>). Data is read from the beginning of  <i>FILE</i> except in the case when it is a regular file and the  <i>--skip=SKIP</i> option is given.</dd>
+</dl>
+<dl>
+<dt>
+<b>-l</b>, <b>--length</b>=<i>LEN</i></dt>
+<dd>
+where <i>LEN</i> is the length, in bytes, of data to be written to the device. If not given (and the length cannot be deduced from  <i>--in=FILE</i> or  <i>--raw</i>) then defaults to zero. If the option is given and the length deduced from  <i>--in=FILE</i> or <i>--raw</i> is less (or no data is provided), then bytes of 0xff are used as fill bytes.</dd>
+</dl>
+<dl>
+<dt>
+<b>-m</b>, <b>--mode</b>=<i>MO</i></dt>
+<dd>
+this option sets the MODE field in the cdb. <i>MO</i> is a value between 0 (default) and 31 inclusive. Alternatively an abbreviation can be given. See the MODES section below. To list the available mode abbreviations at run time give an invalid one (e.g. '--mode=xxx') or use the '-hh' option.</dd>
+</dl>
+<dl>
+<dt>
+<b>-o</b>, <b>--offset</b>=<i>OFF</i></dt>
+<dd>
+this option sets the BUFFER OFFSET field in the cdb. <i>OFF</i> is a value between 0 (default) and 2**24-1 . It is a byte offset.</dd>
+</dl>
+<dl>
+<dt>
+<b>-r</b>, <b>--raw</b></dt>
+<dd>
+read data from stdin until an EOF is detected. This data is sent with the WRITE BUFFER command to  <i>DEVICE</i>. The action of this option is the same as using '--in=-'.</dd>
+</dl>
+<dl>
+<dt>
+<b>-s</b>, <b>--skip</b>=<i>SKIP</i></dt>
+<dd>
+this option is only active when <i>--in=FILE</i> is given and <i>FILE</i> is a regular file, rather than stdin. Data is read starting at byte offset  <i>SKIP</i> to the end of file (or the amount given by <i>--length=LEN</i>). If not given the byte offset defaults to 0 (i.e. the start of the file).</dd>
+</dl>
+<dl>
+<dt>
+<b>-S</b>, <b>--specific</b>=<i>MS</i></dt>
+<dd>
+<i>MS</i> is the MODE SPECIFIC field in the cdb. This is a 3-bit field so the values 0 to 7 are accepted. This field was introduced in SPC-4 revision 32 and can be used to specify additional events that activate deferred microcode (when  <i>MO</i> is 0xD).</dd>
+</dl>
+<dl>
+<dt>
+<b>-t</b>, <b>--timeout</b>=<i>TO</i></dt>
+<dd>
+<i>TO</i> is the command timeout (in seconds) for each WRITE BUFFER command issued by this utility. Its default value is 300 seconds (5 minutes) and should only be altered if this is not sufficient.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b>, <b>--verbose</b></dt>
+<dd>
+increase the level of verbosity, (i.e. debug output).</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>, <b>--version</b></dt>
+<dd>
+print the version string and then exit.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>MODES</h1> Following is a list of WRITE BUFFER command settings for the MODE field. First is an acronym accepted by the  <i>MO</i> argument of this utility. Following the acronym in square brackets are the corresponding decimal and hex values that may also be given for  <i>MO</i>. The following are listed in numerical order.<dl>
+<dt>
+hd  [0, 0x0]</dt>
+<dd>
+Combined header and data (obsolete in SPC-4).</dd>
+</dl>
+<dl>
+<dt>
+vendor  [1, 0x1]</dt>
+<dd>
+Vendor specific.</dd>
+</dl>
+<dl>
+<dt>
+data  [2, 0x2]</dt>
+<dd>
+Data (was called &quot;Write Data&quot; in SPC-3).</dd>
+</dl>
+<dl>
+<dt>
+dmc  [4, 0x4]</dt>
+<dd>
+Download microcode and activate (was called &quot;Download microcode&quot; in SPC-3).</dd>
+</dl>
+<dl>
+<dt>
+dmc_save  [5, 0x5]</dt>
+<dd>
+Download microcode, save, and activate (was called &quot;Download microcode and save&quot; in SPC-3).</dd>
+</dl>
+<dl>
+<dt>
+dmc_offs  [6, 0x6]</dt>
+<dd>
+Download microcode with offsets and activate (was called &quot;Download microcode with offsets&quot; in SPC-3).</dd>
+</dl>
+<dl>
+<dt>
+dmc_offs_save  [7, 0x7]</dt>
+<dd>
+Download microcode with offsets, save, and activate (was called &quot;Download microcode with offsets and save&quot; in SPC-3).</dd>
+</dl>
+<dl>
+<dt>
+echo  [10, 0xa]</dt>
+<dd>
+Write data to echo buffer (was called &quot;Echo buffer&quot; in SPC-3).</dd>
+</dl>
+<dl>
+<dt>
+dmc_offs_ev_defer  [13, 0xd]</dt>
+<dd>
+Download microcode with offsets, select activation events, save, and defer activate (introduced in SPC-4).</dd>
+</dl>
+<dl>
+<dt>
+dmc_offs_defer  [14, 0xe]</dt>
+<dd>
+Download microcode with offsets, save, and defer activate (introduced in SPC-4).</dd>
+</dl>
+<dl>
+<dt>
+activate_mc  [15, 0xf]</dt>
+<dd>
+Activate deferred microcode (introduced in SPC-4).</dd>
+</dl>
+<dl>
+<dt>
+en_ex  [26, 0x1A]</dt>
+<dd>
+Enable expander communications protocol and Echo buffer (obsolete in SPC-4).</dd>
+</dl>
+<dl>
+<dt>
+dis_ex  [27, 0x1B]</dt>
+<dd>
+Disable expander communications protocol (obsolete in SPC-4).</dd>
+</dl>
+<dl>
+<dt>
+deh  [28, 0x1C]</dt>
+<dd>
+Download application client error history (was called &quot;Download application log&quot; in SPC-3).</dd>
+</dl>
+</div>
+<div class="section">
+<h1>NOTES</h1> If no  <i>--length=LEN</i> is given this utility reads up to 8 MiB of data from the given file  <i>FILE</i> (or stdin). If a larger amount of data is required then the  <i>--length=LEN</i> option should be given.<div class="spacer">
+</div>
+The user should be aware that most operating systems have limits on the amount of data that can be sent with one SCSI command. In Linux this depends on the pass through mechanism used (e.g. block SG_IO or the sg driver) and various setting in sysfs in the Linux lk 2.6/3 series (e.g. /sys/block/sda/queue/max_sectors_kb). Devices (i.e. logical units) also typically have limits on the maximum amount of data they can handle in one command. These two limitations suggest that modes containing the word &quot;offset&quot; together with the  <i>--bpw=CS</i> option are required as firmware files get larger and larger. And  <i>CS</i> can be quite small, for example 4096 bytes, resulting in many WRITE BUFFER commands being sent.<div class="spacer">
+</div>
+Attempting to download a microcode/firmware file that is too large may cause an error to occur in the pass-through layer (i.e. before the SCSI command is issued). In Linux such error reports can be obscure as in &quot;pass through os error invalid argument&quot;. FreeBSD reports such errors well to the machine's console but returns a cryptic error message to this utility.<div class="spacer">
+</div>
+Downloading incorrect microcode into a device has the ability to render that device inoperable. One would hope that the device vendor verifies the data before activating it. If the SCSI WRITE BUFFER command is given values in its cdb (e.g.  <i>LEN</i>) that are inappropriate (e.g. too large) then the device should respond with a sense key of ILLEGAL REQUEST and an additional sense code of INVALID FIELD in CDB. If a WRITE BUFFER command (or a sequence of them) fails due to device vendor verification checks then it should respond with a sense key of ILLEGAL REQUEST and an additional sense code of COMMAND SEQUENCE ERROR.<div class="spacer">
+</div>
+All numbers given with options are assumed to be decimal. Alternatively numerical values can be given in hexadecimal preceded by either &quot;0x&quot; or &quot;0X&quot; (or has a trailing &quot;h&quot; or &quot;H&quot;).</div>
+<div class="section">
+<h1>EXAMPLES</h1> The following sends new firmware to an enclosure. Sending a 1.5 MB file in one WRITE BUFFER command caused the enclosure to lock up temporarily and did not update the firmware. Breaking the firmware file into 4 KB chunks (an educated guess) was more successful:<div class="spacer">
+</div>
+<br/>
+  sg_write_buffer -b 4k -m dmc_offs_save -I firmware.bin /dev/sg4<div class="spacer">
+</div>
+The firmware update occurred in the following enclosure power cycle. With a modern enclosure the Extended Inquiry VPD page gives indications in which situations a firmware upgrade will take place.</div>
+<div class="section">
+<h1>EXIT STATUS</h1> The exit status of sg_write_buffer is 0 when it is successful. Otherwise see the sg3_utils(8) man page.</div>
+<div class="section">
+<h1>AUTHORS</h1> Written by Luben Tuikov and Douglas Gilbert.</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Report bugs to &lt;dgilbert at interlog dot com&gt;.</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright &#169; 2006-2015 Luben Tuikov and Douglas Gilbert<div style="height: 0.00em;">
+&#160;</div>
+This software is distributed under a FreeBSD license. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>sg_read_buffer, sg_ses_microcode(sg3_utils)</b></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+February 2015</td>
+<td class="foot-os">
+sg3_utils-1.41</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

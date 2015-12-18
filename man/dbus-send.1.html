@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+DBUS-SEND(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+DBUS-SEND(1)</td>
+<td class="head-vol">
+User Commands</td>
+<td class="head-rtitle">
+DBUS-SEND(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> dbus-send - Send a message to a message bus</div>
+<div class="section">
+<h1>SYNOPSIS</h1><div style="margin-left: 10.00ex;text-indent: -10.00ex;" class="spacer">
+<b>dbus-send</b> [--system | --session | --address=<i>ADDRESS</i>] [--dest=<i>NAME</i>] [--print-reply&#160;[<i>=literal</i>]] [--reply-timeout=<i>MSEC</i>] [--type=<i>TYPE</i>] <i>OBJECT_PATH</i> <i>INTERFACE.MEMBER</i> [<i>CONTENTS</i>...]<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <b>dbus-send</b> command is used to send a message to a D-Bus message bus. See  <b>http://www.freedesktop.org/software/dbus/</b> for more information about the big picture.<div class="spacer">
+</div>
+There are two well-known message buses: the systemwide message bus (installed on many systems as the &quot;messagebus&quot; service) and the per-user-login-session message bus (started each time a user logs in). The  <b>--system</b> and  <b>--session</b> options direct  <b>dbus-send</b> to send messages to the system or session buses respectively. If neither is specified,  <b>dbus-send</b> sends to the session bus.<div class="spacer">
+</div>
+Nearly all uses of  <b>dbus-send</b> must provide the  <b>--dest</b> argument which is the name of a connection on the bus to send the message to. If  <b>--dest</b> is omitted, no destination is set.<div class="spacer">
+</div>
+The object path and the name of the message to send must always be specified. Following arguments, if any, are the message contents (message arguments). These are given as type-specified values and may include containers (arrays, dicts, and variants) as described below.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+&lt;contents&gt;   ::= &lt;item&gt; | &lt;container&gt; [ &lt;item&gt; | &lt;container&gt;...]<br/>
+&lt;item&gt;       ::= &lt;type&gt;:&lt;value&gt;<br/>
+&lt;container&gt;  ::= &lt;array&gt; | &lt;dict&gt; | &lt;variant&gt;<br/>
+&lt;array&gt;      ::= array:&lt;type&gt;:&lt;value&gt;[,&lt;value&gt;...]<br/>
+&lt;dict&gt;       ::= dict:&lt;type&gt;:&lt;type&gt;:&lt;key&gt;,&lt;value&gt;[,&lt;key&gt;,&lt;value&gt;...]<br/>
+&lt;variant&gt;    ::= variant:&lt;type&gt;:&lt;value&gt;<br/>
+&lt;type&gt;       ::= string | int16 | uint 16 | int32 | uint32 | int64 | uint64 | double | byte | boolean | objpath<br/>
+</div>
+<div class="spacer">
+</div>
+D-Bus supports more types than these, but  <b>dbus-send</b> currently does not. Also,  <b>dbus-send</b> does not permit empty containers or nested containers (e.g. arrays of variants).<div class="spacer">
+</div>
+Here is an example invocation:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<div class="spacer">
+</div>
+<br/>
+  dbus-send --dest=org.freedesktop.ExampleName               \<br/>
+            /org/freedesktop/sample/object/name              \<br/>
+            org.freedesktop.ExampleInterface.ExampleMethod   \<br/>
+            int32:47 string:'hello world' double:65.32       \<br/>
+            array:string:&quot;1st item&quot;,&quot;next item&quot;,&quot;last item&quot;  \<br/>
+            dict:string:int32:&quot;one&quot;,1,&quot;two&quot;,2,&quot;three&quot;,3      \<br/>
+            variant:int32:-8                                 \<br/>
+            objpath:/org/freedesktop/sample/object/name<div class="spacer">
+</div>
+<br/>
+</div>
+<div class="spacer">
+</div>
+Note that the interface is separated from a method or signal name by a dot, though in the actual protocol the interface and the interface member are separate fields.</div>
+<div class="section">
+<h1>OPTIONS</h1> The following options are supported:<div class="spacer">
+</div>
+<b>--dest=</b><i>NAME</i><div style="margin-left: 4.00ex;">
+Specify the name of the connection to receive the message.</div>
+<div class="spacer">
+</div>
+<b>--print-reply</b><div style="margin-left: 4.00ex;">
+Block for a reply to the message sent, and print any reply received in a human-readable form. It also means the message type (<b>--type=</b>) is  <b>method_call</b>.</div>
+<div class="spacer">
+</div>
+<b>--print-reply=literal</b><div style="margin-left: 4.00ex;">
+Block for a reply to the message sent, and print the body of the reply. If the reply is an object path or a string, it is printed literally, with no punctuation, escape characters etc.</div>
+<div class="spacer">
+</div>
+<b>--reply-timeout=</b><i>MSEC</i><div style="margin-left: 4.00ex;">
+Wait for a reply for up to  <i>MSEC</i> milliseconds. The default is implementation&#8208;defined, typically 25 seconds.</div>
+<div class="spacer">
+</div>
+<b>--system</b><div style="margin-left: 4.00ex;">
+Send to the system message bus.</div>
+<div class="spacer">
+</div>
+<b>--session</b><div style="margin-left: 4.00ex;">
+Send to the session message bus. (This is the default.)</div>
+<div class="spacer">
+</div>
+<b>--address=</b><i>ADDRESS</i><div style="margin-left: 4.00ex;">
+Send to  <i>ADDRESS</i>.</div>
+<div class="spacer">
+</div>
+<b>--type=</b><i>TYPE</i><div style="margin-left: 4.00ex;">
+Specify  <b>method_call</b> or  <b>signal</b> (defaults to &quot; <b>signal</b>&quot;).</div>
+</div>
+<div class="section">
+<h1>AUTHOR</h1> dbus-send was written by Philip Blundell.</div>
+<div class="section">
+<h1>BUGS</h1> Please send bug reports to the D-Bus mailing list or bug tracker, see  <b>http://www.freedesktop.org/software/dbus/</b></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+02/16/2015</td>
+<td class="foot-os">
+D-Bus 1.8.16</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

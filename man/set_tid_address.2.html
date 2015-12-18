@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SET_TID_ADDRESS(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SET_TID_ADDRESS(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+SET_TID_ADDRESS(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> set_tid_address - set pointer to thread ID</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;linux/unistd.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>long set_tid_address(int *</b><i>tidptr</i><b>);</b><br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> For each thread, the kernel maintains two attributes (addresses) called <i>set_child_tid</i> and <i>clear_child_tid</i>. These two attributes contain the value NULL by default.<dl>
+<dt>
+<i>set_child_tid</i></dt>
+<dd>
+If a thread is started using <b>clone</b>(2) with the <b>CLONE_CHILD_SETTID</b> flag, <i>set_child_tid</i> is set to the value passed in the <i>ctid</i> argument of that system call.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+When <i>set_child_tid</i> is set, the very first thing the new thread does is to write its thread ID at this address.</dd>
+</dl>
+<dl>
+<dt>
+<i>clear_child_tid</i></dt>
+<dd>
+If a thread is started using <b>clone</b>(2) with the <b>CLONE_CHILD_CLEARTID</b> flag, <i>clear_child_tid</i> is set to the value passed in the <i>ctid</i> argument of that system call.</dd>
+</dl>
+<div class="spacer">
+</div>
+The system call <b>set_tid_address</b>() sets the <i>clear_child_tid</i> value for the calling thread to <i>tidptr</i>.<div class="spacer">
+</div>
+When a thread whose <i>clear_child_tid</i> is not NULL terminates, then, if the thread is sharing memory with other threads, then 0 is written at the address specified in <i>clear_child_tid</i> and the kernel performs the following operation:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    futex(clear_child_tid, FUTEX_WAKE, 1, NULL, NULL, 0);<div style="height: 1.00em;">
+&#160;</div>
+The effect of this operation is to wake a single thread that is performing a futex wait on the memory location. Errors from the futex wake operation are ignored.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> <b>set_tid_address</b>() always returns the caller's thread ID.</div>
+<div class="section">
+<h1>ERRORS</h1> <b>set_tid_address</b>() always succeeds.</div>
+<div class="section">
+<h1>VERSIONS</h1> This call is present since Linux 2.5.48. Details as given here are valid since Linux 2.5.49.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> This system call is Linux-specific.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>clone</b>(2), <b>futex</b>(2), <b>gettid</b>(2)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2014-07-08</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

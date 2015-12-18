@@ -1,0 +1,3761 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+GROFF_MM(7)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+GROFF_MM(7)</td>
+<td class="head-vol">
+Miscellaneous Information Manual</td>
+<td class="head-rtitle">
+GROFF_MM(7)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> groff_mm - groff mm macros</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>groff</b> <b>-mm</b> [ <i>options</i>... ] [ <i>files</i>... ]</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The groff mm macros are intended to be compatible with the DWB mm macros with the following limitations:<dl>
+<dt>
+<b>&#8226;</b></dt>
+<dd>
+No Bell Labs localisms are implemented.</dd>
+</dl>
+<dl>
+<dt>
+<b>&#8226;</b></dt>
+<dd>
+The macros OK and PM are not implemented.</dd>
+</dl>
+<dl>
+<dt>
+<b>&#8226;</b></dt>
+<dd>
+groff mm does not support cut marks.</dd>
+</dl>
+<div class="spacer">
+</div>
+<b>mm</b> is intended to support easy localization. Use <b>mmse</b> as an example how to adapt the output format to a national standard. Localized strings are collected in the file &#8216;/usr/share/groff/1.22.3/tmac/<i>xx</i>.tmac&#8217;, where <i>xx</i> denotes the two-letter code for the <i>language</i>, as defined in the ISO 639 standard. For Swedish, this is &#8216;sv.tmac&#8217; &#8211; not &#8216;se&#8217;, which is the ISO 3166 two-letter code for the <i>country</i> (as used for the output format localization).<div class="spacer">
+</div>
+A file called <b>locale</b> or <i>country</i><b>_locale</b> is read after the initialization of the global variables. It is therefore possible to localize the macros with a different company name and so on.<div class="spacer">
+</div>
+In this manual, square brackets are used to show optional arguments.<div class="subsection">
+<h2>Number registers and strings</h2> Many macros can be controlled by number registers and strings. A number register is assigned with the <b>nr</b> command:<div style="margin-left: 5.00ex;">
+<div class="spacer">
+</div>
+<b>.nr&#160;</b><i>XXX [<b>&#177;</b>]n [i]</i></div>
+<div class="spacer">
+</div>
+<i>XXX</i> is the name of the register, <i>n</i>&#160;is the value to be assigned, and <i>i</i>&#160;is the increment value for auto-increment. <i>n</i>&#160;can have a plus or minus sign as a prefix if an increment or decrement of the current value is wanted. (Auto-increment or auto-decrement occurs if the number register is used with a plus or minus sign, <b>\n+[</b><i>XXX</i><b>]</b> or <b>\n-[</b><i>XXX</i><b>].)</b><div class="spacer">
+</div>
+Strings are defined with <b>ds</b>.<div style="margin-left: 5.00ex;">
+<div class="spacer">
+</div>
+<b>.ds</b> <i>YYY string</i></div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div class="spacer">
+</div>
+The string is assigned everything to the end of the line, even blanks. Initial blanks in <i>string</i> should be prefixed with a double-quote. (Strings are used in the text as <b>\*[</b><i>YYY</i><b>].)</b></div>
+<div class="subsection">
+<h2>Special formatting of number registers</h2> A number register is printed with normal digits if no format has been given. Set the format with <b>af</b>:<div style="margin-left: 5.00ex;">
+<div class="spacer">
+</div>
+<b>.af&#160;</b><i>R c</i></div>
+<div class="spacer">
+</div>
+<i>R</i>&#160;is the name of the register, <i>c</i>&#160;is the format.<div style="margin-left: 5.00ex;">
+<table class="tbl">
+<col style="width: 4.00ex;"/>
+<col style="width: 39.00ex;"/>
+<tbody>
+<tr>
+<td>
+Form</td>
+<td>
+Sequence</td>
+</tr>
+<tr>
+<td>
+1</td>
+<td>
+0, 1, 2, 3, ...</td>
+</tr>
+<tr>
+<td>
+001</td>
+<td>
+000, 001, 002, 003, ...</td>
+</tr>
+<tr>
+<td>
+i</td>
+<td>
+0, i, ii, iii, iv, ...</td>
+</tr>
+<tr>
+<td>
+I</td>
+<td>
+0, I, II, III, IV, ...</td>
+</tr>
+<tr>
+<td>
+a</td>
+<td>
+0, a, b, c, ..., z, aa, ab, ...</td>
+</tr>
+<tr>
+<td>
+A</td>
+<td>
+0, A, B, C, ..., Z, AA, AB, ...</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="subsection">
+<h2>Fonts</h2> In <b>mm</b>, the fonts (or rather, font styles) <b>R</b>&#160;(normal), <b>I</b>&#160;(italic), and <b>B</b>&#160;(bold) are hardwired to font positions <b>1</b>, <b>2</b>, and&#160;<b>3</b>, respectively. Internally, font positions are used for backwards compatibility. From a practical point of view it doesn't make a big difference &#8211; a different font family can still be selected with a call to the <b>.fam</b> request or using <b>groff</b>'s <b>-f</b> command line option. On the other hand, if you want to replace just, say, font <b>B</b>, you have to replace the font at position&#160;2 (with a call to &#8216;.fp&#160;2&#160;...&#8217;).</div>
+<div class="subsection">
+<h2>Macros</h2><dl>
+<dt>
+<b>)E&#160;</b><i>level text</i></dt>
+<dd>
+Add heading text <i>text</i> to the table of contents with <i>level</i>, which is either&#160;0 or in the range 1 to&#160;7. See also <b>.H</b>. This macro is used for customized tables of contents.</dd>
+</dl>
+<dl>
+<dt>
+<b>1C&#160;</b>[<b>1</b>]</dt>
+<dd>
+Begin one-column processing. A&#160;<b>1</b> as an argument disables the page break. Use wide footnotes, small footnotes may be overprinted.</dd>
+</dl>
+<dl>
+<dt>
+<b>2C</b></dt>
+<dd>
+Begin two-column processing. Splits the page in two columns. It is a special case of <b>MC</b>. See also <b>1C</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>AE</b></dt>
+<dd>
+Abstract end, see <b>AS</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>AF&#160;[</b><i>name-of-firm</i><b>]</b></dt>
+<dd>
+Author's firm, should be called before <b>AU</b>, see also <b>COVER</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>AL&#160;</b><i>[type&#160;[text-indent&#160;</i><b>[1]]]</b></dt>
+<dd>
+Start auto-increment list. Items are numbered beginning with one. The <i>type</i> argument controls the format of numbers.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<table class="tbl">
+<col style="width: 3.00ex;"/>
+<col style="width: 27.00ex;"/>
+<tbody>
+<tr>
+<td>
+Arg</td>
+<td>
+Description</td>
+</tr>
+<tr>
+<td>
+1</td>
+<td>
+Arabic (the default)</td>
+</tr>
+<tr>
+<td>
+A</td>
+<td>
+Upper-case letters (A&#8211;Z)</td>
+</tr>
+<tr>
+<td>
+a</td>
+<td>
+Lower-case letters (a&#8211;z)</td>
+</tr>
+<tr>
+<td>
+I</td>
+<td>
+Upper-case roman</td>
+</tr>
+<tr>
+<td>
+i</td>
+<td>
+Lower-case roman</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+<i>text-indent</i> sets the indentation and overrides <b>Li</b>. A third argument prohibits printing of a blank line before each item.</dd>
+</dl>
+<dl>
+<dt>
+<b>APP&#160;</b><i>name text</i></dt>
+<dd>
+Begin an appendix with name <i>name</i>. Automatic naming occurs if <i>name</i> is <b>&quot;&quot;</b>. The appendices start with&#160;<b>A</b> if automatic naming is used. A new page is ejected, and a header is also produced if the number variable <b>Aph</b> is non-zero. This is the default. The appendix always appears in the &#8216;List of contents&#8217; with correct page numbers. The name &#8216;APPENDIX&#8217; can be changed by setting the string <b>App</b> to the desired text. The string <b>Apptxt</b> contains the current appendix text.</dd>
+</dl>
+<dl>
+<dt>
+<b>APPSK&#160;</b><i>name pages text</i></dt>
+<dd>
+Same as <b>.APP</b>, but the page number is incremented with <i>pages</i>. This is used when diagrams or other non-formatted documents are included as appendices.</dd>
+</dl>
+<dl>
+<dt>
+<b>AS&#160;</b><i>[arg [indent]]</i></dt>
+<dd>
+Abstract start. Indentation is specified in &#8216;ens&#8217;, but scaling is allowed. Argument <i>arg</i> controls where the abstract is printed.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<table class="tbl">
+<col style="width: 6.00ex;"/>
+<col style="width: 161.00ex;"/>
+<tbody>
+<tr>
+<td>
+<b>Arg</b></td>
+<td>
+<b>Placement</b></td>
+</tr>
+<tr>
+<td>
+0</td>
+<td>
+Abstract is printed on page&#160;1 and on the cover sheet if used in the released-paper style (<b>MT 4</b>), otherwise it is printed on page&#160;1 without a cover sheet.</td>
+</tr>
+<tr>
+<td>
+1</td>
+<td>
+Abstract is only printed on the cover sheet (<b>MT 4</b> only).</td>
+</tr>
+<tr>
+<td>
+2</td>
+<td>
+Abstract is printed only on the cover sheet (other than <b>MT 4</b> only). The cover sheet is printed without a need for <b>CS</b>.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+An abstract is not printed at all in external letters (<b>MT 5</b>). The <i>indent</i> parameter controls the indentation of both margins, otherwise normal text indentation is used.</dd>
+</dl>
+<dl>
+<dt>
+<b>AST&#160;</b><i>[title]</i></dt>
+<dd>
+Abstract title. Default is &#8216;ABSTRACT&#8217;. Sets the text above the abstract text.</dd>
+</dl>
+<dl>
+<dt>
+<b>AT&#160;</b><i>title1 [title2 [...]]</i></dt>
+<dd>
+Author's title. <b>AT</b> must appear just after each <b>AU</b>. The title shows up after the name in the signature block.</dd>
+</dl>
+<dl>
+<dt>
+<b>AU&#160;</b><i>[name [initials [loc [dept [ext [room [arg [arg [arg]]]]]]]]]</i></dt>
+<dd>
+Author information. Specifies the author of the memo or paper, and is printed on the cover sheet and on other similar places. <b>AU</b> must not appear before <b>TL</b>. The author information can contain initials, location, department, telephone extension, room number or name and up to three extra arguments.</dd>
+</dl>
+<dl>
+<dt>
+<b>AV&#160;</b><i>[name&#160;</i><b>[1]]</b></dt>
+<dd>
+Approval signature. Generates an approval line with place for signature and date. The string &#8216;APPROVED:&#8217; can be changed with variable <b>Letapp</b>; it is replaced with an empty lin if there is a second argument. The string &#8216;Date&#8217; can be changed with variable <b>Letdate</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>AVL&#160;</b><i>[name]</i></dt>
+<dd>
+Letter signature. Generates a line with place for signature.</dd>
+</dl>
+<dl>
+<dt>
+<b>B&#160;</b><i>[bold-text [prev-font-text [bold [...]]]]</i></dt>
+<dd>
+Begin boldface. No limit on the number of arguments. All arguments are concatenated to one word; the first, third and so on is printed in boldface.</dd>
+</dl>
+<dl>
+<dt>
+<b>B1</b></dt>
+<dd>
+Begin box (as the ms macro). Draws a box around the text. The text is indented one character, and the right margin is one character shorter.</dd>
+</dl>
+<dl>
+<dt>
+<b>B2</b></dt>
+<dd>
+End box. Finishes the box started with <b>B1</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>BE</b></dt>
+<dd>
+End bottom block, see <b>BS</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>BI&#160;</b><i>[bold-text [italic-text [bold-text [...]]]]</i></dt>
+<dd>
+Bold-italic. No limit on the number of arguments, see&#160;<b>B</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>BL&#160;</b><i>[text-indent&#160;</i><b>[1]]</b></dt>
+<dd>
+Start bullet list. Initializes a list with a bullet and a space in the beginning of each list item (see <b>LI</b>). <i>text-indent</i> overrides the default indentation of the list items set by number register <b>Pi</b>. A third argument prohibits printing of a blank line before each item.</dd>
+</dl>
+<dl>
+<dt>
+<b>BR&#160;</b><i>[bold-text [roman-text [bold-text [...]]]]</i></dt>
+<dd>
+Bold-roman. No limit on the number of arguments.</dd>
+</dl>
+<dl>
+<dt>
+<b>BS</b></dt>
+<dd>
+Bottom block start. Begins the definition of a text block which is printed at the bottom of each page. The block ends with <b>BE</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>BVL&#160;</b><i>text-indent [mark-indent&#160;</i><b>[1]]</b></dt>
+<dd>
+Start of broken variable-item list. Broken variable-item list has no fixed mark, it assumes that every <b>LI</b> has a mark instead. The text always begins at the next line after the mark. <i>text-indent</i> sets the indentation to the text, and <i>mark-indent</i> the distance from the current indentation to the mark. A third argument prohibits printing of a blank line before each item.</dd>
+</dl>
+<dl>
+<dt>
+<b>COVER&#160;</b><i>[arg]</i></dt>
+<dd>
+Begin a coversheet definition. It is important that <b>.COVER</b> appears before any normal text. This macro uses <i>arg</i> to build the filename &#8216;/usr/share/groff/1.22.3/tmac/mm/ <i>arg</i>.cov&#8217;. Therefore it is possible to create unlimited types of cover sheets. &#8216;ms.cov&#8217; is supposed to look like the ms cover sheet. <b>.COVER</b> requires a <b>.COVEND</b> at the end of the cover definition. Always use this order of the cover macros:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<br/>
+.COVER<br/>
+.TL<br/>
+.AF<br/>
+.AU<br/>
+.AT<br/>
+.AS<br/>
+.AE<br/>
+.COVEND<br/>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+However, only <b>.TL</b> and <b>.AU</b> are required.</dd>
+</dl>
+<dl>
+<dt>
+<b>COVEND</b></dt>
+<dd>
+Finish the cover description and print the cover page. It is defined in the cover file.</dd>
+</dl>
+<dl>
+<dt>
+<b>DE</b></dt>
+<dd>
+Display end. Ends a block of text or display that begins with <b>DS</b> or <b>DF</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>DF&#160;</b><i>[format [fill [rindent]]]</i></dt>
+<dd>
+Begin floating display (no nesting allowed). A floating display is saved in a queue and is printed in the order entered. <i>Format</i>, <i>fill</i>, and <i>rindent</i> are the same as in <b>DS</b>. Floating displays are controlled by the two number registers <b>De</b> and <b>Df</b>.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>De register</b></dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<table class="tbl">
+<col style="width: 1.00ex;"/>
+<col style="width: 106.00ex;"/>
+<tbody>
+<tr>
+<td>
+0</td>
+<td>
+Nothing special, this is the default.</td>
+</tr>
+<tr>
+<td>
+1</td>
+<td>
+A page eject occurs after each printed display, giving only one display per page and no text following it.</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>Df register</b></dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<table class="tbl">
+<col style="width: 1.00ex;"/>
+<col style="width: 172.00ex;"/>
+<tbody>
+<tr>
+<td>
+0</td>
+<td>
+Displays are printed at the end of each section (when section-page numbering is active) or at the end of the document.</td>
+</tr>
+<tr>
+<td>
+1</td>
+<td>
+A new display is printed on the current page if there is enough space, otherwise it is printed at the end of the document.</td>
+</tr>
+<tr>
+<td>
+2</td>
+<td>
+One display is printed at the top of each page or column (in multi-column mode).</td>
+</tr>
+<tr>
+<td>
+3</td>
+<td>
+Print one display if there is enough space for it, otherwise it is printed at the top of the next page or column.</td>
+</tr>
+<tr>
+<td>
+4</td>
+<td>
+Print as many displays as possible in a new page or column. A page break occurs between each display if De is not zero.</td>
+</tr>
+<tr>
+<td>
+5</td>
+<td>
+Fill the current page with displays and the rest beginning at a new page or column. (This is the default.) A page break occurs between each display if <b>De</b> is not zero.</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>DL&#160;</b><i>[text-indent&#160;</i><b>[<b>1</b> [<b>1</b>]]]</b></dt>
+<dd>
+Dash list start. Begins a list where each item is printed after a dash. <i>text-indent</i> changes the default indentation of the list items set by number register <b>Pi</b>. A second argument prevents an empty line between each list item. See <b>LI</b>. A third argument prohibits printing of a blank line before each item.</dd>
+</dl>
+<dl>
+<dt>
+<b>DS&#160;</b><i>[format [fill [rindent]]]</i></dt>
+<dd>
+Static display start. Begins collection of text until <b>DE</b>. The text is printed together on the same page, unless it is longer than the height of the page. <b>DS</b> can be nested arbitrarily.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>format</b></dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<table class="tbl">
+<col style="width: 10.00ex;"/>
+<col style="width: 50.00ex;"/>
+<tbody>
+<tr>
+<td>
+&quot;&quot;</td>
+<td>
+No indentation.</td>
+</tr>
+<tr>
+<td>
+none</td>
+<td>
+No indentation.</td>
+</tr>
+<tr>
+<td>
+L</td>
+<td>
+No indentation.</td>
+</tr>
+<tr>
+<td>
+I</td>
+<td>
+Indent text with the value of number register Si .</td>
+</tr>
+<tr>
+<td>
+C</td>
+<td>
+Center each line.</td>
+</tr>
+<tr>
+<td>
+CB</td>
+<td>
+Center the whole display as a block.</td>
+</tr>
+<tr>
+<td>
+R</td>
+<td>
+Right-adjust the lines.</td>
+</tr>
+<tr>
+<td>
+RB</td>
+<td>
+Right-adjust the whole display as a block.</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+The values &#8216;L&#8217;, &#8216;I&#8217;, &#8216;C&#8217;, and &#8216;CB&#8217; can also be specified as &#8216;0&#8217;, &#8216;1&#8217;, &#8216;2&#8217;, and &#8216;3&#8217;, respectively, for compatibility reasons.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>fill</b></dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<table class="tbl">
+<col style="width: 10.00ex;"/>
+<col style="width: 24.00ex;"/>
+<tbody>
+<tr>
+<td>
+&quot;&quot;</td>
+<td>
+Line-filling turned off.</td>
+</tr>
+<tr>
+<td>
+none</td>
+<td>
+Line-filling turned off.</td>
+</tr>
+<tr>
+<td>
+N</td>
+<td>
+Line-filling turned off.</td>
+</tr>
+<tr>
+<td>
+F</td>
+<td>
+Line-filling turned on.</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+&#8216;N&#8217; and &#8216;F&#8217; can also be specified as &#8216;0&#8217; and &#8216;1&#8217;, respectively.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+By default, an empty line is printed before and after the display. Setting number register <b>Ds</b> to&#160;0 prevents this. <i>rindent</i> shortens the line length by that amount.</dd>
+</dl>
+<dl>
+<dt>
+<b>EC&#160;</b><i>[title [override [flag [refname]]]]</i></dt>
+<dd>
+Equation title. Sets a title for an equation. The <i>override</i> argument changes the numbering.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>flag</b></dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<table class="tbl">
+<col style="width: 4.00ex;"/>
+<col style="width: 35.00ex;"/>
+<tbody>
+<tr>
+<td>
+none</td>
+<td>
+override is a prefix to the number.</td>
+</tr>
+<tr>
+<td>
+0</td>
+<td>
+override is a prefix to the number.</td>
+</tr>
+<tr>
+<td>
+1</td>
+<td>
+override is a suffix to the number.</td>
+</tr>
+<tr>
+<td>
+2</td>
+<td>
+override replaces the number.</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>EC</b> uses the number register <b>Ec</b> as a counter. It is possible to use <b>.af</b> to change the format of the number. If number register <b>Of</b> is&#160;1, the format of title uses a dash instead of a dot after the number.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+The string <b>Le</b> controls the title of the List of Equations; default is &#8216;LIST OF EQUATIONS&#8217;. The List of Equations is only printed if number register <b>Le</b> is&#160;1. The default is&#160;0. The string <b>Liec</b> contains the word &#8216;Equation&#8217;, which is printed before the number. If <i>refname</i> is used, then the equation number is saved with <b>.SETR</b>, and can be retrieved with &#8216; <b>.GETST</b> <i>refname</i>&#8217;.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+Special handling of the title occurs if <b>EC</b> is used inside <b>DS</b>/<b>DE</b>; it is not affected by the format of <b>DS</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>EF&#160;</b><i>[arg]</i></dt>
+<dd>
+Even-page footer, printed just above the normal page footer on even pages. See <b>PF</b>.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+This macro defines string <b>EOPef</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>EH&#160;</b><i>[arg]</i></dt>
+<dd>
+Even-page header, printed just below the normal page header on even pages. See <b>PH</b>.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+This macro defines string <b>TPeh</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>EN</b></dt>
+<dd>
+Equation end, see <b>EQ</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>EOP</b></dt>
+<dd>
+End-of-page user-defined macro. This macro is called instead of the normal printing of the footer. The macro is executed in a separate environment, without any trap active. See <b>TP</b>.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>Strings available to EOP</b></dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<table class="tbl">
+<col style="width: 5.00ex;"/>
+<col style="width: 20.00ex;"/>
+<tbody>
+<tr>
+<td>
+EOPf</td>
+<td>
+argument of <b>PF</b></td>
+</tr>
+<tr>
+<td>
+EOPef</td>
+<td>
+argument of <b>EF</b></td>
+</tr>
+<tr>
+<td>
+EOPof</td>
+<td>
+argument of <b>OF</b></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl>
+<dt>
+<b>EPIC&#160;</b><i>[<b>-L</b>] width height [name]</i></dt>
+<dd>
+Draw a box with the given <i>width</i> and <i>height</i>. It also prints the text <i>name</i> or a default string if <i>name</i> is not specified. This is used to include external pictures; just give the size of the picture. <b>-L</b> left-adjusts the picture; the default is to center. See <b>PIC</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>EQ&#160;</b><i>[label]</i></dt>
+<dd>
+Equation start. <b>EQ</b>/<b>EN</b> are the delimiters for equations written for <b>eqn</b>(1). <b>EQ</b>/<b>EN</b> must be inside of a <b>DS</b>/<b>DE</b> pair, except if <b>EQ</b> is used to set options for <b>eqn</b> only. The <i>label</i> argument appears at the right margin of the equation, centered vertically within the <b>DS</b>/<b>DE</b> block, unless number register <b>Eq</b> is&#160;1. Then the label appears at the left margin.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+If there are multiple <b>EQ</b>/<b>EN</b> blocks within a single <b>DS</b>/<b>DE</b> pair, only the last equation label (if any) is printed.</dd>
+</dl>
+<dl>
+<dt>
+<b>EX&#160;</b><i>[title [override [flag [refname]]]]</i></dt>
+<dd>
+Exhibit title. The arguments are the same as for <b>EC</b>. <b>EX</b> uses the number register <b>Ex</b> as a counter. The string <b>Lx</b> controls the title of the List of Exhibits; default is &#8216;LIST OF EXHIBITS&#8217;. The List of Exhibits is only printed if number register <b>Lx</b> is&#160;1, which is the default. The string <b>Liex</b> contains the word &#8216;Exhibit&#8217;, which is printed before the number. If <i>refname</i> is used, the exhibit number is saved with <b>.SETR</b>, and can be retrieved with &#8216; <b>.GETST</b> <i>refname</i>&#8217;.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+Special handling of the title occurs if <b>EX</b> is used inside <b>DS</b>/<b>DE</b>; it is not affected by the format of <b>DS</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>FC&#160;</b><i>[closing]</i></dt>
+<dd>
+Print &#8216;Yours&#160;very&#160;truly,&#8217; as a formal closing of a letter or memorandum. The argument replaces the default string. The default is stored in string variable <b>Letfc</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>FD&#160;</b><i>[arg&#160;</i><b>[1]]</b></dt>
+<dd>
+Footnote default format. Controls the hyphenation (hyphen), right margin justification (adjust), and indentation of footnote text (indent). It can also change the label justification (ljust).</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<table class="tbl">
+<col style="width: 3.00ex;"/>
+<col style="width: 6.00ex;"/>
+<col style="width: 6.00ex;"/>
+<col style="width: 6.00ex;"/>
+<col style="width: 5.00ex;"/>
+<tbody>
+<tr>
+<td>
+arg</td>
+<td>
+hyphen</td>
+<td>
+adjust</td>
+<td>
+indent</td>
+<td>
+ljust</td>
+</tr>
+<tr>
+<td>
+0</td>
+<td>
+no</td>
+<td>
+yes</td>
+<td>
+yes</td>
+<td>
+left</td>
+</tr>
+<tr>
+<td>
+1</td>
+<td>
+yes</td>
+<td>
+yes</td>
+<td>
+yes</td>
+<td>
+left</td>
+</tr>
+<tr>
+<td>
+2</td>
+<td>
+no</td>
+<td>
+no</td>
+<td>
+yes</td>
+<td>
+left</td>
+</tr>
+<tr>
+<td>
+3</td>
+<td>
+yes</td>
+<td>
+no</td>
+<td>
+yes</td>
+<td>
+left</td>
+</tr>
+<tr>
+<td>
+4</td>
+<td>
+no</td>
+<td>
+yes</td>
+<td>
+no</td>
+<td>
+left</td>
+</tr>
+<tr>
+<td>
+5</td>
+<td>
+yes</td>
+<td>
+yes</td>
+<td>
+no</td>
+<td>
+left</td>
+</tr>
+<tr>
+<td>
+6</td>
+<td>
+no</td>
+<td>
+no</td>
+<td>
+no</td>
+<td>
+left</td>
+</tr>
+<tr>
+<td>
+7</td>
+<td>
+yes</td>
+<td>
+no</td>
+<td>
+no</td>
+<td>
+left</td>
+</tr>
+<tr>
+<td>
+8</td>
+<td>
+no</td>
+<td>
+yes</td>
+<td>
+yes</td>
+<td>
+right</td>
+</tr>
+<tr>
+<td>
+9</td>
+<td>
+yes</td>
+<td>
+yes</td>
+<td>
+yes</td>
+<td>
+right</td>
+</tr>
+<tr>
+<td>
+10</td>
+<td>
+no</td>
+<td>
+no</td>
+<td>
+yes</td>
+<td>
+right</td>
+</tr>
+<tr>
+<td>
+11</td>
+<td>
+yes</td>
+<td>
+no</td>
+<td>
+yes</td>
+<td>
+right</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+An argument greater than or equal to 11 is considered as value&#160;0. Default for <b>mm</b> is 10.</dd>
+</dl>
+<dl>
+<dt>
+<b>FE</b></dt>
+<dd>
+Footnote end.</dd>
+</dl>
+<dl>
+<dt>
+<b>FG&#160;</b><i>[title [override [flag [refname]]]]</i></dt>
+<dd>
+Figure title. The arguments are the same as for <b>EC</b>. <b>FG</b> uses the number register <b>Fg</b> as a counter. The string <b>Lf</b> controls the title of the List of Figures; default is &#8216;LIST OF FIGURES&#8217;. The List of Figures is only printed if number register <b>Lf</b> is&#160;1, which is the default. The string <b>Lifg</b> contains the word &#8216;Figure&#8217;, which is printed before the number. If <i>refname</i> is used, then the figure number is saved with <b>.SETR</b>, and can be retrieved with &#8216; <b>.GETST</b> <i>refname</i>&#8217;.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+Special handling of the title occurs if <b>FG</b> is used inside <b>DS</b>/<b>DE</b>, it is not affected by the format of <b>DS</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>FS&#160;</b><i>[label]</i></dt>
+<dd>
+Footnote start. The footnote is ended by <b>FE</b>. By default, footnotes are automatically numbered; the number is available in string&#160;<b>F</b>. Just add <b>\*F</b> in the text. By adding <i>label</i>, it is possible to have other number or names on the footnotes. Footnotes in displays are now possible. An empty line separates footnotes; the height of the line is controlled by number register <b>Fs</b>, default value is&#160;1.</dd>
+</dl>
+<dl>
+<dt>
+<b>GETHN&#160;</b><i>refname [varname]</i></dt>
+<dd>
+Include the header number where the corresponding &#8216;<b>SETR</b>  <i>refname</i>&#8217; was placed. This is displayed as &#8216;X.X.X.&#8217; in pass&#160;1. See <b>INITR</b>. If <i>varname</i> is used, <b>GETHN</b> sets the string variable <i>varname</i> to the header number.</dd>
+</dl>
+<dl>
+<dt>
+<b>GETPN&#160;</b><i>refname [varname]</i></dt>
+<dd>
+Include the page number where the corresponding &#8216;<b>SETR</b>  <i>refname</i>&#8217; was placed. This is displayed as &#8216;9999&#8217; in pass&#160;1. See <b>INITR</b>. If <i>varname</i> is used, <b>GETPN</b> sets the stringvariable <i>varname</i> to the page number.</dd>
+</dl>
+<dl>
+<dt>
+<b>GETR&#160;</b><i>refname</i></dt>
+<dd>
+Combine <b>GETHN</b> and <b>GETPN</b> with the text &#8216;chapter&#8217; and &#8216;,&#160;page&#8217;. The string <b>Qrf</b> contains the text for the cross reference:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+.ds Qrf See chapter \\*[Qrfh], page \\*[Qrfp].</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>Qrf</b> may be changed to support other languages. Strings <b>Qrfh</b> and <b>Qrfp</b> are set by <b>GETR</b> and contain the page and header number, respectively.</dd>
+</dl>
+<dl>
+<dt>
+<b>GETST&#160;</b><i>refname [varname]</i></dt>
+<dd>
+Include the string saved with the second argument to <b>.SETR</b>. This is a dummy string in pass&#160;1. If <i>varname</i> is used, <b>GETST</b> sets it to the saved string. See <b>INITR</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>H&#160;</b><i>level [heading-text [heading-suffix]]</i></dt>
+<dd>
+Numbered section heading. Section headers can have a level between 1 and 14; level&#160;1 is the top level. The text is given in <i>heading-text</i>, and must be surrounded by double quotes if it contains spaces. <i>heading-suffix</i> is added to the header in the text but not in the table of contents. This is normally used for footnote marks and similar things. Don't use <b>\*F</b> in <i>heading-suffix</i>, it doesn't work. A manual label must be used, see <b>FS</b>.<div style="height: 1.00em;">
+&#160;</div>
+A call to the paragraph macro&#160;<b>P</b> directly after&#160;<b>H</b> is ignored. <b>H</b>&#160;takes care of spacing and indentation.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>Page ejection before heading</b></dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+Number register <b>Ej</b> controls page ejection before the heading. By default, a level-one heading gets two blank lines before it; higher levels only get one. A new page is ejected before each first-level heading if number register <b>Ej</b> is&#160;1. All levels below or equal the value of <b>Ej</b> get a new page. Default value for <b>Ej</b> is&#160;0.</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>Heading break level</b></dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+A line break occurs after the heading if the heading level is less or equal to number register <b>Hb</b>. Default value is&#160;2.</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>Heading space level</b></dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+A blank line is inserted after the heading if the heading level is less or equal to number register <b>Hs</b>. Default value is&#160;2.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+Text follows the heading on the same line if the level is greater than both <b>Hb</b> and <b>Hs</b>.</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>Post-heading indent</b></dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+Indentation of the text after the heading is controlled by number register <b>Hi</b>. Default value is&#160;0.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>Hi</b><table class="tbl">
+<col style="width: 1.00ex;"/>
+<col style="width: 73.00ex;"/>
+<tbody>
+<tr>
+<td>
+0</td>
+<td>
+The text is left-justified.</td>
+</tr>
+<tr>
+<td>
+1</td>
+<td>
+Indentation of the text follows the value of number register Pt , see P .</td>
+</tr>
+<tr>
+<td>
+2</td>
+<td>
+The text is lined up with the first word of the heading.</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>Centered section headings</b></dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+All headings whose level is equal or below number register <b>Hc</b> and also less than or equal to <b>Hb</b> or <b>Hs</b> are centered.</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>Font control of the heading</b></dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+The font of each heading level is controlled by string <b>HF</b>. It contains a font number or font name for each level. Default value is<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<b>2 2 2 2 2 2 2 2 2 2 2 2 2 2</b></dd>
+</dl>
+</div>
+</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+(all headings in italic). This could also be written as<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<b>I I I I I I I I I I I I I I</b></dd>
+</dl>
+</div>
+</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+Note that some other implementations use <b>3&#160;3&#160;2&#160;2&#160;2&#160;2&#160;2</b> as the default value. All omitted values are presumed to have value&#160;1.</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>Point size control</b></dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+String <b>HP</b> controls the point size of each heading, in the same way as <b>HF</b> controls the font. A value of&#160;0 selects the default point size. Default value is<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<b>0 0 0 0 0 0 0 0 0 0 0 0 0 0</b></dd>
+</dl>
+</div>
+</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+Beware that only the point size changes, not the vertical size. The latter can be controlled by the user-specified macros <b>HX</b> and/or <b>HZ</b>.</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>Heading counters</b></dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+Fourteen number registers named <b>H1</b> up to <b>H14</b> contain the counter for each heading level. The values are printed using Arabic numerals; this can be changed with the macro <b>HM</b> (see below). All marks are concatenated before printing. To avoid this, set number register <b>Ht</b> to&#160;1. This only prints the current heading counter at each heading.</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>Automatic table of contents</b></dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+All headings whose level is equal or below number register <b>Cl</b> are saved to be printed in the table of contents. Default value is&#160;2.</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>Special control of the heading, user-defined macros</b></dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+The following macros can be defined by the user to get a finer control of vertical spacing, fonts, or other features. Argument <i>level</i> is the level-argument to&#160;<b>H</b>, but&#160;0 for unnumbered headings (see <b>HU</b>). Argument <i>rlevel</i> is the real level; it is set to number register <b>Hu</b> for unnumbered headings. Argument <i>heading-text</i> is the text argument to <b>H</b> and <b>HU</b>.<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+<b>HX&#160;</b><i>level rlevel heading-text</i></dt>
+<dd>
+This macro is called just before the printing of the heading. The following registers are available for <b>HX</b>. Note that <b>HX</b> may alter <b>}0</b>, <b>}2</b>, and <b>;3</b>.<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+<b>}0&#160;</b>(string)</dt>
+<dd>
+Contains the heading mark plus two spaces if <i>rlevel</i> is non-zero, otherwise empty.</dd>
+</dl>
+<dl>
+<dt>
+<b>;0&#160;</b>(register)</dt>
+<dd>
+Contains the position of the text after the heading. 0&#160;means that the text should follow the heading on the same line, 1&#160;means that a line break should occur before the text, and 2&#160;means that a blank line should separate the heading and the text.</dd>
+</dl>
+<dl>
+<dt>
+<b>}2&#160;</b>(string)</dt>
+<dd>
+Contains two spaces if register <b>;0</b> is&#160;0. It is used to separate the heading from the text. The string is empty if <b>;0</b> is non-zero.</dd>
+</dl>
+<dl>
+<dt>
+<b>;3&#160;</b>(register)</dt>
+<dd>
+Contains the needed space in units after the heading. Default is 2v. Can be used to change things like numbering (<b>}0</b>), vertical spacing (<b>}2</b>), and the needed space after the heading.</dd>
+</dl>
+</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>HY&#160;</b><i>dlevel rlevel heading-text</i></dt>
+<dd>
+This macro is called after size and font calculations and might be used to change indentation.</dd>
+</dl>
+<dl>
+<dt>
+<b>HZ&#160;</b><i>dlevel rlevel heading-text</i></dt>
+<dd>
+This macro is called after the printing of the heading, just before <b>H</b> or <b>HU</b> exits. Can be used to change the page header according to the section heading.</dd>
+</dl>
+</div>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>HC&#160;</b><i>[hyphenation-character]</i></dt>
+<dd>
+Set hyphenation character. Default value is &#8216;\%&#8217;. Resets to the default if called without argument. Hyphenation can be turned off by setting number register <b>Hy</b> to&#160;0 at the beginning of the file.</dd>
+</dl>
+<dl>
+<dt>
+<b>HM&#160;</b><i>[arg1 [arg2 [... [arg14]]]]</i></dt>
+<dd>
+Heading mark style. Controls the type of marking for printing of the heading counters. Default is&#160;1 for all levels.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>Argument</b><table class="tbl">
+<col style="width: 10.00ex;"/>
+<col style="width: 49.00ex;"/>
+<tbody>
+<tr>
+<td>
+1</td>
+<td>
+Arabic numerals.</td>
+</tr>
+<tr>
+<td>
+0001</td>
+<td>
+Arabic numerals with leading zeroes, one or more.</td>
+</tr>
+<tr>
+<td>
+A</td>
+<td>
+upper-case alphabetic</td>
+</tr>
+<tr>
+<td>
+a</td>
+<td>
+lower-case alphabetic</td>
+</tr>
+<tr>
+<td>
+I</td>
+<td>
+upper-case roman numerals</td>
+</tr>
+<tr>
+<td>
+i</td>
+<td>
+lower-case roman numerals</td>
+</tr>
+<tr>
+<td>
+&quot;&quot;</td>
+<td>
+Arabic numerals.</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>HU&#160;</b><i>heading-text</i></dt>
+<dd>
+Unnumbered section header. <b>HU</b> behaves like <b>H</b> at the level in number register <b>Hu</b>. See&#160;<b>H</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>HX&#160;</b><i>dlevel rlevel heading-text</i></dt>
+<dd>
+User-defined heading exit. Called just before printing the header. See&#160;<b>H</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>HY&#160;</b><i>dlevel rlevel heading-text</i></dt>
+<dd>
+User-defined heading exit. Called just before printing the header. See&#160;<b>H</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>HZ&#160;</b><i>dlevel rlevel heading-text</i></dt>
+<dd>
+User-defined heading exit. Called just after printing the header. See&#160;<b>H</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>I&#160;</b><i>[italic-text [prev-font-text [italic-text [...]]]]</i></dt>
+<dd>
+Italic. Changes the font to italic if called without arguments. With one argument it sets the word in italic. With two arguments it concatenates them and sets the first word in italic and the second in the previous font. There is no limit on the number of argument; all are concatenated.</dd>
+</dl>
+<dl>
+<dt>
+<b>IA&#160;</b><i>[addressee-name [title]]</i></dt>
+<dd>
+Begin specification of the addressee and addressee's address in letter style. Several names can be specified with empty <b>IA</b>/<b>IE</b>-pairs, but only one address. See <b>LT</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>IB&#160;</b><i>[italic-text [bold-text [italic-text [...]]]]</i></dt>
+<dd>
+Italic-bold. Even arguments are printed in italic, odd in boldface. See&#160;<b>I</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>IE</b></dt>
+<dd>
+End the address specification after <b>IA</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>INITI&#160;</b><i>type filename [macro]</i></dt>
+<dd>
+Initialize the new index system and set the filename to collect index lines in with <b>IND</b>. Argument <i>type</i> selects the type of index: page number, header marks or both. The default is page numbers.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+It is also possible to create a macro that is responsible for formatting each row; just add the name of the macro as a third argument. The macro is then called with the index as argument(s).</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>type</b></dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+<table class="tbl">
+<col style="width: 1.00ex;"/>
+<col style="width: 67.00ex;"/>
+<tbody>
+<tr>
+<td>
+N</td>
+<td>
+Page numbers</td>
+</tr>
+<tr>
+<td>
+H</td>
+<td>
+Header marks</td>
+</tr>
+<tr>
+<td>
+B</td>
+<td>
+Both page numbers and header marks, separated with a tab character.</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>INITR&#160;</b><i>filename</i></dt>
+<dd>
+Initialize the cross reference macros. Cross references are written to stderr and are supposed to be redirected into file &#8216; <i>filename</i>.qrf&#8217;. Requires two passes with groff; this is handled by a separate program called <b>mmroff</b>(1). This program exists because <b>groff</b>(1) by default deactivates the unsafe operations that are required by <b>INITR</b>. The first pass looks for cross references, and the second one includes them. <b>INITR</b> can be used several times, but it is only the first occurrence of <b>INITR</b> that is active.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+See also <b>SETR</b>, <b>GETPN</b>, and <b>GETHN</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>IND&#160;</b><i>arg1 [arg2 [...]]</i></dt>
+<dd>
+Write a line in the index file selected by <b>INITI</b> with all arguments and the page number or header mark separated by tabs.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<b>Examples</b></dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+arg1\tpage number<div style="height: 0.00em;">
+&#160;</div>
+arg1\targ2\tpage number<div style="height: 0.00em;">
+&#160;</div>
+arg1\theader mark<div style="height: 0.00em;">
+&#160;</div>
+arg1\tpage number\theader mark</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>INDP</b></dt>
+<dd>
+Print the index by running the command specified by string variable <b>Indcmd</b>, which has &#8216;sort&#160;-t\t&#8217; as the default value. <b>INDP</b> reads the output from the command to form the index, by default in two columns (this can be changed by defining <b>TYIND</b>). The index is printed with string variable <b>Index</b> as header, default is &#8216;INDEX&#8217;. One-column processing is reactivated after the list. <b>INDP</b> calls the user-defined macros <b>TXIND</b>, <b>TYIND</b>, and <b>TZIND</b> if defined. <b>TXIND</b> is called before printing the string &#8216;INDEX&#8217;, <b>TYIND</b> is called instead of printing &#8216;INDEX&#8217;, and <b>TZIND</b> is called after the printing and should take care of restoring to normal operation again.</dd>
+</dl>
+<dl>
+<dt>
+<b>ISODATE [0]</b></dt>
+<dd>
+Change the predefined date string in <b>DT</b> to ISO-format, this is, &#8216;YYYY-MM-DD&#8217;. This can also be done by adding <b>-rIso=1</b> on the command line. Reverts to old date format if argument is&#160;<b>0</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>IR&#160;</b><i>[italic-text [roman-text [italic-text [...]]]]</i></dt>
+<dd>
+Italic-roman. Even arguments are printed in italic, odd in roman. See&#160;<b>I</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>LB&#160;</b><i>text-indent mark-indent pad type [mark [LI-space [LB-space]]]</i></dt>
+<dd>
+List-begin macro. This is the common macro used for all lists. <i>text-indent</i> is the number of spaces to indent the text from the current indentation.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+<i>pad</i> and <i>mark-indent</i> control where to put the mark. The mark is placed within the mark area, and <i>mark-indent</i> sets the number of spaces before this area. By default it is&#160;0. The mark area ends where the text begins. The start of the text is still controlled by <i>text-indent</i>.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+The mark is left-justified within the mark area if <i>pad</i> is&#160;0. If <i>pad</i> is greater than&#160;0, <i>mark-indent</i> is ignored, and the mark is placed <i>pad</i> spaces before the text. This right-justifies the mark.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+If <i>type</i> is&#160;0 the list either has a hanging indentation or, if argument <i>mark</i> is given, the string <i>mark</i> as a mark.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+If <i>type</i> is greater than&#160;0 automatic numbering occurs, using arabic numbers if <i>mark</i> is empty. <i>mark</i> can then be any of &#8216;1&#8217;, &#8216;A&#8217;, &#8216;a&#8217;, &#8216;I&#8217;, or &#8216;i&#8217;.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+<i>type</i> selects one of six possible ways to display the mark.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>type</b></dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+<table class="tbl">
+<col style="width: 1.00ex;"/>
+<col style="width: 3.00ex;"/>
+<tbody>
+<tr>
+<td>
+1</td>
+<td>
+x.</td>
+</tr>
+<tr>
+<td>
+2</td>
+<td>
+x)</td>
+</tr>
+<tr>
+<td>
+3</td>
+<td>
+(x)</td>
+</tr>
+<tr>
+<td>
+4</td>
+<td>
+[x]</td>
+</tr>
+<tr>
+<td>
+5</td>
+<td>
+&lt;x&gt;</td>
+</tr>
+<tr>
+<td>
+6</td>
+<td>
+{x}</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+Every item in the list gets <i>LI-space</i> number of blank lines before them. Default is&#160;1.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>LB</b> itself prints <i>LB-space</i> blank lines. Default is&#160;0.</dd>
+</dl>
+<dl>
+<dt>
+<b>LC&#160;</b><i>[list-level]</i></dt>
+<dd>
+List-status clear. Terminates all current active lists down to <i>list-level</i>, or&#160;0 if no argument is given. This is used by&#160;<b>H</b> to clear any active list.</dd>
+</dl>
+<dl>
+<dt>
+<b>LE [1]</b></dt>
+<dd>
+List end. Terminates the current list. <b>LE</b> outputs a blank line if an argument is given.</dd>
+</dl>
+<dl>
+<dt>
+<b>LI&#160;</b><i>[mark&#160;</i><b>[1|2]]</b></dt>
+<dd>
+List item preceding every item in a list. Without argument, <b>LI</b> prints the mark determined by the current list type. By giving <b>LI</b> one argument, it uses that as the mark instead. Two arguments to <b>LI</b> makes <i>mark</i> a prefix to the current mark. There is no separating space between the prefix and the mark if the second argument is &#8216;2&#8217; instead of &#8216;1&#8217;. This behaviour can also be achieved by setting number register <b>Limsp</b> to zero. A zero length <i>mark</i> makes a hanging indentation instead.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+A blank line is printed before the list item by default. This behaviour can be controlled by number register <b>Ls</b>. Pre-spacing occurs for each list level less than or equal to <b>Ls</b>. Default value is 99. There is no nesting limit.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+The indentation can be changed through number register <b>Li</b>. Default is&#160;6.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+All lists begin with a list initialization macro, <b>LB</b>. There are, however, seven predefined list types to make lists easier to use. They all call <b>LB</b> with different default values.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<table class="tbl">
+<col style="width: 9.00ex;"/>
+<col style="width: 30.00ex;"/>
+<tbody>
+<tr>
+<td>
+<b>AL</b></td>
+<td>
+Automatically Incremented List</td>
+</tr>
+<tr>
+<td>
+<b>ML</b></td>
+<td>
+Marked List</td>
+</tr>
+<tr>
+<td>
+<b>VL</b></td>
+<td>
+Variable-Item List</td>
+</tr>
+<tr>
+<td>
+<b>BL</b></td>
+<td>
+Bullet List</td>
+</tr>
+<tr>
+<td>
+<b>DL</b></td>
+<td>
+Dash List</td>
+</tr>
+<tr>
+<td>
+<b>RL</b></td>
+<td>
+Reference List</td>
+</tr>
+<tr>
+<td>
+<b>BVL</b></td>
+<td>
+Broken Variable List.</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+These lists are described at other places in this manual. See also <b>LB</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>LT&#160;</b><i>[<i>arg/</i>]<i></i></i></dt>
+<dd>
+Format a letter in one of four different styles depending on the argument. See also section <b>INTERNALS</b>.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<table class="tbl">
+<col style="width: 3.00ex;"/>
+<col style="width: 146.00ex;"/>
+<tbody>
+<tr>
+<td>
+Arg</td>
+<td>
+Style</td>
+</tr>
+<tr>
+<td>
+BL</td>
+<td>
+Blocked. Date line, return address, writer's address and closing begins at the center of the line. . All other lines begin at the left margin.</td>
+</tr>
+<tr>
+<td>
+SB</td>
+<td>
+Semi-blocked. Same as blocked, except that the first line in every paragraph is indented five spaces.</td>
+</tr>
+<tr>
+<td>
+FB</td>
+<td>
+Full-blocked. All lines begin at the left margin.</td>
+</tr>
+<tr>
+<td>
+SP</td>
+<td>
+Simplified. Almost the same as the full-blocked style. Subject and the writer's identification are printed in all-capital.</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>LO&#160;</b><i>type [arg]</i></dt>
+<dd>
+Specify options in letter (see <b>.LT</b>). This is a list of the standard options:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<table class="tbl">
+<col style="width: 2.00ex;"/>
+<col style="width: 246.00ex;"/>
+<tbody>
+<tr>
+<td>
+CN</td>
+<td>
+Confidential notation. Prints &#8216;CONFIDENTIAL&#8217; on the second line below the date line. . Any argument replaces &#8216;CONFIDENTIAL&#8217;. . See also string variable LetCN .</td>
+</tr>
+<tr>
+<td>
+RN</td>
+<td>
+Reference notation. Prints &#8216;In reference to:&#8217; and the argument two lines below the date line. See also string variable LetRN .</td>
+</tr>
+<tr>
+<td>
+AT</td>
+<td>
+Attention. Prints &#8216;ATTENTION:&#8217; and the argument below the inside address. See also string variable LetAT .</td>
+</tr>
+<tr>
+<td>
+SA</td>
+<td>
+Salutation. Prints &#8217;To Whom It May Concern:&#8217; or the argument if it was present. The salutation is printed two lines below the inside address. See also string variable LetSA .</td>
+</tr>
+<tr>
+<td>
+SJ</td>
+<td>
+Subject line. Prints the argument as subject prefixed with &#8216;SUBJECT:&#8217; two lines below the inside address, except in letter type &#8216;SP&#8217;, where the subject is printed in all-capital without any prefix. See also string variable LetSJ .</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>MC&#160;</b><i>column-size [column-separation]</i></dt>
+<dd>
+Begin multiple columns. Return to normal with <b>1C</b>. <b>MC</b> creates as many columns as the current line length permits. <i>column-size</i> is the width of each column, and <i>column-separation</i> is the space between two columns. Default separation is <i>column-size</i>/15. See also <b>1C</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>ML&#160;</b><i>mark [text-indent&#160;</i><b>[1]]</b></dt>
+<dd>
+Marked list start. The <i>mark</i> argument is printed before each list item. <i>text-indent</i> sets the indent and overrides <b>Li</b>. A third argument prohibits printing of a blank line before each item.</dd>
+</dl>
+<dl>
+<dt>
+<b>MT&#160;</b><i>[arg [addressee]]</i></dt>
+<dd>
+Memorandum type. The argument <i>arg</i> is part of a filename in &#8216;/usr/share/groff/1.22.3/tmac/mm/*.MT&#8217;. Memorandum types 0 to&#160;5 are supported, including type &#8216;string&#8217; (which gets internally mapped to type&#160;6). <i>addressee</i> just sets a variable, used in the AT&amp;T macros.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>arg</b></dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<table class="tbl">
+<col style="width: 1.00ex;"/>
+<col style="width: 57.00ex;"/>
+<tbody>
+<tr>
+<td>
+0</td>
+<td>
+Normal memorandum, no type printed.</td>
+</tr>
+<tr>
+<td>
+1</td>
+<td>
+Memorandum with &#8216;MEMORANDUM FOR FILE&#8217; printed.</td>
+</tr>
+<tr>
+<td>
+2</td>
+<td>
+Memorandum with &#8216;PROGRAMMER'S NOTES&#8217; printed.</td>
+</tr>
+<tr>
+<td>
+3</td>
+<td>
+Memorandum with &#8216;ENGINEER'S NOTES&#8217; printed.</td>
+</tr>
+<tr>
+<td>
+4</td>
+<td>
+Released paper style.</td>
+</tr>
+<tr>
+<td>
+5</td>
+<td>
+External letter style.</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+See also <b>COVER</b>/<b>COVEND</b>, a more flexible type of front page.</dd>
+</dl>
+<dl>
+<dt>
+<b>MOVE&#160;</b><i>y-pos [x-pos [line-length]]</i></dt>
+<dd>
+Move to a position, setting page offset to <i>x-pos</i>. If <i>line-length</i> is not given, the difference between current and new page offset is used. Use <b>PGFORM</b> without arguments to return to normal.</dd>
+</dl>
+<dl>
+<dt>
+<b>MULB&#160;</b><i>cw1 space1 [cw2 space2 [cw3 ...]]</i></dt>
+<dd>
+Begin a special multi-column mode. All columns widths must be specified. The space between the columns must be specified also. The last column does not need any space definition. <b>MULB</b> starts a diversion, and <b>MULE</b> ends the diversion and prints the columns. The unit for the width and space arguments is &#8216;n&#8217;, but <b>MULB</b> accepts all normal unit specifications like &#8216;c&#8217; and &#8216;i&#8217;. <b>MULB</b> operates in a separate environment.</dd>
+</dl>
+<dl>
+<dt>
+<b>MULN</b></dt>
+<dd>
+Begin the next column. This is the only way to switch the column.</dd>
+</dl>
+<dl>
+<dt>
+<b>MULE</b></dt>
+<dd>
+End the multi-column mode and print the columns.</dd>
+</dl>
+<dl>
+<dt>
+<b>nP&#160;</b><i>[type]</i></dt>
+<dd>
+Print numbered paragraph with header level two. See <b>.P</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>NCOL</b></dt>
+<dd>
+Force printing to the next column. Don't use this together with the <b>MUL*</b> macros, see <b>2C</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>NS&#160;</b><i>[arg&#160;</i><b>[1]]</b></dt>
+<dd>
+Print different types of notations. The argument selects between the predefined type of notations. If the second argument is available, then the argument becomes the entire notation. If the argument doesn't select a predefined type, it is printed as &#8216;Copy ( <i>arg/</i>) to&#8217;. It is possible to add more standard notations, see the string variables <b>Letns</b> and <b>Letnsdef</b>.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<table class="tbl">
+<col style="width: 12.00ex;"/>
+<col style="width: 27.00ex;"/>
+<tbody>
+<tr>
+<td>
+<b>Arg</b></td>
+<td>
+<b>Notation</b></td>
+</tr>
+<tr>
+<td>
+<i>none/</i></td>
+<td>
+Copy To</td>
+</tr>
+<tr>
+<td>
+&quot;&quot;</td>
+<td>
+Copy To</td>
+</tr>
+<tr>
+<td>
+1</td>
+<td>
+Copy To (with att.) to</td>
+</tr>
+<tr>
+<td>
+2</td>
+<td>
+Copy To (without att.) to</td>
+</tr>
+<tr>
+<td>
+3</td>
+<td>
+Att.</td>
+</tr>
+<tr>
+<td>
+4</td>
+<td>
+Atts.</td>
+</tr>
+<tr>
+<td>
+5</td>
+<td>
+Enc.</td>
+</tr>
+<tr>
+<td>
+6</td>
+<td>
+Encs.</td>
+</tr>
+<tr>
+<td>
+7</td>
+<td>
+Under separate cover</td>
+</tr>
+<tr>
+<td>
+8</td>
+<td>
+Letter to</td>
+</tr>
+<tr>
+<td>
+9</td>
+<td>
+Memorandum to</td>
+</tr>
+<tr>
+<td>
+10</td>
+<td>
+Copy (with atts.) to</td>
+</tr>
+<tr>
+<td>
+11</td>
+<td>
+Copy (without atts.) to</td>
+</tr>
+<tr>
+<td>
+12</td>
+<td>
+Abstract Only to</td>
+</tr>
+<tr>
+<td>
+13</td>
+<td>
+Complete Memorandum to</td>
+</tr>
+<tr>
+<td>
+14</td>
+<td>
+CC</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>ND&#160;</b><i>new-date</i></dt>
+<dd>
+New date. Overrides the current date. Date is not printed if <i>new-date</i> is an empty string.</dd>
+</dl>
+<dl>
+<dt>
+<b>OF&#160;</b><i>[arg]</i></dt>
+<dd>
+Odd-page footer, a line printed just above the normal footer. See <b>EF</b> and <b>PF</b>.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+This macro defines string <b>EOPof</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>OH&#160;</b><i>[arg]</i></dt>
+<dd>
+Odd-page header, a line printed just below the normal header. See <b>EH</b> and <b>PH</b>.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+This macro defines string <b>TPoh</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>OP</b></dt>
+<dd>
+Make sure that the following text is printed at the top of an odd-numbered page. Does not output an empty page if currently at the top of an odd page.</dd>
+</dl>
+<dl>
+<dt>
+<b>P&#160;</b><i>[type]</i></dt>
+<dd>
+Begin new paragraph. <b>P</b>&#160;without argument produces left-justified text, even the first line of the paragraph. This is the same as setting <i>type</i> to&#160;0. If the argument is&#160;1, the first line of text following&#160;<b>P</b> is indented by the number of spaces in number register <b>Pi</b>, by default&#160;5.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+Instead of giving an argument to&#160;<b>P</b> it is possible to set the paragraph type in number register <b>Pt</b>. Using 0 and&#160;1 is the same as adding that value to <b>P</b>. A value of&#160;2 indents all paragraphs, except after headings, lists, and displays (this value can't be used as an argument to <b>P</b> itself).</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+The space between two paragraphs is controlled by number register <b>Ps</b>, and is&#160;1 by default (one blank line).</dd>
+</dl>
+<dl>
+<dt>
+<b>PGFORM&#160;</b><i>[linelength [pagelength [pageoffset&#160;</i><b>[1]]]]</b></dt>
+<dd>
+Set line length, page length, and/or page offset. This macro can be used for special formatting, like letter heads and other. It is normally the first command in a file, though it is not necessary. <b>PGFORM</b> can be used without arguments to reset everything after a <b>MOVE</b> call. A line break is done unless the fourth argument is given. This can be used to avoid the page number on the first page while setting new width and length. (It seems as if this macro sometimes doesn't work too well. Use the command line arguments to change line length, page length, and page offset instead.)</dd>
+</dl>
+<dl>
+<dt>
+<b>PGNH</b></dt>
+<dd>
+No header is printed on the next page. Used to get rid of the header in letters or other special texts. This macro must be used before any text to inhibit the page header on the first page.</dd>
+</dl>
+<dl>
+<dt>
+<b>PIC [-B] [-L] [-C] [-R] [-I&#160;</b><i>n] filename [width [height]]</i></dt>
+<dd>
+Include a PostScript file in the document. The macro depends on <b>mmroff</b>(1) and <b>INITR</b>. The arguments <b>-L</b>, <b>-C</b>, <b>-R</b>, and <b>-I&#160;</b><i>n</i> adjust the picture or indent it. With no flag the picture is adjusted to the left. Adding <b>-B</b> draws a box around the picture. The optional <i>width</i> and <i>height</i> can also be given to resize the picture.</dd>
+</dl>
+<dl>
+<dt>
+<b>PE</b></dt>
+<dd>
+Picture end. Ends a picture for <b>pic</b>(@MAN1EXT).</dd>
+</dl>
+<dl>
+<dt>
+<b>PF&#160;</b><i>[arg]</i></dt>
+<dd>
+Page footer. <b>PF</b> sets the line to be printed at the bottom of each page. Empty by default. See <b>PH</b> for the argument specification.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+This macro defines string <b>EOPf</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>PH&#160;</b><i>[arg]</i></dt>
+<dd>
+Page header, a line printed at the top of each page. The argument should be specified as</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+&quot;'<i>left-part</i>'<i>center-part</i>'<i>right-part</i>'&quot;</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+where <i>left-part</i>, <i>center-part</i>, and <i>right-part</i> are printed left-justified, centered, and right justified, respectively. Within the argument to <b>PH</b>, the character &#8216;%&#8217; is changed to the current page number. The default argument is</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+&quot;''- % -''&quot;</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+which gives the page number between two dashes.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+This macro defines string <b>TPh</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>PS</b></dt>
+<dd>
+Picture start (from pic). Begins a picture for <b>pic</b>(1).</dd>
+</dl>
+<dl>
+<dt>
+<b>PX</b></dt>
+<dd>
+Page header user-defined exit. This macro is called just after the printing of the page header in <i>no-space</i> mode.</dd>
+</dl>
+<dl>
+<dt>
+<b>R</b></dt>
+<dd>
+Roman. Return to roman font, see also&#160;<b>I</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>RB&#160;</b><i>[roman-text [bold-text [roman-text [...]]]]</i></dt>
+<dd>
+Roman-bold. Even arguments are printed in roman, odd in boldface. See&#160;<b>I</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>RD&#160;</b><i>[prompt [diversion [string]]]</i></dt>
+<dd>
+Read from standard input to diversion and/or string. The text is saved in a diversion named <i>diversion</i>. Recall the text by writing the name of the diversion after a dot on an empty line. A string is also defined if <i>string</i> is given. <i>Diversion</i> and/or <i>prompt</i> can be empty (&quot;&quot;).</dd>
+</dl>
+<dl>
+<dt>
+<b>RF</b></dt>
+<dd>
+Reference end. Ends a reference definition and returns to normal processing. See <b>RS</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>RI&#160;</b><i>[roman-text [italic-text [roman-text [...]]]]</i></dt>
+<dd>
+Print even arguments in roman, odd in italic. See&#160;<b>I</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>RL&#160;</b><i>[text-indent</i><b>[1]]</b></dt>
+<dd>
+Reference list start. Begins a list where each item is preceded with an automatically incremented number between square brackets. <i>text-indent</i> changes the default indentation.</dd>
+</dl>
+<dl>
+<dt>
+<b>RP&#160;</b><i>[arg1 [arg2]]</i></dt>
+<dd>
+Produce reference page. This macro can be used if a reference page is wanted somewhere in the document. It is not needed if <b>TC</b> is used to produce a table of contents. The reference page is then printed automatically.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+The reference counter is not reset if <i>arg1</i> is&#160;1.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+<i>arg2</i> tells <b>RP</b> whether to eject a page or not.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>arg2</b></dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<table class="tbl">
+<col style="width: 1.00ex;"/>
+<col style="width: 49.00ex;"/>
+<tbody>
+<tr>
+<td>
+0</td>
+<td>
+The reference page is printed on a separate page.</td>
+</tr>
+<tr>
+<td>
+1</td>
+<td>
+Do not eject page after the list.</td>
+</tr>
+<tr>
+<td>
+2</td>
+<td>
+Do not eject page before the list.</td>
+</tr>
+<tr>
+<td>
+3</td>
+<td>
+Do not eject page before and after the list.</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+The reference items are separated by a blank line. Setting number register <b>Ls</b> to&#160;0 suppresses the line.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+The string <b>Rp</b> contains the reference page title and is set to &#8216;REFERENCES&#8217; by default. The number register <b>Rpe</b> holds the default value for the second argument of <b>RP</b>; it is initially set to&#160;0.</dd>
+</dl>
+<dl>
+<dt>
+<b>RS&#160;</b><i>[string-name]</i></dt>
+<dd>
+Begin an automatically numbered reference definition. Put the string <b>\*(Rf</b> where the reference mark should be and write the reference between <b>RS</b>/<b>RF</b> at next new line after the reference mark. The reference number is stored in number register <b>:R</b>. If <i>string-name</i> is given, a string with that name is defined and contains the current reference mark. The string can be referenced as <b>\*[</b><i>string-name</i><b>]</b> later in the text.</dd>
+</dl>
+<dl>
+<dt>
+<b>S&#160;</b><i>[size [spacing]]</i></dt>
+<dd>
+Set point size and vertical spacing. If any argument is equal to &#8216;P&#8217;, the previous value is used. A &#8216;C&#8217; means current value, and &#8216;D&#8217; the default value. If &#8216;+&#8217; or &#8216;-&#8217; is used before the value, the current value is incremented or decremented, respectively.</dd>
+</dl>
+<dl>
+<dt>
+<b>SA&#160;</b><i>[arg]</i></dt>
+<dd>
+Set right-margin justification. Justification is turned on by default. No argument or value &#8216;0&#8217; turns off justification, and &#8216;1&#8217; turns on justification.</dd>
+</dl>
+<dl>
+<dt>
+<b>SETR&#160;</b><i>refname [string]</i></dt>
+<dd>
+Remember the current header and page number as <i>refname</i>. Saves <i>string</i> if <i>string</i> is defined. <i>string</i> is retrieved with <b>.GETST</b>. See <b>INITR</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>SG&#160;</b><i>[arg&#160;</i><b>[1]]</b></dt>
+<dd>
+Signature line. Prints the authors name(s) after the formal closing. The argument is appended to the reference data, printed at either the first or last author. The reference data is the location, department, and initials specified with <b>.AU</b>. It is printed at the first author if the second argument is given, otherwise at the last. No reference data is printed if the author(s) is specified through <b>.WA</b>/<b>.WE</b>. See section <b>INTERNALS</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>SK&#160;</b><i>[pages]</i></dt>
+<dd>
+Skip pages. If <i>pages</i> is&#160;0 or omitted, a skip to the next page occurs unless it is already at the top of a page. Otherwise it skips <i>pages</i> pages.</dd>
+</dl>
+<dl>
+<dt>
+<b>SM&#160;</b><i>string1 [string2 [string3]]</i></dt>
+<dd>
+Make a string smaller. If <i>string2</i> is given, <i>string1</i> is made smaller and <i>string2</i> stays at normal size, concatenated with <i>string1</i>. With three arguments, everything is concatenated, but only <i>string2</i> is made smaller.</dd>
+</dl>
+<dl>
+<dt>
+<b>SP&#160;</b><i>[lines]</i></dt>
+<dd>
+Space vertically. <i>lines</i> can have any scaling factor, like &#8216;3i&#8217; or &#8216;8v&#8217;. Several <b>SP</b> calls in a line only produces the maximum number of lines, not the sum. <b>SP</b> is ignored also until the first text line in a page. Add <b>\&amp;</b> before a call to <b>SP</b> to avoid this.</dd>
+</dl>
+<dl>
+<dt>
+<b>TAB</b></dt>
+<dd>
+Reset tabs to every&#160;5n. Normally used to reset any previous tab positions.</dd>
+</dl>
+<dl>
+<dt>
+<b>TB&#160;</b><i>[title [override [flag [refname]]]]</i></dt>
+<dd>
+Table title. The arguments are the same as for <b>EC</b>. <b>TB</b> uses the number register <b>Tb</b> as a counter. The string <b>Lt</b> controls the title of the List of Tables; default value is &#8216;LIST OF TABLES&#8217;. The List of Tables is only printed if number register <b>Lt</b> is&#160;1, which is the default. The string <b>Litb</b> contains the word &#8216;TABLE&#8217;, which is printed before the number.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+Special handling of the title occurs if <b>TB</b> is used inside <b>DS</b>/<b>DE</b>, it is not affected by the format of <b>DS</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>TC&#160;</b><i>[slevel [spacing [tlevel [tab [h1 [h2 [h3 [h4 [h5]]]]]]]]]</i></dt>
+<dd>
+Table of contents. This macro is normally used as the last line of the document. It generates a table of contents with headings up to the level controlled by number register <b>Cl</b>. Note that <b>Cl</b> controls the saving of headings, it has nothing to do with <b>TC</b>. Headings with a level less than or equal to <i>slevel</i> get <i>spacing</i> number of lines before them. Headings with a level less than or equal to <i>tlevel</i> have their page numbers right-justified with dots or spaces separating the text and the page number. Spaces are used if <i>tab</i> is greater than zero, dots otherwise. Other headings have the page number directly at the end of the heading text (<i>ragged-right</i>).</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+The rest of the arguments is printed, centered, before the table of contents.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+The user-defined macros <b>TX</b> and <b>TY</b> are used if <b>TC</b> is called with at most four arguments. <b>TX</b> is called before the printing of the string &#8216;CONTENTS&#8217;, and <b>TY</b> is called instead of printing &#8216;CONTENTS&#8217;.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+Equivalent macros can be defined for list of figures, tables, equations and exhibits by defining <b>TX</b><i>xx</i> or <b>TY</b><i>xx,</i> where <i>xx</i> is &#8216;Fg&#8217;, &#8216;TB&#8217;, &#8216;EC&#8217;, or &#8216;EX&#8217;, respectively.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+String <b>Ci</b> can be set to control the indentations for each heading-level. It must be scaled, like</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+.ds Ci .25i .5i .75i 1i 1i</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+By default, the indentation is controlled by the maximum length of headings in each level.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+The string variables <b>Lifg</b>, <b>Litb</b>, <b>Liex</b>, <b>Liec</b>, and <b>Licon</b> contain &#8216;Figure&#8217;, &#8216;TABLE&#8217;, &#8216;Exhibit&#8217;, &#8216;Equation&#8217;, and &#8216;CONTENTS&#8217;, respectively. These can be redefined to other languages.</dd>
+</dl>
+<dl>
+<dt>
+<b>TE</b></dt>
+<dd>
+Table end. See <b>TS</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>TH [N]</b></dt>
+<dd>
+Table header. See <b>TS</b>. <b>TH</b> ends the header of the table. This header is printed again if a page break occurs. Argument &#8216;N&#8217; isn't implemented yet.</dd>
+</dl>
+<dl>
+<dt>
+<b>TL&#160;</b><i>[charging-case-number [filing-case-number]]</i></dt>
+<dd>
+Begin title of memorandum. All text up to the next <b>AU</b> is included in the title. <i>charging-case-number</i> and <i>filing-case-number</i> are saved for use in the front page processing.</dd>
+</dl>
+<dl>
+<dt>
+<b>TM&#160;</b><i>[num1 [num2 [...]]]</i></dt>
+<dd>
+Technical memorandum numbers used in <b>.MT</b>. An unlimited number of arguments may be given.</dd>
+</dl>
+<dl>
+<dt>
+<b>TP</b></dt>
+<dd>
+Top-of-page user-defined macro. This macro is called instead of the normal page header. It is possible to get complete control over the header. Note that the header and the footer are printed in a separate environment. Line length is preserved, though. See <b>EOP</b>.</dd>
+</dl>
+<dl>
+<dt>
+</dt>
+<dd>
+<b>strings available to TP</b></dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<table class="tbl">
+<col style="width: 4.00ex;"/>
+<col style="width: 20.00ex;"/>
+<tbody>
+<tr>
+<td>
+TPh</td>
+<td>
+argument of <b>PH</b></td>
+</tr>
+<tr>
+<td>
+TPeh</td>
+<td>
+argument of <b>EH</b></td>
+</tr>
+<tr>
+<td>
+TPoh</td>
+<td>
+argument of <b>OH</b></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl>
+<dt>
+<b>TS [H]</b></dt>
+<dd>
+Table start. This is the start of a table specification to <b>tbl</b>(1). <b>TS</b> ends with <b>TE</b>. Argument &#8216;H&#8217; tells <b>mm</b> that the table has a header. See <b>TH</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>TX</b></dt>
+<dd>
+User-defined table of contents exit. This macro is called just before <b>TC</b> prints the word &#8216;CONTENTS&#8217;. See <b>TC</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>TY</b></dt>
+<dd>
+User-defined table of contents exit. This macro is called instead of printing &#8216;CONTENTS&#8217;. See <b>TC</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>VERBON&#160;</b><i>[flag [point-size [font]]]</i></dt>
+<dd>
+Begin verbatim output using Courier font. Usually for printing programs. All characters have equal width. The point size can be changed with the second argument. By specifying a third argument it is possible to use another font instead of Courier. <i>flag</i> controls several special features. Its value is the sum of all wanted features.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<table class="tbl">
+<col style="width: 3.00ex;"/>
+<col style="width: 248.00ex;"/>
+<tbody>
+<tr>
+<td>
+Arg</td>
+<td>
+Description</td>
+</tr>
+<tr>
+<td>
+1</td>
+<td>
+Disable the escape character (\). This is normally turned on during verbose output.</td>
+</tr>
+<tr>
+<td>
+2</td>
+<td>
+Add an empty line before the verbose text.</td>
+</tr>
+<tr>
+<td>
+4</td>
+<td>
+Add an empty line after the verbose text.</td>
+</tr>
+<tr>
+<td>
+8</td>
+<td>
+Print the verbose text with numbered lines. This adds four digit-sized spaces in the beginning of each line. Finer control is available with the string variable Verbnm . It contains all arguments to the troff (1) command .nm , normally &#8216;1&#8217;.</td>
+</tr>
+<tr>
+<td>
+16</td>
+<td>
+Indent the verbose text by &#8216;5n&#8217;. . This is controlled by the number-variable Verbin (in units).</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>VERBOFF</b></dt>
+<dd>
+End verbatim output.</dd>
+</dl>
+<dl>
+<dt>
+<b>VL&#160;</b><i>text-indent [mark-indent&#160;</i><b>[1]]</b></dt>
+<dd>
+Variable-item list. It has no fixed mark, it assumes that every <b>LI</b> has a mark instead. <i>text-indent</i> sets the indent to the text, and <i>mark-indent</i> the distance from the current indentation to the mark. A third argument prohibits printing of a blank line before each item.</dd>
+</dl>
+<dl>
+<dt>
+<b>VM [-T] [</b><i>top [bottom]]</i></dt>
+<dd>
+Vertical margin. Increase the top and bottom margin by <i>top</i> and <i>bottom</i>, respectively. If option <b>-T</b> is specified, set those margins to <i>top</i> and <i>bottom</i>. If no argument is given, reset the margin to zero, or to the default (&#8216;7v 5v&#8217;) if <b>-T</b> is used. It is highly recommended that macros <b>TP</b> and/or <b>EOP</b> are defined if using <b>-T</b> and setting top and/or bottom margin to less than the default.</dd>
+</dl>
+<dl>
+<dt>
+<b>WA&#160;</b><i>[writer-name [title]]</i></dt>
+<dd>
+Begin specification of the writer and writer's address. Several names can be specified with empty <b>WA</b>/<b>WE</b> pairs, but only one address.</dd>
+</dl>
+<dl>
+<dt>
+<b>WE</b></dt>
+<dd>
+End the address specification after <b>.WA</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>WC&#160;</b><i>[format1] [format2] [...]</i></dt>
+<dd>
+Footnote and display width control.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<table class="tbl">
+<col style="width: 3.00ex;"/>
+<col style="width: 82.00ex;"/>
+<tbody>
+<tr>
+<td>
+N</td>
+<td>
+Set default mode which is equal to using the options -WF , -FF , -WD , and FB .</td>
+</tr>
+<tr>
+<td>
+WF</td>
+<td>
+Wide footnotes, wide also in two-column mode.</td>
+</tr>
+<tr>
+<td>
+-WF</td>
+<td>
+Normal footnote width, follow column mode.</td>
+</tr>
+<tr>
+<td>
+FF</td>
+<td>
+All footnotes gets the same width as the first footnote encountered.</td>
+</tr>
+<tr>
+<td>
+-FF</td>
+<td>
+Normal footnotes, width follows <b>WF</b> and <b>-WF</b>.</td>
+</tr>
+<tr>
+<td>
+WD</td>
+<td>
+Wide displays, wide also in two-column mode.</td>
+</tr>
+<tr>
+<td>
+-WD</td>
+<td>
+Normal display width, follow column mode.</td>
+</tr>
+<tr>
+<td>
+FB</td>
+<td>
+Floating displays generates a line break when printed on the current page.</td>
+</tr>
+<tr>
+<td>
+-FB</td>
+<td>
+Floating displays does not generate line break.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="subsection">
+<h2>Strings used in mm</h2><dl>
+<dt>
+<b>App</b></dt>
+<dd>
+A string containing the word &#8216;APPENDIX&#8217;.</dd>
+</dl>
+<dl>
+<dt>
+<b>Apptxt</b></dt>
+<dd>
+The current appendix text.</dd>
+</dl>
+<dl>
+<dt>
+<b>EM</b></dt>
+<dd>
+Em dash string</dd>
+</dl>
+<dl>
+<dt>
+<b>H1txt</b></dt>
+<dd>
+Updated by <b>.H</b> and <b>.HU</b> to the current heading text. Also updated in table of contents &amp; friends.</dd>
+</dl>
+<dl>
+<dt>
+<b>HF</b></dt>
+<dd>
+Font list for headings, &#8216;2 2 2 2 2 2 2&#8217; by default. Non-numeric font names may also be used.</dd>
+</dl>
+<dl>
+<dt>
+<b>HP</b></dt>
+<dd>
+Point size list for headings. By default, this is &#8217;0 0 0 0 0 0 0&#8217; which is the same as &#8216;10 10 10 10 10 10 10&#8217;.</dd>
+</dl>
+<dl>
+<dt>
+<b>Index</b></dt>
+<dd>
+Contains the string &#8216;INDEX&#8217;.</dd>
+</dl>
+<dl>
+<dt>
+<b>Indcmd</b></dt>
+<dd>
+Contains the index command. Default value is &#8216;sort&#160;-t\t&#8217;.</dd>
+</dl>
+<dl>
+<dt>
+<b>Lifg</b></dt>
+<dd>
+String containing &#8216;Figure&#8217;.</dd>
+</dl>
+<dl>
+<dt>
+<b>Litb</b></dt>
+<dd>
+String containing &#8216;TABLE&#8217;.</dd>
+</dl>
+<dl>
+<dt>
+<b>Liex</b></dt>
+<dd>
+String containing &#8216;Exhibit&#8217;.</dd>
+</dl>
+<dl>
+<dt>
+<b>Liec</b></dt>
+<dd>
+String containing &#8216;Equation&#8217;.</dd>
+</dl>
+<dl>
+<dt>
+<b>Licon</b></dt>
+<dd>
+String containing &#8216;CONTENTS&#8217;.</dd>
+</dl>
+<dl>
+<dt>
+<b>Lf</b></dt>
+<dd>
+Contains the string &#8216;LIST OF FIGURES&#8217;.</dd>
+</dl>
+<dl>
+<dt>
+<b>Lt</b></dt>
+<dd>
+Contains the string &#8216;LIST OF TABLES&#8217;.</dd>
+</dl>
+<dl>
+<dt>
+<b>Lx</b></dt>
+<dd>
+Contains the string &#8216;LIST OF EXHIBITS&#8217;.</dd>
+</dl>
+<dl>
+<dt>
+<b>Le</b></dt>
+<dd>
+Contains the string &#8216;LIST OF EQUATIONS&#8217;.</dd>
+</dl>
+<dl>
+<dt>
+<b>Letfc</b></dt>
+<dd>
+Contains the string &#8216;Yours very truly,&#8217;, used in <b>.FC</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>Letapp</b></dt>
+<dd>
+Contains the string &#8216;APPROVED:&#8217;, used in <b>.AV</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>Letdate</b></dt>
+<dd>
+Contains the string &#8216;Date&#8217;, used in <b>.AV</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>LetCN</b></dt>
+<dd>
+Contains the string &#8216;CONFIDENTIAL&#8217;, used in <b>.LO CN</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>LetSA</b></dt>
+<dd>
+Contains the string &#8216;To Whom It May Concern:&#8217;, used in <b>.LO SA</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>LetAT</b></dt>
+<dd>
+Contains the string &#8216;ATTENTION:&#8217;, used in <b>.LO AT</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>LetSJ</b></dt>
+<dd>
+Contains the string &#8216;SUBJECT:&#8217;, used in <b>.LO SJ</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>LetRN</b></dt>
+<dd>
+Contains the string &#8216;In reference to:&#8217;, used in <b>.LO RN</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>Letns</b></dt>
+<dd>
+is an array containing the different strings used in <b>.NS</b>. It is really a number of string variables prefixed with <b>Letns!</b>. If the argument doesn't exist, it is included between <b>()</b> with <b>Letns!copy</b> as a prefix and <b>Letns!to</b> as a suffix. Observe the space after &#8216;Copy&#8217; and before &#8216;to&#8217;.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<table class="tbl">
+<col style="width: 10.00ex;"/>
+<col style="width: 25.00ex;"/>
+<tbody>
+<tr>
+<td>
+Name</td>
+<td>
+Value</td>
+</tr>
+<tr>
+<td>
+Letns!0</td>
+<td>
+Copy to</td>
+</tr>
+<tr>
+<td>
+Letns!1</td>
+<td>
+Copy (with att.) to</td>
+</tr>
+<tr>
+<td>
+Letns!2</td>
+<td>
+Copy (without att.) to</td>
+</tr>
+<tr>
+<td>
+Letns!3</td>
+<td>
+Att.</td>
+</tr>
+<tr>
+<td>
+Letns!4</td>
+<td>
+Atts.</td>
+</tr>
+<tr>
+<td>
+Letns!5</td>
+<td>
+Enc.</td>
+</tr>
+<tr>
+<td>
+Letns!6</td>
+<td>
+Encs.</td>
+</tr>
+<tr>
+<td>
+Letns!7</td>
+<td>
+Under separate cover</td>
+</tr>
+<tr>
+<td>
+Letns!8</td>
+<td>
+Letter to</td>
+</tr>
+<tr>
+<td>
+Letns!9</td>
+<td>
+Memorandum to</td>
+</tr>
+<tr>
+<td>
+Letns!10</td>
+<td>
+Copy (with atts.) to</td>
+</tr>
+<tr>
+<td>
+Letns!11</td>
+<td>
+Copy (without atts.) to</td>
+</tr>
+<tr>
+<td>
+Letns!12</td>
+<td>
+Abstract Only to</td>
+</tr>
+<tr>
+<td>
+Letns!13</td>
+<td>
+Complete Memorandum to</td>
+</tr>
+<tr>
+<td>
+Letns!14</td>
+<td>
+CC</td>
+</tr>
+<tr>
+<td>
+Letns!copy</td>
+<td>
+Copy \&quot;</td>
+</tr>
+<tr>
+<td>
+Letns!to</td>
+<td>
+&quot; to</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>Letnsdef</b></dt>
+<dd>
+Define the standard notation used when no argument is given to <b>.NS</b>. Default is&#160;0.</dd>
+</dl>
+<dl>
+<dt>
+<b>MO1 &#8211; MO12</b></dt>
+<dd>
+Strings containing the month names &#8216;January&#8217; through &#8216;December&#8217;.</dd>
+</dl>
+<dl>
+<dt>
+<b>Qrf</b></dt>
+<dd>
+String containing &#8216;See chapter \\*[Qrfh], page \\n[Qrfp].&#8217;.</dd>
+</dl>
+<dl>
+<dt>
+<b>Rp</b></dt>
+<dd>
+Contains the string &#8216;REFERENCES&#8217;.</dd>
+</dl>
+<dl>
+<dt>
+<b>Tcst</b></dt>
+<dd>
+Contains the current status of the table of contents and list of figures, etc. Empty outside of <b>.TC</b>. Useful in user-defined macros like <b>.TP</b>.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<table class="tbl">
+<col style="width: 5.00ex;"/>
+<col style="width: 17.00ex;"/>
+<tbody>
+<tr>
+<td>
+Value</td>
+<td>
+Meaning</td>
+</tr>
+<tr>
+<td>
+co</td>
+<td>
+Table of contents</td>
+</tr>
+<tr>
+<td>
+fg</td>
+<td>
+List of figures</td>
+</tr>
+<tr>
+<td>
+tb</td>
+<td>
+List of tables</td>
+</tr>
+<tr>
+<td>
+ec</td>
+<td>
+List of equations</td>
+</tr>
+<tr>
+<td>
+ex</td>
+<td>
+List of exhibits</td>
+</tr>
+<tr>
+<td>
+ap</td>
+<td>
+Appendix</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>Tm</b></dt>
+<dd>
+Contains the string &#8216;\(tm&#8217;, the trade mark symbol.</dd>
+</dl>
+<dl>
+<dt>
+<b>Verbnm</b></dt>
+<dd>
+Argument to <b>.nm</b> in the <b>.VERBON</b> command. Default is&#160;1.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>Number variables used in mm</h2><dl>
+<dt>
+<b>Aph</b></dt>
+<dd>
+Print an appendix page for every new appendix  if this number variable is non-zero. No output occurs if <b>Aph</b> is zero, but there is always an appendix entry in the &#8216;List of contents&#8217;.</dd>
+</dl>
+<dl>
+<dt>
+<b>Cl</b></dt>
+<dd>
+Contents level (in the range 0 to 14). The contents is saved if a heading level is lower than or equal to the value of <b>Cl</b>. Default is&#160;2.</dd>
+</dl>
+<dl>
+<dt>
+<b>Cp</b></dt>
+<dd>
+Eject page between list of table, list of figure, etc., if the value of <b>Cp</b> is zero. Default is&#160;0.</dd>
+</dl>
+<dl>
+<dt>
+<b>D</b></dt>
+<dd>
+Debug flag. Values greater than zero produce debug information of increasing verbosity. A value of&#160;1 gives information about the progress of formatting. Default is&#160;0.</dd>
+</dl>
+<dl>
+<dt>
+<b>De</b></dt>
+<dd>
+If set to&#160;1, eject after floating display is output. Default is&#160;0.</dd>
+</dl>
+<dl>
+<dt>
+<b>Dsp</b></dt>
+<dd>
+If defined, it controls the space output before and after static displays. Otherwise the value of <b>Lsp</b> is used.</dd>
+</dl>
+<dl>
+<dt>
+<b>Df</b></dt>
+<dd>
+Control floating keep output. This is a number in the range 0 to 5, with a default value of&#160;5. See <b>.DF</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>Ds</b></dt>
+<dd>
+If set to&#160;1, use the amount of space stored in register <b>Lsp</b> before and after display. Default is&#160;1.</dd>
+</dl>
+<dl>
+<dt>
+<b>Ej</b></dt>
+<dd>
+If set to&#160;1, eject page before each first-level heading. Default is&#160;0.</dd>
+</dl>
+<dl>
+<dt>
+<b>Eq</b></dt>
+<dd>
+Equation labels are left-adjusted if set to&#160;0 and right-adjusted if set to&#160;1. Default is&#160;0.</dd>
+</dl>
+<dl>
+<dt>
+<b>Fs</b></dt>
+<dd>
+Footnote spacing. Default is&#160;1.</dd>
+</dl>
+<dl>
+<dt>
+<b>H1 &#8211; H7</b></dt>
+<dd>
+Heading counters</dd>
+</dl>
+<dl>
+<dt>
+<b>H1dot</b></dt>
+<dd>
+Append a dot after the level-one heading number if value is greater than zero. Default is&#160;1.</dd>
+</dl>
+<dl>
+<dt>
+<b>H1h</b></dt>
+<dd>
+A copy of number register <b>H1</b>, but it is incremented just before the page break. Useful in user-defined header macros.</dd>
+</dl>
+<dl>
+<dt>
+<b>Hb</b></dt>
+<dd>
+Heading break level. A number in the range 0 to 14, with a default value of&#160;2. See&#160;<b>.H</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>Hc</b></dt>
+<dd>
+Heading centering level. A number in the range 0 to 14, with a default value value of&#160;0. See&#160;<b>.H</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>Hi</b></dt>
+<dd>
+Heading temporary indent. A number in the range 0 to 2, with a default value of&#160;1.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<table class="tbl">
+<col style="width: 1.00ex;"/>
+<col style="width: 53.00ex;"/>
+<tbody>
+<tr>
+<td>
+0</td>
+<td>
+no indentation, left margin</td>
+</tr>
+<tr>
+<td>
+1</td>
+<td>
+indent to the right, similar to &#8216; &quot;.P 1&quot; &#8217;</td>
+</tr>
+<tr>
+<td>
+2</td>
+<td>
+indent to line up with text part of preceding heading</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>Hps</b></dt>
+<dd>
+Heading pre-space level. If the heading level is less than or equal to <b>Hps</b>, two lines precede the section heading instead of one. Default is first level only. The real amount of lines is controlled by the variables <b>Hps1</b> and <b>Hps2</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>Hps1</b></dt>
+<dd>
+Number of lines preceding <b>.H</b> if the heading level is greater than <b>Hps</b>. Value is in units, default is 0.5.</dd>
+</dl>
+<dl>
+<dt>
+<b>Hps2</b></dt>
+<dd>
+Number of lines preceding <b>.H</b> if the heading level is less than or equal to <b>Hps</b>. Value is in units, default is&#160;1.</dd>
+</dl>
+<dl>
+<dt>
+<b>Hs</b></dt>
+<dd>
+Heading space level. A number in the range 0 to 14, with a default value of&#160;2. See&#160;<b>.H</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>Hss</b></dt>
+<dd>
+Number of lines following <b>.H</b> if the heading level is less than or equal to <b>Hs</b>. Value is in units, default is&#160;1.</dd>
+</dl>
+<dl>
+<dt>
+<b>Ht</b></dt>
+<dd>
+Heading numbering type.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<table class="tbl">
+<col style="width: 1.00ex;"/>
+<col style="width: 36.00ex;"/>
+<tbody>
+<tr>
+<td>
+0</td>
+<td>
+multiple levels (1.1.1, 1.1.2, etc.)</td>
+</tr>
+<tr>
+<td>
+1</td>
+<td>
+single level</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+Default is&#160;0.</dd>
+</dl>
+<dl>
+<dt>
+<b>Hu</b></dt>
+<dd>
+Unnumbered heading level. Default is&#160;2.</dd>
+</dl>
+<dl>
+<dt>
+<b>Hy</b></dt>
+<dd>
+Hyphenation status of text body.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<table class="tbl">
+<col style="width: 1.00ex;"/>
+<col style="width: 32.00ex;"/>
+<tbody>
+<tr>
+<td>
+0</td>
+<td>
+no hyphenation</td>
+</tr>
+<tr>
+<td>
+1</td>
+<td>
+hyphenation on, set to value&#160;14</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+Default is&#160;0.</dd>
+</dl>
+<dl>
+<dt>
+<b>Iso</b></dt>
+<dd>
+Set this variable to&#160;1 on the command line to get an ISO-formatted date string ( <b>-rIso=1</b>). Useless inside of a document.</dd>
+</dl>
+<dl>
+<dt>
+<b>L</b></dt>
+<dd>
+Page length, only for command line settings.</dd>
+</dl>
+<dl>
+<dt>
+<b>Letwam</b></dt>
+<dd>
+Maximum lines in return-address, used in <b>.WA</b>/<b>.WE</b>. Default is&#160;14.</dd>
+</dl>
+<dl>
+<dt>
+<b>Lf</b>,&#160;<b>Lt</b>,&#160;<b>Lx</b>,&#160;<b>Le</b></dt>
+<dd>
+Enable (1) or disable (0) the printing of List of figures, List of tables, List of exhibits and List of equations, respectively. Default values are Lf=1, Lt=1, Lx=1, and Le=0.</dd>
+</dl>
+<dl>
+<dt>
+<b>Li</b></dt>
+<dd>
+List indentation, used by <b>.AL</b>. Default is&#160;6.</dd>
+</dl>
+<dl>
+<dt>
+<b>Limsp</b></dt>
+<dd>
+A flag controlling the insertion of space between prefix and mark in automatic lists (<b>.AL</b>).</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<table class="tbl">
+<col style="width: 1.00ex;"/>
+<col style="width: 10.00ex;"/>
+<tbody>
+<tr>
+<td>
+0</td>
+<td>
+no space</td>
+</tr>
+<tr>
+<td>
+1</td>
+<td>
+emit space</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>Ls</b></dt>
+<dd>
+List space threshold. If current list level is greater than <b>Ls</b> no spacing occurs around lists. Default is&#160;99.</dd>
+</dl>
+<dl>
+<dt>
+<b>Lsp</b></dt>
+<dd>
+The vertical space used by an empty line. The default is 0.5v in troff mode and 1v in nroff mode.</dd>
+</dl>
+<dl>
+<dt>
+<b>N</b></dt>
+<dd>
+Page numbering style.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<table class="tbl">
+<col style="width: 1.00ex;"/>
+<col style="width: 76.00ex;"/>
+<tbody>
+<tr>
+<td>
+0</td>
+<td>
+normal header for all pages.</td>
+</tr>
+<tr>
+<td>
+1</td>
+<td>
+header replaces footer on first page, header is empty.</td>
+</tr>
+<tr>
+<td>
+2</td>
+<td>
+page header is removed on the first page.</td>
+</tr>
+<tr>
+<td>
+3</td>
+<td>
+&#8216;section-page&#8217; numbering style enabled.</td>
+</tr>
+<tr>
+<td>
+4</td>
+<td>
+page header is removed on the first page.</td>
+</tr>
+<tr>
+<td>
+5</td>
+<td>
+&#8216;section-page&#8217; and &#8216;section-figure&#8217; numbering style enabled.</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+Default is&#160;0. See also the number registers <b>Sectf</b> and <b>Sectp</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>Np</b></dt>
+<dd>
+A flag to control whether paragraphs are numbered.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<table class="tbl">
+<col style="width: 1.00ex;"/>
+<col style="width: 33.00ex;"/>
+<tbody>
+<tr>
+<td>
+0</td>
+<td>
+not numbered</td>
+</tr>
+<tr>
+<td>
+1</td>
+<td>
+numbered in first-level headings.</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+Default is&#160;0.</dd>
+</dl>
+<dl>
+<dt>
+<b>O</b></dt>
+<dd>
+Page offset, only for command line settings.</dd>
+</dl>
+<dl>
+<dt>
+<b>Of</b></dt>
+<dd>
+Format of figure, table, exhibit, and equation titles.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<table class="tbl">
+<col style="width: 1.00ex;"/>
+<col style="width: 13.00ex;"/>
+<tbody>
+<tr>
+<td>
+0</td>
+<td>
+&quot;. &quot;</td>
+</tr>
+<tr>
+<td>
+1</td>
+<td>
+&quot; - &quot;</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+Default is&#160;0.</dd>
+</dl>
+<dl>
+<dt>
+<b>P</b></dt>
+<dd>
+Current page-number, normally the same as &#8216;%&#8217; unless &#8216;section-page&#8217; numbering style is enabled.</dd>
+</dl>
+<dl>
+<dt>
+<b>Pi</b></dt>
+<dd>
+Paragraph indentation. Default is&#160;5.</dd>
+</dl>
+<dl>
+<dt>
+<b>Pgps</b></dt>
+<dd>
+A flag to control whether header and footer point size should follow the current settings or just change when the header and footer are defined.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<table class="tbl">
+<col style="width: 1.00ex;"/>
+<col style="width: 101.00ex;"/>
+<tbody>
+<tr>
+<td>
+0</td>
+<td>
+Point size only changes to the current setting when .PH , .PF , .OH , .EH , .OF , or .OE is executed.</td>
+</tr>
+<tr>
+<td>
+1</td>
+<td>
+Point size changes after every .S . This is the default.</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<b>Ps</b></dt>
+<dd>
+Paragraph spacing. Default is&#160;1.</dd>
+</dl>
+<dl>
+<dt>
+<b>Pt</b></dt>
+<dd>
+Paragraph type.</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+</dt>
+<dd>
+<table class="tbl">
+<col style="width: 1.00ex;"/>
+<col style="width: 52.00ex;"/>
+<tbody>
+<tr>
+<td>
+0</td>
+<td>
+left-justified</td>
+</tr>
+<tr>
+<td>
+1</td>
+<td>
+indented paragraphs</td>
+</tr>
+<tr>
+<td>
+2</td>
+<td>
+indented paragraphs except after .H , .DE , or .LE .</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+Default is&#160;0.</dd>
+</dl>
+<dl>
+<dt>
+<b>Rpe</b></dt>
+<dd>
+Set default value for second argument of <b>.RP</b>. Default is&#160;0.</dd>
+</dl>
+<dl>
+<dt>
+<b>Sectf</b></dt>
+<dd>
+A flag controlling &#8216;section-figures&#8217; numbering style. A non-zero value enables this. See also register&#160;<b>N</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>Sectp</b></dt>
+<dd>
+A flag controlling &#8217;section-page&#8217; numbering style. A non-zero value enables this. See also register&#160;<b>N</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>Si</b></dt>
+<dd>
+Display indentation. Default is&#160;5.</dd>
+</dl>
+<dl>
+<dt>
+<b>Verbin</b></dt>
+<dd>
+Indentation for <b>.VERBON</b>. Default is 5n.</dd>
+</dl>
+<dl>
+<dt>
+<b>W</b></dt>
+<dd>
+Line length, only for command line settings.</dd>
+</dl>
+<dl>
+<dt>
+<b>.mgm</b></dt>
+<dd>
+Always&#160;1.</dd>
+</dl>
+</div>
+</div>
+<div class="section">
+<h1>INTERNALS</h1> The letter macros are using different submacros depending on the letter type. The name of the submacro has the letter type as suffix. It is therefore possible to define other letter types, either in the national macro-file, or as local additions. <b>.LT</b> sets the number variables <b>Pt</b> and <b>Pi</b> to 0 and&#160;5, respectively. The following strings and macros must be defined for a new letter type.<dl>
+<dt>
+<b>let@init_</b><i>type</i></dt>
+<dd>
+This macro is called directly by <b>.LT</b>. It is supposed to initialize variables and other stuff.</dd>
+</dl>
+<dl>
+<dt>
+<b>let@head_</b><i>type</i></dt>
+<dd>
+This macro prints the letter head, and is called instead of the normal page header. It is supposed to remove the alias <b>let@header</b>, otherwise it is called for all pages.</dd>
+</dl>
+<dl>
+<dt>
+<b>let@sg_</b><i>type name title n flag [arg1 [arg2 [...]]]</i></dt>
+<dd>
+<b>.SG</b> is calling this macro only for letters; memorandums have its own processing. <i>name</i> and <i>title</i> are specified through <b>.WA</b>/<b>.WB</b>. <i>n</i>&#160;is the counter, 1-max, and <i>flag</i> is true for the last name. Any other argument to <b>.SG</b> is appended.</dd>
+</dl>
+<dl>
+<dt>
+<b>let@fc_</b><i>type closing</i></dt>
+<dd>
+This macro is called by <b>.FC</b>, and has the formal closing as the argument.</dd>
+</dl>
+<div class="spacer">
+</div>
+<b>.LO</b> is implemented as a general option-macro. It demands that a string named <b>Let</b><i>type</i> is defined, where <i>type</i> is the letter type. <b>.LO</b> then assigns the argument to the string variable <b>let*lo-</b><i>type.</i></div>
+<div class="section">
+<h1>FILES</h1><dl>
+<dt>
+<b>/usr/share/groff/1.22.3/tmac/m.tmac</b></dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>/usr/share/groff/1.22.3/tmac/mm/*.cov</b></dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>/usr/share/groff/1.22.3/tmac/mm/*.MT</b></dt>
+<dd>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>/usr/share/groff/1.22.3/tmac/mm/locale</b></dt>
+<dd>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>groff</b>(1), <b>troff</b>(1), <b>tbl</b>(1), <b>pic</b>(1), <b>eqn</b>(1)<div style="height: 0.00em;">
+&#160;</div>
+<b>groff_mmse</b>(7)</div>
+<div class="section">
+<h1>COPYING</h1> Copyright &#169; 1989-2014 Free Software Foundation, Inc.<div style="height: 1.00em;">
+&#160;</div>
+Permission is granted to make and distribute verbatim copies of this manual provided the copyright notice and this permission notice are preserved on all copies.<div style="height: 1.00em;">
+&#160;</div>
+Permission is granted to copy and distribute modified versions of this manual under the conditions for verbatim copying, provided that the entire resulting derived work is distributed under the terms of a permission notice identical to this one.<div style="height: 1.00em;">
+&#160;</div>
+Permission is granted to copy and distribute translations of this manual into another language, under the above conditions for modified versions, except that this permission notice may be included in translations approved by the Free Software Foundation instead of in the original English.</div>
+<div class="section">
+<h1>AUTHOR</h1> J&#246;rgen H&#228;gg, Lund, Sweden</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+4 November 2014</td>
+<td class="foot-os">
+Groff Version 1.22.3</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

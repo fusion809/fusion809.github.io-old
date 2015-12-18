@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+GETUNWIND(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+GETUNWIND(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+GETUNWIND(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> getunwind - copy the unwind data to caller's buffer</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;syscall.h&gt;</b> <b>#include &lt;linux/unwind.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>long getunwind(void </b><i>*buf</i><b>, size_t </b><i>buf_size</i><b>);</b><br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<i>Note</i>: There is no glibc wrapper for this system call; see NOTES.</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <i>Note: this function is obsolete.</i><div style="height: 1.00em;">
+&#160;</div>
+The IA-64-specific <b>getunwind</b>() system call copies the kernel's call frame unwind data into the buffer pointed to by <i>buf</i> and returns the size of the unwind data; this data describes the gate page (kernel code that is mapped into user space).<div style="height: 1.00em;">
+&#160;</div>
+The size of the buffer <i>buf</i> is specified in <i>buf_size</i>. The data is copied only if <i>buf_size</i> is greater than or equal to the size of the unwind data and <i>buf</i> is not NULL; otherwise, no data is copied, and the call succeeds, returning the size that would be needed to store the unwind data.<div style="height: 1.00em;">
+&#160;</div>
+The first part of the unwind data contains an unwind table. The rest contains the associated unwind information, in no particular order. The unwind table contains entries of the following form:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    u64 start;      (64-bit address of start of function)<br/>
+    u64 end;        (64-bit address of end of function)<br/>
+    u64 info;       (BUF-relative offset to unwind info)<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+An entry whose <i>start</i> value is zero indicates the end of the table. For more information about the format, see the <i>IA-64 Software Conventions and Runtime Architecture</i> manual.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, <b>getunwind</b>() returns the size of the unwind data. On error, -1 is returned and <i>errno</i> is set to indicate the error.</div>
+<div class="section">
+<h1>ERRORS</h1> <b>getunwind</b>() fails with the error <b>EFAULT</b> if the unwind info can't be stored in the space specified by <i>buf</i>.</div>
+<div class="section">
+<h1>VERSIONS</h1> This system call is available since Linux 2.4.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> This system call is Linux-specific, and is available only on the IA-64 architecture.</div>
+<div class="section">
+<h1>NOTES</h1> This system call has been deprecated. The modern way to obtain the kernel's unwind data is via the gate DSO. The address of the ELF header for this DSO is passed to user level via <b>AT_SYSINFO_EHDR</b> (see <b>getauxval</b>(3)).<div style="height: 1.00em;">
+&#160;</div>
+Glibc does not provide a wrapper for this system call; in the unlikely event that you want to call it, use <b>syscall</b>(2).</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>getauxval</b>(3)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2014-09-21</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

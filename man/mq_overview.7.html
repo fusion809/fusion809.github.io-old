@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+MQ_OVERVIEW(7)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+MQ_OVERVIEW(7)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+MQ_OVERVIEW(7)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> mq_overview - overview of POSIX message queues</div>
+<div class="section">
+<h1>DESCRIPTION</h1> POSIX message queues allow processes to exchange data in the form of messages. This API is distinct from that provided by System V message queues (<b>msgget</b>(2), <b>msgsnd</b>(2), <b>msgrcv</b>(2), etc.), but provides similar functionality.<div style="height: 1.00em;">
+&#160;</div>
+Message queues are created and opened using <b>mq_open</b>(3); this function returns a <i>message queue descriptor</i> (<i>mqd_t</i>), which is used to refer to the open message queue in later calls. Each message queue is identified by a name of the form <i>/somename</i>; that is, a null-terminated string of up to <b>NAME_MAX</b> (i.e., 255) characters consisting of an initial slash, followed by one or more characters, none of which are slashes. Two processes can operate on the same queue by passing the same name to <b>mq_open</b>(3).<div style="height: 1.00em;">
+&#160;</div>
+Messages are transferred to and from a queue using <b>mq_send</b>(3) and <b>mq_receive</b>(3). When a process has finished using the queue, it closes it using <b>mq_close</b>(3), and when the queue is no longer required, it can be deleted using <b>mq_unlink</b>(3). Queue attributes can be retrieved and (in some cases) modified using <b>mq_getattr</b>(3) and <b>mq_setattr</b>(3). A process can request asynchronous notification of the arrival of a message on a previously empty queue using <b>mq_notify</b>(3).<div style="height: 1.00em;">
+&#160;</div>
+A message queue descriptor is a reference to an <i>open message queue description</i> (cf. <b>open</b>(2)). After a <b>fork</b>(2), a child inherits copies of its parent's message queue descriptors, and these descriptors refer to the same open message queue descriptions as the corresponding descriptors in the parent. Corresponding descriptors in the two processes share the flags (<i>mq_flags</i>) that are associated with the open message queue description.<div style="height: 1.00em;">
+&#160;</div>
+Each message has an associated <i>priority</i>, and messages are always delivered to the receiving process highest priority first. Message priorities range from 0 (low) to <i>sysconf(_SC_MQ_PRIO_MAX)&#160;-&#160;1</i> (high). On Linux, <i>sysconf(_SC_MQ_PRIO_MAX)</i> returns 32768, but POSIX.1 requires only that an implementation support at least priorities in the range 0 to 31; some implementations provide only this range.<div class="spacer">
+</div>
+The remainder of this section describes some specific details of the Linux implementation of POSIX message queues.<div class="subsection">
+<h2>Library interfaces and system calls</h2> In most cases the <b>mq_*</b>() library interfaces listed above are implemented on top of underlying system calls of the same name. Deviations from this scheme are indicated in the following table:<div style="margin-left: 5.00ex;">
+<table class="tbl">
+<col style="width: 18.00ex;"/>
+<col style="width: 18.00ex;"/>
+<tbody>
+<tr>
+<td>
+Library interface</td>
+<td>
+System call</td>
+</tr>
+<tr>
+<td>
+mq_close(3)</td>
+<td>
+close(2)</td>
+</tr>
+<tr>
+<td>
+mq_getattr(3)</td>
+<td>
+mq_getsetattr(2)</td>
+</tr>
+<tr>
+<td>
+mq_notify(3)</td>
+<td>
+mq_notify(2)</td>
+</tr>
+<tr>
+<td>
+mq_open(3)</td>
+<td>
+mq_open(2)</td>
+</tr>
+<tr>
+<td>
+mq_receive(3)</td>
+<td>
+mq_timedreceive(2)</td>
+</tr>
+<tr>
+<td>
+mq_send(3)</td>
+<td>
+mq_timedsend(2)</td>
+</tr>
+<tr>
+<td>
+mq_setattr(3)</td>
+<td>
+mq_getsetattr(2)</td>
+</tr>
+<tr>
+<td>
+mq_timedreceive(3)</td>
+<td>
+mq_timedreceive(2)</td>
+</tr>
+<tr>
+<td>
+mq_timedsend(3)</td>
+<td>
+mq_timedsend(2)</td>
+</tr>
+<tr>
+<td>
+mq_unlink(3)</td>
+<td>
+mq_unlink(2)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="subsection">
+<h2>Versions</h2> POSIX message queues have been supported on Linux since kernel 2.6.6. Glibc support has been provided since version 2.3.4.</div>
+<div class="subsection">
+<h2>Kernel configuration</h2> Support for POSIX message queues is configurable via the <b>CONFIG_POSIX_MQUEUE</b> kernel configuration option. This option is enabled by default.</div>
+<div class="subsection">
+<h2>Persistence</h2> POSIX message queues have kernel persistence: if not removed by <b>mq_unlink</b>(3), a message queue will exist until the system is shut down.</div>
+<div class="subsection">
+<h2>Linking</h2> Programs using the POSIX message queue API must be compiled with <i>cc -lrt</i> to link against the real-time library, <i>librt</i>.</div>
+<div class="subsection">
+<h2>/proc interfaces</h2> The following interfaces can be used to limit the amount of kernel memory consumed by POSIX message queues and to set the default attributes for new message queues:<dl>
+<dt>
+<i>/proc/sys/fs/mqueue/msg_default</i> (since Linux 3.5)</dt>
+<dd>
+This file defines the value used for a new queue's <i>mq_maxmsg</i> setting when the queue is created with a call to <b>mq_open</b>(3) where <i>attr</i> is specified as NULL. The default value for this file is 10. The minimum and maximum are as for <i>/proc/sys/fs/mqueue/msg_max</i>. A new queue's default <i>mq_maxmsg</i> value will be the smaller of <i>msg_default</i> and <i>msg_max</i>. Up until Linux 2.6.28, the default <i>mq_maxmsg</i> was 10; from Linux 2.6.28 to Linux 3.4, the default was the value defined for the <i>msg_max</i> limit.</dd>
+</dl>
+<dl>
+<dt>
+<i>/proc/sys/fs/mqueue/msg_max</i></dt>
+<dd>
+This file can be used to view and change the ceiling value for the maximum number of messages in a queue. This value acts as a ceiling on the <i>attr-&gt;mq_maxmsg</i> argument given to <b>mq_open</b>(3). The default value for <i>msg_max</i> is 10. The minimum value is 1 (10 in kernels before 2.6.28). The upper limit is <b>HARD_MSGMAX</b>. The <i>msg_max</i> limit is ignored for privileged processes (<b>CAP_SYS_RESOURCE</b>), but the <b>HARD_MSGMAX</b> ceiling is nevertheless imposed.<div style="height: 1.00em;">
+&#160;</div>
+The definition of <b>HARD_MSGMAX</b> has changed across kernel versions:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+*</dt>
+<dd>
+Up to Linux 2.6.32: <i>131072&#160;/&#160;sizeof(void&#160;*)</i></dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+Linux 2.6.33 to 3.4: <i>(32768&#160;*&#160;sizeof(void&#160;*) / 4)</i></dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+Since Linux 3.5: 65,536</dd>
+</dl>
+</div>
+<dl>
+<dt>
+<i>/proc/sys/fs/mqueue/msgsize_default</i> (since Linux 3.5)</dt>
+<dd>
+This file defines the value used for a new queue's <i>mq_msgsize</i> setting when the queue is created with a call to <b>mq_open</b>(3) where <i>attr</i> is specified as NULL. The default value for this file is 8192 (bytes). The minimum and maximum are as for <i>/proc/sys/fs/mqueue/msgsize_max</i>. If <i>msgsize_default</i> exceeds <i>msgsize_max</i>, a new queue's default <i>mq_msgsize</i> value is capped to the <i>msgsize_max</i> limit. Up until Linux 2.6.28, the default <i>mq_msgsize</i> was 8192; from Linux 2.6.28 to Linux 3.4, the default was the value defined for the <i>msgsize_max</i> limit.</dd>
+</dl>
+<dl>
+<dt>
+<i>/proc/sys/fs/mqueue/msgsize_max</i></dt>
+<dd>
+This file can be used to view and change the ceiling on the maximum message size. This value acts as a ceiling on the <i>attr-&gt;mq_msgsize</i> argument given to <b>mq_open</b>(3). The default value for <i>msgsize_max</i> is 8192 bytes. The minimum value is 128 (8192 in kernels before 2.6.28). The upper limit for <i>msgsize_max</i> has varied across kernel versions:</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+*</dt>
+<dd>
+Before Linux 2.6.28, the upper limit is <b>INT_MAX</b>.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+From Linux 2.6.28 to 3.4, the limit is 1,048,576.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+Since Linux 3.5, the limit is 16,777,216 (<b>HARD_MSGSIZEMAX</b>).</dd>
+</dl>
+</div>
+<dl>
+<dt>
+</dt>
+<dd>
+The <i>msgsize_max</i> limit is ignored for privileged process (<b>CAP_SYS_RESOURCE</b>), but, since Linux 3.5, the <b>HARD_MSGSIZEMAX</b> ceiling is enforced for privileged processes.</dd>
+</dl>
+<dl>
+<dt>
+<i>/proc/sys/fs/mqueue/queues_max</i></dt>
+<dd>
+This file can be used to view and change the system-wide limit on the number of message queues that can be created. The default value for <i>queues_max</i> is 256. No ceiling is imposed on the <i>queues_max</i> limit; privileged processes (<b>CAP_SYS_RESOURCE</b>) can exceed the limit (but see BUGS).</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>Resource limit</h2> The <b>RLIMIT_MSGQUEUE</b> resource limit, which places a limit on the amount of space that can be consumed by all of the message queues belonging to a process's real user ID, is described in <b>getrlimit</b>(2).</div>
+<div class="subsection">
+<h2>Mounting the message queue filesystem</h2> On Linux, message queues are created in a virtual filesystem. (Other implementations may also provide such a feature, but the details are likely to differ.) This filesystem can be mounted (by the superuser) using the following commands:<br/>
+<div class="spacer">
+</div>
+<br/>
+#<b> mkdir /dev/mqueue</b><br/>
+#<b> mount -t mqueue none /dev/mqueue</b><div class="spacer">
+</div>
+<br/>
+<br/>
+The sticky bit is automatically enabled on the mount directory.<div style="height: 1.00em;">
+&#160;</div>
+After the filesystem has been mounted, the message queues on the system can be viewed and manipulated using the commands usually used for files (e.g., <b>ls</b>(1) and <b>rm</b>(1)).<div style="height: 1.00em;">
+&#160;</div>
+The contents of each file in the directory consist of a single line containing information about the queue:<br/>
+<div class="spacer">
+</div>
+<br/>
+$<b> cat /dev/mqueue/mymq</b><br/>
+QSIZE:129     NOTIFY:2    SIGNO:0    NOTIFY_PID:8260<div class="spacer">
+</div>
+<br/>
+<br/>
+These fields are as follows:<dl>
+<dt>
+<b>QSIZE</b></dt>
+<dd>
+Number of bytes of data in all messages in the queue.</dd>
+</dl>
+<dl>
+<dt>
+<b>NOTIFY_PID</b></dt>
+<dd>
+If this is nonzero, then the process with this PID has used <b>mq_notify</b>(3) to register for asynchronous message notification, and the remaining fields describe how notification occurs.</dd>
+</dl>
+<dl>
+<dt>
+<b>NOTIFY</b></dt>
+<dd>
+Notification method: 0 is <b>SIGEV_SIGNAL</b>; 1 is <b>SIGEV_NONE</b>; and 2 is <b>SIGEV_THREAD</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>SIGNO</b></dt>
+<dd>
+Signal number to be used for <b>SIGEV_SIGNAL</b>.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>Polling message queue descriptors</h2> On Linux, a message queue descriptor is actually a file descriptor, and can be monitored using <b>select</b>(2), <b>poll</b>(2), or <b>epoll</b>(7). This is not portable.</div>
+<div class="subsection">
+<h2>IPC namespaces</h2> For a discussion of the interaction of System V IPC objects and IPC namespaces, see <b>namespaces</b>(7).</div>
+</div>
+<div class="section">
+<h1>NOTES</h1> System V message queues (<b>msgget</b>(2), <b>msgsnd</b>(2), <b>msgrcv</b>(2), etc.) are an older API for exchanging messages between processes. POSIX message queues provide a better designed interface than System V message queues; on the other hand POSIX message queues are less widely available (especially on older systems) than System V message queues.<div style="height: 1.00em;">
+&#160;</div>
+Linux does not currently (2.6.26) support the use of access control lists (ACLs) for POSIX message queues.</div>
+<div class="section">
+<h1>EXAMPLE</h1> An example of the use of various message queue functions is shown in <b>mq_notify</b>(3).</div>
+<div class="section">
+<h1>BUGS</h1> In Linux versions 3.5 to 3.14, the kernel imposed a ceiling of 1024 (<b>HARD_QUEUESMAX</b>) on the value to which the <i>queues_max</i> limit could be raised, and the ceiling was enforced even for privileged processes. This ceiling value was removed in Linux 3.14, and patches to stable kernels 3.5.x to 3.13.x also removed the ceiling.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>getrlimit</b>(2), <b>mq_getsetattr</b>(2), <b>poll</b>(2), <b>select</b>(2), <b>mq_close</b>(3), <b>mq_getattr</b>(3), <b>mq_notify</b>(3), <b>mq_open</b>(3), <b>mq_receive</b>(3), <b>mq_send</b>(3), <b>mq_unlink</b>(3), <b>epoll</b>(7), <b>namespaces</b>(7)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-08-08</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

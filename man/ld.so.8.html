@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+LD.SO(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+LD.SO(8)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+LD.SO(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> ld.so, ld-linux.so* - dynamic linker/loader</div>
+<div class="section">
+<h1>SYNOPSIS</h1> The dynamic linker can be run either indirectly by running some dynamically linked program or shared object (in which case no command-line options to the dynamic linker can be passed and, in the ELF case, the dynamic linker which is stored in the <b>.interp</b> section of the program is executed) or directly by running:<div class="spacer">
+</div>
+<i>/lib/ld-linux.so.*</i> [OPTIONS] [PROGRAM [ARGUMENTS]]</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The programs <b>ld.so</b> and <b>ld-linux.so*</b> find and load the shared objects (shared libraries) needed by a program, prepare the program to run, and then run it.<div class="spacer">
+</div>
+Linux binaries require dynamic linking (linking at run time) unless the <b>-static</b> option was given to <b>ld</b>(1) during compilation.<div class="spacer">
+</div>
+The program <b>ld.so</b> handles a.out binaries, a format used long ago; <b>ld-linux.so*</b> handles ELF ( <i>/lib/ld-linux.so.1</i> for libc5, <i>/lib/ld-linux.so.2</i> for glibc2), which everybody has been using for years now. Otherwise, both have the same behavior, and use the same support files and programs <b>ldd</b>(1), <b>ldconfig</b>(8), and <i>/etc/ld.so.conf</i>.<div class="spacer">
+</div>
+When resolving shared object dependencies, the dynamic linker first inspects each dependency string to see if it contains a slash (this can occur if a shared object pathname containing slashes was specified at link time). If a slash is found, then the dependency string is interpreted as a (relative or absolute) pathname, and the shared object is loaded using that pathname.<div class="spacer">
+</div>
+If a shared object dependency does not contain a slash, then it is searched for in the following order:<dl>
+<dt>
+o</dt>
+<dd>
+(ELF only) Using the directories specified in the DT_RPATH dynamic section attribute of the binary if present and DT_RUNPATH attribute does not exist. Use of DT_RPATH is deprecated.</dd>
+</dl>
+<dl>
+<dt>
+o</dt>
+<dd>
+Using the environment variable <b>LD_LIBRARY_PATH</b>. Except if the executable is a set-user-ID/set-group-ID binary, in which case it is ignored.</dd>
+</dl>
+<dl>
+<dt>
+o</dt>
+<dd>
+(ELF only) Using the directories specified in the DT_RUNPATH dynamic section attribute of the binary if present.</dd>
+</dl>
+<dl>
+<dt>
+o</dt>
+<dd>
+From the cache file <i>/etc/ld.so.cache</i>, which contains a compiled list of candidate shared objects previously found in the augmented library path. If, however, the binary was linked with the <b>-z nodeflib</b> linker option, shared objects in the default paths are skipped. Shared objects installed in hardware capability directories (see below) are preferred to other shared objects.</dd>
+</dl>
+<dl>
+<dt>
+o</dt>
+<dd>
+In the default path <i>/lib</i>, and then <i>/usr/lib</i>. (On some 64-bit archiectures, the default paths for 64-bit shared objects are <i>/lib64</i>, and then <i>/usr/lib64</i>.) If the binary was linked with the <b>-z nodeflib</b> linker option, this step is skipped.</dd>
+</dl>
+<div class="subsection">
+<h2>Rpath token expansion</h2> <b>ld.so</b> understands certain strings in an rpath specification (DT_RPATH or DT_RUNPATH); those strings are substituted as follows<dl>
+<dt>
+<i>$ORIGIN</i> (or equivalently <i>${ORIGIN}</i>)</dt>
+<dd>
+This expands to the directory containing the program or shared object. Thus, an application located in <i>somedir/app</i> could be compiled with<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    gcc -Wl,-rpath,'$ORIGIN/../lib'<div style="height: 1.00em;">
+&#160;</div>
+so that it finds an associated shared object in <i>somedir/lib</i> no matter where <i>somedir</i> is located in the directory hierarchy. This facilitates the creation of &quot;turn-key&quot; applications that do not need to be installed into special directories, but can instead be unpacked into any directory and still find their own shared objects.</dd>
+</dl>
+<dl>
+<dt>
+<i>$LIB</i> (or equivalently <i>${LIB}</i>)</dt>
+<dd>
+This expands to <i>lib</i> or <i>lib64</i> depending on the architecture (e.g., on x86-64, it expands to <i>lib64</i> and on x86-32, it expands to <i>lib</i>).</dd>
+</dl>
+<dl>
+<dt>
+<i>$PLATFORM</i> (or equivalently <i>${PLATFORM}</i>)</dt>
+<dd>
+This expands to a string corresponding to the processor type of the host system (e.g., &quot;x86_64&quot;). On some architectures, the Linux kernel doesn't provide a platform string to the dynamic linker. The value of this string is taken from the <b>AT_PLATFORM</b> value in the auxiliary vector (see <b>getauxval</b>(3)).</dd>
+</dl>
+</div>
+</div>
+<div class="section">
+<h1>OPTIONS</h1><dl>
+<dt>
+<b>--list</b></dt>
+<dd>
+List all dependencies and how they are resolved.</dd>
+</dl>
+<dl>
+<dt>
+<b>--verify</b></dt>
+<dd>
+Verify that program is dynamically linked and this dynamic linker can handle it.</dd>
+</dl>
+<dl>
+<dt>
+<b>--inhibit-cache</b></dt>
+<dd>
+Do not use <i>/etc/ld.so.cache</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>--library-path</b><i> path</i></dt>
+<dd>
+Use <i>path</i> instead of <b>LD_LIBRARY_PATH</b> environment variable setting (see below).</dd>
+</dl>
+<dl>
+<dt>
+<b>--inhibit-rpath</b><i> list</i></dt>
+<dd>
+Ignore RPATH and RUNPATH information in object names in <i>list</i>. This option is ignored if <b>ld.so</b> is set-user-ID or set-group-ID.</dd>
+</dl>
+<dl>
+<dt>
+<b>--audit</b><i> list</i></dt>
+<dd>
+Use objects named in <i>list</i> as auditors.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ENVIRONMENT</h1> Among the more important environment variables are the following:<dl>
+<dt>
+<b>LD_ASSUME_KERNEL</b></dt>
+<dd>
+(glibc since 2.2.3) Each shared object can inform the dynamic linker of the minimum kernel ABI version that it requires. (This requirement is encoded in an ELF note section that is viewable via <i>readelf&#160;-n</i> as a section labeled <b>NT_GNU_ABI_TAG</b>.) At run time, the dynamic linker determines the ABI version of the running kernel and will reject loading shared objects that specify minimum ABI versions that exceed that ABI version.<div style="height: 1.00em;">
+&#160;</div>
+<b>LD_ASSUME_KERNEL</b> can be used to cause the dynamic linker to assume that it is running on a system with a different kernel ABI version. For example, the following command line causes the dynamic linker to assume it is running on Linux 2.2.5 when loading the shared objects required by <i>myprog</i>:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<br/>
+$ <b>LD_ASSUME_KERNEL=2.2.5 ./myprog</b><br/>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+On systems that provide multiple versions of a shared object (in different directories in the search path) that have different minimum kernel ABI version requirements, <b>LD_ASSUME_KERNEL</b> can be used to select the version of the object that is used (dependent on the directory search order). Historically, the most common use of the <b>LD_ASSUME_KERNEL</b> feature was to manually select the older LinuxThreads POSIX threads implementation on systems that provided both LinuxThreads and NPTL (which latter was typically the default on such systems); see <b>pthreads</b>(7).</dd>
+</dl>
+<dl>
+<dt>
+<b>LD_BIND_NOW</b></dt>
+<dd>
+(libc5; glibc since 2.1.1) If set to a nonempty string, causes the dynamic linker to resolve all symbols at program startup instead of deferring function call resolution to the point when they are first referenced. This is useful when using a debugger.</dd>
+</dl>
+<dl>
+<dt>
+<b>LD_LIBRARY_PATH</b></dt>
+<dd>
+A list of directories in which to search for ELF libraries at execution-time. The items in the list are separated by either colons or semicolons. Similar to the <b>PATH</b> environment variable. Ignored in set-user-ID and set-group-ID programs.</dd>
+</dl>
+<dl>
+<dt>
+<b>LD_PRELOAD</b></dt>
+<dd>
+A list of additional, user-specified, ELF shared objects to be loaded before all others. The items of the list can be separated by spaces or colons. This can be used to selectively override functions in other shared objects. The objects are searched for using the rules given under DESCRIPTION. For set-user-ID/set-group-ID ELF binaries, preload pathnames containing slashes are ignored, and shared objects in the standard search directories are loaded only if the set-user-ID mode bit is enabled on the shared object file.</dd>
+</dl>
+<dl>
+<dt>
+<b>LD_TRACE_LOADED_OBJECTS</b></dt>
+<dd>
+(ELF only) If set to a nonempty string, causes the program to list its dynamic dependencies, as if run by <b>ldd</b>(1), instead of running normally.</dd>
+</dl>
+<div class="spacer">
+</div>
+Then there are lots of more or less obscure variables, many obsolete or only for internal use.<dl>
+<dt>
+<b>LD_AOUT_LIBRARY_PATH</b></dt>
+<dd>
+(libc5) Version of <b>LD_LIBRARY_PATH</b> for a.out binaries only. Old versions of ld-linux.so.1 also supported <b>LD_ELF_LIBRARY_PATH</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>LD_AOUT_PRELOAD</b></dt>
+<dd>
+(libc5) Version of <b>LD_PRELOAD</b> for a.out binaries only. Old versions of ld-linux.so.1 also supported <b>LD_ELF_PRELOAD</b>.</dd>
+</dl>
+<dl>
+<dt>
+<b>LD_AUDIT</b></dt>
+<dd>
+(glibc since 2.4) A colon-separated list of user-specified, ELF shared objects to be loaded before all others in a separate linker namespace (i.e., one that does not intrude upon the normal symbol bindings that would occur in the process). These objects can be used to audit the operation of the dynamic linker. <b>LD_AUDIT</b> is ignored for set-user-ID/set-group-ID binaries.<div style="height: 1.00em;">
+&#160;</div>
+The dynamic linker will notify the audit shared objects at so-called auditing checkpoints&#8212;for example, loading a new shared object, resolving a symbol, or calling a symbol from another shared object&#8212;by calling an appropriate function within the audit shared object. For details, see <b>rtld-audit</b>(7). The auditing interface is largely compatible with that provided on Solaris, as described in its <i>Linker and Libraries Guide</i>, in the chapter <i>Runtime Linker Auditing Interface</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>LD_BIND_NOT</b></dt>
+<dd>
+(glibc since 2.1.95) Do not update the GOT (global offset table) and PLT (procedure linkage table) after resolving a symbol.</dd>
+</dl>
+<dl>
+<dt>
+<b>LD_DEBUG</b></dt>
+<dd>
+(glibc since 2.1) Output verbose debugging information about the dynamic linker. If set to <b>all</b> prints all debugging information it has, if set to <b>help</b> prints a help message about which categories can be specified in this environment variable. Since glibc 2.3.4, <b>LD_DEBUG</b> is ignored for set-user-ID/set-group-ID binaries.</dd>
+</dl>
+<dl>
+<dt>
+<b>LD_DEBUG_OUTPUT</b></dt>
+<dd>
+(glibc since 2.1) File in which <b>LD_DEBUG</b> output should be written. The default is standard error. <b>LD_DEBUG_OUTPUT</b> is ignored for set-user-ID/set-group-ID binaries.</dd>
+</dl>
+<dl>
+<dt>
+<b>LD_DYNAMIC_WEAK</b></dt>
+<dd>
+(glibc since 2.1.91) Allow weak symbols to be overridden (reverting to old glibc behavior). For security reasons, since glibc 2.3.4, <b>LD_DYNAMIC_WEAK</b> is ignored for set-user-ID/set-group-ID binaries.</dd>
+</dl>
+<dl>
+<dt>
+<b>LD_HWCAP_MASK</b></dt>
+<dd>
+(glibc since 2.1) Mask for hardware capabilities.</dd>
+</dl>
+<dl>
+<dt>
+<b>LD_KEEPDIR</b></dt>
+<dd>
+(a.out only)(libc5) Don't ignore the directory in the names of a.out libraries to be loaded. Use of this option is strongly discouraged.</dd>
+</dl>
+<dl>
+<dt>
+<b>LD_NOWARN</b></dt>
+<dd>
+(a.out only)(libc5) Suppress warnings about a.out libraries with incompatible minor version numbers.</dd>
+</dl>
+<dl>
+<dt>
+<b>LD_ORIGIN_PATH</b></dt>
+<dd>
+(glibc since 2.1) Path where the binary is found (for non-set-user-ID programs). For security reasons, since glibc 2.4, <b>LD_ORIGIN_PATH</b> is ignored for set-user-ID/set-group-ID binaries.</dd>
+</dl>
+<dl>
+<dt>
+<b>LD_POINTER_GUARD</b></dt>
+<dd>
+(glibc since 2.4) Set to 0 to disable pointer guarding. Any other value enables pointer guarding, which is also the default. Pointer guarding is a security mechanism whereby some pointers to code stored in writable program memory (return addresses saved by <b>setjmp</b>(3) or function pointers used by various glibc internals) are mangled semi-randomly to make it more difficult for an attacker to hijack the pointers for use in the event of a buffer overrun or stack-smashing attack.</dd>
+</dl>
+<dl>
+<dt>
+<b>LD_PROFILE</b></dt>
+<dd>
+(glibc since 2.1) The name of a (single) shared object to be profiled, specified either as a pathname or a soname. Profiling output is appended to the file whose name is: &quot; <i>$LD_PROFILE_OUTPUT</i>/<i>$LD_PROFILE</i>.profile&quot;.</dd>
+</dl>
+<dl>
+<dt>
+<b>LD_PROFILE_OUTPUT</b></dt>
+<dd>
+(glibc since 2.1) Directory where <b>LD_PROFILE</b> output should be written. If this variable is not defined, or is defined as an empty string, then the default is <i>/var/tmp</i>. <b>LD_PROFILE_OUTPUT</b> is ignored for set-user-ID and set-group-ID programs, which always use <i>/var/profile</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>LD_SHOW_AUXV</b></dt>
+<dd>
+(glibc since 2.1) Show auxiliary array passed up from the kernel. For security reasons, since glibc 2.3.5, <b>LD_SHOW_AUXV</b> is ignored for set-user-ID/set-group-ID binaries.</dd>
+</dl>
+<dl>
+<dt>
+<b>LD_TRACE_PRELINKING</b></dt>
+<dd>
+(glibc since 2.4) Trace prelinking of the object whose name is assigned to this environment variable. (Use <b>ldd</b>(1) to get a list of the objects that might be traced.) If the object name is not recognized, then all prelinking activity is traced.</dd>
+</dl>
+<dl>
+<dt>
+<b>LD_USE_LOAD_BIAS</b></dt>
+<dd>
+By default (i.e., if this variable is not defined), executables and prelinked shared objects will honor base addresses of their dependent shared objects and (nonprelinked) position-independent executables (PIEs) and other shared objects will not honor them. If <b>LD_USE_LOAD_BIAS</b> is defined with the value 1, both executables and PIEs will honor the base addresses. If <b>LD_USE_LOAD_BIAS</b> is defined with the value 0, neither executables nor PIEs will honor the base addresses. This variable is ignored by set-user-ID and set-group-ID programs.</dd>
+</dl>
+<dl>
+<dt>
+<b>LD_VERBOSE</b></dt>
+<dd>
+(glibc since 2.1) If set to a nonempty string, output symbol versioning information about the program if the <b>LD_TRACE_LOADED_OBJECTS</b> environment variable has been set.</dd>
+</dl>
+<dl>
+<dt>
+<b>LD_WARN</b></dt>
+<dd>
+(ELF only)(glibc since 2.1.3) If set to a nonempty string, warn about unresolved symbols.</dd>
+</dl>
+<dl>
+<dt>
+<b>LDD_ARGV0</b></dt>
+<dd>
+(libc5) <i>argv</i>[0] to be used by <b>ldd</b>(1) when none is present.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>FILES</h1><dl>
+<dt>
+<i>/lib/ld.so</i></dt>
+<dd>
+a.out dynamic linker/loader</dd>
+</dl>
+<dl>
+<dt>
+<i>/lib/ld-linux.so.</i>{<i>1</i>,<i>2</i>}</dt>
+<dd>
+ELF dynamic linker/loader</dd>
+</dl>
+<dl>
+<dt>
+<i>/etc/ld.so.cache</i></dt>
+<dd>
+File containing a compiled list of directories in which to search for shared objects and an ordered list of candidate shared objects.</dd>
+</dl>
+<dl>
+<dt>
+<i>/etc/ld.so.preload</i></dt>
+<dd>
+File containing a whitespace-separated list of ELF shared objects to be loaded before the program.</dd>
+</dl>
+<dl>
+<dt>
+<b>lib*.so*</b></dt>
+<dd>
+shared objects</dd>
+</dl>
+</div>
+<div class="section">
+<h1>NOTES</h1> The <b>ld.so</b> functionality is available for executables compiled using libc version 4.4.3 or greater. ELF functionality is available since Linux 1.1.52 and libc5.<div class="subsection">
+<h2>Hardware capabilities</h2> Some shared objects are compiled using hardware-specific instructions which do not exist on every CPU. Such objects should be installed in directories whose names define the required hardware capabilities, such as <i>/usr/lib/sse2/</i>. The dynamic linker checks these directories against the hardware of the machine and selects the most suitable version of a given shared object. Hardware capability directories can be cascaded to combine CPU features. The list of supported hardware capability names depends on the CPU. The following names are currently recognized:<dl>
+<dt>
+<b>Alpha</b></dt>
+<dd>
+ev4, ev5, ev56, ev6, ev67</dd>
+</dl>
+<dl>
+<dt>
+<b>MIPS</b></dt>
+<dd>
+loongson2e, loongson2f, octeon, octeon2</dd>
+</dl>
+<dl>
+<dt>
+<b>PowerPC</b></dt>
+<dd>
+4xxmac, altivec, arch_2_05, arch_2_06, booke, cellbe, dfp, efpdouble, efpsingle, fpu, ic_snoop, mmu, notb, pa6t, power4, power5, power5+, power6x, ppc32, ppc601, ppc64, smt, spe, ucache, vsx</dd>
+</dl>
+<dl>
+<dt>
+<b>SPARC</b></dt>
+<dd>
+flush, muldiv, stbar, swap, ultra3, v9, v9v, v9v2</dd>
+</dl>
+<dl>
+<dt>
+<b>s390</b></dt>
+<dd>
+dfp, eimm, esan3, etf3enh, g5, highgprs, hpage, ldisp, msa, stfle, z900, z990, z9-109, z10, zarch</dd>
+</dl>
+<dl>
+<dt>
+<b>x86 (32-bit only)</b></dt>
+<dd>
+acpi, apic, clflush, cmov, cx8, dts, fxsr, ht, i386, i486, i586, i686, mca, mmx, mtrr, pat, pbe, pge, pn, pse36, sep, ss, sse, sse2, tm</dd>
+</dl>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ld</b>(1), <b>ldd</b>(1), <b>pldd</b>(1), <b>sprof</b>(1), <b>dlopen</b>(3), <b>getauxval</b>(3), <b>rtld-audit</b>(7), <b>ldconfig</b>(8), <b>sln</b>(8)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-08-08</td>
+<td class="foot-os">
+GNU</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

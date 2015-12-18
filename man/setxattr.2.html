@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SETXATTR(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SETXATTR(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+SETXATTR(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> setxattr, lsetxattr, fsetxattr - set an extended attribute value</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;sys/types.h&gt;</b> <b>#include &lt;sys/xattr.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>int setxattr(const char&#160;*</b><i>path</i><b>, const char&#160;*</b><i>name</i><b>,</b><br/>
+<b>              const void&#160;*</b><i>value</i><b>, size_t </b><i>size</i><b>, int </b><i>flags</i><b>);</b><br/>
+<b>int lsetxattr(const char&#160;*</b><i>path</i><b>, const char&#160;*</b><i>name</i><b>,</b><br/>
+<b>              const void&#160;*</b><i>value</i><b>, size_t </b><i>size</i><b>, int </b><i>flags</i><b>);</b><br/>
+<b>int fsetxattr(int </b><i>fd</i><b>, const char&#160;*</b><i>name</i><b>,</b><br/>
+<b>              const void&#160;*</b><i>value</i><b>, size_t </b><i>size</i><b>, int </b><i>flags</i><b>);</b><br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> Extended attributes are <i>name</i>:<i>value</i> pairs associated with inodes (files, directories, symbolic links, etc.). They are extensions to the normal attributes which are associated with all inodes in the system (i.e., the <b>stat</b>(2) data). A complete overview of extended attributes concepts can be found in <b>xattr</b>(7).<div class="spacer">
+</div>
+<b>setxattr</b>() sets the <i>value</i> of the extended attribute identified by <i>name</i> and associated with the given <i>path</i> in the filesystem. The <i>size</i> argument specifies the size (in bytes) of <i>value</i>; a zero-length value is permitted.<div class="spacer">
+</div>
+<b>lsetxattr</b>() is identical to <b>setxattr</b>(), except in the case of a symbolic link, where the extended attribute is set on the link itself, not the file that it refers to.<div class="spacer">
+</div>
+<b>fsetxattr</b>() is identical to <b>setxattr</b>(), only the extended attribute is set on the open file referred to by <i>fd</i> (as returned by <b>open</b>(2)) in place of <i>path</i>.<div class="spacer">
+</div>
+An extended attribute name is a null-terminated string. The <i>name</i> includes a namespace prefix; there may be several, disjoint namespaces associated with an individual inode. The <i>value</i> of an extended attribute is a chunk of arbitrary textual or binary data of specified length.<div class="spacer">
+</div>
+By default (i.e., <i>flags</i> is zero), the extended attribute will be created if it does not exist, or the value will be replaced if the attribute already exists. To modify these semantics, one of the following values can be specified in <i>flags</i>:<dl>
+<dt>
+<b>XATTR_CREATE</b></dt>
+<dd>
+Perform a pure create, which fails if the named attribute exists already.</dd>
+</dl>
+<dl>
+<dt>
+<b>XATTR_REPLACE</b></dt>
+<dd>
+Perform a pure replace operation, which fails if the named attribute does not already exist.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, zero is returned. On failure, -1 is returned and <i>errno</i> is set appropriately.</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>EDQUOT</b></dt>
+<dd>
+Disk quota limits meant that there is insufficient space remaining to store the extended attribute.</dd>
+</dl>
+<dl>
+<dt>
+<b>EEXIST</b></dt>
+<dd>
+<b>XATTR_CREATE</b> was specified, and the attribute exists already.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOATTR</b></dt>
+<dd>
+<b>XATTR_REPLACE</b> was specified, and the attribute does not exist. (<b>ENOATTR</b> is defined to be a synonym for <b>ENODATA</b> in <i>&lt;attr/xattr.h&gt;</i>.)</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOSPC</b></dt>
+<dd>
+There is insufficient space remaining to store the extended attribute.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTSUP</b></dt>
+<dd>
+The namespace prefix of <i>name</i> is not valid.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTSUP</b></dt>
+<dd>
+Extended attributes are not supported by the filesystem, or are disabled,</dd>
+</dl>
+<div class="spacer">
+</div>
+In addition, the errors documented in <b>stat</b>(2) can also occur.</div>
+<div class="section">
+<h1>VERSIONS</h1> These system calls have been available on Linux since kernel 2.4; glibc support is provided since version 2.3.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> These system calls are Linux-specific.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>getfattr</b>(1), <b>setfattr</b>(1), <b>getxattr</b>(2), <b>listxattr</b>(2), <b>open</b>(2), <b>removexattr</b>(2), <b>stat</b>(2), <b>symlink</b>(7), <b>xattr</b>(7)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-05-07</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

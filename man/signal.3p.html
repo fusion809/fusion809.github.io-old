@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SIGNAL(3P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SIGNAL(3P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+SIGNAL(3P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> signal &#8212; signal management</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;signal.h&gt;<div class="spacer">
+</div>
+void (*signal(int <i>sig</i>, void (*<i>func</i>)(int)))(int);<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The functionality described on this reference page is aligned with the ISO&#160;C standard. Any conflict between the requirements described here and the ISO&#160;C standard is unintentional. This volume of POSIX.1&#8208;2008 defers to the ISO&#160;C standard.<div class="spacer">
+</div>
+Use of this function is unspecified in a multi-threaded process.<div class="spacer">
+</div>
+The  <i>signal</i>() function chooses one of three ways in which receipt of the signal number <i>sig</i> is to be subsequently handled. If the value of <i>func</i> is SIG_DFL, default handling for that signal shall occur. If the value of <i>func</i> is SIG_IGN, the signal shall be ignored. Otherwise, the application shall ensure that <i>func</i> points to a function to be called when that signal occurs. An invocation of such a function because of a signal, or (recursively) of any further functions called by that invocation (other than functions in the standard library), is called a ``signal handler''.<div class="spacer">
+</div>
+When a signal occurs, and <i>func</i> points to a function, it is implementation-defined whether the equivalent of a:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>signal(</b><i>sig</i><b>, SIG_DFL);</b><br/>
+</div>
+<div class="spacer">
+</div>
+is executed or the implementation prevents some implementation-defined set of signals (at least including <i>sig</i>) from occurring until the current signal handling has completed. (If the value of <i>sig</i> is SIGILL, the implementation may alternatively define that no action is taken.) Next the equivalent of:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>(*func)(sig);</b><br/>
+</div>
+<div class="spacer">
+</div>
+is executed. If and when the function returns, if the value of <i>sig</i> was SIGFPE, SIGILL, or SIGSEGV or any other implementation-defined value corresponding to a computational exception, the behavior is undefined. Otherwise, the program shall resume execution at the point it was interrupted. The ISO&#160;C standard places a restriction on applications relating to the use of  <i>raise</i>() from signal handlers. This restriction does not apply to POSIX applications, as POSIX.1&#8208;2008 requires  <i>raise</i>() to be async-signal-safe (see <i>Section 2.4.3</i>, <i>Signal Actions</i>).<div class="spacer">
+</div>
+If the process is multi-threaded, or if the process is single-threaded and a signal handler is executed other than as the result of:<dl>
+<dt>
+ *</dt>
+<dd>
+The process calling  <i>abort</i>(),  <i>raise</i>(),  <i>kill</i>(),  <i>pthread_kill</i>(), or  <i>sigqueue</i>() to generate a signal that is not blocked</dd>
+</dl>
+<dl>
+<dt>
+ *</dt>
+<dd>
+A pending signal being unblocked and being delivered before the call that unblocked it returns</dd>
+</dl>
+<div class="spacer">
+</div>
+the behavior is undefined if the signal handler refers to any object other than <i>errno</i> with static storage duration other than by assigning a value to an object declared as <b>volatile sig_atomic_t</b>, or if the signal handler calls any function defined in this standard other than one of the functions listed in <i>Section 2.4</i>, <i>Signal Concepts</i>.<div class="spacer">
+</div>
+At program start-up, the equivalent of:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>signal(</b><i>sig</i><b>, SIG_IGN);</b><br/>
+</div>
+<div class="spacer">
+</div>
+is executed for some signals, and the equivalent of:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>signal(</b><i>sig</i><b>, SIG_DFL);</b><br/>
+</div>
+<div class="spacer">
+</div>
+is executed for all other signals (see <i>exec</i>).<div class="spacer">
+</div>
+The  <i>signal</i>() function shall not change the setting of <i>errno</i> if successful.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> If the request can be honored,  <i>signal</i>() shall return the value of <i>func</i> for the most recent call to  <i>signal</i>() for the specified signal <i>sig</i>. Otherwise, SIG_ERR shall be returned and a positive value shall be stored in <i>errno</i>.</div>
+<div class="section">
+<h1>ERRORS</h1> The  <i>signal</i>() function shall fail if:<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+The <i>sig</i> argument is not a valid signal number or an attempt is made to catch a signal that cannot be caught or ignore a signal that cannot be ignored.</dd>
+</dl>
+<div class="spacer">
+</div>
+The  <i>signal</i>() function may fail if:<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+An attempt was made to set the action to SIG_DFL for a signal that cannot be caught or ignored (or both).</dd>
+</dl>
+<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>EXAMPLES</h1> None.</div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> The  <i>sigaction</i>() function provides a more comprehensive and reliable mechanism for controlling signals; new applications should use  <i>sigaction</i>() rather than  <i>signal</i>().</div>
+<div class="section">
+<h1>RATIONALE</h1> None.</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> None.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i>Section 2.4</i>, <i>Signal Concepts</i>, <i><i>exec</i></i>, <i><i>pause</i>()</i>, <i><i>raise</i>()</i>, <i><i>sigaction</i>()</i>, <i><i>sigsuspend</i>()</i>, <i><i>waitid</i>()</i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i><b>&lt;signal.h&gt;</b></i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

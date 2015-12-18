@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SCHED(7)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SCHED(7)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+SCHED(7)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sched - overview of scheduling APIs</div>
+<div class="section">
+<h1>DESCRIPTION</h1><div class="subsection">
+<h2>API summary</h2> The Linux scheduling APIs are as follows:<dl>
+<dt>
+<b>sched_setscheduler</b>(2)</dt>
+<dd>
+Set the scheduling policy and parameters of a specified thread.</dd>
+</dl>
+<dl>
+<dt>
+<b>sched_getscheduler</b>(2)</dt>
+<dd>
+Return the scheduling policy of a specified thread.</dd>
+</dl>
+<dl>
+<dt>
+<b>sched_setparam</b>(2)</dt>
+<dd>
+Set the scheduling parameters of a specified thread.</dd>
+</dl>
+<dl>
+<dt>
+<b>sched_getparam</b>(2)</dt>
+<dd>
+Fetch the scheduling parameters of a specified thread.</dd>
+</dl>
+<dl>
+<dt>
+<b>sched_get_priority_max</b>(2)</dt>
+<dd>
+Return the maximum priority available in a specified scheduling policy.</dd>
+</dl>
+<dl>
+<dt>
+<b>sched_get_priority_min</b>(2)</dt>
+<dd>
+Return the minimum priority available in a specified scheduling policy.</dd>
+</dl>
+<dl>
+<dt>
+<b>sched_rr_get_interval</b>(2)</dt>
+<dd>
+Fetch the quantum used for threads that are scheduled under the &quot;round-robin&quot; scheduling policy.</dd>
+</dl>
+<dl>
+<dt>
+<b>sched_yield</b>(2)</dt>
+<dd>
+Cause the caller to relinquish the CPU, so that some other thread be executed.</dd>
+</dl>
+<dl>
+<dt>
+<b>sched_setaffinity</b>(2)</dt>
+<dd>
+(Linux-specific) Set the CPU affinity of a specified thread.</dd>
+</dl>
+<dl>
+<dt>
+<b>sched_getaffinity</b>(2)</dt>
+<dd>
+(Linux-specific) Get the CPU affinity of a specified thread.</dd>
+</dl>
+<dl>
+<dt>
+<b>sched_setattr</b>(2)</dt>
+<dd>
+Set the scheduling policy and parameters of a specified thread. This (Linux-specific) system call provides a superset of the functionality of <b>sched_setscheduler</b>(2) and <b>sched_setparam</b>(2).</dd>
+</dl>
+<dl>
+<dt>
+<b>sched_getattr</b>(2)</dt>
+<dd>
+Fetch the scheduling policy and parameters of a specified thread. This (Linux-specific) system call provides a superset of the functionality of <b>sched_getscheduler</b>(2) and <b>sched_getparam</b>(2).</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>Scheduling policies</h2> The scheduler is the kernel component that decides which runnable thread will be executed by the CPU next. Each thread has an associated scheduling policy and a  <i>static</i> scheduling priority, <i>sched_priority</i>. The scheduler makes its decisions based on knowledge of the scheduling policy and static priority of all threads on the system.<div style="height: 1.00em;">
+&#160;</div>
+For threads scheduled under one of the normal scheduling policies ( <b>SCHED_OTHER</b>, <b>SCHED_IDLE</b>, <b>SCHED_BATCH</b>),  <i>sched_priority</i> is not used in scheduling decisions (it must be specified as 0).<div style="height: 1.00em;">
+&#160;</div>
+Processes scheduled under one of the real-time policies ( <b>SCHED_FIFO</b>, <b>SCHED_RR</b>) have a  <i>sched_priority</i> value in the range 1 (low) to 99 (high). (As the numbers imply, real-time threads always have higher priority than normal threads.) Note well: POSIX.1 requires an implementation to support only a minimum 32 distinct priority levels for the real-time policies, and some systems supply just this minimum. Portable programs should use <b>sched_get_priority_min</b>(2) and <b>sched_get_priority_max</b>(2) to find the range of priorities supported for a particular policy.<div style="height: 1.00em;">
+&#160;</div>
+Conceptually, the scheduler maintains a list of runnable threads for each possible  <i>sched_priority</i> value. In order to determine which thread runs next, the scheduler looks for the nonempty list with the highest static priority and selects the thread at the head of this list.<div style="height: 1.00em;">
+&#160;</div>
+A thread's scheduling policy determines where it will be inserted into the list of threads with equal static priority and how it will move inside this list.<div style="height: 1.00em;">
+&#160;</div>
+All scheduling is preemptive: if a thread with a higher static priority becomes ready to run, the currently running thread will be preempted and returned to the wait list for its static priority level. The scheduling policy determines the ordering only within the list of runnable threads with equal static priority.</div>
+<div class="subsection">
+<h2>SCHED_FIFO: First in-first out scheduling</h2>  <b>SCHED_FIFO</b> can be used only with static priorities higher than 0, which means that when a  <b>SCHED_FIFO</b> threads becomes runnable, it will always immediately preempt any currently running  <b>SCHED_OTHER</b>, <b>SCHED_BATCH</b>, or <b>SCHED_IDLE</b> thread.  <b>SCHED_FIFO</b> is a simple scheduling algorithm without time slicing. For threads scheduled under the  <b>SCHED_FIFO</b> policy, the following rules apply:<dl>
+<dt>
+*</dt>
+<dd>
+A <b>SCHED_FIFO</b> thread that has been preempted by another thread of higher priority will stay at the head of the list for its priority and will resume execution as soon as all threads of higher priority are blocked again.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+When a <b>SCHED_FIFO</b> thread becomes runnable, it will be inserted at the end of the list for its priority.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+A call to <b>sched_setscheduler</b>(2), <b>sched_setparam</b>(2), or <b>sched_setattr</b>(2) will put the  <b>SCHED_FIFO</b> (or <b>SCHED_RR</b>) thread identified by  <i>pid</i> at the start of the list if it was runnable. As a consequence, it may preempt the currently running thread if it has the same priority. (POSIX.1 specifies that the thread should go to the end of the list.)</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+A thread calling <b>sched_yield</b>(2) will be put at the end of the list.</dd>
+</dl>
+<div class="spacer">
+</div>
+No other events will move a thread scheduled under the  <b>SCHED_FIFO</b> policy in the wait list of runnable threads with equal static priority.<div style="height: 1.00em;">
+&#160;</div>
+A <b>SCHED_FIFO</b> thread runs until either it is blocked by an I/O request, it is preempted by a higher priority thread, or it calls <b>sched_yield</b>(2).</div>
+<div class="subsection">
+<h2>SCHED_RR: Round-robin scheduling</h2>  <b>SCHED_RR</b> is a simple enhancement of <b>SCHED_FIFO</b>. Everything described above for  <b>SCHED_FIFO</b> also applies to <b>SCHED_RR</b>, except that each thread is allowed to run only for a maximum time quantum. If a  <b>SCHED_RR</b> thread has been running for a time period equal to or longer than the time quantum, it will be put at the end of the list for its priority. A  <b>SCHED_RR</b> thread that has been preempted by a higher priority thread and subsequently resumes execution as a running thread will complete the unexpired portion of its round-robin time quantum. The length of the time quantum can be retrieved using <b>sched_rr_get_interval</b>(2).</div>
+<div class="subsection">
+<h2>SCHED_DEADLINE: Sporadic task model deadline scheduling</h2> Since version 3.14, Linux provides a deadline scheduling policy (<b>SCHED_DEADLINE</b>). This policy is currently implemented using GEDF (Global Earliest Deadline First) in conjunction with CBS (Constant Bandwidth Server). To set and fetch this policy and associated attributes, one must use the Linux-specific <b>sched_setattr</b>(2) and <b>sched_getattr</b>(2) system calls.<div style="height: 1.00em;">
+&#160;</div>
+A sporadic task is one that has a sequence of jobs, where each job is activated at most once per period. Each job also has a <i>relative deadline</i>, before which it should finish execution, and a <i>computation time</i>, which is the CPU time necessary for executing the job. The moment when a task wakes up because a new job has to be executed is called the <i>arrival time</i> (also referred to as the request time or release time). The <i>start time</i> is the time at which a task starts its execution. The <i>absolute deadline</i> is thus obtained by adding the relative deadline to the arrival time.<div style="height: 1.00em;">
+&#160;</div>
+The following diagram clarifies these terms:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<br/>
+arrival/wakeup                    absolute deadline<br/>
+     |    start time                    |<br/>
+     |        |                         |<br/>
+     v        v                         v<br/>
+-----x--------xooooooooooooooooo--------x--------x---<br/>
+              |&lt;- comp. time -&gt;|<br/>
+     |&lt;------- relative deadline ------&gt;|<br/>
+     |&lt;-------------- period -------------------&gt;|<br/>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+When setting a <b>SCHED_DEADLINE</b> policy for a thread using <b>sched_setattr</b>(2), one can specify three parameters: <i>Runtime</i>, <i>Deadline</i>, and <i>Period</i>. These parameters do not necessarily correspond to the aforementioned terms: usual practice is to set Runtime to something bigger than the average computation time (or worst-case execution time for hard real-time tasks), Deadline to the relative deadline, and Period to the period of the task. Thus, for <b>SCHED_DEADLINE</b> scheduling, we have:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<br/>
+arrival/wakeup                    absolute deadline<br/>
+     |    start time                    |<br/>
+     |        |                         |<br/>
+     v        v                         v<br/>
+-----x--------xooooooooooooooooo--------x--------x---<br/>
+              |&lt;-- Runtime -------&gt;|<br/>
+     |&lt;----------- Deadline -----------&gt;|<br/>
+     |&lt;-------------- Period -------------------&gt;|<br/>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+The three deadline-scheduling parameters correspond to the <i>sched_runtime</i>, <i>sched_deadline</i>, and <i>sched_period</i> fields of the <i>sched_attr</i> structure; see <b>sched_setattr</b>(2). These fields express values in nanoseconds. If <i>sched_period</i> is specified as 0, then it is made the same as <i>sched_deadline</i>.<div style="height: 1.00em;">
+&#160;</div>
+The kernel requires that:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    sched_runtime &lt;= sched_deadline &lt;= sched_period<div style="height: 1.00em;">
+&#160;</div>
+In addition, under the current implementation, all of the parameter values must be at least 1024 (i.e., just over one microsecond, which is the resolution of the implementation), and less than 2^63. If any of these checks fails, <b>sched_setattr</b>(2) fails with the error <b>EINVAL</b>.<div style="height: 1.00em;">
+&#160;</div>
+The CBS guarantees non-interference between tasks, by throttling threads that attempt to over-run their specified Runtime.<div style="height: 1.00em;">
+&#160;</div>
+To ensure deadline scheduling guarantees, the kernel must prevent situations where the set of <b>SCHED_DEADLINE</b> threads is not feasible (schedulable) within the given constraints. The kernel thus performs an admittance test when setting or changing <b>SCHED_DEADLINE</b> policy and attributes. This admission test calculates whether the change is feasible; if it is not, <b>sched_setattr</b>(2) fails with the error <b>EBUSY</b>.<div style="height: 1.00em;">
+&#160;</div>
+For example, it is required (but not necessarily sufficient) for the total utilization to be less than or equal to the total number of CPUs available, where, since each thread can maximally run for Runtime per Period, that thread's utilization is its Runtime divided by its Period.<div style="height: 1.00em;">
+&#160;</div>
+In order to fulfil the guarantees that are made when a thread is admitted to the <b>SCHED_DEADLINE</b> policy, <b>SCHED_DEADLINE</b> threads are the highest priority (user controllable) threads in the system; if any <b>SCHED_DEADLINE</b> thread is runnable, it will preempt any thread scheduled under one of the other policies.<div style="height: 1.00em;">
+&#160;</div>
+A call to <b>fork</b>(2) by a thread scheduled under the <b>SCHED_DEADLINE</b> policy will fail with the error <b>EAGAIN</b>, unless the thread has its reset-on-fork flag set (see below).<div style="height: 1.00em;">
+&#160;</div>
+A <b>SCHED_DEADLINE</b> thread that calls <b>sched_yield</b>(2) will yield the current job and wait for a new period to begin.</div>
+<div class="subsection">
+<h2>SCHED_OTHER: Default Linux time-sharing scheduling</h2>  <b>SCHED_OTHER</b> can be used at only static priority 0.  <b>SCHED_OTHER</b> is the standard Linux time-sharing scheduler that is intended for all threads that do not require the special real-time mechanisms. The thread to run is chosen from the static priority 0 list based on a  <i>dynamic</i> priority that is determined only inside this list. The dynamic priority is based on the nice value (set by <b>nice</b>(2), <b>setpriority</b>(2), or <b>sched_setattr</b>(2)) and increased for each time quantum the thread is ready to run, but denied to run by the scheduler. This ensures fair progress among all  <b>SCHED_OTHER</b> threads.</div>
+<div class="subsection">
+<h2>SCHED_BATCH: Scheduling batch processes</h2> (Since Linux 2.6.16.)  <b>SCHED_BATCH</b> can be used only at static priority 0. This policy is similar to  <b>SCHED_OTHER</b> in that it schedules the thread according to its dynamic priority (based on the nice value). The difference is that this policy will cause the scheduler to always assume that the thread is CPU-intensive. Consequently, the scheduler will apply a small scheduling penalty with respect to wakeup behavior, so that this thread is mildly disfavored in scheduling decisions.<div style="height: 1.00em;">
+&#160;</div>
+This policy is useful for workloads that are noninteractive, but do not want to lower their nice value, and for workloads that want a deterministic scheduling policy without interactivity causing extra preemptions (between the workload's tasks).</div>
+<div class="subsection">
+<h2>SCHED_IDLE: Scheduling very low priority jobs</h2> (Since Linux 2.6.23.)  <b>SCHED_IDLE</b> can be used only at static priority 0; the process nice value has no influence for this policy.<div style="height: 1.00em;">
+&#160;</div>
+This policy is intended for running jobs at extremely low priority (lower even than a +19 nice value with the <b>SCHED_OTHER</b> or <b>SCHED_BATCH</b> policies).</div>
+<div class="subsection">
+<h2>Resetting scheduling policy for child processes</h2> Each thread has a reset-on-fork scheduling flag. When this flag is set, children created by <b>fork</b>(2) do not inherit privileged scheduling policies. The reset-on-fork flag can be set by either:<dl>
+<dt>
+*</dt>
+<dd>
+ORing the <b>SCHED_RESET_ON_FORK</b> flag into the <i>policy</i> argument when calling <b>sched_setscheduler</b>(2) (since Linux 2.6.32); or</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+specifying the <b>SCHED_FLAG_RESET_ON_FORK</b> flag in <i>attr.sched_flags</i> when calling <b>sched_setattr</b>(2).</dd>
+</dl>
+<div class="spacer">
+</div>
+Note that the constants used with these two APIs have different names. The state of the reset-on-fork flag can analogously be retrieved using <b>sched_getscheduler</b>(2) and <b>sched_getattr</b>(2).<div style="height: 1.00em;">
+&#160;</div>
+The reset-on-fork feature is intended for media-playback applications, and can be used to prevent applications evading the <b>RLIMIT_RTTIME</b> resource limit (see <b>getrlimit</b>(2)) by creating multiple child processes.<div style="height: 1.00em;">
+&#160;</div>
+More precisely, if the reset-on-fork flag is set, the following rules apply for subsequently created children:<dl>
+<dt>
+*</dt>
+<dd>
+If the calling thread has a scheduling policy of <b>SCHED_FIFO</b> or <b>SCHED_RR</b>, the policy is reset to <b>SCHED_OTHER</b> in child processes.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+If the calling process has a negative nice value, the nice value is reset to zero in child processes.</dd>
+</dl>
+<div class="spacer">
+</div>
+After the reset-on-fork flag has been enabled, it can be reset only if the thread has the <b>CAP_SYS_NICE</b> capability. This flag is disabled in child processes created by <b>fork</b>(2).</div>
+<div class="subsection">
+<h2>Privileges and resource limits</h2> In Linux kernels before 2.6.12, only privileged (<b>CAP_SYS_NICE</b>) threads can set a nonzero static priority (i.e., set a real-time scheduling policy). The only change that an unprivileged thread can make is to set the <b>SCHED_OTHER</b> policy, and this can be done only if the effective user ID of the caller matches the real or effective user ID of the target thread (i.e., the thread specified by <i>pid</i>) whose policy is being changed.<div style="height: 1.00em;">
+&#160;</div>
+A thread must be privileged (<b>CAP_SYS_NICE</b>) in order to set or modify a <b>SCHED_DEADLINE</b> policy.<div style="height: 1.00em;">
+&#160;</div>
+Since Linux 2.6.12, the <b>RLIMIT_RTPRIO</b> resource limit defines a ceiling on an unprivileged thread's static priority for the <b>SCHED_RR</b> and <b>SCHED_FIFO</b> policies. The rules for changing scheduling policy and priority are as follows:<dl>
+<dt>
+*</dt>
+<dd>
+If an unprivileged thread has a nonzero <b>RLIMIT_RTPRIO</b> soft limit, then it can change its scheduling policy and priority, subject to the restriction that the priority cannot be set to a value higher than the maximum of its current priority and its <b>RLIMIT_RTPRIO</b> soft limit.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+If the <b>RLIMIT_RTPRIO</b> soft limit is 0, then the only permitted changes are to lower the priority, or to switch to a non-real-time policy.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+Subject to the same rules, another unprivileged thread can also make these changes, as long as the effective user ID of the thread making the change matches the real or effective user ID of the target thread.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+Special rules apply for the <b>SCHED_IDLE</b> policy. In Linux kernels before 2.6.39, an unprivileged thread operating under this policy cannot change its policy, regardless of the value of its <b>RLIMIT_RTPRIO</b> resource limit. In Linux kernels since 2.6.39, an unprivileged thread can switch to either the <b>SCHED_BATCH</b> or the <b>SCHED_OTHER</b> policy so long as its nice value falls within the range permitted by its <b>RLIMIT_NICE</b> resource limit (see <b>getrlimit</b>(2)).</dd>
+</dl>
+<div class="spacer">
+</div>
+Privileged (<b>CAP_SYS_NICE</b>) threads ignore the <b>RLIMIT_RTPRIO</b> limit; as with older kernels, they can make arbitrary changes to scheduling policy and priority. See <b>getrlimit</b>(2) for further information on <b>RLIMIT_RTPRIO</b>.</div>
+<div class="subsection">
+<h2>Limiting the CPU usage of real-time and deadline processes</h2> A nonblocking infinite loop in a thread scheduled under the <b>SCHED_FIFO</b>, <b>SCHED_RR</b>, or <b>SCHED_DEADLINE</b> policy will block all threads with lower priority forever. Prior to Linux 2.6.25, the only way of preventing a runaway real-time process from freezing the system was to run (at the console) a shell scheduled under a higher static priority than the tested application. This allows an emergency kill of tested real-time applications that do not block or terminate as expected.<div style="height: 1.00em;">
+&#160;</div>
+Since Linux 2.6.25, there are other techniques for dealing with runaway real-time and deadline processes. One of these is to use the <b>RLIMIT_RTTIME</b> resource limit to set a ceiling on the CPU time that a real-time process may consume. See <b>getrlimit</b>(2) for details.<div style="height: 1.00em;">
+&#160;</div>
+Since version 2.6.25, Linux also provides two <i>/proc</i> files that can be used to reserve a certain amount of CPU time to be used by non-real-time processes. Reserving some CPU time in this fashion allows some CPU time to be allocated to (say) a root shell that can be used to kill a runaway process. Both of these files specify time values in microseconds:<dl>
+<dt>
+<i>/proc/sys/kernel/sched_rt_period_us</i></dt>
+<dd>
+This file specifies a scheduling period that is equivalent to 100% CPU bandwidth. The value in this file can range from 1 to <b>INT_MAX</b>, giving an operating range of 1 microsecond to around 35 minutes. The default value in this file is 1,000,000 (1 second).</dd>
+</dl>
+<dl>
+<dt>
+<i>/proc/sys/kernel/sched_rt_runtime_us</i></dt>
+<dd>
+The value in this file specifies how much of the &quot;period&quot; time can be used by all real-time and deadline scheduled processes on the system. The value in this file can range from -1 to <b>INT_MAX</b>-1. Specifying -1 makes the runtime the same as the period; that is, no CPU time is set aside for non-real-time processes (which was the Linux behavior before kernel 2.6.25). The default value in this file is 950,000 (0.95 seconds), meaning that 5% of the CPU time is reserved for processes that don't run under a real-time or deadline scheduling policy.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>Response time</h2> A blocked high priority thread waiting for I/O has a certain response time before it is scheduled again. The device driver writer can greatly reduce this response time by using a &quot;slow interrupt&quot; interrupt handler.</div>
+<div class="subsection">
+<h2>Miscellaneous</h2> Child processes inherit the scheduling policy and parameters across a <b>fork</b>(2). The scheduling policy and parameters are preserved across <b>execve</b>(2).<div style="height: 1.00em;">
+&#160;</div>
+Memory locking is usually needed for real-time processes to avoid paging delays; this can be done with <b>mlock</b>(2) or <b>mlockall</b>(2).</div>
+</div>
+<div class="section">
+<h1>NOTES</h1> Originally, Standard Linux was intended as a general-purpose operating system being able to handle background processes, interactive applications, and less demanding real-time applications (applications that need to usually meet timing deadlines). Although the Linux kernel 2.6 allowed for kernel preemption and the newly introduced O(1) scheduler ensures that the time needed to schedule is fixed and deterministic irrespective of the number of active tasks, true real-time computing was not possible up to kernel version 2.6.17.<div class="subsection">
+<h2>Real-time features in the mainline Linux kernel</h2> From kernel version 2.6.18 onward, however, Linux is gradually becoming equipped with real-time capabilities, most of which are derived from the former <i>realtime-preempt</i> patches developed by Ingo Molnar, Thomas Gleixner, Steven Rostedt, and others. Until the patches have been completely merged into the mainline kernel, they must be installed to achieve the best real-time performance. These patches are named:<br/>
+<div class="spacer">
+</div>
+<br/>
+patch-<i>kernelversion</i>-rt<i>patchversion</i><br/>
+<br/>
+<div class="spacer">
+</div>
+and can be downloaded from <a class="link-ext" href="http://www.kernel.org/pub/linux/kernel/projects/rt/">http://www.kernel.org/pub/linux/kernel/projects/rt/</a><div style="height: 1.00em;">
+&#160;</div>
+Without the patches and prior to their full inclusion into the mainline kernel, the kernel configuration offers only the three preemption classes <b>CONFIG_PREEMPT_NONE</b>, <b>CONFIG_PREEMPT_VOLUNTARY</b>, and <b>CONFIG_PREEMPT_DESKTOP</b> which respectively provide no, some, and considerable reduction of the worst-case scheduling latency.<div style="height: 1.00em;">
+&#160;</div>
+With the patches applied or after their full inclusion into the mainline kernel, the additional configuration item <b>CONFIG_PREEMPT_RT</b> becomes available. If this is selected, Linux is transformed into a regular real-time operating system. The FIFO and RR scheduling policies are then used to run a thread with true real-time priority and a minimum worst-case scheduling latency.</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>chrt</b>(1), <b>taskset</b>(1), <b>getpriority</b>(2), <b>mlock</b>(2), <b>mlockall</b>(2), <b>munlock</b>(2), <b>munlockall</b>(2), <b>nice</b>(2), <b>sched_get_priority_max</b>(2), <b>sched_get_priority_min</b>(2), <b>sched_getscheduler</b>(2), <b>sched_getaffinity</b>(2), <b>sched_getparam</b>(2), <b>sched_rr_get_interval</b>(2), <b>sched_setaffinity</b>(2), <b>sched_setscheduler</b>(2), <b>sched_setparam</b>(2), <b>sched_yield</b>(2), <b>setpriority</b>(2), <b>pthread_getaffinity_np</b>(3), <b>pthread_setaffinity_np</b>(3), <b>sched_getcpu</b>(3), <b>capabilities</b>(7), <b>cpuset</b>(7)<div class="spacer">
+</div>
+<i>Programming for the real world - POSIX.4</i> by Bill O. Gallmeister, O'Reilly &amp; Associates, Inc., ISBN 1-56592-074-0.<div class="spacer">
+</div>
+The Linux kernel source files <i>Documentation/scheduler/sched-deadline.txt</i>, <i>Documentation/scheduler/sched-rt-group.txt</i>, <i>Documentation/scheduler/sched-design-CFS.txt</i>, and <i>Documentation/scheduler/sched-nice-design.txt</i></div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-07-23</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

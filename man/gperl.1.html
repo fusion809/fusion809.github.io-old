@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+GPERL(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+GPERL(1)</td>
+<td class="head-vol">
+General Commands Manual</td>
+<td class="head-rtitle">
+GPERL(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> gperl - groff preprocessor for Perl parts in roff files</div>
+<div class="section">
+<h1>SYNOPSIS</h1> [<span class="opt"><b>-</b>]</span> [<span class="opt"><b>--</b>]</span> [<span class="opt"><b></b> <i>filespec ....</i>]</span> <b>gperl -h</b>|<b>--help</b><div style="height: 0.00em;">
+&#160;</div>
+<b>gperl -v</b>|<b>--version</b></div>
+<div class="section">
+<h1>DESCRIPTION</h1> This is a preprocesor for <b>groff</b>(1). It allows to add <b>perl</b>(7) code into <b>groff</b>(7) files. The result of a <i>Perl part</i> can be stored in groff <i>strings</i> or <i>numerical registers</i> based on the arguments at a final line of a <i>Perl part</i>.</div>
+<div class="section">
+<h1>OPTIONS</h1> So far, there are only <i>filespec</i> or <i>breaking</i> options.<div class="spacer">
+</div>
+<i>filespec</i> are file names or the minus character <b>-</b> character for standard input. As usual, the argument <b>--</b> can be used in order to let all fowllowing arguments mean file names, even if the names begin with a minus character <b>-</b>.<div class="spacer">
+</div>
+An option is <i>breaking</i>, when the program just writes the information that was asked for and then stops. All other arguments will be ignored by that. These <i>breaking</i> options are heree<dl>
+<dt>
+<b>-h&#160;|<b>&#160;--help</b></b></dt>
+<dd>
+Print help information with a short explanation of options to standard output.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v&#160;|<b>&#160;--version</b></b></dt>
+<dd>
+Print version information to standard output.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>PERL PARTS</h1> <i>Perl</i> parts in <i>groff files</i> are enclosed by two <b>.Perl</b> requests with different arguments, a <i>starting</i> and an <i>ending</i> command.<div class="subsection">
+<h2>Starting Perl Mode</h2> The starting <i>Perl request</i> can either be without arguments, or by a request that has the term <b>start</b> as its only argument.<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+*</dt>
+<dd>
+<b>.Perl</b></dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+<b>.Perl start</b></dd>
+</dl>
+</div>
+</div>
+<div class="subsection">
+<h2>Ending Perl Mode without Storage</h2> A <b>.Perl</b> command line with an argument different from <b>start</b> finishes a running <i>Perl part</i>. Of course, it would be reasonable to add the argument <b>stop</b>; that's possible, but not necessary.<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+*</dt>
+<dd>
+<b>.Perl stop</b></dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+<b>.Perl</b><i> other_than_start</i></dd>
+</dl>
+</div>
+The argument <i>other_than_start</i> can additionally be used as a <i>groff</i> string variable name for storage &#8212; see next section.</div>
+<div class="subsection">
+<h2>Ending Perl Mode with Storage</h2> A useful feature of <b>gperl</b> is to store one or more results from the <i>Perl mode</i>.<div class="spacer">
+</div>
+The output of a <i>Perl part</i> can be got with backticks <b>`...`</b>.<div class="spacer">
+</div>
+This program collects all printing to STDOUT (normal standard output) by the Perl <b>print</b> program. This pseudo-printing output can have several lines, due to printed line breaks with <b>\n</b>. By that, the output of a Perl run should be stored into a Perl array, with a single line for each array member.<div class="spacer">
+</div>
+This Perl array output can be stored by <b>gperl</b> in either<dl>
+<dt>
+<i>groff strings</i></dt>
+<dd>
+by creating a groff command <b>.ds</b></dd>
+</dl>
+<dl>
+<dt>
+<i>groff number register</i></dt>
+<dd>
+by creating a groff command <b>.rn</b></dd>
+</dl>
+<div class="spacer">
+</div>
+The storage modes can be determined by arguments of a final stopping <b>.Perl</b> command. Each argument <b>.ds</b> changes the mode into <i>groff string</i> and <b>.nr</b> changes the mode into <i>groff number register</i> for all following output parts.<div class="spacer">
+</div>
+By default, all output is saved as strings, so <b>.ds</b> is not really needed before the first <b>.nr</b> command. That suits to <b>groff</b>(7), because every output can be saved as <i>groff</i> string, but the number registers can be very restrictive.<div class="spacer">
+</div>
+In <i>string mode</i>, <b>gperl</b> generates a <i>groff string</i> storage line<div style="margin-left: 5.00ex;">
+<br/>
+<b>.ds </b><i>var_name content</i><br/>
+</div>
+In <i>number register mode</i> the following groff command is generated<div style="margin-left: 5.00ex;">
+<br/>
+<b>.nr </b><i>var_name content</i><br/>
+</div>
+<div class="spacer">
+</div>
+We present argument collections in the following. You can add as first argument for all <b>stop</b>. We omit this additional element.<dl>
+<dt>
+<b>.Perl .ds </b><i>var_name</i></dt>
+<dd>
+This will store 1 output line into the groff string named <i>var_name</i> by the automatically created command</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<div style="margin-left: 5.00ex;">
+<br/>
+<b>.ds</b><i> var_name output</i><br/>
+</div>
+</div>
+<dl>
+<dt>
+<b>.Perl</b><i> var_name</i></dt>
+<dd>
+If <i>var_name</i> is different from <b>start</b> this is equivalent to the former command, because the string mode is string with <b>.ds</b> command. default.</dd>
+</dl>
+<dl>
+<dt>
+<b>.Perl</b><i> var_name1 var_name2</i></dt>
+<dd>
+This will store 2 output lines into groff string names <i>var_name1</i> and <i>var_name2</i>, because the default mode <b>.ds</b> is active, such that no <b>.ds</b> argument is needed. Of course, this is equivalent to</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<div style="margin-left: 5.00ex;">
+<br/>
+<b>.Perl .ds </b><i>var_name1 var_name2</i><br/>
+</div>
+and<div style="margin-left: 5.00ex;">
+<br/>
+<b>.Perl .ds </b><i>var_name1 </i><b>.ds</b><i> var_name2</i><br/>
+</div>
+</div>
+<dl>
+<dt>
+<b>.Perl .nr</b><i> var_name1 varname2</i></dt>
+<dd>
+stores both variables as number register variables. <b>gperl</b> generates</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<br/>
+<b>.nr</b><i> var_name1 output_line1</i><br/>
+<b>.nr</b><i> var_name2 output_line2</i><br/>
+</div>
+<dl>
+<dt>
+<b>.Perl .nr </b><i>var_name1</i><b> .ds </b><i>var_name2</i></dt>
+<dd>
+stores the 1st argument as <i>number register</i> and the second as <i>string</i> by</dd>
+</dl>
+<div style="margin-left: 5.00ex;">
+<br/>
+<b>.nr</b><i> var_name1 output_line1</i><br/>
+<b>.ds</b><i> var_name2 output_line2</i><br/>
+</div>
+</div>
+<div class="subsection">
+<h2>Printing towards STDERR is without Storage</h2> The printing towards <i>STDERR</i>, (standard error) works as usual. All error information goes to the real normal <i>standard error</i>, without other automatical storage.</div>
+</div>
+<div class="section">
+<h1>EXAMPLES</h1> A possible <i>Perl part</i> in a <i>roff file</i> could look like that:<div style="margin-left: 5.00ex;">
+<br/>
+before<br/>
+.Perl start<br/>
+my $result = 'some data';<br/>
+print $result;<br/>
+.Perl stop .ds string_var<br/>
+after<br/>
+</div>
+<div class="spacer">
+</div>
+This stores the result <b>&#8221;some data&#8221;</b> into the <i>roff string</i> called <b>string_var</b>, such that the following line is printed:<div style="margin-left: 5.00ex;">
+<br/>
+.ds string_var some data<br/>
+</div>
+by <b>gperl</b> as food for the coming <b>groff</b> run.<div class="spacer">
+</div>
+A <i>Perl part</i> with several outputs is:<div style="margin-left: 5.00ex;">
+<br/>
+.Perl start<br/>
+print &#8221;first\n&#8221;;<br/>
+print &#8221;second line\n&#8221;;<br/>
+print &#8221;3\n&#8221;;<br/>
+.Perl var1 var2 .nr var3 <br/>
+</div>
+This stores 3 printed lines into 3 <i>groff</i> strings. <b>var1</b>,<b>var2</b>,<b>var3</b>. So the following <i>groff</i> command lines are created:<div style="margin-left: 5.00ex;">
+<br/>
+.ds var1 first<br/>
+.ds var2 second line<br/>
+.nr var3 3<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> Man-pages related to <i>groff</i> are <b>groff</b>(1), <b>groff</b>(7), <b>grog</b>(1), and <b>groffer</b>(1).<div class="spacer">
+</div>
+Documents related to <i>Perl</i> are <b>perl</b>(1), <b>perl</b>(7).</div>
+<div class="section">
+<h1>COPYING</h1> Copyright &#169; 2014 Free Software Foundation, Inc.<div class="spacer">
+</div>
+This file is part of <i>gperl</i>, which is part of <i>groff</i>, a free software project. You can redistribute it and/or modify it under the terms of the <b>GNU General Public License</b> as published by the <b>Free Software Foundation</b>, version&#160;2.<div class="spacer">
+</div>
+The license text is available in the internet at <a class="link-ext" href="http://www.gnu.org/licenses/gpl-2.0.html">http://www.gnu.org/licenses/gpl-2.0.html</a></div>
+<div class="section">
+<h1>AUTHORS</h1> This file was written by Bernd Warken</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+4 November 2014</td>
+<td class="foot-os">
+Groff Version 1.22.3</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

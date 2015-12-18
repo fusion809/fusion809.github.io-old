@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+UNSHARE(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+UNSHARE(1)</td>
+<td class="head-vol">
+User Commands</td>
+<td class="head-rtitle">
+UNSHARE(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> unshare - run program with some namespaces unshared from parent</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>unshare</b> [options] <i>program</i> [<i>arguments</i>]</div>
+<div class="section">
+<h1>DESCRIPTION</h1> Unshares the indicated namespaces from the parent process and then executes the specified  <i>program</i>.<div class="spacer">
+</div>
+The namespaces can optionally be persisted by bind mounting /proc/[pid]/ns/[type] files to a filesystem path and entered with <b>nsenter</b>(1) even after  <i>program</i> terminates. Once a persistent namespace is no longer needed it can be unpersisted with <b>umount</b>(8). See EXAMPLES section for more details.<div class="spacer">
+</div>
+The namespaces to be unshared are indicated via options.  Unshareable namespaces are:<dl>
+<dt>
+<b>mount namespace</b></dt>
+<dd>
+Mounting and unmounting filesystems will not affect the rest of the system ( <b>CLONE_NEWNS</b> flag), except for filesystems which are explicitly marked as shared (with  <b>mount --make-shared</b>; see <i>/proc/self/mountinfo</i> or  <b>findmnt -o+PROPAGATION</b> for the <b>shared</b> flags).<div style="height: 1.00em;">
+&#160;</div>
+<b>unshare</b> since util-linux version 2.27 automatically sets propagation to  <b>private</b> in the new mount namespace to make sure that the new namespace is really unshared. This feature is possible to disable by option  <b>--propagation unchanged</b>. Note that  <b>private</b> is the kernel default.</dd>
+</dl>
+<dl>
+<dt>
+<b>UTS namespace</b></dt>
+<dd>
+Setting hostname or domainname will not affect the rest of the system. ( <b>CLONE_NEWUTS</b> flag)</dd>
+</dl>
+<dl>
+<dt>
+<b>IPC namespace</b></dt>
+<dd>
+The process will have an independent namespace for System V message queues, semaphore sets and shared memory segments.  ( <b>CLONE_NEWIPC</b> flag)</dd>
+</dl>
+<dl>
+<dt>
+<b>network namespace</b></dt>
+<dd>
+The process will have independent IPv4 and IPv6 stacks, IP routing tables, firewall rules, the  <i>/proc/net</i> and <i>/sys/class/net</i> directory trees, sockets, etc.  ( <b>CLONE_NEWNET</b> flag)</dd>
+</dl>
+<dl>
+<dt>
+<b>pid namespace</b></dt>
+<dd>
+Children will have a distinct set of PID to process mappings from their parent. ( <b>CLONE_NEWPID</b> flag)</dd>
+</dl>
+<dl>
+<dt>
+<b>user namespace</b></dt>
+<dd>
+The process will have a distinct set of UIDs, GIDs and capabilities. ( <b>CLONE_NEWUSER</b> flag)</dd>
+</dl>
+<div class="spacer">
+</div>
+See <b>clone</b>(2) for the exact semantics of the flags.</div>
+<div class="section">
+<h1>OPTIONS</h1><dl>
+<dt>
+<b>-i</b>,<b> --ipc</b>[=<i>file</i>]</dt>
+<dd>
+Unshare the IPC namespace. If <i>file</i> is specified then persistent namespace is created by bind mount.</dd>
+</dl>
+<dl>
+<dt>
+<b>-m</b>,<b> --mount</b>[=<i>file</i>]</dt>
+<dd>
+Unshare the mount namespace. If <i>file</i> is specified then persistent namespace is created by bind mount.</dd>
+</dl>
+<dl>
+<dt>
+<b>-n</b>,<b> --net</b>[=<i>file</i>]</dt>
+<dd>
+Unshare the network namespace. If <i>file</i> is specified then persistent namespace is created by bind mount.</dd>
+</dl>
+<dl>
+<dt>
+<b>-p</b>,<b> --pid</b>[=<i>file</i>]</dt>
+<dd>
+Unshare the pid namespace. If <i>file</i> is specified then persistent namespace is created by bind mount. See also the  <b>--fork</b> and <b>--mount-proc</b> options.</dd>
+</dl>
+<dl>
+<dt>
+<b>-u</b>,<b> --uts</b>[=<i>file</i>]</dt>
+<dd>
+Unshare the UTS namespace. If <i>file</i> is specified then persistent namespace is created by bind mount.</dd>
+</dl>
+<dl>
+<dt>
+<b>-U</b>,<b> --user</b>[=<i>file</i>]</dt>
+<dd>
+Unshare the user namespace. If <i>file</i> is specified then persistent namespace is created by bind mount.</dd>
+</dl>
+<dl>
+<dt>
+<b>-f</b>,<b> --fork</b></dt>
+<dd>
+Fork the specified <i>program</i> as a child process of <b>unshare</b> rather than running it directly.  This is useful when creating a new pid namespace.</dd>
+</dl>
+<dl>
+<dt>
+<b>--mount-proc</b>[=<i>mountpoint</i>]</dt>
+<dd>
+Just before running the program, mount the proc filesystem at <i>mountpoint</i> (default is /proc).  This is useful when creating a new pid namespace.  It also implies creating a new mount namespace since the /proc mount would otherwise mess up existing programs on the system.  The new proc filesystem is explicitly mounted as private (by MS_PRIVATE|MS_REC).</dd>
+</dl>
+<dl>
+<dt>
+<b>-r</b>,<b> --map-root-user</b></dt>
+<dd>
+Run the program only after the current effective user and group IDs have been mapped to the superuser UID and GID in the newly created user namespace.  This makes it possible to conveniently gain capabilities needed to manage various aspects of the newly created namespaces (such as configuring interfaces in the network namespace or mounting filesystems in the mount namespace) even when run unprivileged.  As a mere convenience feature, it does not support more sophisticated use cases, such as mapping multiple ranges of UIDs and GIDs. This option implies --setgroups=deny.</dd>
+</dl>
+<dl>
+<dt>
+<b>--propagation <i>private|shared|slave|unchanged</i></b></dt>
+<dd>
+Recursively sets mount propagation flag in the new mount namespace. The default is to set the propagation to  <i>private</i>, this feature is possible to disable by  <i>unchanged</i> argument. The options is silently ignored when mount namespace (<b>--mount</b>) is not requested.</dd>
+</dl>
+<dl>
+<dt>
+<b>--setgroups <i>allow|deny</i></b></dt>
+<dd>
+Allow or deny <b>setgroups</b>(2) syscall in user namespaces.<div style="height: 1.00em;">
+&#160;</div>
+<b>setgroups(2)</b> is only callable with CAP_SETGID and CAP_SETGID in a user namespace (since Linux 3.19) does not give you permission to call setgroups(2) until after GID map has been set. The GID map is writable by root when <b>setgroups(2)</b> is enabled and GID map becomes writable by unprivileged processes when <b>setgroups(2)</b> is permanently disabled.</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>,<b> --version</b></dt>
+<dd>
+Display version information and exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>,<b> --help</b></dt>
+<dd>
+Display help text and exit.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>EXAMPLES</h1><dl>
+<dt>
+<b># unshare --fork --pid --mount-proc readlink /proc/self</b></dt>
+<dd>
+1<div style="height: 0.00em;">
+&#160;</div>
+Establish a PID namespace, ensure we're PID 1 in it against newly mounted procfs instance.</dd>
+</dl>
+<dl>
+<dt>
+<b>$ unshare --map-root-user --user sh -c whoami</b></dt>
+<dd>
+root<div style="height: 0.00em;">
+&#160;</div>
+Establish a user namespace as an unprivileged user with a root user within it.</dd>
+</dl>
+<dl>
+<dt>
+<b># touch /root/uts-ns</b></dt>
+<dd>
+<b># unshare --uts=/root/uts-ns hostanme FOO</b> <b># nsenter --uts=/root/uts-ns hostname</b> FOO <b># umount /root/uts-ns</b><div style="height: 0.00em;">
+&#160;</div>
+Establish a persistent UTS namespace, modify hostname. The namespace maybe later entered by nsenter. The namespace is destroyed by umount the bind reference.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>unshare</b>(2), <b>clone</b>(2), <b>mount</b>(8)</div>
+<div class="section">
+<h1>AUTHORS</h1> <a class="link-ext" href="dottedmag@dottedmag.net">Mikhail Gusarov</a><div style="height: 0.00em;">
+&#160;</div>
+<a class="link-ext" href="kzak@redhat.com">Karel Zak</a></div>
+<div class="section">
+<h1>AVAILABILITY</h1> The unshare command is part of the util-linux package and is available from ftp://ftp.kernel.org/pub/linux/utils/util-linux/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+July 2014</td>
+<td class="foot-os">
+util-linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

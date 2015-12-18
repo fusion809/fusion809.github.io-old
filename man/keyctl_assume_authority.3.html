@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+KEYCTL_INSTANTIATE(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+KEYCTL_INSTANTIATE(3)</td>
+<td class="head-vol">
+Linux Key Management Calls</td>
+<td class="head-rtitle">
+KEYCTL_INSTANTIATE(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> keyctl_assume_authority - Assume the authority to instantiate a key<div style="height: 0.00em;">
+&#160;</div>
+keyctl_instantiate - Instantiate a key from flat data<div style="height: 0.00em;">
+&#160;</div>
+keyctl_instantiate_iov - Instantiate a key from segmented data<div style="height: 0.00em;">
+&#160;</div>
+keyctl_reject - Negatively instantiate a key specifying search error<div style="height: 0.00em;">
+&#160;</div>
+keyctl_negate - Negatively instantiate a key</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;keyutils.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>long keyctl_assume_authority(key_serial_t </b><i>key</i><b>);</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>long keyctl_instantiate(key_serial_t </b><i>key</i><b>, const void *</b><i>payload</i><b>,</b><br/>
+<b>size_t </b><i>plen</i><b>, key_serial_t </b><i>keyring</i><b>);</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>long keyctl_instantiate_iov(key_serial_t </b><i>key</i><b>,</b><br/>
+<b>const struct iovec *</b><i>payload_iov</i><b>, unsigned </b><i>ioc</i><b>,</b><br/>
+<b>key_serial_t </b><i>keyring</i><b>);</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>long keyctl_negate(key_serial_t </b><i>key</i><b>, unsigned </b><i>timeout</i><b>,</b><br/>
+<b>key_serial_t </b><i>keyring</i><b>);</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>long keyctl_reject(key_serial_t </b><i>key</i><b>, unsigned </b><i>timeout</i><b>,</b><br/>
+<b>unsigned </b><i>error</i><b>, key_serial_t </b><i>keyring</i><b>);</b></div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>keyctl_assume_authority</b>() assumes the authority for the calling thread to deal with and instantiate the specified uninstantiated <i>key</i>.<div class="spacer">
+</div>
+The calling thread must have the appopriate authorisation key resident in one of its keyrings for this to succeed, and that authority must not have been revoked.<div class="spacer">
+</div>
+The authorising key is allocated by request_key() when it needs to invoke userspace to generate a key for the requesting process.  This is then attached to one of the keyrings of the userspace process to which the task of instantiating the key is given:<dl>
+<dt>
+</dt>
+<dd>
+requester -&gt; request_key() -&gt; instantiator</dd>
+</dl>
+<div class="spacer">
+</div>
+Calling this function modifies the way <b>request_key</b>() works when called thereafter by the calling (instantiator) thread; once the authority is assumed, the keyrings of the initial process are added to the search path, using the initial process's UID, GID, groups and security context.<div class="spacer">
+</div>
+If a thread has multiple instantiations to deal with, it may call this function to change the authorisation key currently in effect.  Supplying a <b>zero</b> <i>key</i> de-assumes the currently assumed authority.<div class="spacer">
+</div>
+<b>NOTE!</b> This is a per-thread setting and not a per-process setting so that a multithreaded process can be used to instantiate several keys at once.<div class="spacer">
+</div>
+<b>keyctl_instantiate</b>() instantiates the payload of an uninstantiated key from the data specified. <i>payload</i> and <i>plen</i> specify the data for the new payload. <i>payload</i> may be NULL and <i>plen</i> may be zero if the key type permits that.  The key type may reject the data if it's in the wrong format or in some other way invalid.<div class="spacer">
+</div>
+<b>keyctl_instantiate_iov</b>() is similar, but the data is passed in an array of iovec structs instead of in a flat buffer. <i>payload_iov</i> points to the base of the array and <i>ioc</i> indicates how many elements there are. <i>payload_iov</i> may be NULL or <i>ioc</i> may be zero to indicate that no data is being supplied.<div class="spacer">
+</div>
+<b>keyctl_reject</b>() marks a key as negatively instantiated and sets the expiration timer on it. <i>timeout</i> specifies the lifetime of the key in seconds. <i>error</i> specifies the error to be returned when a search hits the key (this is typically <i>EKEYREJECTED</i>, <i>EKEYREVOKED</i> or <i>EKEYEXPIRED</i>). Note that keyctl_reject() falls back to keyctl_negate() if the kernel does not support it.<div class="spacer">
+</div>
+<b>keyctl_negate</b>() as <i>keyctl_reject</i>() with an error code of <i>ENOKEY</i><b>.</b><div class="spacer">
+</div>
+Only a key for which authority has been assumed may be instantiated or negatively instantiated, and once instantiated, the authorisation key will be revoked and the requesting process will be able to resume.<div class="spacer">
+</div>
+The destination <i>keyring</i>, if given, is assumed to belong to the initial requester, and not the instantiating process.  Therefore, the special keyring IDs refer to the requesting process's keyrings, not the caller's, and the requester's UID, etc. will be used to access them.<div class="spacer">
+</div>
+The destination keyring can be <b>zero</b> if no extra link is desired.<div class="spacer">
+</div>
+The requester, not the caller, must have <b>write</b> permission on the destination for a link to be made there.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success <b>keyctl_instantiate</b>() returns <b>0</b>. On error, the value <b>-1</b> will be returned and errno will have been set to an appropriate error.</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>ENOKEY</b></dt>
+<dd>
+The key or keyring specified is invalid.</dd>
+</dl>
+<dl>
+<dt>
+<b>EKEYEXPIRED</b></dt>
+<dd>
+The keyring specified has expired.</dd>
+</dl>
+<dl>
+<dt>
+<b>EKEYREVOKED</b></dt>
+<dd>
+The key or keyring specified had been revoked, or the authorisation has been revoked.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+The payload data was invalid.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOMEM</b></dt>
+<dd>
+Insufficient memory to store the new payload or to expand the destination keyring.</dd>
+</dl>
+<dl>
+<dt>
+<b>EDQUOT</b></dt>
+<dd>
+The key quota for the key's user would be exceeded by increasing the size of the key to accommodate the new payload or the key quota for the keyring's user would be exceeded by expanding the destination keyring.</dd>
+</dl>
+<dl>
+<dt>
+<b>EACCES</b></dt>
+<dd>
+The key exists, but is not <b>writable</b> by the requester.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>LINKING</h1> This is a library function that can be found in <i>libkeyutils</i>. When linking, <b>-lkeyutils</b> should be specified to the linker.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>keyctl</b>(1),<div style="height: 0.00em;">
+&#160;</div>
+<b>add_key</b>(2),<div style="height: 0.00em;">
+&#160;</div>
+<b>keyctl</b>(2),<div style="height: 0.00em;">
+&#160;</div>
+<b>request_key</b>(2),<div style="height: 0.00em;">
+&#160;</div>
+<b>keyctl</b>(3),<div style="height: 0.00em;">
+&#160;</div>
+<b>request-key</b>(8),<div style="height: 0.00em;">
+&#160;</div>
+<b>keyutils</b>(7),<div style="height: 0.00em;">
+&#160;</div>
+<b>keyrings</b>(7)</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+4 May 2006</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

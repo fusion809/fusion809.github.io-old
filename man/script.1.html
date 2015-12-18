@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SCRIPT(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SCRIPT(1)</td>
+<td class="head-vol">
+User Commands</td>
+<td class="head-rtitle">
+SCRIPT(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> script - make typescript of terminal session</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>script</b> [options] [<i>file</i>]</div>
+<div class="section">
+<h1>DESCRIPTION</h1> <b>script</b> makes a typescript of everything displayed on your terminal.  It is useful for students who need a hardcopy record of an interactive session as proof of an assignment, as the typescript file can be printed out later with <b>lpr</b>(1).<div class="spacer">
+</div>
+If the argument <i>file</i> is given, <b>script</b> saves the dialogue in this <i>file</i>. If no filename is given, the dialogue is saved in the file <b>typescript</b>.</div>
+<div class="section">
+<h1>OPTIONS</h1><dl>
+<dt>
+<b>-a</b>, <b>--append</b></dt>
+<dd>
+Append the output to <i>file</i> or to <b>typescript</b>, retaining the prior contents.</dd>
+</dl>
+<dl>
+<dt>
+<b>-c</b>, <b>--command</b> <i>command</i></dt>
+<dd>
+Run the <i>command</i> rather than an interactive shell.  This makes it easy for a script to capture the output of a program that behaves differently when its stdout is not a tty.</dd>
+</dl>
+<dl>
+<dt>
+<b>-e</b>, <b>--return</b></dt>
+<dd>
+Return the exit code of the child process.  Uses the same format as bash termination on signal termination exit code is 128+n.</dd>
+</dl>
+<dl>
+<dt>
+<b>-f</b>, <b>--flush</b></dt>
+<dd>
+Flush output after each write.  This is nice for telecooperation: one person does `mkfifo foo; script -f foo', and another can supervise real-time what is being done using `cat foo'.</dd>
+</dl>
+<dl>
+<dt>
+<b>--force</b></dt>
+<dd>
+Allow the default output destination, i.e. the typescript file, to be a hard or symbolic link.  The command will follow a symbolic link.</dd>
+</dl>
+<dl>
+<dt>
+<b>-q</b>, <b>--quiet</b></dt>
+<dd>
+Be quiet (do not write start and done messages to either standard output or the typescript file).</dd>
+</dl>
+<dl>
+<dt>
+<b>-t</b>, <b>--timing</b>[=<i>file</i>]</dt>
+<dd>
+Output timing data to standard error, or to <i>file</i> when given.  This data contains two fields, separated by a space.  The first field indicates how much time elapsed since the previous output.  The second field indicates how many characters were output this time.  This information can be used to replay typescripts with realistic typing and output delays.</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>, <b>--version</b></dt>
+<dd>
+Display version information and exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-h</b>, <b>--help</b></dt>
+<dd>
+Display help text and exit.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>NOTES</h1> The script ends when the forked shell exits (a <i>control-D</i> for the Bourne shell (<b>sh</b>(1)), and <i>exit</i>, <i>logout</i> or <i>control-d</i> (if <i>ignoreeof</i> is not set) for the C-shell, <b>csh</b>(1)).<div class="spacer">
+</div>
+Certain interactive commands, such as <b>vi</b>(1), create garbage in the typescript file. <b>script</b> works best with commands that do not manipulate the screen, the results are meant to emulate a hardcopy terminal.<div class="spacer">
+</div>
+It is not recommended to run <b>script</b> in non-interactive shells. The inner shell of <b>script</b> is always interactive, and this could lead to unexpected results. If you use <b>script</b> in the shell initialization file, you have to avoid entering an infinite loop. Use e. g. profile file, which is read by login shells only:<div style="margin-left: 5.00ex;">
+</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 5.00ex;">
+<br/>
+if test -t 0 ; then<br/>
+    script<br/>
+    exit<br/>
+fi<br/>
+</div>
+<div class="spacer">
+</div>
+You should also avoid use of script in command pipes, as <b>script</b> can read more input than you would expect.</div>
+<div class="section">
+<h1>ENVIRONMENT</h1> The following environment variable is utilized by <b>script</b>:<dl>
+<dt>
+<b>SHELL</b></dt>
+<dd>
+If the variable <b>SHELL</b> exists, the shell forked by <b>script</b> will be that shell.  If <b>SHELL</b> is not set, the Bourne shell is assumed.  (Most shells set this variable automatically).</dd>
+</dl>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>csh</b>(1) (for the <i>history</i> mechanism), <b>scriptreplay</b>(1).</div>
+<div class="section">
+<h1>HISTORY</h1> The <b>script</b> command appeared in 3.0BSD.</div>
+<div class="section">
+<h1>BUGS</h1> <b>script</b> places <i>everything</i> in the log file, including linefeeds and backspaces.  This is not what the naive user expects.<div class="spacer">
+</div>
+<b>script</b> is primarily designed for interactive terminal sessions, it's possible that when stdin is not a terminal (for example &quot;echo foo | script&quot;) then all session hung ups, because interactive shell within script session miss EOF and the <b>script</b> has no clue when close the session. See the NOTES section for more information.</div>
+<div class="section">
+<h1>AVAILABILITY</h1> The script command is part of the util-linux package and is available from <a class="link-ext" href="ftp://ftp.kernel.org/pub/linux/utils/util-linux/">Linux Kernel Archive</a></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+June 2014</td>
+<td class="foot-os">
+util-linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

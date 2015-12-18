@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SHADOW(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SHADOW(3)</td>
+<td class="head-vol">
+Library Calls</td>
+<td class="head-rtitle">
+SHADOW(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> shadow, getspnam - encrypted password file routines</div>
+<div class="section">
+<h1>SYNTAX</h1>  <i>#include &lt;shadow.h&gt;</i><div class="spacer">
+</div>
+<i>struct spwd *getspent();</i><div class="spacer">
+</div>
+<i>struct spwd *getspnam(char</i><i>*name</i><i>);</i><div class="spacer">
+</div>
+<i>void setspent();</i><div class="spacer">
+</div>
+<i>void endspent();</i><div class="spacer">
+</div>
+<i>struct spwd *fgetspent(FILE</i><i>*fp</i><i>);</i><div class="spacer">
+</div>
+<i>struct spwd *sgetspent(char</i><i>*cp</i><i>);</i><div class="spacer">
+</div>
+<i>int putspent(struct spwd</i><i>*p,</i><i>FILE</i><i>*fp</i><i>);</i><div class="spacer">
+</div>
+<i>int lckpwdf();</i><div class="spacer">
+</div>
+<i>int ulckpwdf();</i></div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <i>shadow</i> manipulates the contents of the shadow password file, /etc/shadow. The structure in the  <i>#include</i> file is:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+struct spwd {<br/>
+      char		*sp_namp; /* user login name */<br/>
+      char		*sp_pwdp; /* encrypted password */<br/>
+      long int		sp_lstchg; /* last password change */<br/>
+      long int		sp_min; /* days until change allowed. */<br/>
+      long int		sp_max; /* days before change required */<br/>
+      long int		sp_warn; /* days warning for expiration */<br/>
+      long int		sp_inact; /* days before account inactive */<br/>
+      long int		sp_expire; /* date when account expires */<br/>
+      unsigned long int	sp_flag; /* reserved for future use */<br/>
+}<br/>
+    <br/>
+</div>
+<div class="spacer">
+</div>
+The meanings of each field are:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;sp_namp - pointer to null-terminated user name</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;sp_pwdp - pointer to null-terminated password</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;sp_lstchg - days since Jan 1, 1970 password was last changed</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;sp_min - days before which password may not be changed</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;sp_max - days after which password must be changed</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;sp_warn - days before password is to expire that user is warned of pending password expiration</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;sp_inact - days after password expires that account is considered inactive and disabled</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;sp_expire - days since Jan 1, 1970 when account will be disabled</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+&#8226;sp_flag - reserved for future use</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <i>getspent</i>,  <i>getspname</i>,  <i>fgetspent</i>, and  <i>sgetspent</i> each return a pointer to a  <i>struct spwd</i>.  <i>getspent</i> returns the next entry from the file, and  <i>fgetspent</i> returns the next entry from the given stream, which is assumed to be a file of the proper format.  <i>sgetspent</i> returns a pointer to a  <i>struct spwd</i> using the provided string as input.  <i>getspnam</i> searches from the current position in the file for an entry matching  <i>name</i>.<div class="spacer">
+</div>
+<i>setspent</i> and  <i>endspent</i> may be used to begin and end, respectively, access to the shadow password file.<div class="spacer">
+</div>
+The  <i>lckpwdf</i> and  <i>ulckpwdf</i> routines should be used to insure exclusive access to the /etc/shadow file.  <i>lckpwdf</i> attempts to acquire a lock using  <i>pw_lock</i> for up to 15 seconds. It continues by attempting to acquire a second lock using  <i>spw_lock</i> for the remainder of the initial 15 seconds. Should either attempt fail after a total of 15 seconds,  <i>lckpwdf</i> returns -1. When both locks are acquired 0 is returned.</div>
+<div class="section">
+<h1>DIAGNOSTICS</h1> Routines return NULL if no more entries are available or if an error occurs during processing. Routines which have  <i>int</i> as the return value return 0 for success and -1 for failure.</div>
+<div class="section">
+<h1>CAVEATS</h1> These routines may only be used by the superuser as access to the shadow password file is restricted.</div>
+<div class="section">
+<h1>FILES</h1> /etc/shadow<div style="margin-left: 4.00ex;">
+Secure user account information.</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1>  <b>getpwent</b>(3),  <b>shadow</b>(5).</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+05/09/2014</td>
+<td class="foot-os">
+shadow-utils 4.2.1</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

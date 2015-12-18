@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+GETENV(3P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+GETENV(3P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+GETENV(3P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> getenv &#8212; get value of an environment variable</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;stdlib.h&gt;<div class="spacer">
+</div>
+char *getenv(const char *<i>name</i>);<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The functionality described on this reference page is aligned with the ISO&#160;C standard. Any conflict between the requirements described here and the ISO&#160;C standard is unintentional. This volume of POSIX.1&#8208;2008 defers to the ISO&#160;C standard.<div class="spacer">
+</div>
+The  <i>getenv</i>() function shall search the environment of the calling process (see the Base Definitions volume of POSIX.1&#8208;2008, <i>Chapter 8</i>, <i>Environment Variables</i>) for the environment variable <i>name</i> if it exists and return a pointer to the value of the environment variable. If the specified environment variable cannot be found, a null pointer shall be returned. The application shall ensure that it does not modify the string pointed to by the  <i>getenv</i>() function.<div class="spacer">
+</div>
+The returned string pointer might be invalidated or the string content might be overwritten by a subsequent call to  <i>getenv</i>(),  <i>setenv</i>(),  <i>unsetenv</i>(), or (if supported)  <i>putenv</i>() but they shall not be affected by a call to any other function in this volume of POSIX.1&#8208;2008.<div class="spacer">
+</div>
+The  <i>getenv</i>() function need not be thread-safe.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> Upon successful completion,  <i>getenv</i>() shall return a pointer to a string containing the <i>value</i> for the specified <i>name</i>. If the specified <i>name</i> cannot be found in the environment of the calling process, a null pointer shall be returned.</div>
+<div class="section">
+<h1>ERRORS</h1> No errors are defined.<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>EXAMPLES</h1><div class="subsection">
+<h2>Getting the Value of an Environment Variable</h2> The following example gets the value of the <i>HOME</i> environment variable.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>#include &lt;stdlib.h&gt;</b><br/>
+<b>...</b><br/>
+<b>const char *name = &quot;HOME&quot;;</b><br/>
+<b>char *value;</b><div class="spacer">
+</div>
+value = getenv(name);<br/>
+</div>
+</div>
+</div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> None.</div>
+<div class="section">
+<h1>RATIONALE</h1> The  <i>clearenv</i>() function was considered but rejected. The  <i>putenv</i>() function has now been included for alignment with the Single UNIX Specification.<div class="spacer">
+</div>
+The  <i>getenv</i>() function is inherently not thread-safe because it returns a value pointing to static data.<div class="spacer">
+</div>
+Conforming applications are required not to directly modify the pointers to which <i>environ</i> points, but to use only the  <i>setenv</i>(),  <i>unsetenv</i>(), and  <i>putenv</i>() functions, or assignment to <i>environ</i> itself, to manipulate the process environment. This constraint allows the implementation to properly manage the memory it allocates. This enables the implementation to free any space it has allocated to strings (and perhaps the pointers to them) stored in <i>environ</i> when  <i>unsetenv</i>() is called. A C runtime start-up procedure (that which invokes  <i>main</i>() and perhaps initializes <i>environ</i>) can also initialize a flag indicating that none of the environment has yet been copied to allocated storage, or that the separate table has not yet been initialized. If the application switches to a complete new environment by assigning a new value to <i>environ</i>, this can be detected by  <i>getenv</i>(),  <i>setenv</i>(),  <i>unsetenv</i>(), or  <i>putenv</i>() and the implementation can at that point reinitialize based on the new environment. (This may include copying the environment strings into a new array and assigning <i>environ</i> to point to it.)<div class="spacer">
+</div>
+In fact, for higher performance of  <i>getenv</i>(), implementations that do not provide  <i>putenv</i>() could also maintain a separate copy of the environment in a data structure that could be searched much more quickly (such as an indexed hash table, or a binary tree), and update both it and the linear list at <i>environ</i> when  <i>setenv</i>() or  <i>unsetenv</i>() is invoked. On implementations that do provide  <i>putenv</i>(), such a copy might still be worthwhile but would need to allow for the fact that applications can directly modify the content of environment strings added with  <i>putenv</i>(). For example, if an environment string found by searching the copy is one that was added using  <i>putenv</i>(), the implementation would need to check that the string in <i>environ</i> still has the same name (and value, if the copy includes values), and whenever searching the copy produces no match the implementation would then need to search each environment string in <i>environ</i> that was added using  <i>putenv</i>() in case any of them have changed their names and now match. Thus, each use of  <i>putenv</i>() to add to the environment would reduce the speed advantage of having the copy.<div class="spacer">
+</div>
+Performance of  <i>getenv</i>() can be important for applications which have large numbers of environment variables. Typically, applications like this use the environment as a resource database of user-configurable parameters. The fact that these variables are in the user's shell environment usually means that any other program that uses environment variables (such as <i>ls</i>, which attempts to use <i>COLUMNS</i>), or really almost any utility (<i>LANG</i>, <i>LC_ALL</i>, and so on) is similarly slowed down by the linear search through the variables.<div class="spacer">
+</div>
+An implementation that maintains separate data structures, or even one that manages the memory it consumes, is not currently required as it was thought it would reduce consensus among implementors who do not want to change their historical implementations.</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> A future version may add one or more functions to access and modify the environment in a thread-safe manner.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i><i>exec</i></i>, <i><i>putenv</i>()</i>, <i><i>setenv</i>()</i>, <i><i>unsetenv</i>()</i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i>Chapter 8</i>, <i>Environment Variables</i>, <i><b>&lt;stdlib.h&gt;</b></i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

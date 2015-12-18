@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+MCHECK(3)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+MCHECK(3)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+MCHECK(3)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> mcheck, mcheck_check_all, mcheck_pedantic, mprobe - heap consistency checking</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;mcheck.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>int mcheck(void (*</b><i>abortfunc</i><b>)(enum mcheck_status </b><i>mstatus</i><b>));</b><div class="spacer">
+</div>
+<br/>
+<b>int mcheck_pedantic(void (*</b><i>abortfunc</i><b>)(enum mcheck_status </b><i>mstatus</i><b>));</b><div class="spacer">
+</div>
+<b>void mcheck_check_all(void);</b><div class="spacer">
+</div>
+<br/>
+<b>enum mcheck_status mprobe(void *</b><i>ptr</i><b>);</b><br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The <b>mcheck</b>() function installs a set of debugging hooks for the <b>malloc</b>(3) family of memory-allocation functions. These hooks cause certain consistency checks to be performed on the state of the heap. The checks can detect application errors such as freeing a block of memory more than once or corrupting the bookkeeping data structures that immediately precede a block of allocated memory.<div style="height: 1.00em;">
+&#160;</div>
+To be effective, the <b>mcheck</b>() function must be called before the first call to <b>malloc</b>(3) or a related function. In cases where this is difficult to ensure, linking the program with <i>-lmcheck</i> inserts an implicit call to <b>mcheck</b>() (with a NULL argument) before the first call to a memory-allocation function.<div style="height: 1.00em;">
+&#160;</div>
+The <b>mcheck_pedantic</b>() function is similar to <b>mcheck</b>(), but performs checks on all allocated blocks whenever one of the memory-allocation functions is called. This can be very slow!<div style="height: 1.00em;">
+&#160;</div>
+The <b>mcheck_check_all</b>() function causes an immediate check on all allocated blocks. This call is effective only if <b>mcheck</b>() is called beforehand.<div style="height: 1.00em;">
+&#160;</div>
+If the system detects an inconsistency in the heap, the caller-supplied function pointed to by <i>abortfunc</i> is invoked with a single argument argument, <i>mstatus</i>, that indicates what type of inconsistency was detected. If <i>abortfunc</i> is NULL, a default function prints an error message on <i>stderr</i> and calls <b>abort</b>(3).<div style="height: 1.00em;">
+&#160;</div>
+The <b>mprobe</b>() function performs a consistency check on the block of allocated memory pointed to by <i>ptr</i>. The <b>mcheck</b>() function should be called beforehand (otherwise <b>mprobe</b>() returns <b>MCHECK_DISABLED</b>).<div style="height: 1.00em;">
+&#160;</div>
+The following list describes the values returned by <b>mprobe</b>() or passed as the <i>mstatus</i> argument when <i>abortfunc</i> is invoked:<dl>
+<dt>
+<b>MCHECK_DISABLED</b> (<b>mprobe</b>() only)</dt>
+<dd>
+<b>mcheck</b>() was not called before the first memory allocation function was called. Consistency checking is not possible.</dd>
+</dl>
+<dl>
+<dt>
+<b>MCHECK_OK</b> (<b>mprobe</b>() only)</dt>
+<dd>
+No inconsistency detected.</dd>
+</dl>
+<dl>
+<dt>
+<b>MCHECK_HEAD</b></dt>
+<dd>
+Memory preceding an allocated block was clobbered.</dd>
+</dl>
+<dl>
+<dt>
+<b>MCHECK_TAIL</b></dt>
+<dd>
+Memory following an allocated block was clobbered.</dd>
+</dl>
+<dl>
+<dt>
+<b>MCHECK_FREE</b></dt>
+<dd>
+A block of memory was freed twice.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>RETURN VALUE</h1> <b>mcheck</b>() and <b>mcheck_pedantic</b>() return 0 on success, or -1 on error.</div>
+<div class="section">
+<h1>VERSIONS</h1> The <b>mcheck_pedantic</b>() and <b>mcheck_check_all</b>() functions are available since glibc 2.2. The <b>mcheck</b>() and <b>mprobe</b>() functions are present since at least glibc 2.0</div>
+<div class="section">
+<h1>ATTRIBUTES</h1> For an explanation of the terms used in this section, see <b>attributes</b>(7).<table class="tbl">
+<col style="width: 62.00ex;"/>
+<col style="width: 13.00ex;"/>
+<col style="width: 5.00ex;"/>
+<tbody>
+<tr>
+<td>
+Interface</td>
+<td>
+Attribute</td>
+<td>
+Value</td>
+</tr>
+<tr>
+<td>
+mcheck (), mcheck_pedantic (),  mcheck_check_all (), mprobe ()</td>
+<td>
+Thread safety</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+MT-Unsafe race:mcheck</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+const:malloc_hooks</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+T}</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>CONFORMING TO</h1> These functions are GNU extensions.</div>
+<div class="section">
+<h1>NOTES</h1> Linking a program with <i>-lmcheck</i> and using the <b>MALLOC_CHECK_</b> environment variable (described in <b>mallopt</b>(3)) cause the same kinds of errors to be detected. But, using <b>MALLOC_CHECK_</b> does not require the application to be relinked.</div>
+<div class="section">
+<h1>EXAMPLE</h1> The program below calls <b>mcheck</b>() with a NULL argument and then frees the same block of memory twice. The following shell session demonstrates what happens when running the program:<br/>
+<div class="spacer">
+</div>
+<br/>
+$<b> ./a.out</b><br/>
+About to free<div class="spacer">
+</div>
+<br/>
+About to free a second time<br/>
+block freed twice<br/>
+Aborted (core dumped)<br/>
+<br/>
+<div class="subsection">
+<h2>Program source</h2> <br/>
+#include &lt;stdlib.h&gt;<br/>
+#include &lt;stdio.h&gt;<br/>
+#include &lt;mcheck.h&gt;<div class="spacer">
+</div>
+<br/>
+int<br/>
+main(int argc, char *argv[])<br/>
+{<br/>
+    char *p;<div class="spacer">
+</div>
+<br/>
+    if (mcheck(NULL) != 0) {<br/>
+        fprintf(stderr, &quot;mcheck() failed\n&quot;);<div class="spacer">
+</div>
+<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    p = malloc(1000);<div class="spacer">
+</div>
+<br/>
+    fprintf(stderr, &quot;About to free\n&quot;);<br/>
+    free(p);<br/>
+    fprintf(stderr, &quot;\nAbout to free a second time\n&quot;);<br/>
+    free(p);<div class="spacer">
+</div>
+<br/>
+    exit(EXIT_SUCCESS);<br/>
+}<br/>
+</div>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>malloc</b>(3), <b>mallopt</b>(3), <b>mtrace</b>(3)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-05-07</td>
+<td class="foot-os">
+GNU</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

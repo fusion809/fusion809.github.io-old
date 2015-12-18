@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+FMEMOPEN(3P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+FMEMOPEN(3P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+FMEMOPEN(3P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> fmemopen &#8212; open a memory buffer stream</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;stdio.h&gt;<div class="spacer">
+</div>
+FILE *fmemopen(void *restrict <i>buf</i>, size_t <i>size</i>,<br/>
+    const char *restrict <i>mode</i>);<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <i>fmemopen</i>() function shall associate the buffer given by the <i>buf</i> and <i>size</i> arguments with a stream. The <i>buf</i> argument shall be either a null pointer or point to a buffer that is at least <i>size</i> bytes long.<div class="spacer">
+</div>
+The <i>mode</i> argument points to a string. If the string is one of the following, the stream shall be opened in the indicated mode. Otherwise, the behavior is undefined.<dl>
+<dt>
+<i>r</i></dt>
+<dd>
+Open the stream for reading.</dd>
+</dl>
+<dl>
+<dt>
+<i>w</i></dt>
+<dd>
+Open the stream for writing.</dd>
+</dl>
+<dl>
+<dt>
+<i>a</i></dt>
+<dd>
+Append; open the stream for writing at the first null byte.</dd>
+</dl>
+<dl>
+<dt>
+<i>r</i>+</dt>
+<dd>
+Open the stream for update (reading and writing).</dd>
+</dl>
+<dl>
+<dt>
+<i>w</i>+</dt>
+<dd>
+Open the stream for update (reading and writing). Truncate the buffer contents.</dd>
+</dl>
+<dl>
+<dt>
+<i>a</i>+</dt>
+<dd>
+Append; open the stream for update (reading and writing); the initial position is at the first null byte.</dd>
+</dl>
+<div class="spacer">
+</div>
+Implementations shall accept all mode strings allowed by  <i>fopen</i>(), but the use of the character <b>'b'</b> shall produce implementation-defined results, where the resulting <b>FILE *</b> need not behave the same as if <b>'b'</b> were omitted.<div class="spacer">
+</div>
+If a null pointer is specified as the <i>buf</i> argument,  <i>fmemopen</i>() shall allocate <i>size</i> bytes of memory as if by a call to  <i>malloc</i>(). This buffer shall be automatically freed when the stream is closed. Because this feature is only useful when the stream is opened for updating (because there is no way to get a pointer to the buffer) the  <i>fmemopen</i>() call may fail if the <i>mode</i> argument does not include a <b>'+'</b>.<div class="spacer">
+</div>
+The stream shall maintain a current position in the buffer. This position shall be initially set to either the beginning of the buffer (for <i>r</i> and <i>w</i> modes) or to the first null byte in the buffer (for <i>a</i> modes). If no null byte is found in append mode, the initial position shall be set to one byte after the end of the buffer.<div class="spacer">
+</div>
+If <i>buf</i> is a null pointer, the initial position shall always be set to the beginning of the buffer.<div class="spacer">
+</div>
+The stream shall also maintain the size of the current buffer contents; use of  <i>fseek</i>() or  <i>fseeko</i>() on the stream with SEEK_END shall seek relative to this size. For modes <i>r</i> and <i>r+</i> the size shall be set to the value given by the <i>size</i> argument. For modes <i>w</i> and <i>w+</i> the initial size shall be zero and for modes <i>a</i> and <i>a+</i> the initial size shall be either the position of the first null byte in the buffer or the value of the <i>size</i> argument if no null byte is found.<div class="spacer">
+</div>
+A read operation on the stream shall not advance the current buffer position beyond the current buffer size. Reaching the buffer size in a read operation shall count as ``end-of-file''. Null bytes in the buffer shall have no special meaning for reads. The read operation shall start at the current buffer position of the stream.<div class="spacer">
+</div>
+A write operation shall start either at the current position of the stream (if <i>mode</i> has not specified <b>'a'</b> as the first character) or at the current size of the stream (if <i>mode</i> had <b>'a'</b> as the first character). If the current position at the end of the write is larger than the current buffer size, the current buffer size shall be set to the current position. A write operation on the stream shall not advance the current buffer size beyond the size given in the <i>size</i> argument.<div class="spacer">
+</div>
+When a stream open for writing is flushed or closed, a null byte shall be written at the current position or at the end of the buffer, depending on the size of the contents. If a stream open for update is flushed or closed and the last write has advanced the current buffer size, a null byte shall be written at the end of the buffer if it fits.<div class="spacer">
+</div>
+An attempt to seek a memory buffer stream to a negative position or to a position larger than the buffer size given in the <i>size</i> argument shall fail.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> Upon successful completion,  <i>fmemopen</i>() shall return a pointer to the object controlling the stream. Otherwise, a null pointer shall be returned, and <i>errno</i> shall be set to indicate the error.</div>
+<div class="section">
+<h1>ERRORS</h1> The  <i>fmemopen</i>() function shall fail if:<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+The <i>size</i> argument specifies a buffer size of zero.</dd>
+</dl>
+<div class="spacer">
+</div>
+The  <i>fmemopen</i>() function may fail if:<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+The value of the <i>mode</i> argument is not valid.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+The <i>buf</i> argument is a null pointer and the <i>mode</i> argument does not include a <b>'+'</b> character.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOMEM</b></dt>
+<dd>
+The <i>buf</i> argument is a null pointer and the allocation of a buffer of length <i>size</i> has failed.</dd>
+</dl>
+<dl>
+<dt>
+<b>EMFILE</b></dt>
+<dd>
+{FOPEN_MAX} streams are currently open in the calling process.</dd>
+</dl>
+<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>EXAMPLES</h1><div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>#include &lt;stdio.h&gt;</b><br/>
+<b>#include &lt;string.h&gt;</b><div class="spacer">
+</div>
+static char buffer[] = &quot;foobar&quot;;<div class="spacer">
+</div>
+int<br/>
+main (void)<br/>
+{<br/>
+    int ch;<br/>
+    FILE *stream;<div class="spacer">
+</div>
+<br/>
+    stream = fmemopen(buffer, strlen (buffer), &quot;r&quot;);<br/>
+    if (stream == NULL)<br/>
+        /* handle error */;<div class="spacer">
+</div>
+<br/>
+    while ((ch = fgetc(stream)) != EOF)<br/>
+        printf(&quot;Got %c\n&quot;, ch);<div class="spacer">
+</div>
+<br/>
+    fclose(stream);<br/>
+    return (0);<br/>
+}<br/>
+</div>
+<div class="spacer">
+</div>
+This program produces the following output:<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>Got f</b><br/>
+<b>Got o</b><br/>
+<b>Got o</b><br/>
+<b>Got b</b><br/>
+<b>Got a</b><br/>
+<b>Got r</b><br/>
+</div>
+</div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> None.</div>
+<div class="section">
+<h1>RATIONALE</h1> This interface has been introduced to eliminate many of the errors encountered in the construction of strings, notably overflowing of strings. This interface prevents overflow.</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> A future revision of this standard may mandate specific behavior when the <i>mode</i> argument includes <b>'b'</b>.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i><i>fdopen</i>()</i>, <i><i>fopen</i>()</i>, <i><i>freopen</i>()</i>, <i><i>fseek</i>()</i>, <i><i>malloc</i>()</i>, <i><i>open_memstream</i>()</i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i><b>&lt;stdio.h&gt;</b></i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

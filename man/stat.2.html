@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+STAT(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+STAT(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+STAT(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> stat, fstat, lstat, fstatat - get file status</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;sys/types.h&gt;</b><div style="height: 0.00em;">
+&#160;</div>
+<b>#include &lt;sys/stat.h&gt;</b><div style="height: 0.00em;">
+&#160;</div>
+<b>#include &lt;unistd.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>int stat(const char *</b><i>pathname</i><b>, struct stat *</b><i>buf</i><b>);</b><div style="height: 0.00em;">
+&#160;</div>
+<br/>
+<b>int fstat(int </b><i>fd</i><b>, struct stat *</b><i>buf</i><b>);</b><div style="height: 0.00em;">
+&#160;</div>
+<br/>
+<b>int lstat(const char *</b><i>pathname</i><b>, struct stat *</b><i>buf</i><b>);</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>#include &lt;fcntl.h&gt;           </b>/* Definition of AT_* constants */ <b>#include &lt;sys/stat.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<b>int fstatat(int </b><i>dirfd</i><b>, const char *</b><i>pathname</i><b>, struct stat *</b><i>buf</i><b>,</b><br/>
+<b>            int </b><i>flags</i><b>);</b><br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Feature Test Macro Requirements for glibc (see <b>feature_test_macros</b>(7)):<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>lstat</b>():<div style="margin-left: 4.00ex;">
+/* glibc 2.19 and earlier */ _BSD_SOURCE ||<div style="height: 0.00em;">
+&#160;</div>
+/* Since glibc 2.20 */_DEFAULT_SOURCE ||<div style="height: 0.00em;">
+&#160;</div>
+_XOPEN_SOURCE&#160;&gt;=&#160;500 || _XOPEN_SOURCE&#160;&amp;&amp;&#160;_XOPEN_SOURCE_EXTENDED<div style="height: 0.00em;">
+&#160;</div>
+|| /* Since glibc 2.10: */ _POSIX_C_SOURCE&#160;&gt;=&#160;200112L</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>fstatat</b>():<div style="margin-left: 4.00ex;">
+<dl>
+<dt>
+Since glibc 2.10:</dt>
+<dd>
+_XOPEN_SOURCE&#160;&gt;=&#160;700 || _POSIX_C_SOURCE&#160;&gt;=&#160;200809L</dd>
+</dl>
+<dl>
+<dt>
+Before glibc 2.10:</dt>
+<dd>
+_ATFILE_SOURCE</dd>
+</dl>
+</div>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> These functions return information about a file, in the buffer pointed to by <i>buf</i>. No permissions are required on the file itself, but&#8212;in the case of <b>stat</b>(), <b>fstatat</b>(), and <b>lstat</b>()&#8212;execute (search) permission is required on all of the directories in <i>pathname</i> that lead to the file.<div class="spacer">
+</div>
+<b>stat</b>() and <b>fstatat</b>() retrieve information about the file pointed to by <i>pathname</i>; the differences for <b>fstatat</b>() are described below.<div style="height: 1.00em;">
+&#160;</div>
+<b>lstat</b>() is identical to <b>stat</b>(), except that if <i>pathname</i> is a symbolic link, then it returns information about the link itself, not the file that it refers to.<div style="height: 1.00em;">
+&#160;</div>
+<b>fstat</b>() is identical to <b>stat</b>(), except that the file about which information is to be retrieved is specified by the file descriptor <i>fd</i>.<div class="spacer">
+</div>
+All of these system calls return a <i>stat</i> structure, which contains the following fields:<div class="spacer">
+</div>
+<br/>
+<br/>
+struct stat {<br/>
+    dev_t     st_dev;         /* ID of device containing file */<br/>
+    ino_t     st_ino;         /* inode number */<br/>
+    mode_t    st_mode;        /* protection */<br/>
+    nlink_t   st_nlink;       /* number of hard links */<br/>
+    uid_t     st_uid;         /* user ID of owner */<br/>
+    gid_t     st_gid;         /* group ID of owner */<br/>
+    dev_t     st_rdev;        /* device ID (if special file) */<br/>
+    off_t     st_size;        /* total size, in bytes */<br/>
+    blksize_t st_blksize;     /* blocksize for filesystem I/O */<br/>
+    blkcnt_t  st_blocks;      /* number of 512B blocks allocated */<div class="spacer">
+</div>
+<br/>
+    /* Since Linux 2.6, the kernel supports nanosecond<br/>
+       precision for the following timestamp fields.<br/>
+       For the details before Linux 2.6, see NOTES. */<div class="spacer">
+</div>
+<br/>
+    struct timespec st_atim;  /* time of last access */<br/>
+    struct timespec st_mtim;  /* time of last modification */<br/>
+    struct timespec st_ctim;  /* time of last status change */<div class="spacer">
+</div>
+<br/>
+#define st_atime st_atim.tv_sec      /* Backward compatibility */<br/>
+#define st_mtime st_mtim.tv_sec<br/>
+#define st_ctime st_ctim.tv_sec<br/>
+};<br/>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<i>Note:</i> the order of fields in the <i>stat</i> structure varies somewhat across architectures. In addition, the definition above does not show the padding bytes that may be present between some fields on various architectures. Consult the glibc and kernel source code if you need to know the details.<div style="height: 1.00em;">
+&#160;</div>
+<i>Note:</i> For performance and simplicity reasons, different fields in the <i>stat</i> structure may contain state information from different moments during the execution of the system call. For example, if <i>st_mode</i> or <i>st_uid</i> is changed by another process by calling <b>chmod</b>(2) or <b>chown</b>(2), <b>stat</b>() might return the old <i>st_mode</i> together with the new <i>st_uid</i>, or the old <i>st_uid</i> together with the new <i>st_mode</i>.<div style="height: 1.00em;">
+&#160;</div>
+The <i>st_dev</i> field describes the device on which this file resides. (The <b>major</b>(3) and <b>minor</b>(3) macros may be useful to decompose the device ID in this field.)<div style="height: 1.00em;">
+&#160;</div>
+The <i>st_rdev</i> field describes the device that this file (inode) represents.<div style="height: 1.00em;">
+&#160;</div>
+The <i>st_size</i> field gives the size of the file (if it is a regular file or a symbolic link) in bytes. The size of a symbolic link is the length of the pathname it contains, without a terminating null byte.<div style="height: 1.00em;">
+&#160;</div>
+The <i>st_blocks</i> field indicates the number of blocks allocated to the file, 512-byte units. (This may be smaller than <i>st_size</i>/512 when the file has holes.)<div style="height: 1.00em;">
+&#160;</div>
+The <i>st_blksize</i> field gives the &quot;preferred&quot; blocksize for efficient filesystem I/O. (Writing to a file in smaller chunks may cause an inefficient read-modify-rewrite.)<div class="spacer">
+</div>
+Not all of the Linux filesystems implement all of the time fields. Some filesystem types allow mounting in such a way that file and/or directory accesses do not cause an update of the <i>st_atime</i> field. (See <i>noatime</i>, <i>nodiratime</i>, and <i>relatime</i> in <b>mount</b>(8), and related information in <b>mount</b>(2).) In addition, <i>st_atime</i> is not updated if a file is opened with the <b>O_NOATIME</b>; see <b>open</b>(2).<div style="height: 1.00em;">
+&#160;</div>
+The field <i>st_atime</i> is changed by file accesses, for example, by <b>execve</b>(2), <b>mknod</b>(2), <b>pipe</b>(2), <b>utime</b>(2), and <b>read</b>(2) (of more than zero bytes). Other routines, like <b>mmap</b>(2), may or may not update <i>st_atime</i>.<div style="height: 1.00em;">
+&#160;</div>
+The field <i>st_mtime</i> is changed by file modifications, for example, by <b>mknod</b>(2), <b>truncate</b>(2), <b>utime</b>(2), and <b>write</b>(2) (of more than zero bytes). Moreover, <i>st_mtime</i> of a directory is changed by the creation or deletion of files in that directory. The <i>st_mtime</i> field is <i>not</i> changed for changes in owner, group, hard link count, or mode.<div style="height: 1.00em;">
+&#160;</div>
+The field <i>st_ctime</i> is changed by writing or by setting inode information (i.e., owner, group, link count, mode, etc.).<div class="spacer">
+</div>
+POSIX refers to the <i>st_mode</i> bits corresponding to the mask <b>S_IFMT</b> (see below) as the <i>file type</i>, the 12 bits corresponding to the mask 07777 as the <i>file mode bits</i> and the least significant 9 bits (0777) as the <i>file permission bits</i>.<div class="spacer">
+</div>
+The following mask values are defined for the file type of the <i>st_mode</i> field:<br/>
+<table class="tbl">
+<col style="width: 8.00ex;"/>
+<col style="width: 7.00ex;"/>
+<col style="width: 36.00ex;"/>
+<tbody>
+<tr>
+<td>
+S_IFMT</td>
+<td>
+0170000</td>
+<td>
+bit mask for the file type bit field</td>
+</tr>
+<tr>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+S_IFSOCK</td>
+<td>
+0140000</td>
+<td>
+socket</td>
+</tr>
+<tr>
+<td>
+S_IFLNK</td>
+<td>
+0120000</td>
+<td>
+symbolic link</td>
+</tr>
+<tr>
+<td>
+S_IFREG</td>
+<td>
+0100000</td>
+<td>
+regular file</td>
+</tr>
+<tr>
+<td>
+S_IFBLK</td>
+<td>
+0060000</td>
+<td>
+block device</td>
+</tr>
+<tr>
+<td>
+S_IFDIR</td>
+<td>
+0040000</td>
+<td>
+directory</td>
+</tr>
+<tr>
+<td>
+S_IFCHR</td>
+<td>
+0020000</td>
+<td>
+character device</td>
+</tr>
+<tr>
+<td>
+S_IFIFO</td>
+<td>
+0010000</td>
+<td>
+FIFO</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<div class="spacer">
+</div>
+Thus, to test for a regular file (for example), one could write:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<br/>
+stat(pathname, &amp;sb);<br/>
+if ((sb.st_mode &amp; S_IFMT) == S_IFREG) {<br/>
+    /* Handle regular file */<br/>
+}<br/>
+<br/>
+<div class="spacer">
+</div>
+Because tests of the above form are common, additional macros are defined by POSIX to allow the test of the file type in <i>st_mode</i> to be written more concisely:<div style="margin-left: 4.00ex;">
+<dl>
+<dt>
+<b>S_ISREG</b>(m)</dt>
+<dd>
+is it a regular file?</dd>
+</dl>
+<dl>
+<dt>
+<b>S_ISDIR</b>(m)</dt>
+<dd>
+directory?</dd>
+</dl>
+<dl>
+<dt>
+<b>S_ISCHR</b>(m)</dt>
+<dd>
+character device?</dd>
+</dl>
+<dl>
+<dt>
+<b>S_ISBLK</b>(m)</dt>
+<dd>
+block device?</dd>
+</dl>
+<dl>
+<dt>
+<b>S_ISFIFO</b>(m)</dt>
+<dd>
+FIFO (named pipe)?</dd>
+</dl>
+<dl>
+<dt>
+<b>S_ISLNK</b>(m)</dt>
+<dd>
+symbolic link?  (Not in POSIX.1-1996.)</dd>
+</dl>
+<dl>
+<dt>
+<b>S_ISSOCK</b>(m)</dt>
+<dd>
+socket?  (Not in POSIX.1-1996.)</dd>
+</dl>
+</div>
+<div class="spacer">
+</div>
+The preceding code snippet could thus be rewritten as:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<br/>
+stat(pathname, &amp;sb);<br/>
+if (S_ISREG(sb.st_mode)) {<br/>
+    /* Handle regular file */<br/>
+}<br/>
+<br/>
+<div class="spacer">
+</div>
+The definitions of most of the above file type test macros are provided if any of the following feature test macros is defined: <b>_BSD_SOURCE</b> (in glibc 2.19 and earlier), <b>_SVID_SOURCE</b> (in glibc 2.19 and earlier), or <b>_DEFAULT_SOURCE</b> (in glibc 2.20 and later). In addition, definitions of all of the above macros except <b>S_IFSOCK</b> and <b>S_ISSOCK</b>() are provided if <b>_XOPEN_SOURCE</b> is defined. The definition of <b>S_IFSOCK</b> can also be exposed by defining <b>_XOPEN_SOURCE</b> with a value of 500 or greater.<div style="height: 1.00em;">
+&#160;</div>
+The definition of <b>S_ISSOCK</b>() is exposed if any of the following feature test macros is defined: <b>_BSD_SOURCE</b> (in glibc 2.19 and earlier), <b>_DEFAULT_SOURCE</b> (in glibc 2.20 and later), <b>_XOPEN_SOURCE</b> with a value of 500 or greater, or <b>_POSIX_C_SOURCE</b> with a value of 200112L or greater.<div class="spacer">
+</div>
+The following mask values are defined for the file mode component of the <i>st_mode</i> field:<br/>
+<table class="tbl">
+<col style="width: 7.00ex;"/>
+<col style="width: 7.00ex;"/>
+<col style="width: 62.00ex;"/>
+<tbody>
+<tr>
+<td>
+S_ISUID</td>
+<td>
+  04000</td>
+<td>
+set-user-ID bit</td>
+</tr>
+<tr>
+<td>
+S_ISGID</td>
+<td>
+  02000</td>
+<td>
+set-group-ID bit (see below)</td>
+</tr>
+<tr>
+<td>
+S_ISVTX</td>
+<td>
+  01000</td>
+<td>
+sticky bit (see below)</td>
+</tr>
+<tr>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+S_IRWXU</td>
+<td>
+  00700</td>
+<td>
+owner has read, write, and execute permission</td>
+</tr>
+<tr>
+<td>
+S_IRUSR</td>
+<td>
+  00400</td>
+<td>
+owner has read permission</td>
+</tr>
+<tr>
+<td>
+S_IWUSR</td>
+<td>
+  00200</td>
+<td>
+owner has write permission</td>
+</tr>
+<tr>
+<td>
+S_IXUSR</td>
+<td>
+  00100</td>
+<td>
+owner has execute permission</td>
+</tr>
+<tr>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+S_IRWXG</td>
+<td>
+  00070</td>
+<td>
+group has read, write, and execute permission</td>
+</tr>
+<tr>
+<td>
+S_IRGRP</td>
+<td>
+  00040</td>
+<td>
+group has read permission</td>
+</tr>
+<tr>
+<td>
+S_IWGRP</td>
+<td>
+  00020</td>
+<td>
+group has write permission</td>
+</tr>
+<tr>
+<td>
+S_IXGRP</td>
+<td>
+  00010</td>
+<td>
+group has execute permission</td>
+</tr>
+<tr>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+S_IRWXO</td>
+<td>
+  00007</td>
+<td>
+others (not in group) have read, write, and execute permission</td>
+</tr>
+<tr>
+<td>
+S_IROTH</td>
+<td>
+  00004</td>
+<td>
+others have read permission</td>
+</tr>
+<tr>
+<td>
+S_IWOTH</td>
+<td>
+  00002</td>
+<td>
+others have write permission</td>
+</tr>
+<tr>
+<td>
+S_IXOTH</td>
+<td>
+  00001</td>
+<td>
+others have execute permission</td>
+</tr>
+</tbody>
+</table>
+<br/>
+<div class="spacer">
+</div>
+The set-group-ID bit (<b>S_ISGID</b>) has several special uses. For a directory, it indicates that BSD semantics is to be used for that directory: files created there inherit their group ID from the directory, not from the effective group ID of the creating process, and directories created there will also get the <b>S_ISGID</b> bit set. For a file that does not have the group execution bit (<b>S_IXGRP</b>) set, the set-group-ID bit indicates mandatory file/record locking.<div class="spacer">
+</div>
+The sticky bit (<b>S_ISVTX</b>) on a directory means that a file in that directory can be renamed or deleted only by the owner of the file, by the owner of the directory, and by a privileged process.<div class="subsection">
+<h2>fstatat()</h2> The <b>fstatat</b>() system call operates in exactly the same way as <b>stat</b>(), except for the differences described here.<div style="height: 1.00em;">
+&#160;</div>
+If the pathname given in <i>pathname</i> is relative, then it is interpreted relative to the directory referred to by the file descriptor <i>dirfd</i> (rather than relative to the current working directory of the calling process, as is done by <b>stat</b>() for a relative pathname).<div style="height: 1.00em;">
+&#160;</div>
+If <i>pathname</i> is relative and <i>dirfd</i> is the special value <b>AT_FDCWD</b>, then <i>pathname</i> is interpreted relative to the current working directory of the calling process (like <b>stat</b>()).<div style="height: 1.00em;">
+&#160;</div>
+If <i>pathname</i> is absolute, then <i>dirfd</i> is ignored.<div style="height: 1.00em;">
+&#160;</div>
+<i>flags</i> can either be 0, or include one or more of the following flags ORed:<dl>
+<dt>
+<b>AT_EMPTY_PATH</b> (since Linux 2.6.39)</dt>
+<dd>
+If <i>pathname</i> is an empty string, operate on the file referred to by <i>dirfd</i> (which may have been obtained using the <b>open</b>(2) <b>O_PATH</b> flag). If <i>dirfd</i> is <b>AT_FDCWD</b>, the call operates on the current working directory. In this case, <i>dirfd</i> can refer to any type of file, not just a directory. This flag is Linux-specific; define <b>_GNU_SOURCE</b> to obtain its definition.</dd>
+</dl>
+<dl>
+<dt>
+<b>AT_NO_AUTOMOUNT</b> (since Linux 2.6.38)</dt>
+<dd>
+Don't automount the terminal (&quot;basename&quot;) component of <i>pathname</i> if it is a directory that is an automount point. This allows the caller to gather attributes of an automount point (rather than the location it would mount). This flag can be used in tools that scan directories to prevent mass-automounting of a directory of automount points. The <b>AT_NO_AUTOMOUNT</b> flag has no effect if the mount point has already been mounted over. This flag is Linux-specific; define <b>_GNU_SOURCE</b> to obtain its definition.</dd>
+</dl>
+<dl>
+<dt>
+<b>AT_SYMLINK_NOFOLLOW</b></dt>
+<dd>
+If <i>pathname</i> is a symbolic link, do not dereference it: instead return information about the link itself, like <b>lstat</b>(). (By default, <b>fstatat</b>() dereferences symbolic links, like <b>stat</b>().)</dd>
+</dl>
+<div class="spacer">
+</div>
+See <b>openat</b>(2) for an explanation of the need for <b>fstatat</b>().</div>
+</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, zero is returned. On error, -1 is returned, and <i>errno</i> is set appropriately.</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>EACCES</b></dt>
+<dd>
+Search permission is denied for one of the directories in the path prefix of <i>pathname</i>. (See also <b>path_resolution</b>(7).)</dd>
+</dl>
+<dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+<i>fd</i> is bad.</dd>
+</dl>
+<dl>
+<dt>
+<b>EFAULT</b></dt>
+<dd>
+Bad address.</dd>
+</dl>
+<dl>
+<dt>
+<b>ELOOP</b></dt>
+<dd>
+Too many symbolic links encountered while traversing the path.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENAMETOOLONG</b></dt>
+<dd>
+<i>pathname</i> is too long.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOENT</b></dt>
+<dd>
+A component of <i>pathname</i> does not exist, or <i>pathname</i> is an empty string.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOMEM</b></dt>
+<dd>
+Out of memory (i.e., kernel memory).</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+A component of the path prefix of <i>pathname</i> is not a directory.</dd>
+</dl>
+<dl>
+<dt>
+<b>EOVERFLOW</b></dt>
+<dd>
+<i>pathname</i> or <i>fd</i> refers to a file whose size, inode number, or number of blocks cannot be represented in, respectively, the types <i>off_t</i>, <i>ino_t</i>, or <i>blkcnt_t</i>. This error can occur when, for example, an application compiled on a 32-bit platform without <i>-D_FILE_OFFSET_BITS=64</i> calls <b>stat</b>() on a file whose size exceeds <i>(1&lt;&lt;31)-1</i> bytes.</dd>
+</dl>
+<div class="spacer">
+</div>
+The following additional errors can occur for <b>fstatat</b>():<dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+<i>dirfd</i> is not a valid file descriptor.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+Invalid flag specified in <i>flags</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+<i>pathname</i> is relative and <i>dirfd</i> is a file descriptor referring to a file other than a directory.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>VERSIONS</h1> <b>fstatat</b>() was added to Linux in kernel 2.6.16; library support was added to glibc in version 2.4.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> <b>stat</b>(), <b>fstat</b>(), <b>lstat</b>(): SVr4, 4.3BSD, POSIX.1-2001, POSIX.1.2008.<div style="height: 1.00em;">
+&#160;</div>
+<b>fstatat</b>(): POSIX.1-2008.<div style="height: 1.00em;">
+&#160;</div>
+According to POSIX.1-2001, <b>lstat</b>() on a symbolic link need return valid information only in the <i>st_size</i> field and the file type of the <i>st_mode</i> field of the <i>stat</i> structure. POSIX.1-2008 tightens the specification, requiring <b>lstat</b>() to return valid information in all fields except the mode bits in <i>st_mode</i>.<div style="height: 1.00em;">
+&#160;</div>
+Use of the <i>st_blocks</i> and <i>st_blksize</i> fields may be less portable. (They were introduced in BSD. The interpretation differs between systems, and possibly on a single system when NFS mounts are involved.) If you need to obtain the definition of the <i>blkcnt_t</i> or <i>blksize_t</i> types from <i>&lt;sys/stat.h&gt;</i>, then define <b>_XOPEN_SOURCE</b> with the value 500 or greater (before including <i>any</i> header files).<div class="spacer">
+</div>
+POSIX.1-1990 did not describe the <b>S_IFMT</b>, <b>S_IFSOCK</b>, <b>S_IFLNK</b>, <b>S_IFREG</b>, <b>S_IFBLK</b>, <b>S_IFDIR</b>, <b>S_IFCHR</b>, <b>S_IFIFO</b>, <b>S_ISVTX</b> constants, but instead demanded the use of the macros <b>S_ISDIR</b>(), and so on. The <b>S_IF*</b> constants are present in POSIX.1-2001 and later.<div style="height: 1.00em;">
+&#160;</div>
+The <b>S_ISLNK</b>() and <b>S_ISSOCK</b>() macros are not in POSIX.1-1996, but both are present in POSIX.1-2001; the former is from SVID 4, the latter from SUSv2.<div class="spacer">
+</div>
+UNIX&#160;V7 (and later systems) had <b>S_IREAD</b>, <b>S_IWRITE</b>, <b>S_IEXEC</b>, where POSIX prescribes the synonyms <b>S_IRUSR</b>, <b>S_IWUSR</b>, <b>S_IXUSR</b>.<div class="subsection">
+<h2>Other systems</h2> Values that have been (or are) in use on various systems:<table class="tbl">
+<col style="width: 4.00ex;"/>
+<col style="width: 8.00ex;"/>
+<col style="width: 2.00ex;"/>
+<col style="width: 6.00ex;"/>
+<col style="width: 173.00ex;"/>
+<tbody>
+<tr>
+<td>
+hex</td>
+<td>
+name</td>
+<td>
+ls</td>
+<td>
+octal</td>
+<td>
+description</td>
+</tr>
+<tr>
+<td>
+f000</td>
+<td>
+S_IFMT</td>
+<td>
+</td>
+<td>
+170000</td>
+<td>
+mask for file type</td>
+</tr>
+<tr>
+<td>
+0000</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+000000</td>
+<td>
+SCO out-of-service inode; BSD unknown type; SVID-v2 and XPG2 have both 0 and 0100000 for ordinary file</td>
+</tr>
+<tr>
+<td>
+1000</td>
+<td>
+S_IFIFO</td>
+<td>
+p|</td>
+<td>
+010000</td>
+<td>
+FIFO (named pipe)</td>
+</tr>
+<tr>
+<td>
+2000</td>
+<td>
+S_IFCHR</td>
+<td>
+c</td>
+<td>
+020000</td>
+<td>
+character special (V7)</td>
+</tr>
+<tr>
+<td>
+3000</td>
+<td>
+S_IFMPC</td>
+<td>
+</td>
+<td>
+030000</td>
+<td>
+multiplexed character special (V7)</td>
+</tr>
+<tr>
+<td>
+4000</td>
+<td>
+S_IFDIR</td>
+<td>
+d/</td>
+<td>
+040000</td>
+<td>
+directory (V7)</td>
+</tr>
+<tr>
+<td>
+5000</td>
+<td>
+S_IFNAM</td>
+<td>
+</td>
+<td>
+050000</td>
+<td>
+XENIX named special file with two subtypes, distinguished by <i>st_rdev</i> values 1, 2</td>
+</tr>
+<tr>
+<td>
+0001</td>
+<td>
+S_INSEM</td>
+<td>
+s</td>
+<td>
+000001</td>
+<td>
+XENIX semaphore subtype of IFNAM</td>
+</tr>
+<tr>
+<td>
+0002</td>
+<td>
+S_INSHD</td>
+<td>
+m</td>
+<td>
+000002</td>
+<td>
+XENIX shared data subtype of IFNAM</td>
+</tr>
+<tr>
+<td>
+6000</td>
+<td>
+S_IFBLK</td>
+<td>
+b</td>
+<td>
+060000</td>
+<td>
+block special (V7)</td>
+</tr>
+<tr>
+<td>
+7000</td>
+<td>
+S_IFMPB</td>
+<td>
+</td>
+<td>
+070000</td>
+<td>
+multiplexed block special (V7)</td>
+</tr>
+<tr>
+<td>
+8000</td>
+<td>
+S_IFREG</td>
+<td>
+-</td>
+<td>
+100000</td>
+<td>
+regular (V7)</td>
+</tr>
+<tr>
+<td>
+9000</td>
+<td>
+S_IFCMP</td>
+<td>
+</td>
+<td>
+110000</td>
+<td>
+VxFS compressed</td>
+</tr>
+<tr>
+<td>
+9000</td>
+<td>
+S_IFNWK</td>
+<td>
+n</td>
+<td>
+110000</td>
+<td>
+network special (HP-UX)</td>
+</tr>
+<tr>
+<td>
+a000</td>
+<td>
+S_IFLNK</td>
+<td>
+l@</td>
+<td>
+120000</td>
+<td>
+symbolic link (BSD)</td>
+</tr>
+<tr>
+<td>
+b000</td>
+<td>
+S_IFSHAD</td>
+<td>
+</td>
+<td>
+130000</td>
+<td>
+Solaris shadow inode for ACL (not seen by user space)</td>
+</tr>
+<tr>
+<td>
+c000</td>
+<td>
+S_IFSOCK</td>
+<td>
+s=</td>
+<td>
+140000</td>
+<td>
+socket (BSD; also &quot;S_IFSOC&quot; on VxFS)</td>
+</tr>
+<tr>
+<td>
+d000</td>
+<td>
+S_IFDOOR</td>
+<td>
+D&gt;</td>
+<td>
+150000</td>
+<td>
+Solaris door</td>
+</tr>
+<tr>
+<td>
+e000</td>
+<td>
+S_IFWHT</td>
+<td>
+w%</td>
+<td>
+160000</td>
+<td>
+BSD whiteout (not used for inode)</td>
+</tr>
+<tr>
+<td>
+0200</td>
+<td>
+S_ISVTX</td>
+<td>
+</td>
+<td>
+001000</td>
+<td>
+sticky bit: save swapped text even after use (V7)  reserved (SVID-v2)  On nondirectories: don't cache this file (SunOS)  On directories: restricted deletion flag (SVID-v4.2)</td>
+</tr>
+<tr>
+<td>
+0400</td>
+<td>
+S_ISGID</td>
+<td>
+</td>
+<td>
+002000</td>
+<td>
+set-group-ID on execution (V7)  for directories: use BSD semantics for propagation of GID</td>
+</tr>
+<tr>
+<td>
+0400</td>
+<td>
+S_ENFMT</td>
+<td>
+</td>
+<td>
+002000</td>
+<td>
+System V file locking enforcement (shared with S_ISGID)</td>
+</tr>
+<tr>
+<td>
+0800</td>
+<td>
+S_ISUID</td>
+<td>
+</td>
+<td>
+004000</td>
+<td>
+set-user-ID on execution (V7)</td>
+</tr>
+<tr>
+<td>
+0800</td>
+<td>
+S_CDF</td>
+<td>
+</td>
+<td>
+004000</td>
+<td>
+directory is a context dependent file (HP-UX)</td>
+</tr>
+</tbody>
+</table>
+<div style="height: 1.00em;">
+&#160;</div>
+A sticky command appeared in Version 32V AT&amp;T UNIX.</div>
+</div>
+<div class="section">
+<h1>NOTES</h1> On Linux, <b>lstat</b>() will generally not trigger automounter action, whereas <b>stat</b>() will (but see <b>fstatat</b>(2)).<div style="height: 1.00em;">
+&#160;</div>
+For most files under the <i>/proc</i> directory, <b>stat</b>() does not return the file size in the <i>st_size</i> field; instead the field is returned with the value 0.<div class="subsection">
+<h2>Timestamp fields</h2> Older kernels and older standards did not support nanosecond timestamp fields. Instead, there were three timestamp fields&#8212;<i>st_atime</i>, <i>st_mtime</i>, and <i>st_ctime</i>&#8212;typed as <i>time_t</i> that recorded timestamps with one-second precision.<div style="height: 1.00em;">
+&#160;</div>
+Since kernel 2.5.48, the <i>stat</i> structure supports nanosecond resolution for the three file timestamp fields. The nanosecond components of each timestamp are available via names of the form <i>st_atim.tv_nsec</i> if the <b>_BSD_SOURCE</b> or <b>_SVID_SOURCE</b> feature test macro is defined. Nanosecond timestamps are nowadays standardized, starting with POSIX.1-2008, and, starting with version 2.12, glibc also exposes the nanosecond component names if <b>_POSIX_C_SOURCE</b> is defined with the value 200809L or greater, or <b>_XOPEN_SOURCE</b> is defined with the value 700 or greater. If none of the aforementioned macros are defined, then the nanosecond values are exposed with names of the form <i>st_atimensec</i>.<div style="height: 1.00em;">
+&#160;</div>
+Nanosecond timestamps are supported on XFS, JFS, Btrfs, and ext4 (since Linux 2.6.23). Nanosecond timestamps are not supported in ext2, ext3, and Reiserfs. On filesystems that do not support subsecond timestamps, the nanosecond fields are returned with the value 0.</div>
+<div class="subsection">
+<h2>C library/kernel differences</h2> Over time, increases in the size of the <i>stat</i> structure have led to three successive versions of <b>stat</b>(): <i>sys_stat</i>() (slot <i>__NR_oldstat</i>), <i>sys_newstat</i>() (slot <i>__NR_stat</i>), and <i>sys_stat64()</i> (slot <i>__NR_stat64</i>) on 32-bit platforms such as i386. The first two versions were already present in Linux 1.0 (albeit with different names); the last was added in Linux 2.4. Similar remarks apply for <b>fstat</b>() and <b>lstat</b>().<div style="height: 1.00em;">
+&#160;</div>
+The kernel-internal versions of the <i>stat</i> structure dealt with by the different versions are, respectively:<div style="margin-left: 5.00ex;">
+<dl>
+<dt>
+<i>__old_kernel_stat</i></dt>
+<dd>
+The original structure, with rather narrow fields, and no padding.</dd>
+</dl>
+<dl>
+<dt>
+<i>stat</i></dt>
+<dd>
+Larger <i>st_ino</i> field and padding added to various parts of the structure to allow for future expansion.</dd>
+</dl>
+<dl>
+<dt>
+<i>stat64</i></dt>
+<dd>
+Even larger <i>st_ino</i> field, larger <i>st_uid</i> and <i>st_gid</i> fields to accommodate the Linux-2.4 expansion of UIDs and GIDs to 32 bits, and various other enlarged fields and further padding in the structure. (Various padding bytes were eventually consumed in Linux 2.6, with the advent of 32-bit device IDs and nanosecond components for the timestamp fields.)</dd>
+</dl>
+</div>
+<div class="spacer">
+</div>
+The glibc <b>stat</b>() wrapper function hides these details from applications, invoking the most recent version of the system call provided by the kernel, and repacking the returned information if required for old binaries.<div style="height: 1.00em;">
+&#160;</div>
+On modern 64-bit systems, life is simpler: there is a single <b>stat</b>() system call and the kernel deals with a <i>stat</i> structure that contains fields of a sufficient size.<div style="height: 1.00em;">
+&#160;</div>
+The underlying system call employed by the glibc <b>fstatat</b>() wrapper function is actually called <b>fstatat64</b>() or, on some architectures, <b>newfstatat</b>().</div>
+</div>
+<div class="section">
+<h1>EXAMPLE</h1> The following program calls <b>stat</b>() and displays selected fields in the returned <i>stat</i> structure.<div class="spacer">
+</div>
+<br/>
+#include &lt;sys/types.h&gt;<br/>
+#include &lt;sys/stat.h&gt;<br/>
+#include &lt;time.h&gt;<br/>
+#include &lt;stdio.h&gt;<br/>
+#include &lt;stdlib.h&gt;<div class="spacer">
+</div>
+<br/>
+int<br/>
+main(int argc, char *argv[])<br/>
+{<br/>
+    struct stat sb;<div class="spacer">
+</div>
+<br/>
+    if (argc != 2) {<br/>
+        fprintf(stderr, &quot;Usage: %s &lt;pathname&gt;\n&quot;, argv[0]);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    if (stat(argv[1], &amp;sb) == -1) {<br/>
+        perror(&quot;stat&quot;);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    printf(&quot;File type:                &quot;);<div class="spacer">
+</div>
+<br/>
+    switch (sb.st_mode &amp; S_IFMT) {<br/>
+    case S_IFBLK:  printf(&quot;block device\n&quot;);            break;<br/>
+    case S_IFCHR:  printf(&quot;character device\n&quot;);        break;<br/>
+    case S_IFDIR:  printf(&quot;directory\n&quot;);               break;<br/>
+    case S_IFIFO:  printf(&quot;FIFO/pipe\n&quot;);               break;<br/>
+    case S_IFLNK:  printf(&quot;symlink\n&quot;);                 break;<br/>
+    case S_IFREG:  printf(&quot;regular file\n&quot;);            break;<br/>
+    case S_IFSOCK: printf(&quot;socket\n&quot;);                  break;<br/>
+    default:       printf(&quot;unknown?\n&quot;);                break;<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    printf(&quot;I-node number:            %ld\n&quot;, (long) sb.st_ino);<div class="spacer">
+</div>
+<br/>
+    printf(&quot;Mode:                     %lo (octal)\n&quot;,<br/>
+            (unsigned long) sb.st_mode);<div class="spacer">
+</div>
+<br/>
+    printf(&quot;Link count:               %ld\n&quot;, (long) sb.st_nlink);<br/>
+    printf(&quot;Ownership:                UID=%ld   GID=%ld\n&quot;,<br/>
+            (long) sb.st_uid, (long) sb.st_gid);<div class="spacer">
+</div>
+<br/>
+    printf(&quot;Preferred I/O block size: %ld bytes\n&quot;,<br/>
+            (long) sb.st_blksize);<br/>
+    printf(&quot;File size:                %lld bytes\n&quot;,<br/>
+            (long long) sb.st_size);<br/>
+    printf(&quot;Blocks allocated:         %lld\n&quot;,<br/>
+            (long long) sb.st_blocks);<div class="spacer">
+</div>
+<br/>
+    printf(&quot;Last status change:       %s&quot;, ctime(&amp;sb.st_ctime));<br/>
+    printf(&quot;Last file access:         %s&quot;, ctime(&amp;sb.st_atime));<br/>
+    printf(&quot;Last file modification:   %s&quot;, ctime(&amp;sb.st_mtime));<div class="spacer">
+</div>
+<br/>
+    exit(EXIT_SUCCESS);<br/>
+}<br/>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ls</b>(1), <b>stat</b>(1), <b>access</b>(2), <b>chmod</b>(2), <b>chown</b>(2), <b>readlink</b>(2), <b>utime</b>(2), <b>capabilities</b>(7), <b>symlink</b>(7)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-07-23</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

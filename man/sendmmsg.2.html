@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SENDMMSG(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SENDMMSG(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+SENDMMSG(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sendmmsg - send multiple messages on a socket</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+<b>#define _GNU_SOURCE</b>         /* See feature_test_macros(7) */<br/>
+<b>#include &lt;sys/socket.h&gt;</b><div class="spacer">
+</div>
+<br/>
+<b>int sendmmsg(int </b><i>sockfd</i><b>, struct mmsghdr *</b><i>msgvec</i><b>, unsigned int </b><i>vlen</i><b>,</b><br/>
+<b>             unsigned int </b><i>flags</i><b>);</b><br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The <b>sendmmsg</b>() system call is an extension of <b>sendmsg</b>(2) that allows the caller to transmit multiple messages on a socket using a single system call. (This has performance benefits for some applications.)<div style="height: 1.00em;">
+&#160;</div>
+The <i>sockfd</i> argument is the file descriptor of the socket on which data is to be transmitted.<div style="height: 1.00em;">
+&#160;</div>
+The <i>msgvec</i> argument is a pointer to an array of <i>mmsghdr</i> structures. The size of this array is specified in <i>vlen</i>.<div style="height: 1.00em;">
+&#160;</div>
+The <i>mmsghdr</i> structure is defined in <i>&lt;sys/socket.h&gt;</i> as:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<br/>
+struct mmsghdr {<br/>
+    struct msghdr msg_hdr;  /* Message header */<br/>
+    unsigned int  msg_len;  /* Number of bytes transmitted */<br/>
+};<br/>
+<br/>
+<div class="spacer">
+</div>
+The <i>msg_hdr</i> field is a <i>msghdr</i> structure, as described in <b>sendmsg</b>(2). The <i>msg_len</i> field is used to return the number of bytes sent from the message in <i>msg_hdr</i> (i.e., the same as the return value from a single <b>sendmsg</b>(2) call).<div style="height: 1.00em;">
+&#160;</div>
+The <i>flags</i> argument contains flags ORed together. The flags are the same as for <b>sendmsg</b>(2).<div style="height: 1.00em;">
+&#160;</div>
+A blocking <b>sendmmsg</b>() call blocks until <i>vlen</i> messages have been sent. A nonblocking call sends as many messages as possible (up to the limit specified by <i>vlen</i>) and returns immediately.<div style="height: 1.00em;">
+&#160;</div>
+On return from <b>sendmmsg</b>(), the <i>msg_len</i> fields of successive elements of <i>msgvec</i> are updated to contain the number of bytes transmitted from the corresponding <i>msg_hdr</i>. The return value of the call indicates the number of elements of <i>msgvec</i> that have been updated.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, <b>sendmmsg</b>() returns the number of messages sent from <i>msgvec</i>; if this is less than <i>vlen</i>, the caller can retry with a further <b>sendmmsg</b>() call to send the remaining messages.<div style="height: 1.00em;">
+&#160;</div>
+On error, -1 is returned, and <i>errno</i> is set to indicate the error.</div>
+<div class="section">
+<h1>ERRORS</h1> Errors are as for <b>sendmsg</b>(2). An error is returned only if no datagrams could be sent.</div>
+<div class="section">
+<h1>VERSIONS</h1> The <b>sendmmsg</b>() system call was added in Linux 3.0. Support in glibc was added in version 2.14.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> <b>sendmmsg</b>() is Linux-specific.</div>
+<div class="section">
+<h1>NOTES</h1> The value specified in <i>vlen</i> is capped to <b>UIO_MAXIOV</b> (1024).</div>
+<div class="section">
+<h1>EXAMPLE</h1> The example below uses <b>sendmmsg</b>() to send <i>onetwo</i> and <i>three</i> in two distinct UDP datagrams using one system call. The contents of the first datagram originates from a pair of buffers.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+#define _GNU_SOURCE<br/>
+#include &lt;netinet/ip.h&gt;<br/>
+#include &lt;stdio.h&gt;<br/>
+#include &lt;stdlib.h&gt;<br/>
+#include &lt;string.h&gt;<br/>
+#include &lt;sys/types.h&gt;<br/>
+#include &lt;sys/socket.h&gt;<div class="spacer">
+</div>
+<br/>
+int<br/>
+main(void)<br/>
+{<br/>
+    int sockfd;<br/>
+    struct sockaddr_in sa;<br/>
+    struct mmsghdr msg[2];<br/>
+    struct iovec msg1[2], msg2;<br/>
+    int retval;<div class="spacer">
+</div>
+<br/>
+    sockfd = socket(AF_INET, SOCK_DGRAM, 0);<br/>
+    if (sockfd == -1) {<br/>
+        perror(&quot;socket()&quot;);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    sa.sin_family = AF_INET;<br/>
+    sa.sin_addr.s_addr = htonl(INADDR_LOOPBACK);<br/>
+    sa.sin_port = htons(1234);<br/>
+    if (connect(sockfd, (struct sockaddr *) &amp;sa, sizeof(sa)) == -1) {<br/>
+        perror(&quot;connect()&quot;);<br/>
+        exit(EXIT_FAILURE);<br/>
+    }<div class="spacer">
+</div>
+<br/>
+    memset(msg1, 0, sizeof(msg1));<br/>
+    msg1[0].iov_base = &quot;one&quot;;<br/>
+    msg1[0].iov_len = 3;<br/>
+    msg1[1].iov_base = &quot;two&quot;;<br/>
+    msg1[1].iov_len = 3;<div class="spacer">
+</div>
+<br/>
+    memset(&amp;msg2, 0, sizeof(msg2));<br/>
+    msg2.iov_base = &quot;three&quot;;<br/>
+    msg2.iov_len = 5;<div class="spacer">
+</div>
+<br/>
+    memset(msg, 0, sizeof(msg));<br/>
+    msg[0].msg_hdr.msg_iov = msg1;<br/>
+    msg[0].msg_hdr.msg_iovlen = 2;<div class="spacer">
+</div>
+<br/>
+    msg[1].msg_hdr.msg_iov = &amp;msg2;<br/>
+    msg[1].msg_hdr.msg_iovlen = 1;<div class="spacer">
+</div>
+<br/>
+    retval = sendmmsg(sockfd, msg, 2, 0);<br/>
+    if (retval == -1)<br/>
+        perror(&quot;sendmmsg()&quot;);<br/>
+    else<br/>
+        printf(&quot;%d messages sent\n&quot;, retval);<div class="spacer">
+</div>
+<br/>
+    exit(0);<br/>
+}<br/>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>recvmmsg</b>(2), <b>sendmsg</b>(2), <b>socket</b>(2), <b>socket</b>(7)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2014-07-08</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

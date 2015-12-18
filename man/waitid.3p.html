@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+WAITID(3P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+WAITID(3P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+WAITID(3P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> waitid &#8212; wait for a child process to change state</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;sys/wait.h&gt;<div class="spacer">
+</div>
+int waitid(idtype_t <i>idtype</i>, id_t <i>id</i>, siginfo_t *<i>infop</i>, int <i>options</i>);<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <i>waitid</i>() function shall suspend the calling thread until one child of the process containing the calling thread changes state. It records the current state of a child in the structure pointed to by <i>infop</i>. The fields of the structure pointed to by <i>infop</i> are filled in as described for the SIGCHLD signal in <i>&lt;signal.h&gt;</i>. If a child process changed state prior to the call to  <i>waitid</i>(),  <i>waitid</i>() shall return immediately. If more than one thread is suspended in  <i>wait</i>(),  <i>waitid</i>(), or  <i>waitpid</i>() waiting for termination of the same process, exactly one thread shall return the process status at the time of the target process termination.<div class="spacer">
+</div>
+The <i>idtype</i> and <i>id</i> arguments are used to specify which children  <i>waitid</i>() waits for.<div class="spacer">
+</div>
+If <i>idtype</i> is P_PID,  <i>waitid</i>() shall wait for the child with a process ID equal to ( <b>pid_t</b>)<i>id</i>.<div class="spacer">
+</div>
+If <i>idtype</i> is P_PGID,  <i>waitid</i>() shall wait for any child with a process group ID equal to ( <b>pid_t</b>)<i>id</i>.<div class="spacer">
+</div>
+If <i>idtype</i> is P_ALL,  <i>waitid</i>() shall wait for any children and <i>id</i> is ignored.<div class="spacer">
+</div>
+The <i>options</i> argument is used to specify which state changes  <i>waitid</i>() shall wait for. It is formed by OR'ing together the following flags:<dl>
+<dt>
+WCONTINUED</dt>
+<dd>
+Status shall be returned for any continued child process whose status either has not been reported since it continued from a job control stop or has been reported only by calls to  <i>waitid</i>() with the WNOWAIT flag set.</dd>
+</dl>
+<dl>
+<dt>
+WEXITED</dt>
+<dd>
+Wait for processes that have exited.</dd>
+</dl>
+<dl>
+<dt>
+WNOHANG</dt>
+<dd>
+Do not hang if no status is available; return immediately.</dd>
+</dl>
+<dl>
+<dt>
+WNOWAIT</dt>
+<dd>
+Keep the process whose status is returned in <i>infop</i> in a waitable state. This shall not affect the state of the process; the process may be waited for again after this call completes.</dd>
+</dl>
+<dl>
+<dt>
+WSTOPPED</dt>
+<dd>
+Status shall be returned for any child that has stopped upon receipt of a signal, and whose status either has not been reported since it stopped or has been reported only by calls to  <i>waitid</i>() with the WNOWAIT flag set.</dd>
+</dl>
+<div class="spacer">
+</div>
+Applications shall specify at least one of the flags WEXITED, WSTOPPED, or WCONTINUED to be OR'ed in with the <i>options</i> argument.<div class="spacer">
+</div>
+The application shall ensure that the <i>infop</i> argument points to a <b>siginfo_t</b> structure. If  <i>waitid</i>() returns because a child process was found that satisfied the conditions indicated by the arguments <i>idtype</i> and <i>options</i>, then the structure pointed to by <i>infop</i> shall be filled in by the system with the status of the process; the <i>si_signo</i> member shall be set equal to SIGCHLD. If  <i>waitid</i>() returns because WNOHANG was specified and status is not available for any process specified by <i>idtype</i> and <i>id</i>, then the <i>si_signo</i> and <i>si_pid</i> members of the structure pointed to by <i>infop</i> shall be set to zero and the values of other members of the structure are unspecified.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> If WNOHANG was specified and status is not available for any process specified by <i>idtype</i> and <i>id</i>, 0 shall be returned. If  <i>waitid</i>() returns due to the change of state of one of its children, 0 shall be returned. Otherwise, &#8722;1 shall be returned and <i>errno</i> set to indicate the error.</div>
+<div class="section">
+<h1>ERRORS</h1> The  <i>waitid</i>() function shall fail if:<dl>
+<dt>
+<b>ECHILD</b></dt>
+<dd>
+The calling process has no existing unwaited-for child processes.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINTR</b></dt>
+<dd>
+The  <i>waitid</i>() function was interrupted by a signal.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+An invalid value was specified for <i>options</i>, or <i>idtype</i> and <i>id</i> specify an invalid set of processes.</dd>
+</dl>
+<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>EXAMPLES</h1> None.</div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> Calls to  <i>waitid</i>() with <i>idtype</i> equal to P_ALL will collect information about any child process. This may result in interactions with other interfaces that may be waiting for their own children (such as by use of  <i>system</i>()). For this reason it is recommended that portable applications not use  <i>waitid</i>() with idtype of P_ALL. See also APPLICATION USAGE for  <i>wait</i>().</div>
+<div class="section">
+<h1>RATIONALE</h1> None.</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> None.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i><i>exec</i></i>, <i><i>exit</i>()</i>, <i><i>wait</i>()</i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i><b>&lt;signal.h&gt;</b></i>, <i><b>&lt;sys_wait.h&gt;</b></i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

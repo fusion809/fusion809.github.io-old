@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+GETRANDOM(2)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+GETRANDOM(2)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+GETRANDOM(2)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> getrandom - obtain a series of random bytes</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>#include &lt;linux/random.h&gt;</b><div style="height: 1.00em;">
+&#160;</div>
+<b>int getrandom(void *</b><i>buf</i><b>, size_t </b><i>buflen</i><b>, unsigned int </b><i>flags</i><b>);</b></div>
+<div class="section">
+<h1>DESCRIPTION</h1> The <b>getrandom</b>() system call fills the buffer pointed to by <i>buf</i> with up to <i>buflen</i> random bytes. These bytes can be used to seed user-space random number generators or for cryptographic purposes.<div class="spacer">
+</div>
+<b>getrandom</b>() relies on entropy gathered from device drivers and other sources of environmental noise. Unnecessarily reading large quantities of data will have a negative impact on other users of the <i>/dev/random</i> and <i>/dev/urandom</i> devices. Therefore, <b>getrandom</b>() should not be used for Monte Carlo simulations or other programs/algorithms which are doing probabilistic sampling.<div style="height: 1.00em;">
+&#160;</div>
+By default, <b>getrandom</b>() draws entropy from the <i>/dev/urandom</i> pool. This behavior can be changed via the <i>flags</i> argument. If the <i>/dev/urandom</i> pool has been initialized, reads of up to 256 bytes will always return as many bytes as requested and will not be interrupted by signals. No such guarantees apply for larger buffer sizes. For example, if the call is interrupted by a signal handler, it may return a partially filled buffer, or fail with the error <b>EINTR</b>. If the pool has not yet been initialized, then the call blocks, unless <b>GRND_RANDOM</b> is specified in <i>flags</i>.<div style="height: 1.00em;">
+&#160;</div>
+The <i>flags</i> argument is a bit mask that can contain zero or more of the following values ORed together:<dl>
+<dt>
+<b>GRND_RANDOM</b></dt>
+<dd>
+If this bit is set, then random bytes are drawn from the <i>/dev/random</i> pool instead of the <i>/dev/urandom</i> pool. The <i>/dev/random</i> pool is limited based on the entropy that can be obtained from environmental noise. If the number of available bytes in <i>/dev/random</i> is less than requested in <i>buflen</i>, the call returns just the available random bytes. If no random bytes are available, the behavior depends on the presence of <b>GRND_NONBLOCK</b> in the <i>flags</i> argument.</dd>
+</dl>
+<dl>
+<dt>
+<b>GRND_NONBLOCK</b></dt>
+<dd>
+By default, when reading from <i>/dev/random</i>, <b>getrandom</b>() blocks if no random bytes are available, and when reading from <i>/dev/urandom</i>, it blocks if the entropy pool has not yet been initialized. If the <b>GRND_NONBLOCK</b> flag is set, then <b>getrandom</b>() does not block in these cases, but instead immediately returns -1 with <i>errno</i> set to <b>EAGAIN</b>.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>RETURN VALUE</h1> On success, <b>getrandom</b>() returns the number of bytes that were copied to the buffer <i>buf</i>. This may be less than the number of bytes requested via <i>buflen</i> if <b>GRND_RANDOM</b> was specified in <i>flags</i> and insufficient entropy was present in the <i>/dev/random</i> pool, or if the system call was interrupted by a signal.<div class="spacer">
+</div>
+On error, -1 is returned, and <i>errno</i> is set appropriately.</div>
+<div class="section">
+<h1>ERRORS</h1><dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+An invalid flag was specified in <i>flags</i>.</dd>
+</dl>
+<dl>
+<dt>
+<b>EFAULT</b></dt>
+<dd>
+The address referred to by <i>buf</i> is outside the accessible address space.</dd>
+</dl>
+<dl>
+<dt>
+<b>EAGAIN</b></dt>
+<dd>
+The requested entropy was not available, and <b>getrandom</b>() would have blocked if the <b>GRND_NONBLOCK</b> flag was not set.</dd>
+</dl>
+<dl>
+<dt>
+<b>EINTR</b></dt>
+<dd>
+The call was interrupted by a signal handler; see the description of how interrupted <b>read</b>(2) calls on &quot;slow&quot; devices are handled with and without the <b>SA_RESTART</b> flag in the <b>signal</b>(7) man page.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>VERSIONS</h1> <b>getrandom</b>() was introduced in version 3.17 of the Linux kernel.</div>
+<div class="section">
+<h1>CONFORMING TO</h1> This system call is Linux-specific.</div>
+<div class="section">
+<h1>NOTES</h1><div class="subsection">
+<h2>Maximum number of bytes returned</h2> As of Linux 3.19 the following limits apply:<dl>
+<dt>
+*</dt>
+<dd>
+When reading from <i>/dev/urandom</i>, a maximum of 33554431 bytes is returned by a single call to <b>getrandom</b>() on a system where <i>int</i> has a size of 32 bits.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+When reading from <i>/dev/random</i>, a maximum of 512 bytes is returned.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>Initialization of the entropy pool</h2> The kernel collects bits of entropy from environment. When a sufficient number of random bits has been collected, the <i>/dev/urandom</i> entropy pool is considered to be initialized. This state is normally reached early in the system bootstrap phase.</div>
+<div class="subsection">
+<h2>Interruption by a signal handler</h2> When reading from <i>/dev/urandom</i> (<b>GRND_RANDOM</b> is not set), <b>getrandom</b>() will block until the entropy pool has been initialized (unless the <b>GRND_NONBLOCK</b> flag was specified). If a request is made to read a large number (more than 256) of bytes, <b>getrandom</b>() will block until those bytes have been generated and transferred from kernel memory to <i>buf</i>. When reading from <i>/dev/random</i> (<b>GRND_RANDOM</b> is set), <b>getrandom</b>() will block until some random bytes become available (unless the <b>GRND_NONBLOCK</b> flag was specified).<div style="height: 1.00em;">
+&#160;</div>
+The behavior when a call to <b>getrandom</b>() that is blocked while reading from <i>/dev/urandom</i> is interrupted by a signal handler depends on the initialization state of the entropy buffer and on the request size, <i>buflen</i>. If the entropy is not yet initialized, then the call will fail with the <b>EINTR</b> error. If the entropy pool has been initialized and the request size is large (<i>buflen</i>&#160;&gt;&#160;256), the call either succeeds, returning a partially filled buffer, or fails with the error <b>EINTR.</b> If the entropy pool has been initialized and the request size is small (<i>buflen</i>&#160;&lt;=&#160;256), then <b>getrandom</b>() will not fail with <b>EINTR</b>. Instead, it will return all of the bytes that have been requested.<div style="height: 1.00em;">
+&#160;</div>
+When reading from <i>/dev/random</i>, blocking requests of any size can be interrupted by a signal (the call fails with the error <b>EINTR</b>).<div style="height: 1.00em;">
+&#160;</div>
+Calling <b>getrandom</b>() to read <i>/dev/urandom</i> for small values (&lt;=&#160;256) of <i>buflen</i> is the preferred mode of usage.<div class="spacer">
+</div>
+The special treatment of small values of <i>buflen</i> was designed for compatibility with OpenBSD's <b>getentropy</b>() system call.<div class="spacer">
+</div>
+The user of <b>getrandom</b>() <i>must</i> always check the return value, to determine whether either an error occurred or fewer bytes than requested were returned. In the case where <b>GRND_RANDOM</b> is not specified and <i>buflen</i> is less than or equal to 256, a return of fewer bytes than requested should never happen, but the careful programmer will check for this anyway!</div>
+<div class="subsection">
+<h2>Choice of random device</h2> Unless you are doing long-term key generation (and perhaps not even then), you probably shouldn't be using <b>GRND_RANDOM.</b> The cryptographic algorithms used for <i>/dev/urandom</i> are quite conservative, and so should be sufficient for all purposes. The disadvantage of <b>GRND_RANDOM</b> is that it can block. Furthermore, dealing with the partially fulfilled <b>getrandom</b>() requests that can occur when using <b>GRND_RANDOM</b> increases code complexity.</div>
+<div class="subsection">
+<h2>Emulating OpenBSD's getentropy()</h2> The <b>getentropy</b>() system call in OpenBSD can be emulated using the following function:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<br/>
+int<br/>
+getentropy(void *buf, size_t buflen)<br/>
+{<br/>
+    int ret;<div class="spacer">
+</div>
+<br/>
+    if (buflen &gt; 256)<br/>
+        goto failure;<br/>
+    ret = getrandom(buf, buflen, 0);<br/>
+    if (ret &lt; 0)<br/>
+        return ret;<br/>
+    if (ret == buflen)<br/>
+        return 0;<br/>
+failure:<br/>
+    errno = EIO;<br/>
+    return -1;<br/>
+}<br/>
+<br/>
+</div>
+</div>
+<div class="section">
+<h1>BUGS</h1> As of Linux 3.19, the following bug exists:<dl>
+<dt>
+*</dt>
+<dd>
+Depending on CPU load, <b>getrandom</b>() does not react to interrupts before reading all bytes requested.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>random</b>(4), <b>urandom</b>(4), <b>signal</b>(7)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2015-01-22</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

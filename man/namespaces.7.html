@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+NAMESPACES(7)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+NAMESPACES(7)</td>
+<td class="head-vol">
+Linux Programmer's Manual</td>
+<td class="head-rtitle">
+NAMESPACES(7)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> namespaces - overview of Linux namespaces</div>
+<div class="section">
+<h1>DESCRIPTION</h1> A namespace wraps a global system resource in an abstraction that makes it appear to the processes within the namespace that they have their own isolated instance of the global resource. Changes to the global resource are visible to other processes that are members of the namespace, but are invisible to other processes. One use of namespaces is to implement containers.<div style="height: 1.00em;">
+&#160;</div>
+Linux provides the following namespaces:<table class="tbl">
+<col style="width: 9.00ex;"/>
+<col style="width: 13.00ex;"/>
+<col style="width: 36.00ex;"/>
+<tbody>
+<tr>
+<td>
+Namespace</td>
+<td>
+Constant</td>
+<td>
+Isolates</td>
+</tr>
+<tr>
+<td>
+IPC</td>
+<td>
+CLONE_NEWIPC</td>
+<td>
+System V IPC, POSIX message queues</td>
+</tr>
+<tr>
+<td>
+Network</td>
+<td>
+CLONE_NEWNET</td>
+<td>
+Network devices, stacks, ports, etc.</td>
+</tr>
+<tr>
+<td>
+Mount</td>
+<td>
+CLONE_NEWNS</td>
+<td>
+Mount points</td>
+</tr>
+<tr>
+<td>
+PID</td>
+<td>
+CLONE_NEWPID</td>
+<td>
+Process IDs</td>
+</tr>
+<tr>
+<td>
+User</td>
+<td>
+CLONE_NEWUSER</td>
+<td>
+User and group IDs</td>
+</tr>
+<tr>
+<td>
+UTS</td>
+<td>
+CLONE_NEWUTS</td>
+<td>
+Hostname and NIS domain name</td>
+</tr>
+</tbody>
+</table>
+<div style="height: 1.00em;">
+&#160;</div>
+This page describes the various namespaces and the associated <i>/proc</i> files, and summarizes the APIs for working with namespaces.<div class="subsection">
+<h2>The namespaces API</h2> As well as various <i>/proc</i> files described below, the namespaces API includes the following system calls:<dl>
+<dt>
+<b>clone</b>(2)</dt>
+<dd>
+The <b>clone</b>(2) system call creates a new process. If the <i>flags</i> argument of the call specifies one or more of the <b>CLONE_NEW*</b> flags listed below, then new namespaces are created for each flag, and the child process is made a member of those namespaces. (This system call also implements a number of features unrelated to namespaces.)</dd>
+</dl>
+<dl>
+<dt>
+<b>setns</b>(2)</dt>
+<dd>
+The <b>setns</b>(2) system call allows the calling process to join an existing namespace. The namespace to join is specified via a file descriptor that refers to one of the <i>/proc/[pid]/ns</i> files described below.</dd>
+</dl>
+<dl>
+<dt>
+<b>unshare</b>(2)</dt>
+<dd>
+The <b>unshare</b>(2) system call moves the calling process to a new namespace. If the <i>flags</i> argument of the call specifies one or more of the <b>CLONE_NEW*</b> flags listed below, then new namespaces are created for each flag, and the calling process is made a member of those namespaces. (This system call also implements a number of features unrelated to namespaces.)</dd>
+</dl>
+<div class="spacer">
+</div>
+Creation of new namespaces using <b>clone</b>(2) and <b>unshare</b>(2) in most cases requires the <b>CAP_SYS_ADMIN</b> capability. User namespaces are the exception: since Linux 3.8, no privilege is required to create a user namespace.</div>
+<div class="subsection">
+<h2>The /proc/[pid]/ns/ directory</h2> Each process has a <i>/proc/[pid]/ns/</i> subdirectory containing one entry for each namespace that supports being manipulated by <b>setns</b>(2):<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<br/>
+$ <b>ls -l /proc/$$/ns</b><br/>
+total 0<br/>
+lrwxrwxrwx. 1 mtk mtk 0 Jan 14 01:20 ipc -&gt; ipc:[4026531839]<br/>
+lrwxrwxrwx. 1 mtk mtk 0 Jan 14 01:20 mnt -&gt; mnt:[4026531840]<br/>
+lrwxrwxrwx. 1 mtk mtk 0 Jan 14 01:20 net -&gt; net:[4026531956]<br/>
+lrwxrwxrwx. 1 mtk mtk 0 Jan 14 01:20 pid -&gt; pid:[4026531836]<br/>
+lrwxrwxrwx. 1 mtk mtk 0 Jan 14 01:20 user -&gt; user:[4026531837]<br/>
+lrwxrwxrwx. 1 mtk mtk 0 Jan 14 01:20 uts -&gt; uts:[4026531838]<br/>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+Bind mounting (see <b>mount</b>(2)) one of the files in this directory to somewhere else in the filesystem keeps the corresponding namespace of the process specified by <i>pid</i> alive even if all processes currently in the namespace terminate.<div style="height: 1.00em;">
+&#160;</div>
+Opening one of the files in this directory (or a file that is bind mounted to one of these files) returns a file handle for the corresponding namespace of the process specified by <i>pid</i>. As long as this file descriptor remains open, the namespace will remain alive, even if all processes in the namespace terminate. The file descriptor can be passed to <b>setns</b>(2).<div style="height: 1.00em;">
+&#160;</div>
+In Linux 3.7 and earlier, these files were visible as hard links. Since Linux 3.8, they appear as symbolic links. If two processes are in the same namespace, then the inode numbers of their <i>/proc/[pid]/ns/xxx</i> symbolic links will be the same; an application can check this using the <i>stat.st_ino</i> field returned by <b>stat</b>(2). The content of this symbolic link is a string containing the namespace type and inode number as in the following example:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+<br/>
+$ <b>readlink /proc/$$/ns/uts</b><br/>
+uts:[4026531838]<br/>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+The files in this subdirectory are as follows:<dl>
+<dt>
+<i>/proc/[pid]/ns/ipc</i> (since Linux 3.0)</dt>
+<dd>
+This file is a handle for the IPC namespace of the process.</dd>
+</dl>
+<dl>
+<dt>
+<i>/proc/[pid]/ns/mnt</i> (since Linux 3.8)</dt>
+<dd>
+This file is a handle for the mount namespace of the process.</dd>
+</dl>
+<dl>
+<dt>
+<i>/proc/[pid]/ns/net</i> (since Linux 3.0)</dt>
+<dd>
+This file is a handle for the network namespace of the process.</dd>
+</dl>
+<dl>
+<dt>
+<i>/proc/[pid]/ns/pid</i> (since Linux 3.8)</dt>
+<dd>
+This file is a handle for the PID namespace of the process.</dd>
+</dl>
+<dl>
+<dt>
+<i>/proc/[pid]/ns/user</i> (since Linux 3.8)</dt>
+<dd>
+This file is a handle for the user namespace of the process.</dd>
+</dl>
+<dl>
+<dt>
+<i>/proc/[pid]/ns/uts</i> (since Linux 3.0)</dt>
+<dd>
+This file is a handle for the UTS namespace of the process.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>IPC namespaces (CLONE_NEWIPC)</h2> IPC namespaces isolate certain IPC resources, namely, System V IPC objects (see <b>svipc</b>(7)) and (since Linux 2.6.30) POSIX message queues (see <b>mq_overview</b>(7)). The common characteristic of these IPC mechanisms is that IPC objects are identified by mechanisms other than filesystem pathnames.<div style="height: 1.00em;">
+&#160;</div>
+Each IPC namespace has its own set of System V IPC identifiers and its own POSIX message queue filesystem. Objects created in an IPC namespace are visible to all other processes that are members of that namespace, but are not visible to processes in other IPC namespaces.<div style="height: 1.00em;">
+&#160;</div>
+The following <i>/proc</i> interfaces are distinct in each IPC namespace:<dl>
+<dt>
+*</dt>
+<dd>
+The POSIX message queue interfaces in <i>/proc/sys/fs/mqueue</i>.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+The System V IPC interfaces in <i>/proc/sys/kernel</i>, namely: <i>msgmax</i>, <i>msgmnb</i>, <i>msgmni</i>, <i>sem</i>, <i>shmall</i>, <i>shmmax</i>, <i>shmmni</i>, and <i>shm_rmid_forced</i>.</dd>
+</dl>
+<dl>
+<dt>
+*</dt>
+<dd>
+The System V IPC interfaces in <i>/proc/sysvipc</i>.</dd>
+</dl>
+<div class="spacer">
+</div>
+When an IPC namespace is destroyed (i.e., when the last process that is a member of the namespace terminates), all IPC objects in the namespace are automatically destroyed.<div style="height: 1.00em;">
+&#160;</div>
+Use of IPC namespaces requires a kernel that is configured with the <b>CONFIG_IPC_NS</b> option.</div>
+<div class="subsection">
+<h2>Network namespaces (CLONE_NEWNET)</h2> Network namespaces provide isolation of the system resources associated with networking: network devices, IPv4 and IPv6 protocol stacks, IP routing tables, firewalls, the <i>/proc/net</i> directory, the <i>/sys/class/net</i> directory, port numbers (sockets), and so on. A physical network device can live in exactly one network namespace. A virtual network device (&quot;veth&quot;) pair provides a pipe-like abstraction that can be used to create tunnels between network namespaces, and can be used to create a bridge to a physical network device in another namespace.<div style="height: 1.00em;">
+&#160;</div>
+When a network namespace is freed (i.e., when the last process in the namespace terminates), its physical network devices are moved back to the initial network namespace (not to the parent of the process).<div style="height: 1.00em;">
+&#160;</div>
+Use of network namespaces requires a kernel that is configured with the <b>CONFIG_NET_NS</b> option.</div>
+<div class="subsection">
+<h2>Mount namespaces (CLONE_NEWNS)</h2> Mount namespaces isolate the set of filesystem mount points, meaning that processes in different mount namespaces can have different views of the filesystem hierarchy. The set of mounts in a mount namespace is modified using <b>mount</b>(2) and <b>umount</b>(2).<div style="height: 1.00em;">
+&#160;</div>
+The <i>/proc/[pid]/mounts</i> file (present since Linux 2.4.19) lists all the filesystems currently mounted in the process's mount namespace. The format of this file is documented in <b>fstab</b>(5). Since kernel version 2.6.15, this file is pollable: after opening the file for reading, a change in this file (i.e., a filesystem mount or unmount) causes <b>select</b>(2) to mark the file descriptor as readable, and <b>poll</b>(2) and <b>epoll_wait</b>(2) mark the file as having an error condition.<div style="height: 1.00em;">
+&#160;</div>
+The <i>/proc/[pid]/mountstats</i> file (present since Linux 2.6.17) exports information (statistics, configuration information) about the mount points in the process's mount namespace. This file is readable only by the owner of the process. Lines in this file have the form:<div style="margin-left: 5.00ex;">
+<br/>
+<div class="spacer">
+</div>
+<br/>
+device /dev/sda7 mounted on /home with fstype ext3 [statistics]<br/>
+(       1      )            ( 2 )             (3 ) (4)<br/>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+The fields in each line are:<dl>
+<dt>
+(1)</dt>
+<dd>
+The name of the mounted device (or &quot;nodevice&quot; if there is no corresponding device).</dd>
+</dl>
+<dl>
+<dt>
+(2)</dt>
+<dd>
+The mount point within the filesystem tree.</dd>
+</dl>
+<dl>
+<dt>
+(3)</dt>
+<dd>
+The filesystem type.</dd>
+</dl>
+<dl>
+<dt>
+(4)</dt>
+<dd>
+Optional statistics and configuration information. Currently (as at Linux 2.6.26), only NFS filesystems export information via this field.</dd>
+</dl>
+</div>
+</div>
+<div class="subsection">
+<h2>PID namespaces (CLONE_NEWPID)</h2> See <b>pid_namespaces</b>(7).</div>
+<div class="subsection">
+<h2>User namespaces (CLONE_NEWUSER)</h2> See <b>user_namespaces</b>(7).</div>
+<div class="subsection">
+<h2>UTS namespaces (CLONE_NEWUTS)</h2> UTS namespaces provide isolation of two system identifiers: the hostname and the NIS domain name. These identifiers are set using <b>sethostname</b>(2) and <b>setdomainname</b>(2), and can be retrieved using <b>uname</b>(2), <b>gethostname</b>(2), and <b>getdomainname</b>(2).<div style="height: 1.00em;">
+&#160;</div>
+Use of UTS namespaces requires a kernel that is configured with the <b>CONFIG_UTS_NS</b> option.</div>
+</div>
+<div class="section">
+<h1>CONFORMING TO</h1> Namespaces are a Linux-specific feature.</div>
+<div class="section">
+<h1>EXAMPLE</h1> See <b>user_namespaces</b>(7).</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>nsenter</b>(1), <b>readlink</b>(1), <b>unshare</b>(1), <b>clone</b>(2), <b>setns</b>(2), <b>unshare</b>(2), <b>proc</b>(5), <b>credentials</b>(7), <b>capabilities</b>(7), <b>pid_namespaces</b>(7), <b>user_namespaces</b>(7), <b>switch_root</b>(8)</div>
+<div class="section">
+<h1>COLOPHON</h1> This page is part of release 4.02 of the Linux <i>man-pages</i> project. A description of the project, information about reporting bugs, and the latest version of this page, can be found at http://www.kernel.org/doc/man-pages/.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2014-09-21</td>
+<td class="foot-os">
+Linux</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

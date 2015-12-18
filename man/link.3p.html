@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+LINK(3P)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+LINK(3P)</td>
+<td class="head-vol">
+POSIX Programmer's Manual</td>
+<td class="head-rtitle">
+LINK(3P)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>PROLOG</h1> This manual page is part of the POSIX Programmer's Manual. The Linux implementation of this interface may differ (consult the corresponding Linux manual page for details of Linux behavior), or the interface may not be implemented on Linux.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>NAME</h1> link, linkat &#8212; link one file to another file relative to two directory file descriptors</div>
+<div class="section">
+<h1>SYNOPSIS</h1><br/>
+#include &lt;unistd.h&gt;<div class="spacer">
+</div>
+int link(const char *<i>path1</i>, const char *<i>path2</i>);<br/>
+int linkat(int <i>fd1</i>, const char *<i>path1</i>, int <i>fd2</i>,<br/>
+    const char *<i>path2</i>, int <i>flag</i>);<br/>
+</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <i>link</i>() function shall create a new link (directory entry) for the existing file, <i>path1</i>.<div class="spacer">
+</div>
+The <i>path1</i> argument points to a pathname naming an existing file. The <i>path2</i> argument points to a pathname naming the new directory entry to be created. The  <i>link</i>() function shall atomically create a new link for the existing file and the link count of the file shall be incremented by one.<div class="spacer">
+</div>
+If <i>path1</i> names a directory,  <i>link</i>() shall fail unless the process has appropriate privileges and the implementation supports using  <i>link</i>() on directories.<div class="spacer">
+</div>
+If <i>path1</i> names a symbolic link, it is implementation-defined whether  <i>link</i>() follows the symbolic link, or creates a new link to the symbolic link itself.<div class="spacer">
+</div>
+Upon successful completion,  <i>link</i>() shall mark for update the last file status change timestamp of the file. Also, the last data modification and last file status change timestamps of the directory that contains the new entry shall be marked for update.<div class="spacer">
+</div>
+If  <i>link</i>() fails, no link shall be created and the link count of the file shall remain unchanged.<div class="spacer">
+</div>
+The implementation may require that the calling process has permission to access the existing file.<div class="spacer">
+</div>
+The  <i>linkat</i>() function shall be equivalent to the  <i>link</i>() function except that symbolic links shall be handled as specified by the value of <i>flag</i> (see below) and except in the case where either <i>path1</i> or <i>path2</i> or both are relative paths. In this case a relative path <i>path1</i> is interpreted relative to the directory associated with the file descriptor <i>fd1</i> instead of the current working directory and similarly for <i>path2</i> and the file descriptor <i>fd2</i>. If the file descriptor was opened without O_SEARCH, the function shall check whether directory searches are permitted using the current permissions of the directory underlying the file descriptor. If the file descriptor was opened with O_SEARCH, the function shall not perform the check.<div class="spacer">
+</div>
+Values for <i>flag</i> are constructed by a bitwise-inclusive OR of flags from the following list, defined in <i>&lt;fcntl.h&gt;</i>:<dl>
+<dt>
+AT_SYMLINK_FOLLOW</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+If <i>path1</i> names a symbolic link, a new link for the target of the symbolic link is created.</dd>
+</dl>
+<div class="spacer">
+</div>
+If  <i>linkat</i>() is passed the special value AT_FDCWD in the <i>fd1</i> or <i>fd2</i> parameter, the current working directory shall be used for the respective <i>path</i> argument. If both <i>fd1</i> and <i>fd2</i> have value AT_FDCWD, the behavior shall be identical to a call to  <i>link</i>(), except that symbolic links shall be handled as specified by the value of <i>flag</i>.<div class="spacer">
+</div>
+If the AT_SYMLINK_FOLLOW flag is clear in the <i>flag</i> argument and the <i>path1</i> argument names a symbolic link, a new link is created for the symbolic link <i>path1</i> and not its target.</div>
+<div class="section">
+<h1>RETURN VALUE</h1> Upon successful completion, these functions shall return 0. Otherwise, these functions shall return &#8722;1 and set <i>errno</i> to indicate the error.<div style="height: 0.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>ERRORS</h1> These functions shall fail if:<dl>
+<dt>
+<b>EACCES</b></dt>
+<dd>
+A component of either path prefix denies search permission, or the requested link requires writing in a directory that denies write permission, or the calling process does not have permission to access the existing file and this is required by the implementation.</dd>
+</dl>
+<dl>
+<dt>
+<b>EEXIST</b></dt>
+<dd>
+The <i>path2</i> argument resolves to an existing directory entry or refers to a symbolic link.</dd>
+</dl>
+<dl>
+<dt>
+<b>ELOOP</b></dt>
+<dd>
+A loop exists in symbolic links encountered during resolution of the <i>path1</i> or <i>path2</i> argument.</dd>
+</dl>
+<dl>
+<dt>
+<b>EMLINK</b></dt>
+<dd>
+The number of links to the file named by <i>path1</i> would exceed {LINK_MAX}.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENAMETOOLONG</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The length of a component of a pathname is longer than {NAME_MAX}.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOENT</b></dt>
+<dd>
+A component of either path prefix does not exist; the file named by <i>path1</i> does not exist; or <i>path1</i> or <i>path2</i> points to an empty string.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOSPC</b></dt>
+<dd>
+The directory to contain the link cannot be extended.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+A component of either path prefix names an existing file that is neither a directory nor a symbolic link to a directory, or the <i>path1</i> argument contains at least one non-&lt;slash&gt; character and ends with one or more trailing &lt;slash&gt; characters and the last pathname component names an existing file that is neither a directory nor a symbolic link to a directory, or the <i>path1</i> argument names an existing non-directory file and the <i>path2</i> argument names a nonexistent file, contains at least one non-&lt;slash&gt; character, and ends with one or more trailing &lt;slash&gt; characters.</dd>
+</dl>
+<dl>
+<dt>
+<b>EPERM</b></dt>
+<dd>
+The file named by <i>path1</i> is a directory and either the calling process does not have appropriate privileges or the implementation prohibits using  <i>link</i>() on directories.</dd>
+</dl>
+<dl>
+<dt>
+<b>EROFS</b></dt>
+<dd>
+The requested link requires writing in a directory on a read-only file system.</dd>
+</dl>
+<dl>
+<dt>
+<b>EXDEV</b></dt>
+<dd>
+The link named by <i>path2</i> and the file named by <i>path1</i> are on different file systems and the implementation does not support links between file systems.</dd>
+</dl>
+<dl>
+<dt>
+<b>EXDEV</b></dt>
+<dd>
+<i>path1</i> refers to a named STREAM.</dd>
+</dl>
+<div class="spacer">
+</div>
+The  <i>linkat</i>() function shall fail if:<dl>
+<dt>
+<b>EBADF</b></dt>
+<dd>
+The <i>path1</i> or <i>path2</i> argument does not specify an absolute path and the <i>fd1</i> or <i>fd2</i> argument, respectively, is neither AT_FDCWD nor a valid file descriptor open for reading or searching.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENOTDIR</b></dt>
+<dd>
+The <i>path1</i> or <i>path2</i> argument is not an absolute path and <i>fd1</i> or <i>fd2</i>, respectively, is a file descriptor associated with a non-directory file.</dd>
+</dl>
+<div class="spacer">
+</div>
+These functions may fail if:<dl>
+<dt>
+<b>ELOOP</b></dt>
+<dd>
+More than {SYMLOOP_MAX} symbolic links were encountered during resolution of the <i>path1</i> or <i>path2</i> argument.</dd>
+</dl>
+<dl>
+<dt>
+<b>ENAMETOOLONG</b></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The length of a pathname exceeds {PATH_MAX}, or pathname resolution of a symbolic link produced an intermediate result with a length that exceeds {PATH_MAX}.<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<div class="spacer">
+</div>
+The  <i>linkat</i>() function may fail if:<dl>
+<dt>
+<b>EINVAL</b></dt>
+<dd>
+The value of the <i>flag</i> argument is not valid.</dd>
+</dl>
+<div class="spacer">
+</div>
+<i>The following sections are informative.</i></div>
+<div class="section">
+<h1>EXAMPLES</h1><div class="subsection">
+<h2>Creating a Link to a File</h2> The following example shows how to create a link to a file named <b>/home/cnd/mod1</b> by creating a new directory entry named <b>/modules/pass1</b>.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>#include &lt;unistd.h&gt;</b><div class="spacer">
+</div>
+char *path1 = &quot;/home/cnd/mod1&quot;;<br/>
+char *path2 = &quot;/modules/pass1&quot;;<br/>
+int   status;<br/>
+...<br/>
+status = link (path1, path2);<br/>
+</div>
+</div>
+<div class="subsection">
+<h2>Creating a Link to a File Within a Program</h2> In the following program example, the  <i>link</i>() function links the <b>/etc/passwd</b> file (defined as <b>PASSWDFILE</b>) to a file named <b>/etc/opasswd</b> (defined as <b>SAVEFILE</b>), which is used to save the current password file. Then, after removing the current password file (defined as <b>PASSWDFILE</b>), the new password file is saved as the current password file using the  <i>link</i>() function again.<div style="height: 1.00em;">
+&#160;</div>
+<div style="margin-left: 4.00ex;">
+<br/>
+<b></b><br/>
+<b>#include &lt;unistd.h&gt;</b><div class="spacer">
+</div>
+#define LOCKFILE &quot;/etc/ptmp&quot;<br/>
+#define PASSWDFILE &quot;/etc/passwd&quot;<br/>
+#define SAVEFILE &quot;/etc/opasswd&quot;<br/>
+...<br/>
+/* Save current password file */<br/>
+link (PASSWDFILE, SAVEFILE);<div class="spacer">
+</div>
+/* Remove current password file. */<br/>
+unlink (PASSWDFILE);<div class="spacer">
+</div>
+/* Save new password file as current password file. */<br/>
+link (LOCKFILE,PASSWDFILE);<br/>
+</div>
+</div>
+</div>
+<div class="section">
+<h1>APPLICATION USAGE</h1> Some implementations do allow links between file systems.<div class="spacer">
+</div>
+If <i>path1</i> refers to a symbolic link, application developers should use  <i>linkat</i>() with appropriate flags to select whether or not the symbolic link should be resolved.</div>
+<div class="section">
+<h1>RATIONALE</h1> Linking to a directory is restricted to the superuser in most historical implementations because this capability may produce loops in the file hierarchy or otherwise corrupt the file system. This volume of POSIX.1&#8208;2008 continues that philosophy by prohibiting  <i>link</i>() and  <i>unlink</i>() from doing this. Other functions could do it if the implementor designed such an extension.<div class="spacer">
+</div>
+Some historical implementations allow linking of files on different file systems. Wording was added to explicitly allow this optional behavior.<div class="spacer">
+</div>
+The exception for cross-file system links is intended to apply only to links that are programmatically indistinguishable from ``hard'' links.<div class="spacer">
+</div>
+The purpose of the  <i>linkat</i>() function is to link files in directories other than the current working directory without exposure to race conditions. Any part of the path of a file could be changed in parallel to a call to  <i>link</i>(), resulting in unspecified behavior. By opening a file descriptor for the directory of both the existing file and the target location and using the  <i>linkat</i>() function it can be guaranteed that the both filenames are in the desired directories.<div class="spacer">
+</div>
+The AT_SYMLINK_FOLLOW flag allows for implementing both common behaviors of the  <i>link</i>() function. The POSIX specification requires that if <i>path1</i> is a symbolic link, a new link for the target of the symbolic link is created. Many systems by default or as an alternative provide a mechanism to avoid the implicit symbolic link lookup and create a new link for the symbolic link itself.<div class="spacer">
+</div>
+Earlier versions of this standard specified only the  <i>link</i>() function, and required it to behave like  <i>linkat</i>() with the AT_SYMLINK_FOLLOW flag. However, historical practice from SVR4 and Linux kernels had  <i>link</i>() behaving like  <i>linkat</i>() with no flags, and many systems that attempted to provide a conforming  <i>link</i>() function did so in a way that was rarely used, and when it was used did not conform to the standard (e.g., by not being atomic, or by dereferencing the symbolic link incorrectly). Since applications could not rely on  <i>link</i>() following links in practice, the  <i>linkat</i>() function was added taking a flag to specify the desired behavior for the application.</div>
+<div class="section">
+<h1>FUTURE DIRECTIONS</h1> None.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <i><i>rename</i>()</i>, <i><i>symlink</i>()</i>, <i><i>unlink</i>()</i><div class="spacer">
+</div>
+The Base Definitions volume of POSIX.1&#8208;2008, <i><b>&lt;fcntl.h&gt;</b></i>, <i><b>&lt;unistd.h&gt;</b></i></div>
+<div class="section">
+<h1>COPYRIGHT</h1> Portions of this text are reprinted and reproduced in electronic form from IEEE Std 1003.1, 2013 Edition, Standard for Information Technology -- Portable Operating System Interface (POSIX), The Open Group Base Specifications Issue 7, Copyright (C) 2013 by the Institute of Electrical and Electronics Engineers, Inc and The Open Group. (This is POSIX.1-2008 with the 2013 Technical Corrigendum 1 applied.) In the event of any discrepancy between this version and the original IEEE and The Open Group Standard, the original IEEE and The Open Group Standard is the referee document. The original Standard can be obtained online at http://www.unix.org/online.html .<div style="height: 1.00em;">
+&#160;</div>
+Any typographical or formatting errors that appear in this page are most likely to have been introduced during the conversion of the source files to man page format. To report such errors, see https://www.kernel.org/doc/man-pages/reporting_bugs.html .</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2013</td>
+<td class="foot-os">
+IEEE/The Open Group</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SG_TURS(8)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SG_TURS(8)</td>
+<td class="head-vol">
+SG3_UTILS</td>
+<td class="head-rtitle">
+SG_TURS(8)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> sg_turs - send one or more SCSI TEST UNIT READY commands</div>
+<div class="section">
+<h1>SYNOPSIS</h1> <b>sg_turs</b> [ <i>--help</i>] [<i>--number=NUM</i>] [<i>--progress</i>] [<i>--time</i>] [ <i>--verbose</i>] [<i>--version</i>] <i>DEVICE</i><div class="spacer">
+</div>
+<b>sg_turs</b> [ <i>-n=NUM</i>] [<i>-p</i>]  [<i>-t</i>] [<i>-v</i>] [<i>-V</i>]  <i>DEVICE</i></div>
+<div class="section">
+<h1>DESCRIPTION</h1> This utility sends one or more SCSI TEST UNIT READY commands to the  <i>DEVICE</i>. This may be useful for timing the per command overhead. Note that TEST UNIT READY has no associated data, just a 6 byte command and a returned SCSI status value.<div class="spacer">
+</div>
+This utility supports two command line syntaxes, the preferred one is shown first in the synopsis and explained in this section. A later section on the old command line syntax outlines the second group of options.</div>
+<div class="section">
+<h1>OPTIONS</h1> Arguments to long options are mandatory for short options as well.<dl>
+<dt>
+<b>-h</b>, <b>--help</b></dt>
+<dd>
+print out the usage message then exit.</dd>
+</dl>
+<dl>
+<dt>
+<b>-n</b>, <b>--number</b>=<i>NUM</i></dt>
+<dd>
+performs TEST UNIT READY <i>NUM</i> times. If not given defaults to 1. These suffix multipliers are permitted: c C *1; w W *2; b B *512; k K KiB *1,024; KB *1,000; m M MiB *1,048,576; MB *1,000,000; g G GiB *1,073,741,824; and GB *1,000,000,000 . Also a suffix of the form &quot;x&lt;n&gt;&quot; multiplies the leading number by &lt;n&gt;. Alternatively a hex number may be given, prefixed by either '0x' or has a trailing 'h'.</dd>
+</dl>
+<dl>
+<dt>
+<b>-O</b>, <b>--old</b></dt>
+<dd>
+switch to older style options.</dd>
+</dl>
+<dl>
+<dt>
+<b>-p</b>, <b>--progress</b></dt>
+<dd>
+show progress indication (a percentage) if available. If <i>--number=NUM</i> is given,  <i>NUM</i> is greater than 1 and an initial progress indication was detected then this utility waits 30 seconds before subsequent checks. Exits when  <i>NUM</i> is reached or there are no more progress indications. Ignores  <i>--time</i> option. See NOTES section below.</dd>
+</dl>
+<dl>
+<dt>
+<b>-t</b>, <b>--time</b></dt>
+<dd>
+after completing the requested number of TEST UNIT READY commands, outputs the total duration and the average number of commands executed per second.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b>, <b>--verbose</b></dt>
+<dd>
+increase level or verbosity.</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b>, <b>--version</b></dt>
+<dd>
+print version string then exit.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>NOTES</h1> The progress indication is optionally part of the sense data. When a prior command that takes a long time to complete (and typically precludes other media access commands) is still underway, the progress indication can be used to determine how long before the device returns to its normal state.<div class="spacer">
+</div>
+The SCSI FORMAT command for disks used with the IMMED bit set is an example of an operation that takes a significant amount of time and precludes other media access during that time. The IMMED bit set instructs the FORMAT command to return control to the application client once the format has commenced (see SBC-3). Several long duration SCSI commands associated with tape drives also use the progress indication (see SSC-3).<div class="spacer">
+</div>
+The <i>DEVICE</i> is opened with a read-only flag (e.g. in Unix with the O_RDONLY flag).<div class="spacer">
+</div>
+Early standards suggested that the SCSI TEST UNIT READY command be used for polling the progress indication. More recent standards seem to suggest the SCSI REQUEST SENSE command should be used instead.</div>
+<div class="section">
+<h1>EXIT STATUS</h1> The exit status of sg_turs is 0 when it is successful (e.g. in the case of a mechanical disk, it is spun up and ready to accept commands). For this utility the other exit status of interest is 2 corresponding to the &quot;not ready&quot; sense key. For other exit status values see the sg3_utils(8) man page.</div>
+<div class="section">
+<h1>OLDER COMMAND LINE OPTIONS</h1> The options in this section were the only ones available prior to sg3_utils version 1.23 . In sg3_utils version 1.23 and later these older options can be selected by either setting the SG3_UTILS_OLD_OPTS environment variable or using '--old' (or '-O) as the first option.<dl>
+<dt>
+<b>-n</b>=<i>NUM</i></dt>
+<dd>
+performs TEST UNIT READY <i>NUM</i> times. If not given defaults to 1. Equivalent to  <i>--number=NUM</i> in the main description.</dd>
+</dl>
+<dl>
+<dt>
+<b>-N</b></dt>
+<dd>
+switch to the newer style options.</dd>
+</dl>
+<dl>
+<dt>
+<b>-p</b></dt>
+<dd>
+show progress indication (a percentage) if available. Equivalent to  <i>--progress</i> in the main description.</dd>
+</dl>
+<dl>
+<dt>
+<b>-t</b></dt>
+<dd>
+after completing the requested number of TEST UNIT READY commands, outputs the total duration and the average number of commands executed per second. Equivalent to  <i>--time</i> in the main description.</dd>
+</dl>
+<dl>
+<dt>
+<b>-v</b></dt>
+<dd>
+increase level of verbosity.</dd>
+</dl>
+<dl>
+<dt>
+<b>-V</b></dt>
+<dd>
+print out version string then exit.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>AUTHORS</h1> Written by D. Gilbert</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright &#169; 2000-2014 Douglas Gilbert<div style="height: 0.00em;">
+&#160;</div>
+This software is distributed under the GPL version 2. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>sg_inq, sg_request (sg3_utils)</b></div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+May 2014</td>
+<td class="foot-os">
+sg3_utils-1.39</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+
