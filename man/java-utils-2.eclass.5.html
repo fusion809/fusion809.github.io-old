@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+JAVA-UTILS-2.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+JAVA-UTILS-2.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+JAVA-UTILS-2.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> java-utils-2.eclass - Base eclass for Java packages</div>
+<div class="section">
+<h1>DESCRIPTION</h1> This eclass provides functionality which is used by java-pkg-2.eclass, java-pkg-opt-2.eclass and java-ant-2 eclass, as well as from ebuilds.<div style="height: 1.00em;">
+&#160;</div>
+This eclass should not be inherited this directly from an ebuild. Instead, you should inherit java-pkg-2 for Java packages or java-pkg-opt-2 for packages that have optional Java support. In addition you can inherit java-ant-2 for Ant-based packages.</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>java-pkg_doexamples</b> [--subdir &lt;subdir&gt;] &lt;file1/dir1&gt; [&lt;file2&gt; ...]</dt>
+<dd>
+Installs given arguments to /usr/share/doc/${PF}/examples If you give it only one parameter and it is a directory it will install everything in that directory to the examples directory.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Parameters:<br/>
+--subdir - If the examples need a certain directory structure<br/>
+$* - list of files to install<div class="spacer">
+</div>
+<br/>
+Examples:<br/>
+java-pkg_doexamples demo<br/>
+java-pkg_doexamples demo/* examples/*<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_addres</b> &lt;jar&gt; &lt;dir&gt; [&lt;find arguments&gt; ...]</dt>
+<dd>
+Adds resource files to an existing jar. It is important that the directory given is actually the root of the corresponding resource tree. The target directory as well as sources.lst, MANIFEST.MF, *.class, *.jar, and *.java files are automatically excluded. Symlinks are always followed. Additional arguments are passed through to find.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+java-pkg_addres ${PN}.jar resources ! -name &quot;*.html&quot;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_rm_files</b> java-pkg_rm_files File1.java File2.java ...</dt>
+<dd>
+Remove unneeded files in ${S}.<div style="height: 1.00em;">
+&#160;</div>
+Every now and then, you'll run into situations whereby a file needs removing, be it a unit test or a regular java class.<div style="height: 1.00em;">
+&#160;</div>
+You can use this function by either: - calling it yourself in java_prepare() and feeding java-pkg_rm_files with the list of files you wish to remove. - defining an array in the ebuild named JAVA_RM_FILES with the list of files you wish to remove.<div style="height: 1.00em;">
+&#160;</div>
+Both way work and it is left to the developer's preferences. If the JAVA_RM_FILES array is defined, it will be automatically handed over to java-pkg_rm_files during the src_prepare phase.<div style="height: 1.00em;">
+&#160;</div>
+See java-utils-2_src_prepare.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+java-pkg_rm_files File1.java File2.java<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_dojar</b> &lt;jar1&gt; [&lt;jar2&gt; ...]</dt>
+<dd>
+Installs any number of jars. Jar's will be installed into /usr/share/${PN}(-${SLOT})/lib/ by default. You can use java-pkg_jarinto to change this path. You should never install a jar with a package version in the filename. Instead, use java-pkg_newjar defined below.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+java-pkg_dojar dist/${PN}.jar dist/${PN}-core.jar<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_regjar</b> &lt;/path/to/installed/jar&gt;</dt>
+<dd>
+Records an already installed (in ${D}) jar in the package.env This would mostly be used if the package has make or a custom script to install things.<div style="height: 1.00em;">
+&#160;</div>
+WARNING: if you want to use shell expansion, you have to use ${D}/... as the for in this function will not be able to expand the path, here's an example:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+  java-pkg_regjar ${D}/opt/my-java/lib/*.jar<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_newjar</b> &lt;path/to/oldname.jar&gt; [&lt;newname.jar&gt;]</dt>
+<dd>
+Installs a jar with a new name (defaults to $PN.jar)<div style="height: 1.00em;">
+&#160;</div>
+For example, installs a versioned jar without the version</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_addcp</b> &lt;classpath&gt;</dt>
+<dd>
+Add something to the package's classpath. For jars, you should use dojar, newjar, or regjar. This is typically used to add directories to the classpath. The parameters of this function are appended to JAVA_PKG_CLASSPATH</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_doso</b> &lt;path/to/file1.so&gt; [...]</dt>
+<dd>
+Installs any number of JNI libraries They will be installed into /usr/lib by default, but java-pkg_sointo can be used change this path<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Example:<br/>
+java-pkg_doso *.so<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_regso</b> &lt;file1.so&gt; [...]</dt>
+<dd>
+Registers an already installed JNI library in package.env.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Parameters:<br/>
+$@ - JNI libraries to register<div class="spacer">
+</div>
+<br/>
+Example:<br/>
+java-pkg_regso *.so /path/*.so<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_jarinto</b> &lt;/path/to/install/jars/into&gt;</dt>
+<dd>
+Changes the path jars are installed into via subsequent java-pkg_dojar calls.</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_sointo</b> &lt;/path/to/install/sofiles/into&gt;</dt>
+<dd>
+Changes the path that JNI libraries are installed into via subsequent java-pkg_doso calls.</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_dohtml</b> &lt;path/to/javadoc/documentation&gt; [...]</dt>
+<dd>
+Install Javadoc HTML documentation. Usage of java-pkg_dojavadoc is preferred.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+java-pkg_dohtml dist/docs/<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_dojavadoc</b> [--symlink destination] &lt;path/to/javadocs/root&gt;</dt>
+<dd>
+Installs javadoc documentation. This should be controlled by the doc use flag.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Parameters:<br/>
+$1: optional --symlink creates to symlink like this for html<br/>
+           documentation bundles.<br/>
+$2: - The javadoc root directory.<div class="spacer">
+</div>
+<br/>
+Examples:<br/>
+java-pkg_dojavadoc docs/api<br/>
+java-pkg_dojavadoc --symlink apidocs docs/api<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_dosrc</b> &lt;path/to/sources&gt; [...]</dt>
+<dd>
+Installs a zip containing the source for a package, so it can used in from IDEs like eclipse and netbeans. Ebuild needs to DEPEND on app-arch/zip to use this. It also should be controlled by USE=source.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Example:<br/>
+java-pkg_dosrc src/*<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_dolauncher</b> &lt;filename&gt; [options]</dt>
+<dd>
+Make a wrapper script to lauch/start this package If necessary, the wrapper will switch to the appropriate VM.<div style="height: 1.00em;">
+&#160;</div>
+Can be called without parameters if the package installs only one jar that has the Main-class attribute set. The wrapper will be named ${PN}.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Parameters:<br/>
+$1 - filename of launcher to create<br/>
+$2 - options, as follows:<br/>
+ --main the.main.class.to.start<br/>
+ --jar /the/jar/too/launch.jar or just &lt;name&gt;.jar<br/>
+ --java_args 'Extra arguments to pass to java'<br/>
+ --pkg_args 'Extra arguments to pass to the package'<br/>
+ --pwd Directory the launcher changes to before executing java<br/>
+ -into Directory to install the launcher to, instead of /usr/bin<br/>
+ -pre Prepend contents of this file to the launcher<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_dowar</b></dt>
+<dd>
+Install war files. TODO document</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_jar-from</b> [--build-only] [--with-dependencies] [--virtual] [--into dir] &lt;package&gt; [&lt;package.jar&gt;] [&lt;destination.jar&gt;]</dt>
+<dd>
+Makes a symlink to a jar from a certain package A lot of java packages include dependencies in a lib/ directory You can use this function to replace these bundled dependencies. The dependency is recorded into package.env DEPEND line, unless &quot;--build-only&quot; is passed as the very first argument, for jars that have to be present only at build time and are not needed on runtime (junit testing etc).<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Example: get all jars from xerces slot 2<br/>
+java-pkg_jar-from xerces-2<div class="spacer">
+</div>
+<br/>
+Example: get a specific jar from xerces slot 2<br/>
+	java-pkg_jar-from xerces-2 xml-apis.jar<div class="spacer">
+</div>
+<br/>
+Example: get a specific jar from xerces slot 2, and name it diffrently<br/>
+	java-pkg_jar-from xerces-2 xml-apis.jar xml.jar<div class="spacer">
+</div>
+<br/>
+Example: get junit.jar which is needed only for building<br/>
+java-pkg_jar-from --build-only junit junit.jar<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Parameters<br/>
+--build-only - makes the jar(s) not added into package.env DEPEND line.<br/>
+  (assumed automatically when called inside src_test)<br/>
+--with-dependencies - get jars also from requested package's dependencies<br/>
+  transitively.<br/>
+--virtual - Packages passed to this function are to be handled as virtuals<br/>
+  and will not have individual jar dependencies recorded.<br/>
+--into $dir - symlink jar(s) into $dir (must exist) instead of .<br/>
+$1 - Package to get jars from, or comma-separated list of packages in<br/>
+case other parameters are not used.<br/>
+$2 - jar from package. If not specified, all jars will be used.<br/>
+$3 - When a single jar is specified, destination filename of the<br/>
+symlink. Defaults to the name of the jar.<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_jarfrom</b></dt>
+<dd>
+See java-pkg_jar-from</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_getjars</b> [--build-only] [--with-dependencies] &lt;package1&gt;[,&lt;package2&gt;...]</dt>
+<dd>
+Get the classpath provided by any number of packages Among other things, this can be passed to 'javac -classpath' or 'ant -lib'. The providing packages are recorded as dependencies into package.env DEPEND line, unless &quot;--build-only&quot; is passed as the very first argument, for jars that have to be present only at build time and are not needed on runtime (junit testing etc).<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Example: Get the classpath for xerces-2 and xalan,<br/>
+java-pkg_getjars xerces-2,xalan<div class="spacer">
+</div>
+<br/>
+Example Return:<br/>
+/usr/share/xerces-2/lib/xml-apis.jar:/usr/share/xerces-2/lib/xmlParserAPIs.jar:/usr/share/xalan/lib/xalan.jar<div class="spacer">
+</div>
+<div class="spacer">
+</div>
+<br/>
+Parameters:<br/>
+--build-only - makes the jar(s) not added into package.env DEPEND line.<br/>
+  (assumed automatically when called inside src_test)<br/>
+--with-dependencies - get jars also from requested package's dependencies<br/>
+  transitively.<br/>
+$1 - list of packages to get jars from<br/>
+  (passed to java-config --classpath)<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_getjar</b> [--build-only] [--virtual] &lt;package&gt; &lt;jarfile&gt;</dt>
+<dd>
+Get the complete path of a single jar from a package The providing package is recorded as runtime dependency into package.env DEPEND line, unless &quot;--build-only&quot; is passed as the very first argument, for jars that have to be present only at build time and are not needed on runtime (junit testing etc).<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Example:<br/>
+java-pkg_getjar xerces-2 xml-apis.jar<br/>
+returns<br/>
+/usr/share/xerces-2/lib/xml-apis.jar<div class="spacer">
+</div>
+<br/>
+Parameters:<br/>
+--build-only - makes the jar not added into package.env DEPEND line.<br/>
+--virtual - Packages passed to this function are to be handled as virtuals<br/>
+  and will not have individual jar dependencies recorded.<br/>
+$1 - package to use<br/>
+$2 - jar to get<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_register-dependency</b> &lt;package&gt;[,&lt;package2&gt;...] [&lt;jarfile&gt;]</dt>
+<dd>
+Registers runtime dependency on a package, list of packages, or a single jar from a package, into package.env DEPEND line. Can only be called in src_install phase. Intended for binary packages where you don't need to symlink the jars or get their classpath during build. As such, the dependencies only need to be specified in ebuild's RDEPEND, and should be omitted in DEPEND.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Parameters:<br/>
+$1 - comma-separated list of packages, or a single package<br/>
+$2 - if param $1 is a single package, optionally specify the jar<br/>
+  to depend on<div class="spacer">
+</div>
+<br/>
+Examples:<br/>
+Record the dependency on whole xerces-2 and xalan,<br/>
+java-pkg_register-dependency xerces-2,xalan<div class="spacer">
+</div>
+<br/>
+Record the dependency on ant.jar from ant-core<br/>
+java-pkg_register-dependency ant-core ant.jar<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+Note: Passing both list of packages as the first parameter AND specifying the jar as the second is not allowed and will cause the function to die. We assume that there's more chance one passes such combination as a mistake, than that there are more packages providing identically named jar without class collisions.</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_register-optional-dependency</b> &lt;package&gt;[,&lt;package2&gt;...] [&lt;jarfile&gt;]</dt>
+<dd>
+Registers optional runtime dependency on a package, list of packages, or a single jar from a package, into package.env OPTIONAL_DEPEND line. Can only be called in src_install phase. Intended for packages that can use other packages when those are in classpath. Will be put on classpath by launcher if they are installed. Typical case is JDBC implementations for various databases. It's better than having USE flag for each implementation triggering hard dependency.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Parameters:<br/>
+$1 - comma-separated list of packages, or a single package<br/>
+$2 - if param $1 is a single package, optionally specify the jar to depend on<div class="spacer">
+</div>
+<br/>
+Example:<br/>
+Record the optional dependency on some jdbc providers<br/>
+java-pkg_register-optional-dependency jdbc-jaybird,jtds-1.2,jdbc-mysql<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+Note: Passing both list of packages as the first parameter AND specifying the jar as the second is not allowed and will cause the function to die. We assume that there's more chance one passes such combination as a mistake, than that there are more packages providing identically named jar without class collisions.</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_register-environment-variable</b> &lt;name&gt; &lt;value&gt;</dt>
+<dd>
+Register an arbitrary environment variable into package.env. The gjl launcher for this package or any package depending on this will export it into environement before executing java command. Must only be called in src_install phase.</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_get-bootclasspath</b> &lt;version&gt;</dt>
+<dd>
+Returns classpath of a given bootclasspath-providing package version.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_find-normal-jars</b> [&lt;path/to/directory&gt;]</dt>
+<dd>
+Find the files with suffix .jar file in the given directory (default: $WORKDIR)</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_ensure-no-bundled-jars</b></dt>
+<dd>
+Try to locate bundled jar files in ${WORKDIR} and die if found. This function should be called after WORKDIR has been populated with symlink to system jar files or bundled jars removed.</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_get-source</b></dt>
+<dd>
+Determines what source version should be used, for passing to -source. Unless you want to break things you probably shouldn't set _WANT_SOURCE<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_get-target</b></dt>
+<dd>
+Determines what target version should be used, for passing to -target. If you don't care about lower versions, you can set _WANT_TARGET to the version of your JDK.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_get-javac</b></dt>
+<dd>
+Returns the compiler executable</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_javac-args</b></dt>
+<dd>
+If an ebuild uses javac directly, instead of using ejavac, it should call this to know what -source/-target to use.<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_get-jni-cflags</b></dt>
+<dd>
+Echos the CFLAGS for JNI compilations</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_register-ant-task</b> [--version x.y] [&lt;name&gt;]</dt>
+<dd>
+Register this package as ant task, so that ant will load it when no specific ANT_TASKS are specified. Note that even without this registering, all packages specified in ANT_TASKS will be loaded. Mostly used by the actual ant tasks packages, but can be also used by other ebuilds that used to symlink their .jar into /usr/share/ant-core/lib to get autoloaded, for backwards compatibility.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Parameters<br/>
+--version x.y Register only for ant version x.y (otherwise for any ant<br/>
+	version). Used by the ant-* packages to prevent loading of mismatched<br/>
+	ant-core ant tasks after core was updated, before the tasks are updated,<br/>
+	without a need for blockers.<br/>
+$1 Name to register as. Defaults to JAVA_PKG_NAME ($PN[-$SLOT])<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>ejunit</b></dt>
+<dd>
+Junit wrapper function. Makes it easier to run the tests and checks for dev-java/junit in DEPEND. Launches the tests using org.junit.runner.JUnitCore.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Parameters:<br/>
+$1 - -cp or -classpath<br/>
+$2 - classpath; junit and recorded dependencies get appended<br/>
+$@ - the rest of the parameters are passed to java<div class="spacer">
+</div>
+<br/>
+Examples:<br/>
+ejunit -cp build/classes org.blinkenlights.jid3.test.AllTests<br/>
+ejunit org.blinkenlights.jid3.test.AllTests<br/>
+ejunit org.blinkenlights.jid3.test.FirstTest org.blinkenlights.jid3.test.SecondTest<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>ejunit4</b></dt>
+<dd>
+Junit4 wrapper function. Makes it easier to run the tests and checks for dev-java/junit:4 in DEPEND. Launches the tests using junit.textui.TestRunner.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Parameters:<br/>
+$1 - -cp or -classpath<br/>
+$2 - classpath; junit and recorded dependencies get appended<br/>
+$@ - the rest of the parameters are passed to java<div class="spacer">
+</div>
+<br/>
+Examples:<br/>
+ejunit4 -cp build/classes org.blinkenlights.jid3.test.AllTests<br/>
+ejunit4 org.blinkenlights.jid3.test.AllTests<br/>
+ejunit4 org.blinkenlights.jid3.test.FirstTest \<br/>
+        org.blinkenlights.jid3.test.SecondTest<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>java-utils-2_src_prepare</b></dt>
+<dd>
+src_prepare Searches for bundled jars Don't call directly, but via java-pkg-2_src_prepare!</dd>
+</dl>
+<dl>
+<dt>
+<b>java-utils-2_pkg_preinst</b></dt>
+<dd>
+pkg_preinst Searches for missing and unneeded dependencies Don't call directly, but via java-pkg-2_pkg_preinst!</dd>
+</dl>
+<dl>
+<dt>
+<b>eant</b> &lt;ant_build_target(s)&gt;</dt>
+<dd>
+Ant wrapper function. Will use the appropriate compiler, based on user-defined compiler. Will also set proper ANT_TASKS from the variable ANT_TASKS, variables:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+Variables:<br/>
+EANT_GENTOO_CLASSPATH - calls java-pkg_getjars for the value and adds to the<br/>
+		gentoo.classpath property. Be sure to call java-ant_rewrite-classpath in src_unpack.<br/>
+EANT_NEEDS_TOOLS - add tools.jar to the gentoo.classpath. Should only be used<br/>
+		for build-time purposes, the dependency is not recorded to<br/>
+		package.env!<br/>
+ANT_TASKS - used to determine ANT_TASKS before calling Ant.<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>ejavac</b> &lt;javac_arguments&gt;</dt>
+<dd>
+Javac wrapper function. Will use the appropriate compiler, based on /etc/java-config/compilers.conf</dd>
+</dl>
+<dl>
+<dt>
+<b>ejavadoc</b> &lt;javadoc_arguments&gt;</dt>
+<dd>
+javadoc wrapper function. Will set some flags based on the VM version due to strict javadoc rules in 1.8.</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_filter-compiler</b> &lt;compiler(s)_to_filter&gt;</dt>
+<dd>
+Used to prevent the use of some compilers. Should be used in src_compile. Basically, it just appends onto JAVA_PKG_FILTER_COMPILER</dd>
+</dl>
+<dl>
+<dt>
+<b>java-pkg_force-compiler</b> &lt;compiler(s)_to_force&gt;</dt>
+<dd>
+Used to force the use of particular compilers. Should be used in src_compile. A common use of this would be to force ecj-3.1 to be used on amd64, to avoid OutOfMemoryErrors that may come up.</dd>
+</dl>
+<dl>
+<dt>
+<b>use_doc</b></dt>
+<dd>
+<div style="height: 1.00em;">
+&#160;</div>
+Helper function for getting ant to build javadocs. If the user has USE=doc, then 'javadoc' or the argument are returned. Otherwise, there is no return.<div style="height: 1.00em;">
+&#160;</div>
+The output of this should be passed to ant.<br/>
+Parameters:<br/>
+$@ - Option value to return. Defaults to 'javadoc'<div class="spacer">
+</div>
+<br/>
+Examples:<br/>
+build javadocs by calling 'javadoc' target<br/>
+eant $(use_doc)<div class="spacer">
+</div>
+<br/>
+build javadocs by calling 'apidoc' target<br/>
+eant $(use_doc apidoc)<br/>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ECLASS VARIABLES</h1><dl>
+<dt>
+<b>JAVA_PKG_WANT_BOOTCLASSPATH</b></dt>
+<dd>
+The version of bootclasspath the package needs to work. Translates to a proper dependency. The bootclasspath can then be obtained by java-ant_rewrite-bootclasspath</dd>
+</dl>
+<dl>
+<dt>
+<b>JAVA_PKG_ALLOW_VM_CHANGE</b> = <i>${JAVA_PKG_ALLOW_VM_CHANGE:=&quot;yes&quot;}</i></dt>
+<dd>
+Allow this eclass to change the active VM? If your system VM isn't sufficient for the package, the build will fail instead of trying to switch to another VM.<div style="height: 1.00em;">
+&#160;</div>
+Overriding the default can be useful for testing specific VMs locally, but should not be used in the final ebuild.</dd>
+</dl>
+<dl>
+<dt>
+<b>JAVA_PKG_FORCE_VM</b></dt>
+<dd>
+Explicitly set a particular VM to use. If its not valid, it'll fall back to whatever /etc/java-config-2/build/jdk.conf would elect to use.<div style="height: 1.00em;">
+&#160;</div>
+Should only be used for testing and debugging.<div style="height: 1.00em;">
+&#160;</div>
+Example: use sun-jdk-1.5 to emerge foo:<br/>
+JAVA_PKG_FORCE_VM=sun-jdk-1.5 emerge foo<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>JAVA_PKG_WANT_BUILD_VM</b></dt>
+<dd>
+A list of VM handles to choose a build VM from. If the list contains the currently active VM use that one, otherwise step through the list till a usable/installed VM is found.<div style="height: 1.00em;">
+&#160;</div>
+This allows to use an explicit list of JDKs in DEPEND instead of a virtual. Users of this variable must make sure at least one of the listed handles is covered by DEPEND. Requires JAVA_PKG_WANT_SOURCE and JAVA_PKG_WANT_TARGET to be set as well.</dd>
+</dl>
+<dl>
+<dt>
+<b>JAVA_PKG_WANT_SOURCE</b></dt>
+<dd>
+Specify a non-standard Java source version for compilation (via javac -source parameter or Ant equivalent via build.xml rewriting done by java-ant-2 eclass). Normally this is determined from the jdk version specified in DEPEND. See java-pkg_get-source function below.<div style="height: 1.00em;">
+&#160;</div>
+Should generally only be used for testing and debugging.<div style="height: 1.00em;">
+&#160;</div>
+Use 1.4 source to emerge baz<br/>
+JAVA_PKG_WANT_SOURCE=1.4 emerge baz<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>JAVA_PKG_WANT_TARGET</b></dt>
+<dd>
+Same as JAVA_PKG_WANT_SOURCE (see above) but for javac -target parameter, which affects the version of generated bytecode. Normally this is determined from the jre/jdk version specified in RDEPEND. See java-pkg_get-target function below.<div style="height: 1.00em;">
+&#160;</div>
+Should generallyonly be used for testing and debugging.<div style="height: 1.00em;">
+&#160;</div>
+emerge bar to be compatible with 1.3<br/>
+JAVA_PKG_WANT_TARGET=1.3 emerge bar<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>JAVA_RM_FILES</b></dt>
+<dd>
+An array containing a list of files to remove. If defined, this array will be automatically handed over to java-pkg_rm_files for processing during the src_prepare phase.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+JAVA_RM_FILES=(<br/>
+	path/to/File1.java<br/>
+	DELETEME.txt<br/>
+)<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>JAVA_PKG_FORCE_ANT_TASKS</b></dt>
+<dd>
+An $IFS separated list of ant tasks. Can be set in environment before calling emerge/ebuild to override variables set in ebuild, mainly for testing before putting the resulting (WANT_)ANT_TASKS into ebuild. Affects only ANT_TASKS in eant() call, not the dependencies specified in WANT_ANT_TASKS.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+JAVA_PKG_FORCE_ANT_TASKS=&quot;ant-junit ant-trax&quot; \<br/>
+	ebuild foo.ebuild compile<br/>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>AUTHORS</h1><br/>
+Thomas Matthijs &lt;axxo@gentoo.org&gt;, Karl Trygve Kalleberg &lt;karltk@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+java@gentoo.org<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/java-utils-2.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/java-utils-2.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+UNPACKER.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+UNPACKER.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+UNPACKER.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> unpacker.eclass - helpers for extraneous file formats and consistent behavior across EAPIs</div>
+<div class="section">
+<h1>DESCRIPTION</h1> Some extraneous file formats are not part of PMS, or are only in certain EAPIs.  Rather than worrying about that, support the crazy cruft here and for all EAPI versions.</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>unpack_pdv</b> &lt;file to unpack&gt; &lt;size of off_t&gt;</dt>
+<dd>
+Unpack those pesky pdv generated files ... They're self-unpacking programs with the binary package stuffed in the middle of the archive.  Valve seems to use it a lot ... too bad it seems to like to segfault a lot :(.  So lets take it apart ourselves.<div style="height: 1.00em;">
+&#160;</div>
+You have to specify the off_t size ... I have no idea how to extract that information out of the binary executable myself.  Basically you pass in the size of the off_t type (in bytes) on the machine that built the pdv archive.<div style="height: 1.00em;">
+&#160;</div>
+One way to determine this is by running the following commands:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+	strings &lt;pdv archive&gt; | grep lseek<br/>
+	strace -elseek &lt;pdv archive&gt;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+Basically look for the first lseek command (we do the strings/grep because sometimes the function call is _llseek or something) and steal the 2nd parameter.  Here is an example:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+	$ strings hldsupdatetool.bin | grep lseek<br/>
+	lseek<br/>
+	$ strace -elseek ./hldsupdatetool.bin<br/>
+	lseek(3, -4, SEEK_END)					= 2981250<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+Thus we would pass in the value of '4' as the second parameter.</dd>
+</dl>
+<dl>
+<dt>
+<b>unpack_makeself</b> [file to unpack] [offset] [tail|dd]</dt>
+<dd>
+Unpack those pesky makeself generated files ... They're shell scripts with the binary package tagged onto the end of the archive.  Loki utilized the format as does many other game companies.<div style="height: 1.00em;">
+&#160;</div>
+If the file is not specified, then ${A} is used.  If the offset is not specified then we will attempt to extract the proper offset from the script itself.</dd>
+</dl>
+<dl>
+<dt>
+<b>unpack_deb</b> &lt;one deb to unpack&gt;</dt>
+<dd>
+Unpack a Debian .deb archive in style.</dd>
+</dl>
+<dl>
+<dt>
+<b>unpack_cpio</b> &lt;one cpio to unpack&gt;</dt>
+<dd>
+Unpack a cpio archive, file &quot;-&quot; means stdin.</dd>
+</dl>
+<dl>
+<dt>
+<b>unpack_zip</b> &lt;zip file&gt;</dt>
+<dd>
+Unpack zip archives. This function ignores all non-fatal errors (i.e. warnings). That is useful for zip archives with extra crap attached (e.g. self-extracting archives).</dd>
+</dl>
+<dl>
+<dt>
+<b>unpacker</b> [archives to unpack]</dt>
+<dd>
+This works in the same way that `unpack` does.  If you don't specify any files, it will default to ${A}.</dd>
+</dl>
+<dl>
+<dt>
+<b>unpacker_src_unpack</b></dt>
+<dd>
+Run `unpacker` to unpack all our stuff.</dd>
+</dl>
+<dl>
+<dt>
+<b>unpacker_src_uri_depends</b> [archives that we will unpack]</dt>
+<dd>
+Walk all the specified files (defaults to $SRC_URI) and figure out the dependencies that are needed to unpack things.<div style="height: 1.00em;">
+&#160;</div>
+Note: USE flags are not yet handled.<div style="height: 1.00em;">
+&#160;</div>
+Return value: Dependencies needed to unpack all the archives</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ECLASS VARIABLES</h1><dl>
+<dt>
+<b>UNPACKER_BZ2</b></dt>
+<dd>
+Utility to use to decompress bzip2 files.  Will dynamically pick between `pbzip2` and `bzip2`.  Make sure your choice accepts the &quot;-dc&quot; options. Note: this is meant for users to set, not ebuilds.</dd>
+</dl>
+<dl>
+<dt>
+<b>UNPACKER_LZIP</b></dt>
+<dd>
+Utility to use to decompress lzip files.  Will dynamically pick between `plzip`, `pdlzip` and `lzip`.  Make sure your choice accepts the &quot;-dc&quot; options. Note: this is meant for users to set, not ebuilds.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+base-system@gentoo.org<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/unpacker.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/unpacker.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

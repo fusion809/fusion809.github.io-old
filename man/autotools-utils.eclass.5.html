@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+AUTOTOOLS-UTILS.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+AUTOTOOLS-UTILS.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+AUTOTOOLS-UTILS.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> autotools-utils.eclass - common ebuild functions for autotools-based packages</div>
+<div class="section">
+<h1>DESCRIPTION</h1> autotools-utils.eclass is autotools.eclass(5) and base.eclass(5) wrapper providing all inherited features along with econf arguments as Bash array, out of source build with overridable build dir location, static archives handling, libtool files removal.<div style="height: 1.00em;">
+&#160;</div>
+Please note that autotools-utils does not support mixing of its phase functions with regular econf/emake calls. If necessary, please call autotools-utils_src_compile instead of the latter.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>EXAMPLE</h1> Typical ebuild using autotools-utils.eclass:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+EAPI=&quot;2&quot;<div class="spacer">
+</div>
+<br/>
+inherit autotools-utils<div class="spacer">
+</div>
+<br/>
+DESCRIPTION=&quot;Foo bar application&quot;<br/>
+HOMEPAGE=&quot;http://example.org/foo/&quot;<br/>
+SRC_URI=&quot;mirror://sourceforge/foo/${P}.tar.bz2&quot;<div class="spacer">
+</div>
+<br/>
+LICENSE=&quot;LGPL-2.1&quot;<br/>
+KEYWORDS=&quot;&quot;<br/>
+SLOT=&quot;0&quot;<br/>
+IUSE=&quot;debug doc examples qt4 static-libs tiff&quot;<div class="spacer">
+</div>
+<br/>
+CDEPEND=&quot;<br/>
+	media-libs/libpng:0<br/>
+	qt4? (<br/>
+		dev-qt/qtcore:4<br/>
+		dev-qt/qtgui:4<br/>
+	)<br/>
+	tiff? ( media-libs/tiff:0 )<br/>
+&quot;<br/>
+RDEPEND=&quot;${CDEPEND}<br/>
+	!media-gfx/bar<br/>
+&quot;<br/>
+DEPEND=&quot;${CDEPEND}<br/>
+	doc? ( app-doc/doxygen )<br/>
+&quot;<div class="spacer">
+</div>
+<br/>
+# bug 123456<br/>
+AUTOTOOLS_IN_SOURCE_BUILD=1<div class="spacer">
+</div>
+<br/>
+DOCS=(AUTHORS ChangeLog README &quot;Read me.txt&quot; TODO)<div class="spacer">
+</div>
+<br/>
+PATCHES=(<br/>
+	&quot;${FILESDIR}/${P}-gcc44.patch&quot; # bug 123458<br/>
+	&quot;${FILESDIR}/${P}-as-needed.patch&quot;<br/>
+	&quot;${FILESDIR}/${P}-unbundle_libpng.patch&quot;<br/>
+)<div class="spacer">
+</div>
+<br/>
+src_configure() {<br/>
+	local myeconfargs=(<br/>
+		$(use_enable debug)<br/>
+		$(use_with qt4)<br/>
+		$(use_enable threads multithreading)<br/>
+		$(use_with tiff)<br/>
+	)<br/>
+	autotools-utils_src_configure<br/>
+}<div class="spacer">
+</div>
+<br/>
+src_compile() {<br/>
+	autotools-utils_src_compile<br/>
+	use doc &amp;&amp; autotools-utils_src_compile docs<br/>
+}<div class="spacer">
+</div>
+<br/>
+src_install() {<br/>
+	use doc &amp;&amp; HTML_DOCS=(&quot;${BUILD_DIR}/apidocs/html/&quot;)<br/>
+	autotools-utils_src_install<br/>
+	if use examples; then<br/>
+		dobin &quot;${BUILD_DIR}&quot;/foo_example{1,2,3} \<br/>
+			|| die 'dobin examples failed'<br/>
+	fi<br/>
+}<div class="spacer">
+</div>
+<br/>
+</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>autotools-utils_src_prepare</b></dt>
+<dd>
+The src_prepare function.<div style="height: 1.00em;">
+&#160;</div>
+Supporting PATCHES array and user patches. See base.eclass(5) for reference.</dd>
+</dl>
+<dl>
+<dt>
+<b>autotools-utils_src_configure</b></dt>
+<dd>
+The src_configure function. For out of source build it creates build directory and runs econf there. Configuration parameters defined in myeconfargs are passed here to econf. Additionally following USE flags are known:<div style="height: 1.00em;">
+&#160;</div>
+IUSE=&quot;static-libs&quot; passes --enable-shared and either --disable-static/--enable-static to econf respectively.</dd>
+</dl>
+<dl>
+<dt>
+<b>myeconfargs</b></dt>
+<dd>
+Optional econf arguments as Bash array. Should be defined before calling src_configure.<br/>
+src_configure() {<br/>
+	local myeconfargs=(<br/>
+		--disable-readline<br/>
+		--with-confdir=&quot;/etc/nasty foo confdir/&quot;<br/>
+		$(use_enable debug cnddebug)<br/>
+		$(use_enable threads multithreading)<br/>
+	)<br/>
+	autotools-utils_src_configure<br/>
+}<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>autotools-utils_src_compile</b></dt>
+<dd>
+The autotools src_compile function, invokes emake in specified BUILD_DIR.</dd>
+</dl>
+<dl>
+<dt>
+<b>autotools-utils_src_install</b></dt>
+<dd>
+The autotools src_install function. Runs emake install, unconditionally removes unnecessary static libs (based on shouldnotlink libtool property) and removes unnecessary libtool files when static-libs USE flag is defined and unset.<div style="height: 1.00em;">
+&#160;</div>
+DOCS and HTML_DOCS arrays are supported. See base.eclass(5) for reference.</dd>
+</dl>
+<dl>
+<dt>
+<b>autotools-utils_src_test</b></dt>
+<dd>
+The autotools src_test function. Runs emake check in build directory.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ECLASS VARIABLES</h1><dl>
+<dt>
+<b>AUTOTOOLS_AUTORECONF</b></dt>
+<dd>
+Set to a non-empty value before calling inherit to enable running autoreconf in src_prepare() and adding autotools dependencies.<div style="height: 1.00em;">
+&#160;</div>
+This is usually necessary when using live sources or applying patches modifying configure.ac or Makefile.am files. Note that in the latter case setting this variable is obligatory even though the eclass will work without it (to add the necessary dependencies).<div style="height: 1.00em;">
+&#160;</div>
+The eclass will try to determine the correct autotools to run including a few external tools: gettext, glib-gettext, intltool, gtk-doc, gnome-doc-prepare. If your tool is not supported, please open a bug and we'll add support for it.<div style="height: 1.00em;">
+&#160;</div>
+Note that dependencies are added for autoconf, automake and libtool only. If your package needs one of the external tools listed above, you need to add appropriate packages to DEPEND yourself.</dd>
+</dl>
+<dl>
+<dt>
+<b>BUILD_DIR</b></dt>
+<dd>
+Build directory, location where all autotools generated files should be placed. For out of source builds it defaults to ${WORKDIR}/${P}_build.<div style="height: 1.00em;">
+&#160;</div>
+This variable has been called AUTOTOOLS_BUILD_DIR formerly. It is set under that name for compatibility.</dd>
+</dl>
+<dl>
+<dt>
+<b>AUTOTOOLS_IN_SOURCE_BUILD</b></dt>
+<dd>
+Set to enable in-source build.</dd>
+</dl>
+<dl>
+<dt>
+<b>ECONF_SOURCE</b></dt>
+<dd>
+Specify location of autotools' configure script. By default it uses ${S}.</dd>
+</dl>
+<dl>
+<dt>
+<b>DOCS</b></dt>
+<dd>
+Array containing documents passed to dodoc command.<div style="height: 1.00em;">
+&#160;</div>
+In EAPIs 4+, can list directories as well.<div style="height: 1.00em;">
+&#160;</div>
+Example:<br/>
+DOCS=( NEWS README )<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>HTML_DOCS</b></dt>
+<dd>
+Array containing documents passed to dohtml command.<div style="height: 1.00em;">
+&#160;</div>
+Example:<br/>
+HTML_DOCS=( doc/html/ )<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>PATCHES</b></dt>
+<dd>
+PATCHES array variable containing all various patches to be applied.<div style="height: 1.00em;">
+&#160;</div>
+Example:<br/>
+PATCHES=( &quot;${FILESDIR}&quot;/${P}-mypatch.patch )<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>AUTOTOOLS_PRUNE_LIBTOOL_FILES</b></dt>
+<dd>
+Sets the mode of pruning libtool files. The values correspond to prune_libtool_files parameters, with leading dashes stripped.<div style="height: 1.00em;">
+&#160;</div>
+Defaults to pruning the libtool files when static libraries are not installed or can be linked properly without them. Libtool files for modules (plugins) will be kept in case plugin loader needs them.<div style="height: 1.00em;">
+&#160;</div>
+If set to 'modules', the .la files for modules will be removed as well. This is often the preferred option.<div style="height: 1.00em;">
+&#160;</div>
+If set to 'all', all .la files will be removed unconditionally. This option is discouraged and shall be used only if 'modules' does not remove the files.<div style="height: 1.00em;">
+&#160;</div>
+If set to 'none', no .la files will be pruned ever. Use in corner cases only.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+Maciej Mrozowski &lt;reavertm@gentoo.org&gt;<br/>
+Micha&#322; G&#243;rny &lt;mgorny@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/autotools-utils.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/autotools-utils.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

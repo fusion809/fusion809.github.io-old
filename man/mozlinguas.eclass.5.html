@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+MOZLINGUAS.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+MOZLINGUAS.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+MOZLINGUAS.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> mozlinguas.eclass - Handle language packs for mozilla products</div>
+<div class="section">
+<h1>DESCRIPTION</h1> Sets IUSE according to MOZ_LANGS (language packs available). Also exports src_unpack, src_compile and src_install for use in ebuilds, and provides supporting functions for langpack generation and installation.</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>mozlinguas_src_unpack</b></dt>
+<dd>
+Unpack xpi language packs according to the user's LINGUAS settings</dd>
+</dl>
+<dl>
+<dt>
+<b>mozlinguas_mozconfig</b></dt>
+<dd>
+if applicable, add the necessary flag to .mozconfig to support the generation of locales.  Note that this function requires mozconfig_annontate to already be declared via an inherit of mozconfig or mozcoreconf.</dd>
+</dl>
+<dl>
+<dt>
+<b>mozlinguas_src_compile</b></dt>
+<dd>
+if applicable, build the selected locales.</dd>
+</dl>
+<dl>
+<dt>
+<b>mozlinguas_xpistage_langpacks</b></dt>
+<dd>
+Add extra langpacks to the xpi-stage dir for prebuilt plugins<div style="height: 1.00em;">
+&#160;</div>
+First argument is the path to the extension Second argument is the prefix of the source (same as first if unspecified) Remaining arguments are the modules in the extension that are localized<br/>
+ (basename of first if unspecified)<div style="height: 1.00em;">
+&#160;</div>
+Example - installing extra langpacks for lightning: src_install() { 	... # general installation steps 	mozlinguas_xpistage_langpacks 	&quot;${BUILD_OBJ_DIR}&quot;/dist/xpi-stage/lightning 	&quot;${WORKDIR}&quot;/lightning 	lightning calendar ... # proceed with installation from the xpi-stage dir }</dd>
+</dl>
+<dl>
+<dt>
+<b>mozlinguas_src_install</b></dt>
+<dd>
+Install xpi language packs according to the user's LINGUAS settings NOTE - uses ${BUILD_OBJ_DIR} or PWD if unset, for source-generated langpacks</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ECLASS VARIABLES</h1><dl>
+<dt>
+<b>MOZ_LANGS</b> ?= <i>()</i></dt>
+<dd>
+Array containing the list of language pack xpis available for this release. The list can be updated with scripts/get_langs.sh from the mozilla overlay.</dd>
+</dl>
+<dl>
+<dt>
+<b>MOZ_PV</b> ?= <i>&quot;${PV}&quot;</i></dt>
+<dd>
+Ebuild package version converted to equivalent upstream version. Defaults to ${PV}, and should be overridden for alphas, betas, and RCs</dd>
+</dl>
+<dl>
+<dt>
+<b>MOZ_PN</b> ?= <i>&quot;${PN}&quot;</i></dt>
+<dd>
+Ebuild package name converted to equivalent upstream name. Defaults to ${PN}, and should be overridden for binary ebuilds.</dd>
+</dl>
+<dl>
+<dt>
+<b>MOZ_P</b> ?= <i>&quot;${MOZ_PN}-${MOZ_PV}&quot;</i></dt>
+<dd>
+Ebuild package name + version converted to upstream equivalent. Defaults to ${MOZ_PN}-${MOZ_PV}</dd>
+</dl>
+<dl>
+<dt>
+<b>MOZ_FTP_URI</b> ?= <i>&quot;&quot;</i></dt>
+<dd>
+The ftp URI prefix for the release tarballs and language packs.</dd>
+</dl>
+<dl>
+<dt>
+<b>MOZ_HTTP_URI</b> ?= <i>&quot;&quot;</i></dt>
+<dd>
+The http URI prefix for the release tarballs and language packs.</dd>
+</dl>
+<dl>
+<dt>
+<b>MOZ_LANGPACK_PREFIX</b> ?= <i>&quot;${MOZ_PV}/linux-i686/xpi/&quot;</i></dt>
+<dd>
+The relative path till the lang code in the langpack file URI. Defaults to ${MOZ_PV}/linux-i686/xpi/</dd>
+</dl>
+<dl>
+<dt>
+<b>MOZ_LANGPACK_SUFFIX</b> ?= <i>&quot;.xpi&quot;</i></dt>
+<dd>
+The suffix after the lang code in the langpack file URI. Defaults to '.xpi'</dd>
+</dl>
+<dl>
+<dt>
+<b>MOZ_LANGPACK_UNOFFICIAL</b> ?= <i>&quot;&quot;</i></dt>
+<dd>
+The status of the langpack, used to differentiate within Manifests and on Gentoo mirrors as to when the langpacks are generated officially by Mozilla or if they were generated unofficially by others (ie the Gentoo mozilla team).  When this var is set, the distfile will have a .unofficial.xpi suffix.</dd>
+</dl>
+<dl>
+<dt>
+<b>MOZ_GENERATE_LANGPACKS</b> ?= <i>&quot;&quot;</i></dt>
+<dd>
+This flag specifies whether or not the langpacks should be generated directly during the build process, rather than being downloaded and installed from upstream pre-built extensions.  Primarily it supports pre-release builds. Defaults to empty.</dd>
+</dl>
+<dl>
+<dt>
+<b>MOZ_L10N_SOURCEDIR</b> ?= <i>&quot;${WORKDIR}/l10n-sources&quot;</i></dt>
+<dd>
+The path that l10n sources can be found at, once unpacked. Defaults to ${WORKDIR}/l10n-sources</dd>
+</dl>
+<dl>
+<dt>
+<b>MOZ_L10N_URI_PREFIX</b> ?= <i>&quot;&quot;</i></dt>
+<dd>
+The full URI prefix of the distfile for each l10n locale.  The AB_CD and MOZ_L10N_URI_SUFFIX will be appended to this to complete the SRC_URI when MOZ_GENERATE_LANGPACKS is set.  If empty, nothing will be added to SRC_URI. Defaults to empty.</dd>
+</dl>
+<dl>
+<dt>
+<b>MOZ_L10N_URI_SUFFIX</b> ?= <i>&quot;.tar.xz&quot;</i></dt>
+<dd>
+The suffix of l10n source distfiles. Defaults to '.tar.xz'</dd>
+</dl>
+</div>
+<div class="section">
+<h1>AUTHORS</h1><br/>
+Nirbheek Chauhan &lt;nirbheek@gentoo.org&gt;<br/>
+Ian Stakenvicius &lt;axs@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+mozilla@gentoo.org<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/mozlinguas.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/mozlinguas.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

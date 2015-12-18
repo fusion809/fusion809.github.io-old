@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+ELISP-COMMON.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+ELISP-COMMON.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+ELISP-COMMON.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> elisp-common.eclass - Emacs-related installation utilities</div>
+<div class="section">
+<h1>DESCRIPTION</h1> Usually you want to use this eclass for (optional) GNU Emacs support of your package.  This is NOT for XEmacs!<div style="height: 1.00em;">
+&#160;</div>
+Many of the steps here are sometimes done by the build system of your package (especially compilation), so this is mainly for standalone elisp files you gathered from somewhere else.<div style="height: 1.00em;">
+&#160;</div>
+When relying on the emacs USE flag, you need to add<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+	emacs? ( virtual/emacs )<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+to your DEPEND/RDEPEND line and use the functions provided here to bring the files to the correct locations.<div style="height: 1.00em;">
+&#160;</div>
+If your package requires a minimum Emacs version, e.g. Emacs 24, then the dependency should be on &gt;=virtual/emacs-24 instead.  Because the user can select the Emacs executable with eselect, you should also make sure that the active Emacs version is sufficient.  This can be tested with function elisp-need-emacs(), which would typically be called from pkg_setup(), as in the following example:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+	elisp-need-emacs 24 || die &quot;Emacs version too low&quot;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+Please note that such tests should be limited to packages that are known to fail with lower Emacs versions; the standard case is to depend on virtual/emacs without version.<div style="height: 1.00em;">
+&#160;</div>
+<div class="subsection">
+<h2>src_compile() usage:</h2> An elisp file is compiled by the elisp-compile() function defined here and simply takes the source files as arguments.  The case of interdependent elisp files is also supported, since the current directory is added to the load-path which makes sure that all files are loadable.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+	elisp-compile *.el<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+Function elisp-make-autoload-file() can be used to generate a file with autoload definitions for the lisp functions.  It takes the output file name (default: &quot;${PN}-autoloads.el&quot;) and a list of directories (default: working directory) as its arguments.  Use of this function requires that the elisp source files contain magic &quot;;;;###autoload&quot; comments.  See the Emacs Lisp Reference Manual (node &quot;Autoload&quot;) for a detailed explanation.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="subsection">
+<h2>src_install() usage:</h2> The resulting compiled files (.elc) should be put in a subdirectory of /usr/share/emacs/site-lisp/ which is named after the first argument of elisp-install().  The following parameters are the files to be put in that directory.  Usually the subdirectory should be ${PN}, you can choose something else, but remember to tell elisp-site-file-install() (see below) the change, as it defaults to ${PN}.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+	elisp-install ${PN} *.el *.elc<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+To let the Emacs support be activated by Emacs on startup, you need to provide a site file (shipped in ${FILESDIR}) which contains the startup code (have a look in the documentation of your software). Normally this would look like this:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+	(add-to-list 'load-path &quot;@SITELISP@&quot;)<br/>
+	(add-to-list 'auto-mode-alist '(&quot;\.csv\'&quot; . csv-mode))<br/>
+	(autoload 'csv-mode &quot;csv-mode&quot; &quot;Major mode for csv files.&quot; t)<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+If your Emacs support files are installed in a subdirectory of /usr/share/emacs/site-lisp/ (which is strongly recommended), you need to extend Emacs' load-path as shown in the first non-comment line. The elisp-site-file-install() function of this eclass will replace &quot;@SITELISP@&quot; and &quot;@SITEETC@&quot; by the actual paths.<div style="height: 1.00em;">
+&#160;</div>
+The next line tells Emacs to load the mode opening a file ending with &quot;.csv&quot; and load functions depending on the context and needed features.  Be careful though.  Commands as &quot;load-library&quot; or &quot;require&quot; bloat the editor as they are loaded on every startup.  When having many Emacs support files, users may be annoyed by the start-up time. Also avoid keybindings as they might interfere with the user's settings.  Give a hint in pkg_postinst(), which should be enough. The guiding principle is that emerging your package should not by itself cause a change of standard Emacs behaviour.<div style="height: 1.00em;">
+&#160;</div>
+The naming scheme for this site-init file matches the shell pattern &quot;[1-8][0-9]*-gentoo*.el&quot;, where the two digits at the beginning define the loading order (numbers below 10 or above 89 are reserved for internal use).  So if your initialisation depends on another Emacs package, your site file's number must be higher!  If there are no such interdependencies then the number should be 50.  Otherwise, numbers divisible by 10 are preferred.<div style="height: 1.00em;">
+&#160;</div>
+Best practice is to define a SITEFILE variable in the global scope of your ebuild (e.g., right after S or RDEPEND):<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+	SITEFILE=&quot;50${PN}-gentoo.el&quot;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+Which is then installed by<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+	elisp-site-file-install &quot;${FILESDIR}/${SITEFILE}&quot;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+in src_install().  Any characters after the &quot;-gentoo&quot; part and before the extension will be stripped from the destination file's name. For example, a file &quot;50${PN}-gentoo-${PV}.el&quot; will be installed as &quot;50${PN}-gentoo.el&quot;.  If your subdirectory is not named ${PN}, give the differing name as second argument.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="subsection">
+<h2>pkg_postinst() / pkg_postrm() usage:</h2> After that you need to recreate the start-up file of Emacs after emerging and unmerging by using<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+	pkg_postinst() {<br/>
+		elisp-site-regen<br/>
+	}<div class="spacer">
+</div>
+<br/>
+	pkg_postrm() {<br/>
+		elisp-site-regen<br/>
+	}<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+When having optional Emacs support, you should prepend &quot;use emacs &amp;&amp;&quot; to above calls of elisp-site-regen(). Don't use &quot;has_version virtual/emacs&quot;!  When unmerging the state of the emacs USE flag is taken from the package database and not from the environment, so it is no problem when you unset USE=emacs between merge and unmerge of a package.</div>
+</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>elisp-emacs-version</b></dt>
+<dd>
+Output version of currently active Emacs.<div style="height: 1.00em;">
+&#160;</div>
+Return value: exit status of Emacs</dd>
+</dl>
+<dl>
+<dt>
+<b>elisp-need-emacs</b> &lt;version&gt;</dt>
+<dd>
+Test if the eselected Emacs version is at least the major version of GNU Emacs specified as argument.<div style="height: 1.00em;">
+&#160;</div>
+Return value: 0 if true, 1 if false, 2 if trouble</dd>
+</dl>
+<dl>
+<dt>
+<b>elisp-compile</b> &lt;list of elisp files&gt;</dt>
+<dd>
+Byte-compile Emacs Lisp files.<div style="height: 1.00em;">
+&#160;</div>
+This function uses GNU Emacs to byte-compile all &quot;.el&quot; specified by its arguments.  The resulting byte-code (&quot;.elc&quot;) files are placed in the same directory as their corresponding source file.<div style="height: 1.00em;">
+&#160;</div>
+The current directory is added to the load-path.  This will ensure that interdependent Emacs Lisp files are visible between themselves, in case they require or load one another.</dd>
+</dl>
+<dl>
+<dt>
+<b>elisp-make-autoload-file</b> [output file] [list of directories]</dt>
+<dd>
+Generate a file with autoload definitions for the lisp functions.</dd>
+</dl>
+<dl>
+<dt>
+<b>elisp-install</b> &lt;subdirectory&gt; &lt;list of files&gt;</dt>
+<dd>
+Install files in SITELISP directory.</dd>
+</dl>
+<dl>
+<dt>
+<b>elisp-site-file-install</b> &lt;site-init file&gt; [subdirectory]</dt>
+<dd>
+Install Emacs site-init file in SITELISP directory.  Automatically inserts a standard comment header with the name of the package (unless it is already present).  Tokens @SITELISP@ and @SITEETC@ are replaced by the path to the package's subdirectory in SITELISP and SITEETC, respectively.</dd>
+</dl>
+<dl>
+<dt>
+<b>elisp-site-regen</b></dt>
+<dd>
+Regenerate the site-gentoo.el file, based on packages' site initialisation files in the /usr/share/emacs/site-lisp/site-gentoo.d/ directory.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ECLASS VARIABLES</h1><dl>
+<dt>
+<b>SITELISP</b> = <i>/usr/share/emacs/site-lisp</i></dt>
+<dd>
+Directory where packages install Emacs Lisp files.</dd>
+</dl>
+<dl>
+<dt>
+<b>SITEETC</b> = <i>/usr/share/emacs/etc</i></dt>
+<dd>
+Directory where packages install miscellaneous (not Lisp) files.</dd>
+</dl>
+<dl>
+<dt>
+<b>EMACS</b> = <i>${EPREFIX}/usr/bin/emacs</i></dt>
+<dd>
+Path of Emacs executable.</dd>
+</dl>
+<dl>
+<dt>
+<b>EMACSFLAGS</b> = <i>&quot;-batch -q --no-site-file&quot;</i></dt>
+<dd>
+Flags for executing Emacs in batch mode. These work for Emacs versions 18-24, so don't change them.</dd>
+</dl>
+<dl>
+<dt>
+<b>BYTECOMPFLAGS</b> = <i>&quot;-L .&quot;</i></dt>
+<dd>
+Emacs flags used for byte-compilation in elisp-compile().</dd>
+</dl>
+</div>
+<div class="section">
+<h1>AUTHORS</h1><br/>
+Matthew Kennedy &lt;mkennedy@gentoo.org&gt;<br/>
+Jeremy Maitin-Shepard &lt;jbms@attbi.com&gt;<br/>
+Mamoru Komachi &lt;usata@gentoo.org&gt;<br/>
+Christian Faulhammer &lt;fauli@gentoo.org&gt;<br/>
+Ulrich M&#252;ller &lt;ulm@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+Gentoo GNU Emacs project &lt;emacs@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/elisp-common.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/elisp-common.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

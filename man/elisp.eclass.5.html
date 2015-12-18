@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+ELISP.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+ELISP.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+ELISP.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> elisp.eclass - Eclass for Emacs Lisp packages</div>
+<div class="section">
+<h1>DESCRIPTION</h1> This eclass is designed to install elisp files of Emacs related packages into the site-lisp directory.  The majority of elisp packages will only need to define the standard ebuild variables (like SRC_URI) and optionally SITEFILE for successful installation.<div style="height: 1.00em;">
+&#160;</div>
+Emacs support for other than pure elisp packages is handled by elisp-common.eclass where you won't have a dependency on Emacs itself. All elisp-* functions are documented there.<div style="height: 1.00em;">
+&#160;</div>
+If the package's source is a single (in whatever way) compressed elisp file with the file name ${P}.el, then this eclass will move ${P}.el to ${PN}.el in src_unpack().</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>elisp_pkg_setup</b></dt>
+<dd>
+Test if the eselected Emacs version is sufficient to fulfil the major version requirement of the NEED_EMACS variable.</dd>
+</dl>
+<dl>
+<dt>
+<b>elisp_src_unpack</b></dt>
+<dd>
+Unpack the sources; also handle the case of a single *.el file in WORKDIR for packages distributed that way.  For EAPIs without src_prepare, call elisp_src_prepare.</dd>
+</dl>
+<dl>
+<dt>
+<b>elisp_src_prepare</b></dt>
+<dd>
+Apply any patches listed in ELISP_PATCHES.  Patch files are searched for in the current working dir, WORKDIR, and FILESDIR.</dd>
+</dl>
+<dl>
+<dt>
+<b>elisp_src_configure</b></dt>
+<dd>
+Do nothing, because Emacs packages seldomly bring a full build system.</dd>
+</dl>
+<dl>
+<dt>
+<b>elisp_src_compile</b></dt>
+<dd>
+Call elisp-compile to byte-compile all Emacs Lisp (*.el) files. If ELISP_TEXINFO lists any Texinfo sources, call makeinfo to generate GNU Info files from them.</dd>
+</dl>
+<dl>
+<dt>
+<b>elisp_src_install</b></dt>
+<dd>
+Call elisp-install to install all Emacs Lisp (*.el and *.elc) files. If the SITEFILE variable specifies a site-init file, install it with elisp-site-file-install.  Also install any GNU Info files listed in ELISP_TEXINFO and documentation listed in the DOCS variable.</dd>
+</dl>
+<dl>
+<dt>
+<b>elisp_pkg_postinst</b></dt>
+<dd>
+Call elisp-site-regen, in order to collect the site initialisation for all installed Emacs Lisp packages in the site-gentoo.el file.</dd>
+</dl>
+<dl>
+<dt>
+<b>elisp_pkg_postrm</b></dt>
+<dd>
+Call elisp-site-regen, in order to collect the site initialisation for all installed Emacs Lisp packages in the site-gentoo.el file.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ECLASS VARIABLES</h1><dl>
+<dt>
+<b>NEED_EMACS</b></dt>
+<dd>
+If you need anything different from Emacs 23, use the NEED_EMACS variable before inheriting elisp.eclass.  Set it to the major version your package uses and the dependency will be adjusted.</dd>
+</dl>
+<dl>
+<dt>
+<b>ELISP_PATCHES</b></dt>
+<dd>
+Space separated list of patches to apply after unpacking the sources. Patch files are searched for in the current working dir, WORKDIR, and FILESDIR.</dd>
+</dl>
+<dl>
+<dt>
+<b>ELISP_REMOVE</b></dt>
+<dd>
+Space separated list of files to remove after unpacking the sources.</dd>
+</dl>
+<dl>
+<dt>
+<b>SITEFILE</b></dt>
+<dd>
+Name of package's site-init file.  The filename must match the shell pattern &quot;[1-8][0-9]*-gentoo.el&quot;; numbers below 10 and above 89 are reserved for internal use.  &quot;50${PN}-gentoo.el&quot; is a reasonable choice in most cases.</dd>
+</dl>
+<dl>
+<dt>
+<b>ELISP_TEXINFO</b></dt>
+<dd>
+Space separated list of Texinfo sources.  Respective GNU Info files will be generated in src_compile() and installed in src_install().</dd>
+</dl>
+<dl>
+<dt>
+<b>DOCS</b></dt>
+<dd>
+DOCS=&quot;blah.txt ChangeLog&quot; is automatically used to install the given files by dodoc in src_install().</dd>
+</dl>
+</div>
+<div class="section">
+<h1>AUTHORS</h1><br/>
+Matthew Kennedy &lt;mkennedy@gentoo.org&gt;<br/>
+Jeremy Maitin-Shepard &lt;jbms@attbi.com&gt;<br/>
+Christian Faulhammer &lt;fauli@gentoo.org&gt;<br/>
+Ulrich M&#252;ller &lt;ulm@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+Gentoo GNU Emacs project &lt;emacs@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/elisp.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/elisp.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+FCAPS.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+FCAPS.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+FCAPS.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> fcaps.eclass - function to set POSIX file-based capabilities</div>
+<div class="section">
+<h1>DESCRIPTION</h1> This eclass provides a function to set file-based capabilities on binaries. This is not the same as USE=caps which controls runtime capability changes, often via packages like libcap.<div style="height: 1.00em;">
+&#160;</div>
+Due to probable capability-loss on moving or copying, this happens in pkg_postinst-phase (at least for now).<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>EXAMPLE</h1> You can manually set the caps on ping and ping6 by doing:<br/>
+pkg_postinst() {<br/>
+	fcaps cap_net_raw bin/ping bin/ping6<br/>
+}<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+Or set it via the global ebuild var FILECAPS:<br/>
+FILECAPS=(<br/>
+	cap_net_raw bin/ping bin/ping6<br/>
+)<br/>
+</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>fcaps</b> [-o &lt;owner&gt;] [-g &lt;group&gt;] [-m &lt;mode&gt;] [-M &lt;caps mode&gt;] &lt;capabilities&gt; &lt;file[s]&gt;</dt>
+<dd>
+Sets the specified capabilities on the specified files.<div style="height: 1.00em;">
+&#160;</div>
+The caps option takes the form as expected by the cap_from_text(3) man page. If no action is specified, then &quot;=ep&quot; will be used as a default.<div style="height: 1.00em;">
+&#160;</div>
+If the file is a relative path (e.g. bin/foo rather than /bin/foo), then the appropriate path var ($D/$ROOT/etc...) will be prefixed based on the current ebuild phase.<div style="height: 1.00em;">
+&#160;</div>
+The caps mode (default 711) is used to set the permission on the file if capabilities were properly set on the file.<div style="height: 1.00em;">
+&#160;</div>
+If the system is unable to set capabilities, it will use the specified user, group, and mode (presumably to make the binary set*id).  The defaults there are root:0 and 4711.  Otherwise, the ownership and permissions will be unchanged.</dd>
+</dl>
+<dl>
+<dt>
+<b>fcaps_pkg_postinst</b></dt>
+<dd>
+Process the FILECAPS array.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ECLASS VARIABLES</h1><dl>
+<dt>
+<b>FILECAPS</b></dt>
+<dd>
+An array of fcap arguments to use to automatically execute fcaps.  See that function for more details.<div style="height: 1.00em;">
+&#160;</div>
+All args are consumed until the '--' marker is found.  So if you have:<br/>
+	FILECAPS=( moo cow -- fat cat -- chubby penguin )<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+This will end up executing:<br/>
+	fcaps moo cow<br/>
+	fcaps fat cat<br/>
+	fcaps chubby penguin<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+Note: If you override pkg_postinst, you must call fcaps_pkg_postinst yourself.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+Constanze Hausner &lt;constanze@gentoo.org&gt;<br/>
+base-system@gentoo.org<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/fcaps.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/fcaps.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

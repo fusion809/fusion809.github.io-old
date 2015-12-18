@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+WEBAPP.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+WEBAPP.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+WEBAPP.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> webapp.eclass - functions for installing applications to run under a web server</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The webapp eclass contains functions to handle web applications with webapp-config. Part of the implementation of GLEP #11</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>need_httpd</b></dt>
+<dd>
+Call this function AFTER your ebuilds DEPEND line if any of the available webservers are able to run this application.</dd>
+</dl>
+<dl>
+<dt>
+<b>need_httpd_cgi</b></dt>
+<dd>
+Call this function AFTER your ebuilds DEPEND line if any of the available CGI-capable webservers are able to run this application.</dd>
+</dl>
+<dl>
+<dt>
+<b>need_httpd_fastcgi</b></dt>
+<dd>
+Call this function AFTER your ebuilds DEPEND line if any of the available FastCGI-capabale webservers are able to run this application.</dd>
+</dl>
+<dl>
+<dt>
+<b>webapp_configfile</b> &lt;file&gt; [more files ...]</dt>
+<dd>
+Mark a file config-protected for a web-based application.</dd>
+</dl>
+<dl>
+<dt>
+<b>webapp_hook_script</b> &lt;file&gt;</dt>
+<dd>
+Install a script that will run after a virtual copy is created, and before a virtual copy has been removed.</dd>
+</dl>
+<dl>
+<dt>
+<b>webapp_postinst_txt</b> &lt;lang&gt; &lt;file&gt;</dt>
+<dd>
+Install a text file containing post-installation instructions.</dd>
+</dl>
+<dl>
+<dt>
+<b>webapp_postupgrade_txt</b> &lt;lang&gt; &lt;file&gt;</dt>
+<dd>
+Install a text file containing post-upgrade instructions.</dd>
+</dl>
+<dl>
+<dt>
+<b>webapp_serverowned</b> [-R] &lt;file&gt; [more files ...]</dt>
+<dd>
+Identify a file which must be owned by the webserver's user:group settings. The ownership of the file is NOT set until the application is installed using the webapp-config tool. If -R is given directories are handled recursively.</dd>
+</dl>
+<dl>
+<dt>
+<b>webapp_server_configfile</b> &lt;server&gt; &lt;file&gt; [new name]</dt>
+<dd>
+Install a configuration file for the webserver.  You need to specify a webapp-config supported &lt;server&gt;.  if no new name is given `basename $2' is used by default. Note: this function will automagically prepend $1 to the front of your config file's name.</dd>
+</dl>
+<dl>
+<dt>
+<b>webapp_sqlscript</b> &lt;db&gt; &lt;file&gt; [version]</dt>
+<dd>
+Install a SQL script that creates/upgrades a database schema for the web application. Currently supported database engines are mysql and postgres. If a version is given the script should upgrade the database schema from the given version to $PVR.</dd>
+</dl>
+<dl>
+<dt>
+<b>webapp_src_preinst</b></dt>
+<dd>
+You need to call this function in src_install() BEFORE anything else has run. For now we just create required webapp-config directories.</dd>
+</dl>
+<dl>
+<dt>
+<b>webapp_pkg_setup</b></dt>
+<dd>
+The default pkg_setup() for this eclass. This will gather required variables from webapp-config and check if there is an application installed to `${ROOT}/var/www/localhost/htdocs/${PN}/' if USE=vhosts is not set.<div style="height: 1.00em;">
+&#160;</div>
+You need to call this function BEFORE anything else has run in your custom pkg_setup().</dd>
+</dl>
+<dl>
+<dt>
+<b>webapp_src_install</b></dt>
+<dd>
+This is the default src_install(). For now, we just make sure that root owns everything, and that there are no setuid files.<div style="height: 1.00em;">
+&#160;</div>
+You need to call this function AFTER everything else has run in your custom src_install().</dd>
+</dl>
+<dl>
+<dt>
+<b>webapp_pkg_postinst</b></dt>
+<dd>
+The default pkg_postinst() for this eclass. This installs the web application to `${ROOT}/var/www/localhost/htdocs/${PN}/' if USE=vhosts is not set. Otherwise display a short notice how to install this application with webapp-config.<div style="height: 1.00em;">
+&#160;</div>
+You need to call this function AFTER everything else has run in your custom pkg_postinst().</dd>
+</dl>
+<dl>
+<dt>
+<b>webapp_pkg_prerm</b></dt>
+<dd>
+This is the default pkg_prerm() for this eclass. If USE=vhosts is not set remove all installed copies of this web application. Otherwise instruct the user to manually remove those copies. See bug #136959.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ECLASS VARIABLES</h1><dl>
+<dt>
+<b>WEBAPP_DEPEND</b> = <i>&quot;&gt;=app-admin/webapp-config-1.50.15&quot;</i></dt>
+<dd>
+An ebuild should use WEBAPP_DEPEND if a custom DEPEND needs to be built, most notably in combination with WEBAPP_OPTIONAL.</dd>
+</dl>
+<dl>
+<dt>
+<b>WEBAPP_NO_AUTO_INSTALL</b></dt>
+<dd>
+An ebuild sets this to `yes' if an automatic installation and/or upgrade is not possible. The ebuild should overwrite pkg_postinst() and explain the reason for this BEFORE calling webapp_pkg_postinst().</dd>
+</dl>
+<dl>
+<dt>
+<b>WEBAPP_OPTIONAL</b></dt>
+<dd>
+An ebuild sets this to `yes' to make webapp support optional, in which case you also need to take care of USE-flags and dependencies.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+web-apps@gentoo.org<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/webapp.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/webapp.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

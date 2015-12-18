@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+LINUX-MOD.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+LINUX-MOD.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+LINUX-MOD.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> linux-mod.eclass - It provides the functionality required to install external modules against a kernel source tree.</div>
+<div class="section">
+<h1>DESCRIPTION</h1> This eclass is used to interface with linux-info.eclass in such a way to provide the functionality and initial functions required to install external modules against a kernel source tree.</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>use_m</b></dt>
+<dd>
+It checks if the kernel version is greater than 2.6.5.<div style="height: 1.00em;">
+&#160;</div>
+Return value: true or false</dd>
+</dl>
+<dl>
+<dt>
+<b>convert_to_m</b> /path/to/the/file</dt>
+<dd>
+It converts a file (e.g. a makefile) to use M= instead of SUBDIRS=</dd>
+</dl>
+<dl>
+<dt>
+<b>set_kvobj</b></dt>
+<dd>
+It sets the KV_OBJ variable.</dd>
+</dl>
+<dl>
+<dt>
+<b>linux-mod_pkg_setup</b></dt>
+<dd>
+It checks the CONFIG_CHECK options (see linux-info.eclass(5)), verifies that the kernel is configured, verifies that the sources are prepared, verifies that the modules support is builtin in the kernel and sets the object extension KV_OBJ.</dd>
+</dl>
+<dl>
+<dt>
+<b>linux-mod_pkg_setup_binary</b></dt>
+<dd>
+Perform all kernel option checks non-fatally, as the .config and /proc/config.gz might not be present. Do not do anything that requires kernel sources.</dd>
+</dl>
+<dl>
+<dt>
+<b>linux-mod_src_compile</b></dt>
+<dd>
+It compiles all the modules specified in MODULE_NAMES. For each module the econf command is executed only if ECONF_PARAMS is defined, the name of the target is specified by BUILD_TARGETS while the options are in BUILD_PARAMS (all the modules share these variables). The compilation happens inside ${srcdir}.<div style="height: 1.00em;">
+&#160;</div>
+Look at the description of these variables for more details.</dd>
+</dl>
+<dl>
+<dt>
+<b>linux-mod_src_install</b></dt>
+<dd>
+It install the modules specified in MODULES_NAME. The modules should be inside the ${objdir} directory and they are installed inside /lib/modules/${KV_FULL}/${libdir}.<div style="height: 1.00em;">
+&#160;</div>
+The modprobe.d configuration file is automatically generated if the MODULESD_&lt;modulename&gt;_* variables are defined. The only way to stop this process is by setting MODULESD_&lt;modulename&gt;_ENABLED=no. At the end the documentation specified via MODULESD_&lt;modulename&gt;_DOCS is also installed.<div style="height: 1.00em;">
+&#160;</div>
+Look at the description of these variables for more details.</dd>
+</dl>
+<dl>
+<dt>
+<b>linux-mod_pkg_preinst</b></dt>
+<dd>
+It checks what to do after having merged the package.</dd>
+</dl>
+<dl>
+<dt>
+<b>linux-mod_pkg_postinst</b></dt>
+<dd>
+It executes /sbin/depmod and adds the package to the /var/lib/module-rebuild/moduledb database (if ${D}/lib/modules is created)&quot;</dd>
+</dl>
+<dl>
+<dt>
+<b>linux-mod_pkg_postrm</b></dt>
+<dd>
+It removes the package from the /var/lib/module-rebuild/moduledb database but it doens't call /sbin/depmod because the modules are still installed.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ECLASS VARIABLES</h1><dl>
+<dt>
+<b>MODULES_OPTIONAL_USE</b></dt>
+<dd>
+A string containing the USE flag to use for making this eclass optional The recommended non-empty value is 'modules'</dd>
+</dl>
+<dl>
+<dt>
+<b>KERNEL_DIR</b></dt>
+<dd>
+A string containing the directory of the target kernel sources. The default value is &quot;/usr/src/linux&quot;</dd>
+</dl>
+<dl>
+<dt>
+<b>ECONF_PARAMS</b></dt>
+<dd>
+It's a string containing the parameters to pass to econf. If this is not set, then econf isn't run.</dd>
+</dl>
+<dl>
+<dt>
+<b>BUILD_PARAMS</b></dt>
+<dd>
+It's a string with the parameters to pass to emake.</dd>
+</dl>
+<dl>
+<dt>
+<b>BUILD_TARGETS</b></dt>
+<dd>
+It's a string with the build targets to pass to make. The default value is &quot;clean module&quot;</dd>
+</dl>
+<dl>
+<dt>
+<b>MODULE_NAMES</b></dt>
+<dd>
+It's a string containing the modules to be built automatically using the default src_compile/src_install. It will only make ${BUILD_TARGETS} once in any directory.<div style="height: 1.00em;">
+&#160;</div>
+The structure of each MODULE_NAMES entry is as follows:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+  modulename(libdir:srcdir:objdir)<div style="height: 1.00em;">
+&#160;</div>
+where:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+  modulename = name of the module file excluding the .ko<br/>
+  libdir     = place in system modules directory where module is installed (by default it's misc)<br/>
+  srcdir     = place for ebuild to cd to before running make (by default it's ${S})<br/>
+  objdir     = place the .ko and objects are located after make runs (by default it's set to srcdir)<div style="height: 1.00em;">
+&#160;</div>
+To get an idea of how these variables are used, here's a few lines of code from around line 540 in this eclass:<div style="height: 1.00em;">
+&#160;</div>
+einfo &quot;Installing ${modulename} module&quot; cd ${objdir} || die &quot;${objdir} does not exist&quot; insinto /lib/modules/${KV_FULL}/${libdir} doins ${modulename}.${KV_OBJ} || die &quot;doins ${modulename}.${KV_OBJ} failed&quot;<div style="height: 1.00em;">
+&#160;</div>
+For example:<br/>
+  MODULE_NAMES=&quot;module_pci(pci:${S}/pci:${S}) module_usb(usb:${S}/usb:${S})&quot;<div style="height: 1.00em;">
+&#160;</div>
+what this would do is<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+  cd &quot;${S}&quot;/pci<br/>
+  make ${BUILD_PARAMS} ${BUILD_TARGETS}<br/>
+  cd &quot;${S}&quot;<br/>
+  insinto /lib/modules/${KV_FULL}/pci<br/>
+  doins module_pci.${KV_OBJ}<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+  cd &quot;${S}&quot;/usb<br/>
+  make ${BUILD_PARAMS} ${BUILD_TARGETS}<br/>
+  cd &quot;${S}&quot;<br/>
+  insinto /lib/modules/${KV_FULL}/usb<br/>
+  doins module_usb.${KV_OBJ}</dd>
+</dl>
+<dl>
+<dt>
+<b>MODULESD_&lt;modulename&gt;_ENABLED</b></dt>
+<dd>
+This is used to disable the modprobe.d file generation otherwise the file will be always generated (unless no MODULESD_&lt;modulename&gt;_* variable is provided). Set to &quot;no&quot; to disable the generation of the file and the installation of the documentation.</dd>
+</dl>
+<dl>
+<dt>
+<b>MODULESD_&lt;modulename&gt;_EXAMPLES</b></dt>
+<dd>
+This is a bash array containing a list of examples which should be used. If you want us to try and take a guess set this to &quot;guess&quot;.<div style="height: 1.00em;">
+&#160;</div>
+For each array_component it's added an options line in the modprobe.d file<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+  options array_component<div style="height: 1.00em;">
+&#160;</div>
+where array_component is &quot;&lt;modulename&gt; options&quot; (see modprobe.conf(5))</dd>
+</dl>
+<dl>
+<dt>
+<b>MODULESD_&lt;modulename&gt;_ALIASES</b></dt>
+<dd>
+This is a bash array containing a list of associated aliases.<div style="height: 1.00em;">
+&#160;</div>
+For each array_component it's added an alias line in the modprobe.d file<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+  alias array_component<div style="height: 1.00em;">
+&#160;</div>
+where array_component is &quot;wildcard &lt;modulename&gt;&quot; (see modprobe.conf(5))</dd>
+</dl>
+<dl>
+<dt>
+<b>MODULESD_&lt;modulename&gt;_ADDITIONS</b></dt>
+<dd>
+This is a bash array containing a list of additional things to add to the bottom of the file. This can be absolutely anything. Each entry is a new line.</dd>
+</dl>
+<dl>
+<dt>
+<b>MODULESD_&lt;modulename&gt;_DOCS</b></dt>
+<dd>
+This is a string list which contains the full path to any associated documents for &lt;modulename&gt;. These files are installed in the live tree.</dd>
+</dl>
+<dl>
+<dt>
+<b>KV_OBJ</b></dt>
+<dd>
+It's a read-only variable. It contains the extension of the kernel modules.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>AUTHORS</h1><br/>
+John Mylchreest &lt;johnm@gentoo.org&gt;,<br/>
+Stefan Schweizer &lt;genstef@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+kernel-misc@gentoo.org<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/linux-mod.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/linux-mod.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

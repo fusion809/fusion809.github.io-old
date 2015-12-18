@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SELINUX-POLICY-2.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SELINUX-POLICY-2.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+SELINUX-POLICY-2.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> selinux-policy-2.eclass - This eclass supports the deployment of the various SELinux modules in sec-policy</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The selinux-policy-2.eclass supports deployment of the various SELinux modules defined in the sec-policy category. It is responsible for extracting the specific bits necessary for single-module deployment (instead of full-blown policy rebuilds) and applying the necessary patches.<div style="height: 1.00em;">
+&#160;</div>
+Also, it supports for bundling patches to make the whole thing just a bit more manageable.</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>selinux-policy-2_src_unpack</b></dt>
+<dd>
+Unpack the policy sources as offered by upstream (refpolicy).</dd>
+</dl>
+<dl>
+<dt>
+<b>selinux-policy-2_src_prepare</b></dt>
+<dd>
+Patch the reference policy sources with our set of enhancements. Start with the base patchbundle referred to by the ebuilds through the BASEPOL variable, then apply the additional patches as offered by the ebuild.<div style="height: 1.00em;">
+&#160;</div>
+Next, extract only those files needed for this particular module (i.e. the .te and .fc files for the given module in the MODS variable).<div style="height: 1.00em;">
+&#160;</div>
+Finally, prepare the build environments for each of the supported SELinux types (such as targeted or strict), depending on the POLICY_TYPES variable content.</dd>
+</dl>
+<dl>
+<dt>
+<b>selinux-policy-2_src_compile</b></dt>
+<dd>
+Build the SELinux policy module (.pp file) for just the selected module, and this for each SELinux policy mentioned in POLICY_TYPES</dd>
+</dl>
+<dl>
+<dt>
+<b>selinux-policy-2_src_install</b></dt>
+<dd>
+Install the built .pp files in the correct subdirectory within /usr/share/selinux.</dd>
+</dl>
+<dl>
+<dt>
+<b>selinux-policy-2_pkg_postinst</b></dt>
+<dd>
+Install the built .pp files in the SELinux policy stores, effectively activating the policy on the system.</dd>
+</dl>
+<dl>
+<dt>
+<b>selinux-policy-2_pkg_postrm</b></dt>
+<dd>
+Uninstall the module(s) from the SELinux policy stores, effectively deactivating the policy on the system.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ECLASS VARIABLES</h1><dl>
+<dt>
+<b>MODS</b> ?= <i>&quot;_illegal&quot;</i></dt>
+<dd>
+This variable contains the (upstream) module name for the SELinux module. This name is only the module name, not the category!</dd>
+</dl>
+<dl>
+<dt>
+<b>BASEPOL</b> ?= <i>${PVR}</i></dt>
+<dd>
+This variable contains the version string of the selinux-base-policy package that this module build depends on. It is used to patch with the appropriate patch bundle(s) that are part of selinux-base-policy.</dd>
+</dl>
+<dl>
+<dt>
+<b>POLICY_PATCH</b> ?= <i>&quot;&quot;</i></dt>
+<dd>
+This variable contains the additional patch(es) that need to be applied on top of the patchset already contained within the BASEPOL variable. The variable can be both a simple string (space-separated) or a bash array.</dd>
+</dl>
+<dl>
+<dt>
+<b>POLICY_FILES</b> ?= <i>&quot;&quot;</i></dt>
+<dd>
+When defined, this contains the files (located in the ebuilds' files/ directory) which should be copied as policy module files into the store. Generally, users would want to include at least a .te and .fc file, but .if files are supported as well. The variable can be both a simple string (space-separated) or a bash array.</dd>
+</dl>
+<dl>
+<dt>
+<b>POLICY_TYPES</b> ?= <i>&quot;targeted strict mcs mls&quot;</i></dt>
+<dd>
+This variable informs the eclass for which SELinux policies the module should be built. Currently, Gentoo supports targeted, strict, mcs and mls. This variable is the same POLICY_TYPES variable that we tell SELinux users to set in make.conf. Therefore, it is not the module that should override it, but the user.</dd>
+</dl>
+<dl>
+<dt>
+<b>SELINUX_GIT_REPO</b> ?= <i>&quot;git://anongit.gentoo.org/proj/hardened-refpolicy.git https://anongit.gentoo.org/git/proj/hardened-refpolicy.git&quot;;</i></dt>
+<dd>
+When defined, this variable overrides the default repository URL as used by this eclass. It allows end users to point to a different policy repository using a single variable, rather than having to set the packagename_LIVE_REPO variable for each and every SELinux policy module package they want to install. The default value is Gentoo's hardened-refpolicy repository.</dd>
+</dl>
+<dl>
+<dt>
+<b>SELINUX_GIT_BRANCH</b> ?= <i>&quot;master&quot;;</i></dt>
+<dd>
+When defined, this variable sets the Git branch to use of the repository. This allows for users and developers to use a different branch for the entire set of SELinux policy packages, rather than having to override them one by one with the packagename_LIVE_BRANCH variable. The default value is the 'master' branch.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+selinux@gentoo.org<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/selinux-policy-2.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/selinux-policy-2.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

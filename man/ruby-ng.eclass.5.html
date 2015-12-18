@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+RUBY-NG.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+RUBY-NG.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+RUBY-NG.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> ruby-ng.eclass - An eclass for installing Ruby packages with proper support for multiple Ruby slots.</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The Ruby eclass is designed to allow an easier installation of Ruby packages and their incorporation into the Gentoo Linux system.<div style="height: 1.00em;">
+&#160;</div>
+Currently available targets are:<br/>
+ * ruby18 - Ruby (MRI) 1.8.x<br/>
+ * ruby19 - Ruby (MRI) 1.9.x<br/>
+ * ruby20 - Ruby (MRI) 2.0.x<br/>
+ * ruby21 - Ruby (MRI) 2.1.x<br/>
+ * ruby22 - Ruby (MRI) 2.2.x<br/>
+ * ree18  - Ruby Enterprise Edition 1.8.x<br/>
+ * jruby  - JRuby<br/>
+ * rbx    - Rubinius<div style="height: 1.00em;">
+&#160;</div>
+This eclass does not define the implementation of the configure, compile, test, or install phases. Instead, the default phases are used.  Specific implementations of these phases can be provided in the ebuild either to be run for each Ruby implementation, or for all Ruby implementations, as follows:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+ * each_ruby_configure<br/>
+ * all_ruby_configure</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>ruby_implementation_depend</b> target [comparator [version]]</dt>
+<dd>
+This function returns the formal package atom for a Ruby implementation.<div style="height: 1.00em;">
+&#160;</div>
+`target' has to be one of the valid values for USE_RUBY (see above)<div style="height: 1.00em;">
+&#160;</div>
+Set `comparator' and `version' to include a comparator (=, &gt;=, etc.) and a version string to the returned string<div style="height: 1.00em;">
+&#160;</div>
+Return value: Package atom of a Ruby implementation to be used in dependencies.</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby_samelib</b></dt>
+<dd>
+Convenience function to output the use dependency part of a dependency. Used as a building block for ruby_add_rdepend() and ruby_add_bdepend(), but may also be useful in an ebuild to specify more complex dependencies.<div style="height: 1.00em;">
+&#160;</div>
+Return value: use flag string with current ruby implementations</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby_implementation_command</b></dt>
+<dd>
+Not all implementations have the same command basename as the target; namely Ruby Enterprise 1.8 uses ree18 and rubyee18 respectively. This function translate between the two<div style="height: 1.00em;">
+&#160;</div>
+Return value: the path to the given ruby implementation</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby_add_rdepend</b> dependencies</dt>
+<dd>
+Adds the specified dependencies, with use condition(s) to RDEPEND, taking the current set of ruby targets into account. This makes sure that all ruby dependencies of the package are installed for the same ruby targets. Use this function for all ruby dependencies instead of setting RDEPEND yourself. The list of atoms uses the same syntax as normal dependencies.<div style="height: 1.00em;">
+&#160;</div>
+Note: runtime dependencies are also added as build-time test dependencies.</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby_add_bdepend</b> dependencies</dt>
+<dd>
+Adds the specified dependencies, with use condition(s) to DEPEND, taking the current set of ruby targets into account. This makes sure that all ruby dependencies of the package are installed for the same ruby targets. Use this function for all ruby dependencies instead of setting DEPEND yourself. The list of atoms uses the same syntax as normal dependencies.</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby_get_use_implementations</b></dt>
+<dd>
+Gets an array of ruby use targets enabled by the user</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby_get_use_targets</b></dt>
+<dd>
+Gets an array of ruby use targets that the ebuild sets</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby_implementations_depend</b></dt>
+<dd>
+Produces the dependency string for the various implementations of ruby which the package is being built against. This should not be used when RUBY_OPTIONAL is unset but must be used if RUBY_OPTIONAL=yes. Do not confuse this function with ruby_implementation_depend().<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+Return value: Dependencies suitable for injection into DEPEND and RDEPEND.</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby-ng_pkg_setup</b></dt>
+<dd>
+Check whether at least one ruby target implementation is present.</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby-ng_src_unpack</b></dt>
+<dd>
+Unpack the source archive.</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby-ng_src_prepare</b></dt>
+<dd>
+Apply patches and prepare versions for each ruby target implementation. Also carry out common clean up tasks.</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby-ng_src_configure</b></dt>
+<dd>
+Configure the package.</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby-ng_src_compile</b></dt>
+<dd>
+Compile the package.</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby-ng_src_test</b></dt>
+<dd>
+Run tests for the package.</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby-ng_src_install</b></dt>
+<dd>
+Install the package for each ruby target implementation.</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby_rbconfig_value</b> rbconfig item</dt>
+<dd>
+Return value: Returns the value of the given rbconfig item of the Ruby interpreter in ${RUBY}.</dd>
+</dl>
+<dl>
+<dt>
+<b>doruby</b> file [file...]</dt>
+<dd>
+Installs the specified file(s) into the sitelibdir of the Ruby interpreter in ${RUBY}.</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby_get_libruby</b></dt>
+<dd>
+Return value: The location of libruby*.so belonging to the Ruby interpreter in ${RUBY}.</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby_get_hdrdir</b></dt>
+<dd>
+Return value: The location of the header files belonging to the Ruby interpreter in ${RUBY}.</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby_get_version</b></dt>
+<dd>
+Return value: The version of the Ruby interpreter in ${RUBY}, or what 'ruby' points to.</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby_get_implementation</b></dt>
+<dd>
+Return value: The implementation of the Ruby interpreter in ${RUBY}, or what 'ruby' points to.</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby-ng_rspec</b></dt>
+<dd>
+This is simply a wrapper around the rspec command (executed by $RUBY}) which also respects TEST_VERBOSE and NOCOLOR environment variables. Optionally takes arguments to pass on to the rspec invocation.  The environment variable RSPEC_VERSION can be used to control the specific rspec version that must be executed. It defaults to 2 for historical compatibility.</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby-ng_cucumber</b></dt>
+<dd>
+This is simply a wrapper around the cucumber command (executed by $RUBY}) which also respects TEST_VERBOSE and NOCOLOR environment variables.</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby-ng_testrb-2</b></dt>
+<dd>
+This is simply a replacement for the testrb command that load the test files and execute them, with test-unit 2.x. This actually requires either an old test-unit-2 version or 2.5.1-r1 or later, as they remove their script and we installed a broken wrapper for a while. This also respects TEST_VERBOSE and NOCOLOR environment variables.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ECLASS VARIABLES</h1><dl>
+<dt>
+<b>USE_RUBY</b> (REQUIRED)</dt>
+<dd>
+This variable contains a space separated list of targets (see above) a package is compatible to. It must be set before the `inherit' call. There is no default. All ebuilds are expected to set this variable.</dd>
+</dl>
+<dl>
+<dt>
+<b>RUBY_PATCHES</b></dt>
+<dd>
+A String or Array of filenames of patches to apply to all implementations.</dd>
+</dl>
+<dl>
+<dt>
+<b>RUBY_OPTIONAL</b></dt>
+<dd>
+Set the value to &quot;yes&quot; to make the dependency on a Ruby interpreter optional and then ruby_implementations_depend() to help populate DEPEND and RDEPEND.</dd>
+</dl>
+<dl>
+<dt>
+<b>RUBY_S</b></dt>
+<dd>
+If defined this variable determines the source directory name after unpacking. This defaults to the name of the package. Note that this variable supports a wildcard mechanism to help with github tarballs that contain the commit hash as part of the directory name.</dd>
+</dl>
+<dl>
+<dt>
+<b>RUBY_QA_ALLOWED_LIBS</b></dt>
+<dd>
+If defined this variable contains a whitelist of shared objects that are allowed to exist even if they don't link to libruby. This avoids the QA check that makes this mandatory. This is most likely not what you are looking for if you get the related &quot;Missing links&quot; QA warning, since the proper fix is almost always to make sure the shared object is linked against libruby. There are cases were this is not the case and the shared object is generic code to be used in some other way (e.g. selenium's firefox driver extension). When set this argument is passed to &quot;grep -E&quot; to remove reporting of these shared objects.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>AUTHORS</h1><br/>
+Author: Diego E. Petten&#242; &lt;flameeyes@gentoo.org&gt;<br/>
+Author: Alex Legler &lt;a3li@gentoo.org&gt;<br/>
+Author: Hans de Graaff &lt;graaff@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+Ruby herd &lt;ruby@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/ruby-ng.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/ruby-ng.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

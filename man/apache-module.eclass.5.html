@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+APACHE-MODULE.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+APACHE-MODULE.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+APACHE-MODULE.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> apache-module.eclass - Provides a common set of functions for apache modules</div>
+<div class="section">
+<h1>DESCRIPTION</h1> This eclass handles apache modules in a sane way.<div style="height: 1.00em;">
+&#160;</div>
+To make use of this eclass simply call one of the need/want_apache functions described in depend.apache.eclass. Make sure you use the need/want_apache call after you have defined DEPEND and RDEPEND. Also note that you can not rely on the automatic RDEPEND=DEPEND that portage does if you use this eclass.<div style="height: 1.00em;">
+&#160;</div>
+See Bug 107127 for more information.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="section">
+<h1>EXAMPLE</h1> Here is a simple example of an ebuild for mod_foo:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+APACHE2_MOD_CONF=&quot;42_mod_foo&quot;<br/>
+APACHE2_MOD_DEFINE=&quot;FOO&quot;<br/>
+need_apache2<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+A more complicated example for a module with non-standard locations:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+APXS2_S=&quot;${S}/apache22/src&quot;<br/>
+APACHE2_MOD_FILE=&quot;${APXS2_S}/${PN}.so&quot;<br/>
+APACHE2_MOD_CONF=&quot;42_${PN}&quot;<br/>
+APACHE2_MOD_DEFINE=&quot;FOO&quot;<br/>
+DOCFILES=&quot;docs/*.html&quot;<br/>
+need_apache2_2<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+A basic module configuration which just loads the module into apache:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+&lt;IfDefine FOO&gt;<br/>
+LoadModule foo_module modules/mod_foo.so<br/>
+&lt;/IfDefine&gt;<br/>
+</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>APXS2_S</b></dt>
+<dd>
+Path to temporary build directory. (Defaults to `${S}/src' if it exists, `${S}' otherwise)</dd>
+</dl>
+<dl>
+<dt>
+<b>APXS2_ARGS</b></dt>
+<dd>
+Arguments to pass to the apxs tool. (Defaults to `-c ${PN}.c')</dd>
+</dl>
+<dl>
+<dt>
+<b>APACHE2_EXECFILES</b></dt>
+<dd>
+List of files that will be installed into ${APACHE_MODULE_DIR} beside ${APACHE2_MOD_FILE}. In addition, this function also sets the executable permission on those files.</dd>
+</dl>
+<dl>
+<dt>
+<b>APACHE2_MOD_CONF</b></dt>
+<dd>
+Module configuration file installed by src_install (minus the .conf suffix and relative to ${FILESDIR}).</dd>
+</dl>
+<dl>
+<dt>
+<b>APACHE2_MOD_DEFINE</b></dt>
+<dd>
+Name of define (e.g. FOO) to use in conditional loading of the installed module/its config file, multiple defines should be space separated.</dd>
+</dl>
+<dl>
+<dt>
+<b>APACHE2_MOD_FILE</b></dt>
+<dd>
+Name of the module that src_install installs minus the .so suffix. (Defaults to `${APXS2_S}/.libs/${PN}.so')</dd>
+</dl>
+<dl>
+<dt>
+<b>APACHE2_VHOST_CONF</b></dt>
+<dd>
+Virtual host configuration file installed by src_install (minus the .conf suffix and relative to ${FILESDIR}).</dd>
+</dl>
+<dl>
+<dt>
+<b>DOCFILES</b></dt>
+<dd>
+If the exported src_install() is being used, and ${DOCFILES} is non-zero, some sed-fu is applied to split out html documentation (if any) from normal documentation, and dodoc'd or dohtml'd.</dd>
+</dl>
+<dl>
+<dt>
+<b>apache-module_src_compile</b></dt>
+<dd>
+The default action is to call ${APXS} with the value of ${APXS2_ARGS}. If a module requires a different build setup than this, use ${APXS} in your own src_compile routine.</dd>
+</dl>
+<dl>
+<dt>
+<b>apache-module_src_install</b></dt>
+<dd>
+This installs the files into apache's directories. The module is installed from a directory chosen as above (apache_cd_dir). In addition, this function can also set the executable permission on files listed in ${APACHE2_EXECFILES}.  The configuration file name is listed in ${APACHE2_MOD_CONF} without the .conf extensions, so if you configuration is 55_mod_foo.conf, APACHE2_MOD_CONF would be 55_mod_foo. ${DOCFILES} contains the list of files you want filed as documentation.</dd>
+</dl>
+<dl>
+<dt>
+<b>apache-module_pkg_postinst</b></dt>
+<dd>
+This prints out information about the installed module and how to enable it.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+apache-devs@gentoo.org<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/apache-module.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/apache-module.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

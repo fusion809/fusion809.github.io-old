@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+HASKELL-CABAL.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+HASKELL-CABAL.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+HASKELL-CABAL.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> haskell-cabal.eclass - for packages that make use of the Haskell Common Architecture for Building Applications and Libraries (cabal)</div>
+<div class="section">
+<h1>DESCRIPTION</h1> Basic instructions:<div style="height: 1.00em;">
+&#160;</div>
+Before inheriting the eclass, set CABAL_FEATURES to reflect the tools and features that the package makes use of.<div style="height: 1.00em;">
+&#160;</div>
+Currently supported features:<br/>
+  haddock    --  for documentation generation<br/>
+  hscolour   --  generation of colourised sources<br/>
+  hoogle     --  generation of documentation search index<br/>
+  alex       --  lexer/scanner generator<br/>
+  happy      --  parser generator<br/>
+  c2hs       --  C interface generator<br/>
+  cpphs      --  C preprocessor clone written in Haskell<br/>
+  profile    --  if package supports to build profiling-enabled libraries<br/>
+  bootstrap  --  only used for the cabal package itself<br/>
+  bin        --  the package installs binaries<br/>
+  lib        --  the package installs libraries<br/>
+  nocabaldep --  don't add dependency on cabal.<br/>
+                 only used for packages that _must_ not pull the dependency<br/>
+                 on cabal, but still use this eclass (e.g. haskell-updater).<br/>
+  ghcdeps    --  constraint dependency on package to ghc onces<br/>
+                 only used for packages that use libghc internally and _must_<br/>
+                 not pull upper versions<br/>
+  test-suite --  add support for cabal test-suites (introduced in Cabal-1.8)</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>cabal_flag</b></dt>
+<dd>
+ebuild.sh:use_enable() taken as base<div style="height: 1.00em;">
+&#160;</div>
+Usage examples:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    CABAL_CONFIGURE_FLAGS=$(cabal_flag gui)<br/>
+ leads to &quot;--flags=gui&quot; or &quot;--flags=-gui&quot; (useflag 'gui')<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+    CABAL_CONFIGURE_FLAGS=$(cabal_flag gtk gui)<br/>
+ also leads to &quot;--flags=gui&quot; or &quot; --flags=-gui&quot; (useflag 'gtk')<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>cabal_chdeps</b></dt>
+<dd>
+Allows easier patching of $CABAL_FILE (${S}/${PN}.cabal by default) depends<div style="height: 1.00em;">
+&#160;</div>
+Accepts argument list as pairs of substitutions: &lt;from-string&gt; &lt;to-string&gt;...<div style="height: 1.00em;">
+&#160;</div>
+Dies on error.<div style="height: 1.00em;">
+&#160;</div>
+Usage examples:<div style="height: 1.00em;">
+&#160;</div>
+src_prepare() {<br/>
+   cabal_chdeps        'base &gt;= 4.2 &amp;&amp; &lt; 4.6' 'base &gt;= 4.2 &amp;&amp; &lt; 4.7'        'containers ==0.4.*' 'containers &gt;= 0.4 &amp;&amp; &lt; 0.6' } or src_prepare() {<br/>
+   CABAL_FILE=${S}/${MY_PN}.cabal cabal_chdeps        'base &gt;= 4.2 &amp;&amp; &lt; 4.6' 'base &gt;= 4.2 &amp;&amp; &lt; 4.7'<br/>
+   CABAL_FILE=${S}/${MY_PN}-tools.cabal cabal_chdeps        'base == 3.*' 'base &gt;= 4.2 &amp;&amp; &lt; 4.7' }<div style="height: 1.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>cabal-constraint</b></dt>
+<dd>
+Allowes to set contraint to the libraries that are used by specified package</dd>
+</dl>
+<dl>
+<dt>
+<b>replace-hcflags</b> &lt;old&gt; &lt;new&gt;</dt>
+<dd>
+Replace the &lt;old&gt; flag with &lt;new&gt; in HCFLAGS. Accepts shell globs for &lt;old&gt;. The implementation is picked from flag-o-matic.eclass:replace-flags()</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ECLASS VARIABLES</h1><dl>
+<dt>
+<b>CABAL_EXTRA_CONFIGURE_FLAGS</b></dt>
+<dd>
+User-specified additional parameters passed to 'setup configure'. example: /etc/portage/make.conf:<br/>
+   CABAL_EXTRA_CONFIGURE_FLAGS=&quot;--enable-shared --enable-executable-dynamic&quot;</dd>
+</dl>
+<dl>
+<dt>
+<b>CABAL_EXTRA_BUILD_FLAGS</b></dt>
+<dd>
+User-specified additional parameters passed to 'setup build'. example: /etc/portage/make.conf: CABAL_EXTRA_BUILD_FLAGS=-v</dd>
+</dl>
+<dl>
+<dt>
+<b>GHC_BOOTSTRAP_FLAGS</b></dt>
+<dd>
+User-specified additional parameters for ghc when building _only_ 'setup' binary bootstrap. example: /etc/portage/make.conf: GHC_BOOTSTRAP_FLAGS=-dynamic to make linking 'setup' faster.</dd>
+</dl>
+<dl>
+<dt>
+<b>CABAL_DEBUG_LOOSENING</b></dt>
+<dd>
+Show debug output for 'cabal_chdeps' function if set. Needs working 'diff'.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>AUTHORS</h1><br/>
+Original author: Andres Loeh &lt;kosmikus@gentoo.org&gt;<br/>
+Original author: Duncan Coutts &lt;dcoutts@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+Haskell herd &lt;haskell@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/haskell-cabal.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/haskell-cabal.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

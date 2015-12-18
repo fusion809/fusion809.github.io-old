@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+VERSIONATOR.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+VERSIONATOR.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+VERSIONATOR.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> versionator.eclass - functions which simplify manipulation of ${PV} and similar version strings</div>
+<div class="section">
+<h1>DESCRIPTION</h1> This eclass provides functions which simplify manipulating $PV and similar variables. Most functions default to working with $PV, although other values can be used.</div>
+<div class="section">
+<h1>EXAMPLE</h1> Simple Example 1: $PV is 1.2.3b, we want 1_2.3b:<br/>
+    MY_PV=$(replace_version_separator 1 '_' )<div style="height: 1.00em;">
+&#160;</div>
+Simple Example 2: $PV is 1.4.5, we want 1:<br/>
+    MY_MAJORV=$(get_major_version )<div style="height: 1.00em;">
+&#160;</div>
+Rather than being a number, the index parameter can be a separator character such as '-', '.' or '_'. In this case, the first separator of this kind is selected.<div style="height: 1.00em;">
+&#160;</div>
+There's also:<br/>
+    version_is_at_least             want      have<br/>
+ which may be buggy, so use with caution.</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>get_all_version_components</b> [version]</dt>
+<dd>
+Split up a version string into its component parts. If no parameter is supplied, defaults to $PV.<br/>
+    0.8.3       -&gt;  0 . 8 . 3<br/>
+    7c          -&gt;  7 c<br/>
+    3.0_p2      -&gt;  3 . 0 _ p2<br/>
+    20040905    -&gt;  20040905<br/>
+    3.0c-r1     -&gt;  3 . 0 c - r1</dd>
+</dl>
+<dl>
+<dt>
+<b>get_version_components</b> [version]</dt>
+<dd>
+Get the important version components, excluding '.', '-' and '_'. Defaults to $PV if no parameter is supplied.<br/>
+    0.8.3       -&gt;  0 8 3<br/>
+    7c          -&gt;  7 c<br/>
+    3.0_p2      -&gt;  3 0 p2<br/>
+    20040905    -&gt;  20040905<br/>
+    3.0c-r1     -&gt;  3 0 c r1</dd>
+</dl>
+<dl>
+<dt>
+<b>get_major_version</b> [version]</dt>
+<dd>
+Get the major version of a value. Defaults to $PV if no parameter is supplied.<br/>
+    0.8.3       -&gt;  0<br/>
+    7c          -&gt;  7<br/>
+    3.0_p2      -&gt;  3<br/>
+    20040905    -&gt;  20040905<br/>
+    3.0c-r1     -&gt;  3</dd>
+</dl>
+<dl>
+<dt>
+<b>get_version_component_range</b> &lt;range&gt; [version]</dt>
+<dd>
+Get a particular component or range of components from the version. If no version parameter is supplied, defaults to $PV.<br/>
+   1      1.2.3       -&gt; 1<br/>
+   1-2    1.2.3       -&gt; 1.2<br/>
+   2-     1.2.3       -&gt; 2.3</dd>
+</dl>
+<dl>
+<dt>
+<b>get_after_major_version</b> [version]</dt>
+<dd>
+Get everything after the major version and its separator (if present) of a value. Defaults to $PV if no parameter is supplied.<br/>
+    0.8.3       -&gt;  8.3<br/>
+    7c          -&gt;  c<br/>
+    3.0_p2      -&gt;  0_p2<br/>
+    20040905    -&gt;  (empty string)<br/>
+    3.0c-r1     -&gt;  0c-r1</dd>
+</dl>
+<dl>
+<dt>
+<b>replace_version_separator</b> &lt;search&gt; &lt;replacement&gt; [subject]</dt>
+<dd>
+Replace the $1th separator with $2 in $3 (defaults to $PV if $3 is not supplied). If there are fewer than $1 separators, don't change anything.<br/>
+    1 '_' 1.2.3       -&gt; 1_2.3<br/>
+    2 '_' 1.2.3       -&gt; 1.2_3<br/>
+    1 '_' 1b-2.3      -&gt; 1b_2.3 Rather than being a number, $1 can be a separator character such as '-', '.' or '_'. In this case, the first separator of this kind is selected.</dd>
+</dl>
+<dl>
+<dt>
+<b>replace_all_version_separators</b> &lt;replacement&gt; [subject]</dt>
+<dd>
+Replace all version separators in $2 (defaults to $PV) with $1.<br/>
+    '_' 1b.2.3        -&gt; 1b_2_3</dd>
+</dl>
+<dl>
+<dt>
+<b>delete_version_separator</b> &lt;search&gt; [subject]</dt>
+<dd>
+Delete the $1th separator in $2 (defaults to $PV if $2 is not supplied). If there are fewer than $1 separators, don't change anything.<br/>
+    1 1.2.3       -&gt; 12.3<br/>
+    2 1.2.3       -&gt; 1.23<br/>
+    1 1b-2.3      -&gt; 1b2.3 Rather than being a number, $1 can be a separator character such as '-', '.' or '_'. In this case, the first separator of this kind is deleted.</dd>
+</dl>
+<dl>
+<dt>
+<b>delete_all_version_separators</b> [subject]</dt>
+<dd>
+Delete all version separators in $1 (defaults to $PV).<br/>
+    1b.2.3        -&gt; 1b23</dd>
+</dl>
+<dl>
+<dt>
+<b>get_version_component_count</b> [version]</dt>
+<dd>
+How many version components are there in $1 (defaults to $PV)?<br/>
+    1.0.1       -&gt;  3<br/>
+    3.0c-r1     -&gt;  4</dd>
+</dl>
+<dl>
+<dt>
+<b>get_last_version_component_index</b> [version]</dt>
+<dd>
+What is the index of the last version component in $1 (defaults to $PV)? Equivalent to get_version_component_count - 1.<br/>
+    1.0.1       -&gt;  2<br/>
+    3.0c-r1     -&gt;  3</dd>
+</dl>
+<dl>
+<dt>
+<b>version_is_at_least</b> &lt;want&gt; [have]</dt>
+<dd>
+Is $2 (defaults to $PVR) at least version $1? Intended for use in eclasses only. May not be reliable, be sure to do very careful testing before actually using this.</dd>
+</dl>
+<dl>
+<dt>
+<b>version_compare</b> &lt;A&gt; &lt;B&gt;</dt>
+<dd>
+Takes two parameters (A, B) which are versions. If A is an earlier version than B, returns 1. If A is identical to B, return 2. If A is later than B, return 3. You probably want version_is_at_least rather than this function. May not be very reliable. Test carefully before using this.</dd>
+</dl>
+<dl>
+<dt>
+<b>version_sort</b> &lt;version&gt; [more versions...]</dt>
+<dd>
+Returns its parameters sorted, highest version last. We're using a quadratic algorithm for simplicity, so don't call it with more than a few dozen items. Uses version_compare, so be careful.</dd>
+</dl>
+<dl>
+<dt>
+<b>version_format_string</b> &lt;format&gt; [version]</dt>
+<dd>
+Reformat complicated version strings.  The first argument is the string to reformat with while the rest of the args are passed on to the get_version_components function.  You should make sure to single quote the first argument since it'll have variables that get delayed expansions.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+Jonathan Callen &lt;jcallen@gentoo.org&gt;<br/>
+base-system@gentoo.org<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/versionator.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/versionator.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

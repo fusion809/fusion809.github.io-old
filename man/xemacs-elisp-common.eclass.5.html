@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+XEMACS-ELISP-COMMON.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+XEMACS-ELISP-COMMON.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+XEMACS-ELISP-COMMON.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> xemacs-elisp-common.eclass - XEmacs-related installation utilities</div>
+<div class="section">
+<h1>DESCRIPTION</h1> Usually you want to use this eclass for (optional) XEmacs support of your package.  This is NOT for GNU Emacs!<div style="height: 1.00em;">
+&#160;</div>
+Many of the steps here are sometimes done by the build system of your package (especially compilation), so this is mainly for standalone elisp files you gathered from somewhere else.<div style="height: 1.00em;">
+&#160;</div>
+When relying on the xemacs USE flag, you need to add<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+      xemacs? ( app-editors/xemacs )<div style="height: 1.00em;">
+&#160;</div>
+to your DEPEND/RDEPEND line and use the functions provided here to bring the files to the correct locations.<div style="height: 1.00em;">
+&#160;</div>
+<div class="subsection">
+<h2>src_compile() usage:</h2> An elisp file is compiled by the xemacs-elisp-compile() function defined here and simply takes the source files as arguments.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+  xemacs-elisp-compile *.el<div style="height: 1.00em;">
+&#160;</div>
+In the case of interdependent elisp files, you can use the xemacs-elisp-comp() function which makes sure all files are loadable.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+  xemacs-elisp-comp *.el<div style="height: 1.00em;">
+&#160;</div>
+Function xemacs-elisp-make-autoload-file() can be used to generate a file with autoload definitions for the lisp functions.  It takes a list of directories (default: working directory) as its argument. Use of this function requires that the elisp source files contain magic &quot;;;;###autoload&quot; comments. See the XEmacs Lisp Reference Manual (node &quot;Autoload&quot;) for a detailed explanation.<div style="height: 1.00em;">
+&#160;</div>
+</div>
+<div class="subsection">
+<h2>src_install() usage:</h2> The resulting compiled files (.elc) should be put in a subdirectory of /usr/lib/xemacs/site-lisp/ which is named after the first argument of xemacs-elisp-install().  The following parameters are the files to be put in that directory.  Usually the subdirectory should be ${PN}, but you can choose something else.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+  xemacs-elisp-install ${PN} *.el *.elc<div style="height: 1.00em;">
+&#160;</div>
+To let the XEmacs support be activated by XEmacs on startup, you need to provide a site file (shipped in ${FILESDIR}) which contains the startup code (have a look in the documentation of your software). Normally this would look like this:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+  	(add-to-list 'load-path &quot;@SITELISP@&quot;)<br/>
+  	(add-to-list 'auto-mode-alist '(&quot;\.csv\'&quot; . csv-mode))<br/>
+  	(autoload 'csv-mode &quot;csv-mode&quot; &quot;Major mode for csv files.&quot; t)<div style="height: 1.00em;">
+&#160;</div>
+If your XEmacs support files are installed in a subdirectory of /usr/share/xemacs/site-packages/ (which is strongly recommended), you need to extend XEmacs' load-path as shown in the first non-comment line. The xemacs-elisp-site-file-install() function of this eclass will replace &quot;@SITELISP@&quot; by the actual path.<div style="height: 1.00em;">
+&#160;</div>
+The next line tells XEmacs to load the mode opening a file ending with &quot;.csv&quot; and load functions depending on the context and needed features.  Be careful though.  Commands as &quot;load-library&quot; or &quot;require&quot; bloat the editor as they are loaded on every startup.  When having many XEmacs support files, users may be annoyed by the start-up time. Also avoid keybindings as they might interfere with the user's settings.  Give a hint in pkg_postinst(), which should be enough.<div style="height: 1.00em;">
+&#160;</div>
+The naming scheme for this site-init file matches the shell pattern &quot;[1-8][0-9]*-gentoo*.el&quot;, where the two digits at the beginning define the loading order (numbers below 10 or above 89 are reserved for internal use).  So if your initialisation depends on another XEmacs package, your site file's number must be higher!  If there are no such interdependencies then the number should be 50.  Otherwise, numbers divisible by 10 are preferred.<div style="height: 1.00em;">
+&#160;</div>
+Best practice is to define a SITEFILE variable in the global scope of your ebuild (e.g., right after S or RDEPEND):<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+  	SITEFILE=&quot;50${PN}-gentoo.el&quot;<div style="height: 1.00em;">
+&#160;</div>
+Which is then installed by<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+  	xemacs-elisp-site-file-install &quot;${FILESDIR}/${SITEFILE}&quot; || die<div style="height: 1.00em;">
+&#160;</div>
+in src_install().  Any characters after the &quot;-gentoo&quot; part and before the extension will be stripped from the destination file's name. For example, a file &quot;50${PN}-gentoo-${PV}.el&quot; will be installed as &quot;50${PN}-gentoo.el&quot;.  If your subdirectory is not named ${PN}, give the differing name as second argument.</div>
+</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>xemacs-elisp-compile</b> &lt;list of elisp files&gt;</dt>
+<dd>
+Byte-compile elisp files with xemacs. This function will die when there is a problem compiling the lisp files.</dd>
+</dl>
+<dl>
+<dt>
+<b>xemacs-elisp-install</b> &lt;subdirectory&gt; &lt;list of files&gt;</dt>
+<dd>
+Install elisp source and byte-compiled files. All files are installed in site-packages in their own directory, indicated by the first argument to the function. This function will die if there is a problem installing the list files.</dd>
+</dl>
+<dl>
+<dt>
+<b>xemacs-elisp-comp</b> &lt;list of elisp files&gt;</dt>
+<dd>
+Byte-compile interdependent XEmacs lisp files. Originally taken from GNU autotools, but some configuration options removed as they don't make sense with the current status of XEmacs in Gentoo.</dd>
+</dl>
+<dl>
+<dt>
+<b>xemacs-elisp-site-file-install</b> &lt;site-init file&gt; [subdirectory]</dt>
+<dd>
+Install XEmacs site-init file in XEMACS_SITELISP directory. Automatically inserts a standard comment header with the name of the package (unless it is already present).  Token @SITELISP@ is replaced by the path to the package's subdirectory in XEMACS_SITELISP.</dd>
+</dl>
+<dl>
+<dt>
+<b>xemacs-elisp-site-regen</b></dt>
+<dd>
+Regenerate the site-gentoo.el file, based on packages' site initialisation files in the /usr/share/xemacs/site-lisp/site-gentoo.d/ directory.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ECLASS VARIABLES</h1><dl>
+<dt>
+<b>XEMACS_SITELISP</b> = <i>/usr/share/xemacs/site-lisp</i></dt>
+<dd>
+Directory where packages install indivivual XEmacs Lisp files.</dd>
+</dl>
+<dl>
+<dt>
+<b>XEMACS_SITEPACKAGE</b> = <i>/usr/share/xemacs/site-packages</i></dt>
+<dd>
+Directory where packages install XEmacs Lisp packages.</dd>
+</dl>
+<dl>
+<dt>
+<b>XEMACS</b> = <i>/usr/bin/xemacs</i></dt>
+<dd>
+Path of XEmacs executable.</dd>
+</dl>
+<dl>
+<dt>
+<b>XEMACS_BATCH_CLEAN</b> = <i>&quot;${XEMACS} --batch --no-site-file --no-init-file&quot;</i></dt>
+<dd>
+Invocation of XEMACS in batch mode.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+xemacs@gentoo.org<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/xemacs-elisp-common.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/xemacs-elisp-common.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

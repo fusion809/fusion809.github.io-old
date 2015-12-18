@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+MULTILIB-BUILD.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+MULTILIB-BUILD.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+MULTILIB-BUILD.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> multilib-build.eclass - flags and utility functions for building multilib packages</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The multilib-build.eclass exports USE flags and utility functions necessary to build packages for multilib in a clean and uniform manner.<div style="height: 1.00em;">
+&#160;</div>
+Please note that dependency specifications for multilib-capable dependencies shall use the USE dependency string in ${MULTILIB_USEDEP} to properly request multilib enabled.</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>multilib_get_enabled_abis</b></dt>
+<dd>
+Return the ordered list of enabled ABIs if multilib builds are enabled. The best (most preferred) ABI will come last.<div style="height: 1.00em;">
+&#160;</div>
+If multilib is disabled, the default ABI will be returned in order to enforce consistent testing with multilib code.</dd>
+</dl>
+<dl>
+<dt>
+<b>multilib_get_enabled_abi_pairs</b></dt>
+<dd>
+Return the ordered list of enabled &lt;use-flag&gt;.&lt;ABI&gt; pairs if multilib builds are enabled. The best (most preferred) ABI will come last.<div style="height: 1.00em;">
+&#160;</div>
+If multilib is disabled, the default ABI will be returned along with empty &lt;use-flag&gt;.</dd>
+</dl>
+<dl>
+<dt>
+<b>multilib_foreach_abi</b> &lt;argv&gt;...</dt>
+<dd>
+If multilib support is enabled, sets the toolchain up for each supported ABI along with the ABI variable and correct BUILD_DIR, and runs the given commands with them.<div style="height: 1.00em;">
+&#160;</div>
+If multilib support is disabled, it just runs the commands. No setup is done.</dd>
+</dl>
+<dl>
+<dt>
+<b>multilib_parallel_foreach_abi</b> &lt;argv&gt;...</dt>
+<dd>
+If multilib support is enabled, sets the toolchain up for each supported ABI along with the ABI variable and correct BUILD_DIR, and runs the given commands with them.<div style="height: 1.00em;">
+&#160;</div>
+If multilib support is disabled, it just runs the commands. No setup is done.<div style="height: 1.00em;">
+&#160;</div>
+This function used to run multiple commands in parallel. Now it's just a deprecated alias to multilib_foreach_abi.</dd>
+</dl>
+<dl>
+<dt>
+<b>multilib_for_best_abi</b> &lt;argv&gt;...</dt>
+<dd>
+Runs the given command with setup for the 'best' (usually native) ABI.</dd>
+</dl>
+<dl>
+<dt>
+<b>multilib_check_headers</b></dt>
+<dd>
+Check whether the header files are consistent between ABIs.<div style="height: 1.00em;">
+&#160;</div>
+This function needs to be called after each ABI's installation phase. It obtains the header file checksums and compares them with previous runs (if any). Dies if header files differ.</dd>
+</dl>
+<dl>
+<dt>
+<b>multilib_copy_sources</b></dt>
+<dd>
+Create a single copy of the package sources for each enabled ABI.<div style="height: 1.00em;">
+&#160;</div>
+The sources are always copied from initial BUILD_DIR (or S if unset) to ABI-specific build directory matching BUILD_DIR used by multilib_foreach_abi().</dd>
+</dl>
+<dl>
+<dt>
+<b>multilib_prepare_wrappers</b> [&lt;install-root&gt;]</dt>
+<dd>
+Perform the preparation of all kinds of wrappers for the current ABI. This function shall be called once per each ABI, after installing the files to be wrapped.<div style="height: 1.00em;">
+&#160;</div>
+Takes an optional custom &lt;install-root&gt; from which files will be used. If no root is specified, uses ${ED}.<div style="height: 1.00em;">
+&#160;</div>
+The files to be wrapped are specified using separate variables, e.g. MULTILIB_WRAPPED_HEADERS. Those variables shall not be changed between the successive calls to multilib_prepare_wrappers and multilib_install_wrappers.<div style="height: 1.00em;">
+&#160;</div>
+After all wrappers are prepared, multilib_install_wrappers shall be called to commit them to the installation tree.</dd>
+</dl>
+<dl>
+<dt>
+<b>multilib_install_wrappers</b> [&lt;install-root&gt;]</dt>
+<dd>
+Install the previously-prepared wrappers. This function shall be called once, after all wrappers were prepared.<div style="height: 1.00em;">
+&#160;</div>
+Takes an optional custom &lt;install-root&gt; to which the wrappers will be installed. If no root is specified, uses ${ED}. There is no need to use the same root as when preparing the wrappers.<div style="height: 1.00em;">
+&#160;</div>
+The files to be wrapped are specified using separate variables, e.g. MULTILIB_WRAPPED_HEADERS. Those variables shall not be changed between the calls to multilib_prepare_wrappers and multilib_install_wrappers.</dd>
+</dl>
+<dl>
+<dt>
+<b>multilib_is_native_abi</b></dt>
+<dd>
+Determine whether the currently built ABI is the profile native. Return true status (0) if that is true, otherwise false (1).</dd>
+</dl>
+<dl>
+<dt>
+<b>multilib_build_binaries</b></dt>
+<dd>
+Deprecated synonym for multilib_is_native_abi</dd>
+</dl>
+<dl>
+<dt>
+<b>multilib_native_use_with</b> &lt;flag&gt; [&lt;opt-name&gt; [&lt;opt-value&gt;]]</dt>
+<dd>
+Output --with configure option alike use_with if USE &lt;flag&gt; is enabled and executables are being built (multilib_is_native_abi is true). Otherwise, outputs --without configure option. Arguments are the same as for use_with in the EAPI.</dd>
+</dl>
+<dl>
+<dt>
+<b>multilib_native_use_enable</b> &lt;flag&gt; [&lt;opt-name&gt; [&lt;opt-value&gt;]]</dt>
+<dd>
+Output --enable configure option alike use_enable if USE &lt;flag&gt; is enabled and executables are being built (multilib_is_native_abi is true). Otherwise, outputs --disable configure option. Arguments are the same as for use_enable in the EAPI.</dd>
+</dl>
+<dl>
+<dt>
+<b>multilib_native_enable</b> &lt;opt-name&gt; [&lt;opt-value&gt;]</dt>
+<dd>
+Output --enable configure option if executables are being built (multilib_is_native_abi is true). Otherwise, output --disable configure option.</dd>
+</dl>
+<dl>
+<dt>
+<b>multilib_native_with</b> &lt;opt-name&gt; [&lt;opt-value&gt;]</dt>
+<dd>
+Output --with configure option if executables are being built (multilib_is_native_abi is true). Otherwise, output --without configure option.</dd>
+</dl>
+<dl>
+<dt>
+<b>multilib_native_usex</b> &lt;flag&gt; [&lt;true1&gt; [&lt;false1&gt; [&lt;true2&gt; [&lt;false2&gt;]]]]</dt>
+<dd>
+Output the concatenation of &lt;true1&gt; (or 'yes' if unspecified) and &lt;true2&gt; if USE &lt;flag&gt; is enabled and executables are being built (multilib_is_native_abi is true). Otherwise, output the concatenation of &lt;false1&gt; (or 'no' if unspecified) and &lt;false2&gt;. Arguments are the same as for usex in the EAPI.<div style="height: 1.00em;">
+&#160;</div>
+Note: in EAPI 4 you need to inherit eutils to use this function.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ECLASS VARIABLES</h1><dl>
+<dt>
+<b>MULTILIB_COMPAT</b></dt>
+<dd>
+List of multilib ABIs supported by the ebuild. If unset, defaults to all ABIs supported by the eclass.<div style="height: 1.00em;">
+&#160;</div>
+This variable is intended for use in prebuilt multilib packages that can provide binaries only for a limited set of ABIs. If ABIs need to be limited due to a bug in source code, package.use.mask is to be used instead. Along with MULTILIB_COMPAT, KEYWORDS should contain '-*'.<div style="height: 1.00em;">
+&#160;</div>
+Note that setting this variable effectively disables support for all other ABIs, including other architectures. For example, specifying abi_x86_{32,64} disables support for MIPS as well.<div style="height: 1.00em;">
+&#160;</div>
+The value of MULTILIB_COMPAT determines the value of IUSE. If set, it also enables REQUIRED_USE constraints.<div style="height: 1.00em;">
+&#160;</div>
+Example use:<br/>
+# Upstream provides binaries for x86 &amp; amd64 only<br/>
+MULTILIB_COMPAT=( abi_x86_{32,64} )<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>MULTILIB_USEDEP</b></dt>
+<dd>
+The USE-dependency to be used on dependencies (libraries) needing to support multilib as well.<div style="height: 1.00em;">
+&#160;</div>
+Example use:<br/>
+RDEPEND=&quot;dev-libs/libfoo[${MULTILIB_USEDEP}]<br/>
+net-libs/libbar[ssl,${MULTILIB_USEDEP}]&quot;<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>MULTILIB_ABI_FLAG</b></dt>
+<dd>
+The complete ABI name. Resembles the USE flag name.<div style="height: 1.00em;">
+&#160;</div>
+This is set within multilib_foreach_abi(), multilib_parallel_foreach_abi() and multilib-minimal sub-phase functions.<div style="height: 1.00em;">
+&#160;</div>
+It may be null (empty) when the build is done on ABI not controlled by a USE flag (e.g. on non-multilib arch or when using multilib portage). The build will always be done for a single ABI then.<div style="height: 1.00em;">
+&#160;</div>
+Example value:<br/>
+abi_x86_64<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>MULTILIB_WRAPPED_HEADERS</b></dt>
+<dd>
+A list of headers to wrap for multilib support. The listed headers will be moved to a non-standard location and replaced with a file including them conditionally to current ABI.<div style="height: 1.00em;">
+&#160;</div>
+This variable has to be a bash array. Paths shall be relative to installation root (${ED}), and name regular files. Recursive wrapping is not supported.<div style="height: 1.00em;">
+&#160;</div>
+Please note that header wrapping is *discouraged*. It is preferred to install all headers in a subdirectory of libdir and use pkg-config to locate the headers. Some C preprocessors will not work with wrapped headers.<div style="height: 1.00em;">
+&#160;</div>
+Example:<br/>
+MULTILIB_WRAPPED_HEADERS=(<br/>
+/usr/include/foobar/config.h<br/>
+)<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>MULTILIB_CHOST_TOOLS</b></dt>
+<dd>
+A list of tool executables to preserve for each multilib ABI. The listed executables will be renamed to ${CHOST}-${basename}, and the native variant will be symlinked to the generic name.<div style="height: 1.00em;">
+&#160;</div>
+This variable has to be a bash array. Paths shall be relative to installation root (${ED}), and name regular files or symbolic links to regular files. Recursive wrapping is not supported.<div style="height: 1.00em;">
+&#160;</div>
+If symbolic link is passed, both symlink path and symlink target will be changed. As a result, the symlink target is expected to be wrapped as well (either by listing in MULTILIB_CHOST_TOOLS or externally).<div style="height: 1.00em;">
+&#160;</div>
+Please note that tool wrapping is *discouraged*. It is preferred to install pkg-config files for each ABI, and require reverse dependencies to use that.<div style="height: 1.00em;">
+&#160;</div>
+Packages that search for tools properly (e.g. using AC_PATH_TOOL macro) will find the wrapper executables automatically. Other packages will need explicit override of tool paths.<div style="height: 1.00em;">
+&#160;</div>
+Example:<br/>
+MULTILIB_CHOST_TOOLS=(<br/>
+/usr/bin/foo-config<br/>
+)</dd>
+</dl>
+</div>
+<div class="section">
+<h1>AUTHORS</h1><br/>
+Author: Micha&#322; G&#243;rny &lt;mgorny@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+gx86-multilib team &lt;multilib@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/multilib-build.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/multilib-build.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

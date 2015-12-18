@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SYSTEMD.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SYSTEMD.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+SYSTEMD.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> systemd.eclass - helper functions to install systemd units</div>
+<div class="section">
+<h1>DESCRIPTION</h1> This eclass provides a set of functions to install unit files for sys-apps/systemd within ebuilds.</div>
+<div class="section">
+<h1>EXAMPLE</h1><br/>
+inherit systemd<div class="spacer">
+</div>
+<br/>
+src_configure() {<br/>
+local myeconfargs=(<br/>
+	--enable-foo<br/>
+	--disable-bar<br/>
+	&quot;$(systemd_with_unitdir)&quot;<br/>
+)<div class="spacer">
+</div>
+<br/>
+econf &quot;${myeconfargs[@]}&quot;<br/>
+}<br/>
+</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>systemd_get_unitdir</b></dt>
+<dd>
+Output the path for the systemd unit directory (not including ${D}). This function always succeeds, even if systemd is not installed.</dd>
+</dl>
+<dl>
+<dt>
+<b>systemd_get_userunitdir</b></dt>
+<dd>
+Output the path for the systemd user unit directory (not including ${D}). This function always succeeds, even if systemd is not installed.</dd>
+</dl>
+<dl>
+<dt>
+<b>systemd_get_utildir</b></dt>
+<dd>
+Output the path for the systemd utility directory (not including ${D}). This function always succeeds, even if systemd is not installed.</dd>
+</dl>
+<dl>
+<dt>
+<b>systemd_dounit</b> &lt;unit&gt;...</dt>
+<dd>
+Install systemd unit(s). Uses doins, thus it is fatal in EAPI 4 and non-fatal in earlier EAPIs.</dd>
+</dl>
+<dl>
+<dt>
+<b>systemd_newunit</b> &lt;old-name&gt; &lt;new-name&gt;</dt>
+<dd>
+Install systemd unit with a new name. Uses newins, thus it is fatal in EAPI 4 and non-fatal in earlier EAPIs.</dd>
+</dl>
+<dl>
+<dt>
+<b>systemd_douserunit</b> &lt;unit&gt;...</dt>
+<dd>
+Install systemd user unit(s). Uses doins, thus it is fatal in EAPI 4 and non-fatal in earlier EAPIs.</dd>
+</dl>
+<dl>
+<dt>
+<b>systemd_newuserunit</b> &lt;old-name&gt; &lt;new-name&gt;</dt>
+<dd>
+Install systemd user unit with a new name. Uses newins, thus it is fatal in EAPI 4 and non-fatal in earlier EAPIs.</dd>
+</dl>
+<dl>
+<dt>
+<b>systemd_install_serviced</b> &lt;conf-file&gt; [&lt;service.d&gt;]</dt>
+<dd>
+Install the file &lt;conf-file&gt; as service.d/00gentoo.conf template. The &lt;service.d&gt; argument specifies the configured service name. If not specified, the configuration file name will be used with .conf suffix stripped (e.g. foo.service.conf -&gt; foo.service).</dd>
+</dl>
+<dl>
+<dt>
+<b>systemd_dotmpfilesd</b> &lt;tmpfilesd&gt;...</dt>
+<dd>
+Install systemd tmpfiles.d files. Uses doins, thus it is fatal in EAPI 4 and non-fatal in earlier EAPIs.</dd>
+</dl>
+<dl>
+<dt>
+<b>systemd_newtmpfilesd</b> &lt;old-name&gt; &lt;new-name&gt;.conf</dt>
+<dd>
+Install systemd tmpfiles.d file under a new name. Uses newins, thus it is fatal in EAPI 4 and non-fatal in earlier EAPIs.</dd>
+</dl>
+<dl>
+<dt>
+<b>systemd_enable_service</b> &lt;target&gt; &lt;service&gt;</dt>
+<dd>
+Enable service in desired target, e.g. install a symlink for it. Uses dosym, thus it is fatal in EAPI 4 and non-fatal in earlier EAPIs.</dd>
+</dl>
+<dl>
+<dt>
+<b>systemd_enable_ntpunit</b> &lt;NN-name&gt; &lt;service&gt;...</dt>
+<dd>
+Add an NTP service provider to the list of implementations in timedated. &lt;NN-name&gt; defines the newly-created ntp-units.d priority and name, while the remaining arguments list service units that will be added to that file.<div style="height: 1.00em;">
+&#160;</div>
+Uses doins, thus it is fatal in EAPI 4 and non-fatal in earlier EAPIs.<div style="height: 1.00em;">
+&#160;</div>
+Doc: http://www.freedesktop.org/wiki/Software/systemd/timedated/</dd>
+</dl>
+<dl>
+<dt>
+<b>systemd_with_unitdir</b> [&lt;configure-option-name&gt;]</dt>
+<dd>
+Output '--with-systemdsystemunitdir' as expected by systemd-aware configure scripts. This function always succeeds. Its output may be quoted in order to preserve whitespace in paths. systemd_to_myeconfargs() is preferred over this function.<div style="height: 1.00em;">
+&#160;</div>
+If upstream does use invalid configure option to handle installing systemd units (e.g. `--with-systemdunitdir'), you can pass the 'suffix' as an optional argument to this function (`$(systemd_with_unitdir systemdunitdir)'). Please remember to report a bug upstream as well.</dd>
+</dl>
+<dl>
+<dt>
+<b>systemd_with_utildir</b></dt>
+<dd>
+Output '--with-systemdsystemutildir' as used by some packages to install systemd helpers. This function always succeeds. Its output may be quoted in order to preserve whitespace in paths.</dd>
+</dl>
+<dl>
+<dt>
+<b>systemd_to_myeconfargs</b></dt>
+<dd>
+Add '--with-systemdsystemunitdir' as expected by systemd-aware configure scripts to the myeconfargs variable used by autotools-utils eclass. Handles quoting automatically.</dd>
+</dl>
+<dl>
+<dt>
+<b>systemd_update_catalog</b></dt>
+<dd>
+Update the journald catalog. This needs to be called after installing or removing catalog files.<div style="height: 1.00em;">
+&#160;</div>
+If systemd is not installed, no operation will be done. The catalog will be (re)built once systemd is installed.<div style="height: 1.00em;">
+&#160;</div>
+See: http://www.freedesktop.org/wiki/Software/systemd/catalog</dd>
+</dl>
+<dl>
+<dt>
+<b>systemd_is_booted</b></dt>
+<dd>
+Check whether the system was booted using systemd.<div style="height: 1.00em;">
+&#160;</div>
+This should be used purely for informational purposes, e.g. warning user that he needs to use systemd. Installed files or application behavior *must not* rely on this. Please remember to check MERGE_TYPE to not trigger the check on binary package build hosts!<div style="height: 1.00em;">
+&#160;</div>
+Returns 0 if systemd is used to boot the system, 1 otherwise.<div style="height: 1.00em;">
+&#160;</div>
+See: man sd_booted</dd>
+</dl>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+systemd@gentoo.org<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/systemd.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/systemd.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

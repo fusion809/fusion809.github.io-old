@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+QT5-BUILD.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+QT5-BUILD.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+QT5-BUILD.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> qt5-build.eclass - Eclass for Qt5 split ebuilds.</div>
+<div class="section">
+<h1>DESCRIPTION</h1> This eclass contains various functions that are used when building Qt5. Requires EAPI 5.</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>qt5-build_src_unpack</b></dt>
+<dd>
+Unpacks the sources.</dd>
+</dl>
+<dl>
+<dt>
+<b>qt5-build_src_prepare</b></dt>
+<dd>
+Prepares the environment and patches the sources if necessary.</dd>
+</dl>
+<dl>
+<dt>
+<b>qt5-build_src_configure</b></dt>
+<dd>
+Runs qmake in the target directories. For packages in qtbase, ./configure is also run before qmake.</dd>
+</dl>
+<dl>
+<dt>
+<b>qt5-build_src_compile</b></dt>
+<dd>
+Runs emake in the target directories.</dd>
+</dl>
+<dl>
+<dt>
+<b>qt5-build_src_test</b></dt>
+<dd>
+Runs tests in the target directories.</dd>
+</dl>
+<dl>
+<dt>
+<b>qt5-build_src_install</b></dt>
+<dd>
+Runs emake install in the target directories.</dd>
+</dl>
+<dl>
+<dt>
+<b>qt5-build_pkg_postinst</b></dt>
+<dd>
+Regenerate configuration after installation or upgrade/downgrade.</dd>
+</dl>
+<dl>
+<dt>
+<b>qt5-build_pkg_postrm</b></dt>
+<dd>
+Regenerate configuration when a module is completely removed.</dd>
+</dl>
+<dl>
+<dt>
+<b>qt_use</b> &lt;flag&gt; [feature] [enableval]</dt>
+<dd>
+&lt;flag&gt; is the name of a flag in IUSE.<div style="height: 1.00em;">
+&#160;</div>
+Outputs &quot;-${enableval}-${feature}&quot; if &lt;flag&gt; is enabled, &quot;-no-${feature}&quot; otherwise. If [feature] is not specified, &lt;flag&gt; is used in its place. If [enableval] is not specified, the &quot;-${enableval}&quot; prefix is omitted.</dd>
+</dl>
+<dl>
+<dt>
+<b>qt_use_compile_test</b> &lt;flag&gt; [config]</dt>
+<dd>
+&lt;flag&gt; is the name of a flag in IUSE. [config] is the argument of qtCompileTest, defaults to &lt;flag&gt;.<div style="height: 1.00em;">
+&#160;</div>
+This function is useful to disable optional dependencies that are checked at qmake-time using the qtCompileTest() function. If &lt;flag&gt; is disabled, the compile test is skipped and the dependency is assumed to be unavailable, i.e. the corresponding feature will be disabled. Note that all invocations of this function must happen before calling qt5-build_src_configure.</dd>
+</dl>
+<dl>
+<dt>
+<b>qt_use_disable_mod</b> &lt;flag&gt; &lt;module&gt; &lt;files...&gt;</dt>
+<dd>
+&lt;flag&gt; is the name of a flag in IUSE. &lt;module&gt; is the (lowercase) name of a Qt5 module. &lt;files...&gt; is a list of one or more qmake project files.<div style="height: 1.00em;">
+&#160;</div>
+This function patches &lt;files&gt; to treat &lt;module&gt; as not installed when &lt;flag&gt; is disabled, otherwise it does nothing. This can be useful to avoid an automagic dependency when the module is present on the system but the corresponding USE flag is disabled.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ECLASS VARIABLES</h1><dl>
+<dt>
+<b>QT5_MODULE</b> ?= <i>${PN}</i></dt>
+<dd>
+The upstream name of the module this package belongs to. Used for SRC_URI and EGIT_REPO_URI. Must be defined before inheriting the eclass.</dd>
+</dl>
+<dl>
+<dt>
+<b>PATCHES</b></dt>
+<dd>
+Array variable containing all the patches to be applied. This variable is expected to be defined in the global scope of ebuilds. Make sure to specify the full path. This variable is used in src_prepare phase.<div style="height: 1.00em;">
+&#160;</div>
+Example:<br/>
+PATCHES=(<br/>
+	&quot;${FILESDIR}/mypatch.patch&quot;<br/>
+	&quot;${FILESDIR}/mypatch2.patch&quot;<br/>
+)<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>QT5_TARGET_SUBDIRS</b></dt>
+<dd>
+Array variable containing the source directories that should be built. All paths must be relative to ${S}.</dd>
+</dl>
+<dl>
+<dt>
+<b>QT5_BUILD_DIR</b></dt>
+<dd>
+Build directory for out-of-source builds.</dd>
+</dl>
+<dl>
+<dt>
+<b>QT5_GENTOO_CONFIG</b></dt>
+<dd>
+Array of &lt;useflag:feature:macro&gt; triplets that are evaluated in src_install to generate the per-package list of enabled QT_CONFIG features and macro definitions, which are then merged together with all other Qt5 packages installed on the system to obtain the global qconfig.{h,pri} files.</dd>
+</dl>
+<dl>
+<dt>
+<b>VIRTUALX_REQUIRED</b> ?= <i>manual</i></dt>
+<dd>
+For proper description see virtualx.eclass man page. Here we redefine default value to be manual, if your package needs virtualx for tests you should proceed with setting VIRTUALX_REQUIRED=test.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>AUTHORS</h1><br/>
+Davide Pesavento &lt;pesa@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+Qt herd &lt;qt@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/qt5-build.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/qt5-build.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

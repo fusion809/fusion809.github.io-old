@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+LINUX-INFO.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+LINUX-INFO.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+LINUX-INFO.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> linux-info.eclass - eclass used for accessing kernel related information</div>
+<div class="section">
+<h1>DESCRIPTION</h1> This eclass is used as a central eclass for accessing kernel related information for source or binary already installed. It is vital for linux-mod.eclass to function correctly, and is split out so that any ebuild behaviour &quot;templates&quot; are abstracted out using additional eclasses.<div style="height: 1.00em;">
+&#160;</div>
+&quot;kernel config&quot; in this file means: The .config of the currently installed sources is used as the first preference, with a fall-back to bundled config (/proc/config.gz) if available.<div style="height: 1.00em;">
+&#160;</div>
+Before using any of the config-handling functions in this eclass, you must ensure that one of the following functions has been called (in order of preference), otherwise you will get bugs like #364041): linux-info_pkg_setup linux-info_get_any_version get_version get_running_version</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>set_arch_to_kernel</b></dt>
+<dd>
+Set the env ARCH to match what the kernel expects.</dd>
+</dl>
+<dl>
+<dt>
+<b>set_arch_to_portage</b></dt>
+<dd>
+Set the env ARCH to match what portage expects.</dd>
+</dl>
+<dl>
+<dt>
+<b>getfilevar</b> variable configfile</dt>
+<dd>
+It detects the value of the variable defined in the file configfile. This is done by including the configfile, and printing the variable with Make. It WILL break if your makefile has missing dependencies!<div style="height: 1.00em;">
+&#160;</div>
+Return value: the value of the variable</dd>
+</dl>
+<dl>
+<dt>
+<b>getfilevar_noexec</b> variable configfile</dt>
+<dd>
+It detects the value of the variable defined in the file configfile. This is done with sed matching an expression only. If the variable is defined, you will run into problems. See getfilevar for those cases.<div style="height: 1.00em;">
+&#160;</div>
+Return value: the value of the variable</dd>
+</dl>
+<dl>
+<dt>
+<b>linux_config_src_exists</b></dt>
+<dd>
+It returns true if .config exists in a build directory otherwise false<div style="height: 1.00em;">
+&#160;</div>
+Return value: true or false</dd>
+</dl>
+<dl>
+<dt>
+<b>linux_config_bin_exists</b></dt>
+<dd>
+It returns true if .config exists in /proc, otherwise false<div style="height: 1.00em;">
+&#160;</div>
+Return value: true or false</dd>
+</dl>
+<dl>
+<dt>
+<b>linux_config_exists</b></dt>
+<dd>
+It returns true if .config exists otherwise false<div style="height: 1.00em;">
+&#160;</div>
+This function MUST be checked before using any of the linux_chkconfig_* functions.<div style="height: 1.00em;">
+&#160;</div>
+Return value: true or false</dd>
+</dl>
+<dl>
+<dt>
+<b>linux_config_path</b></dt>
+<dd>
+Echo the name of the config file to use.  If none are found, then return false.</dd>
+</dl>
+<dl>
+<dt>
+<b>require_configured_kernel</b></dt>
+<dd>
+This function verifies that the current kernel is configured (it checks against the existence of .config) otherwise it dies.</dd>
+</dl>
+<dl>
+<dt>
+<b>linux_chkconfig_present</b> option</dt>
+<dd>
+It checks that CONFIG_&lt;option&gt;=y or CONFIG_&lt;option&gt;=m is present in the current kernel .config If linux_config_exists returns false, the results of this are UNDEFINED. You MUST call linux_config_exists first.<div style="height: 1.00em;">
+&#160;</div>
+Return value: true or false</dd>
+</dl>
+<dl>
+<dt>
+<b>linux_chkconfig_module</b> option</dt>
+<dd>
+It checks that CONFIG_&lt;option&gt;=m is present in the current kernel .config If linux_config_exists returns false, the results of this are UNDEFINED. You MUST call linux_config_exists first.<div style="height: 1.00em;">
+&#160;</div>
+Return value: true or false</dd>
+</dl>
+<dl>
+<dt>
+<b>linux_chkconfig_builtin</b> option</dt>
+<dd>
+It checks that CONFIG_&lt;option&gt;=y is present in the current kernel .config If linux_config_exists returns false, the results of this are UNDEFINED. You MUST call linux_config_exists first.<div style="height: 1.00em;">
+&#160;</div>
+Return value: true or false</dd>
+</dl>
+<dl>
+<dt>
+<b>linux_chkconfig_string</b> option</dt>
+<dd>
+It prints the CONFIG_&lt;option&gt; value of the current kernel .config (it requires a configured kernel). If linux_config_exists returns false, the results of this are UNDEFINED. You MUST call linux_config_exists first.<div style="height: 1.00em;">
+&#160;</div>
+Return value: CONFIG_&lt;option&gt;</dd>
+</dl>
+<dl>
+<dt>
+<b>kernel_is</b> [-lt -gt -le -ge -eq] major_number [minor_number patch_number]</dt>
+<dd>
+It returns true when the current kernel version satisfies the comparison against the passed version. -eq is the default comparison.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+For Example where KV = 2.6.9<br/>
+kernel_is 2 4   returns false<br/>
+kernel_is 2     returns true<br/>
+kernel_is 2 6   returns true<br/>
+kernel_is 2 6 8 returns false<br/>
+kernel_is 2 6 9 returns true<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+Return value: true or false</dd>
+</dl>
+<dl>
+<dt>
+<b>get_version</b></dt>
+<dd>
+It gets the version of the kernel inside KERNEL_DIR and populates the KV_FULL variable (if KV_FULL is already set it does nothing).<div style="height: 1.00em;">
+&#160;</div>
+The kernel version variables (KV_MAJOR, KV_MINOR, KV_PATCH, KV_EXTRA and KV_LOCAL) are also set.<div style="height: 1.00em;">
+&#160;</div>
+The KV_DIR is set using the KERNEL_DIR env var, the KV_DIR_OUT is set using a valid KBUILD_OUTPUT (in a decreasing priority list, we look for the env var, makefile var or the symlink /lib/modules/${KV_MAJOR}.${KV_MINOR}.${KV_PATCH}${KV_EXTRA}/build).</dd>
+</dl>
+<dl>
+<dt>
+<b>get_running_version</b></dt>
+<dd>
+It gets the version of the current running kernel and the result is the same as get_version() if the function can find the sources.</dd>
+</dl>
+<dl>
+<dt>
+<b>linux-info_get_any_version</b></dt>
+<dd>
+This attempts to find the version of the sources, and otherwise falls back to the version of the running kernel.</dd>
+</dl>
+<dl>
+<dt>
+<b>check_kernel_built</b></dt>
+<dd>
+This function verifies that the current kernel sources have been already prepared otherwise it dies.</dd>
+</dl>
+<dl>
+<dt>
+<b>check_modules_supported</b></dt>
+<dd>
+This function verifies that the current kernel support modules (it checks CONFIG_MODULES=y) otherwise it dies.</dd>
+</dl>
+<dl>
+<dt>
+<b>check_extra_config</b></dt>
+<dd>
+It checks the kernel config options specified by CONFIG_CHECK. It dies only when a required config option (i.e. the prefix ~ is not used) doesn't satisfy the directive.</dd>
+</dl>
+<dl>
+<dt>
+<b>linux-info_pkg_setup</b></dt>
+<dd>
+Force a get_version() call when inherited from linux-mod.eclass and then check if the kernel is configured to support the options specified in CONFIG_CHECK (if not null)</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ECLASS VARIABLES</h1><dl>
+<dt>
+<b>KERNEL_DIR</b></dt>
+<dd>
+A string containing the directory of the target kernel sources. The default value is &quot;/usr/src/linux&quot;</dd>
+</dl>
+<dl>
+<dt>
+<b>CONFIG_CHECK</b></dt>
+<dd>
+A string containing a list of .config options to check for before proceeding with the install.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+  e.g.: CONFIG_CHECK=&quot;MTRR&quot;<div style="height: 1.00em;">
+&#160;</div>
+You can also check that an option doesn't exist by prepending it with an exclamation mark (!).<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+  e.g.: CONFIG_CHECK=&quot;!MTRR&quot;<div style="height: 1.00em;">
+&#160;</div>
+To simply warn about a missing option, prepend a '~'. It may be combined with '!'.<div style="height: 1.00em;">
+&#160;</div>
+In general, most checks should be non-fatal. The only time fatal checks should be used is for building kernel modules or cases that a compile will fail without the option.<div style="height: 1.00em;">
+&#160;</div>
+This is to allow usage of binary kernels, and minimal systems without kernel sources.</dd>
+</dl>
+<dl>
+<dt>
+<b>ERROR_&lt;CFG&gt;</b></dt>
+<dd>
+A string containing the error message to display when the check against CONFIG_CHECK fails. &lt;CFG&gt; should reference the appropriate option used in CONFIG_CHECK.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+  e.g.: ERROR_MTRR=&quot;MTRR exists in the .config but shouldn't!!&quot;</dd>
+</dl>
+<dl>
+<dt>
+<b>KBUILD_OUTPUT</b></dt>
+<dd>
+A string passed on commandline, or set from the kernel makefile. It contains the directory which is to be used as the kernel object directory.</dd>
+</dl>
+<dl>
+<dt>
+<b>KV_FULL</b></dt>
+<dd>
+A read-only variable. It's a string containing the full kernel version. ie: 2.6.9-gentoo-johnm-r1</dd>
+</dl>
+<dl>
+<dt>
+<b>KV_MAJOR</b></dt>
+<dd>
+A read-only variable. It's an integer containing the kernel major version. ie: 2</dd>
+</dl>
+<dl>
+<dt>
+<b>KV_MINOR</b></dt>
+<dd>
+A read-only variable. It's an integer containing the kernel minor version. ie: 6</dd>
+</dl>
+<dl>
+<dt>
+<b>KV_PATCH</b></dt>
+<dd>
+A read-only variable. It's an integer containing the kernel patch version. ie: 9</dd>
+</dl>
+<dl>
+<dt>
+<b>KV_EXTRA</b></dt>
+<dd>
+A read-only variable. It's a string containing the kernel EXTRAVERSION. ie: -gentoo</dd>
+</dl>
+<dl>
+<dt>
+<b>KV_LOCAL</b></dt>
+<dd>
+A read-only variable. It's a string containing the kernel LOCALVERSION concatenation. ie: -johnm</dd>
+</dl>
+<dl>
+<dt>
+<b>KV_DIR</b></dt>
+<dd>
+A read-only variable. It's a string containing the kernel source directory, will be null if KERNEL_DIR is invalid.</dd>
+</dl>
+<dl>
+<dt>
+<b>KV_OUT_DIR</b></dt>
+<dd>
+A read-only variable. It's a string containing the kernel object directory, will be KV_DIR unless KBUILD_OUTPUT is used. This should be used for referencing .config.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>AUTHORS</h1><br/>
+Original author: John Mylchreest &lt;johnm@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+kernel-misc@gentoo.org<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/linux-info.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/linux-info.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+MULTIPROCESSING.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+MULTIPROCESSING.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+MULTIPROCESSING.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> multiprocessing.eclass - parallelization with bash (wtf?)</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The multiprocessing eclass contains a suite of functions that allow ebuilds to quickly run things in parallel using shell code.<div style="height: 1.00em;">
+&#160;</div>
+It has two modes: pre-fork and post-fork.  If you don't want to dive into any more nuts &amp; bolts, just use the pre-fork mode.  For main threads that mostly spawn children and then wait for them to finish, use the pre-fork mode.  For main threads that do a bit of processing themselves, use the post-fork mode. You may mix &amp; match them for longer computation loops.</div>
+<div class="section">
+<h1>EXAMPLE</h1><br/>
+# First initialize things:<br/>
+multijob_init<div class="spacer">
+</div>
+<br/>
+# Then hash a bunch of files in parallel:<br/>
+for n in {0..20} ; do<br/>
+	multijob_child_init md5sum data.${n} &gt; data.${n}<br/>
+done<div class="spacer">
+</div>
+<br/>
+# Then wait for all the children to finish:<br/>
+multijob_finish<br/>
+</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>bashpid</b></dt>
+<dd>
+Return the process id of the current sub shell.  This is to support bash versions older than 4.0 that lack $BASHPID support natively.  Simply do: echo ${BASHPID:-$(bashpid)}<div style="height: 1.00em;">
+&#160;</div>
+Note: Using this func in any other way than the one above is not supported.</dd>
+</dl>
+<dl>
+<dt>
+<b>makeopts_jobs</b> [${MAKEOPTS}]</dt>
+<dd>
+Searches the arguments (defaults to ${MAKEOPTS}) and extracts the jobs number specified therein.  Useful for running non-make tools in parallel too. i.e. if the user has MAKEOPTS=-j9, this will echo &quot;9&quot; -- we can't return the number as bash normalizes it to [0, 255].  If the flags haven't specified a -j flag, then &quot;1&quot; is shown as that is the default `make` uses.  Since there's no way to represent infinity, we return 999 if the user has -j without a number.</dd>
+</dl>
+<dl>
+<dt>
+<b>makeopts_loadavg</b> [${MAKEOPTS}]</dt>
+<dd>
+Searches the arguments (defaults to ${MAKEOPTS}) and extracts the value set for load-average. For make and ninja based builds this will mean new jobs are not only limited by the jobs-value, but also by the current load - which might get excessive due to I/O and not just due to CPU load. Be aware that the returned number might be a floating-point number. Test whether your software supports that.</dd>
+</dl>
+<dl>
+<dt>
+<b>multijob_init</b> [${MAKEOPTS}]</dt>
+<dd>
+Setup the environment for executing code in parallel. You must call this before any other multijob function.</dd>
+</dl>
+<dl>
+<dt>
+<b>multijob_child_init</b> [--pre|--post] [command to run in background]</dt>
+<dd>
+This function has two forms.  You can use it to execute a simple command in the background (and it takes care of everything else), or you must call this first thing in your forked child process.<div style="height: 1.00em;">
+&#160;</div>
+The --pre/--post options allow you to select the child generation mode.<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+# 1st form: pass the command line as arguments:<br/>
+multijob_child_init ls /dev<br/>
+# Or if you want to use pre/post fork modes:<br/>
+multijob_child_init --pre ls /dev<br/>
+multijob_child_init --post ls /dev<div class="spacer">
+</div>
+<br/>
+# 2nd form: execute multiple stuff in the background (post fork):<br/>
+(<br/>
+multijob_child_init<br/>
+out=`ls`<br/>
+if echo &quot;${out}&quot; | grep foo ; then<br/>
+	echo &quot;YEAH&quot;<br/>
+fi<br/>
+) &amp;<br/>
+multijob_post_fork<div class="spacer">
+</div>
+<br/>
+# 2nd form: execute multiple stuff in the background (pre fork):<br/>
+multijob_pre_fork<br/>
+(<br/>
+multijob_child_init<br/>
+out=`ls`<br/>
+if echo &quot;${out}&quot; | grep foo ; then<br/>
+	echo &quot;YEAH&quot;<br/>
+fi<br/>
+) &amp;<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>multijob_pre_fork</b></dt>
+<dd>
+You must call this in the parent process before forking a child process. If the parallel limit has been hit, it will wait for one child to finish and return its exit status.</dd>
+</dl>
+<dl>
+<dt>
+<b>multijob_post_fork</b></dt>
+<dd>
+You must call this in the parent process after forking a child process. If the parallel limit has been hit, it will wait for one child to finish and return its exit status.</dd>
+</dl>
+<dl>
+<dt>
+<b>multijob_finish_one</b></dt>
+<dd>
+Wait for a single process to exit and return its exit code.</dd>
+</dl>
+<dl>
+<dt>
+<b>multijob_finish</b></dt>
+<dd>
+Wait for all pending processes to exit and return the bitwise or of all their exit codes.</dd>
+</dl>
+<dl>
+<dt>
+<b>redirect_alloc_fd</b> &lt;var&gt; &lt;file&gt; [redirection]</dt>
+<dd>
+Find a free fd and redirect the specified file via it.  Store the new fd in the specified variable.  Useful for the cases where we don't care about the exact fd #.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>AUTHORS</h1><br/>
+Brian Harring &lt;ferringb@gentoo.org&gt;<br/>
+Mike Frysinger &lt;vapier@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+base-system@gentoo.org<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/multiprocessing.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/multiprocessing.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

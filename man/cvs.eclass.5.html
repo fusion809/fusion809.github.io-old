@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+CVS.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+CVS.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+CVS.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> cvs.eclass - This eclass provides generic cvs fetching functions</div>
+<div class="section">
+<h1>DESCRIPTION</h1> This eclass provides the generic cvs fetching functions. To use this from an ebuild, set the ECLASS VARIABLES as specified below in your ebuild before inheriting. Then either leave the default src_unpack or extend over cvs_src_unpack. If you find that you need to call the cvs_* functions directly, I'd be interested to hear about it.</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>cvs_src_unpack</b></dt>
+<dd>
+The cvs src_unpack function, which will be exported</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ECLASS VARIABLES</h1><dl>
+<dt>
+<b>ECVS_CVS_COMPRESS</b> ?= <i>-z1</i></dt>
+<dd>
+Set the default compression level.  Has no effect when ECVS_CVS_COMMAND is defined by ebuild/user.</dd>
+</dl>
+<dl>
+<dt>
+<b>ECVS_CVS_OPTIONS</b> ?= <i>&quot;-q -f&quot;</i></dt>
+<dd>
+Additional options to the cvs commands.  Has no effect when ECVS_CVS_COMMAND is defined by ebuild/user.</dd>
+</dl>
+<dl>
+<dt>
+<b>ECVS_CVS_COMMAND</b> ?= <i>&quot;cvs ${ECVS_CVS_OPTIONS} ${ECVS_CVS_COMPRESS}&quot;</i></dt>
+<dd>
+CVS command to run<div style="height: 1.00em;">
+&#160;</div>
+You can set, for example, &quot;cvs -t&quot; for extensive debug information on the cvs connection.  The default of &quot;cvs -q -f -z4&quot; means to be quiet, to disregard the ~/.cvsrc config file and to use maximum compression.</dd>
+</dl>
+<dl>
+<dt>
+<b>ECVS_UP_OPTS</b> ?= <i>-dP</i></dt>
+<dd>
+CVS options given after the cvs update command. Don't remove &quot;-dP&quot; or things won't work.</dd>
+</dl>
+<dl>
+<dt>
+<b>ECVS_CO_OPTS</b></dt>
+<dd>
+CVS options given after the cvs checkout command.</dd>
+</dl>
+<dl>
+<dt>
+<b>ECVS_OFFLINE</b> ?= <i>${EVCS_OFFLINE}</i></dt>
+<dd>
+Set this variable to a non-empty value to disable the automatic updating of a CVS source tree. This is intended to be set outside the cvs source tree by users.</dd>
+</dl>
+<dl>
+<dt>
+<b>ECVS_LOCAL</b></dt>
+<dd>
+If this is set, the CVS module will be fetched non-recursively. Refer to the information in the CVS man page regarding the -l command option (not the -l global option).</dd>
+</dl>
+<dl>
+<dt>
+<b>ECVS_LOCALNAME</b></dt>
+<dd>
+Local name of checkout directory<div style="height: 1.00em;">
+&#160;</div>
+This is useful if the module on the server is called something common like 'driver' or is nested deep in a tree, and you don't like useless empty directories.<div style="height: 1.00em;">
+&#160;</div>
+WARNING: Set this only from within ebuilds!  If set in your shell or some such, things will break because the ebuild won't expect it and have e.g. a wrong $S setting.</dd>
+</dl>
+<dl>
+<dt>
+<b>ECVS_TOP_DIR</b> ?= <i>&quot;${PORTAGE_ACTUAL_DISTDIR-${DISTDIR}}/cvs-src&quot;</i></dt>
+<dd>
+The directory under which CVS modules are checked out.</dd>
+</dl>
+<dl>
+<dt>
+<b>ECVS_SERVER</b> ?= <i>&quot;offline&quot;</i></dt>
+<dd>
+CVS path<div style="height: 1.00em;">
+&#160;</div>
+The format is &quot;server:/dir&quot;, e.g. &quot;anoncvs.kde.org:/home/kde&quot;. Remove the other parts of the full CVSROOT, which might look like &quot;:pserver:anonymous@anoncvs.kde.org:/home/kde&quot;; this is generated using other settings also.<div style="height: 1.00em;">
+&#160;</div>
+Set this to &quot;offline&quot; to disable fetching (i.e. to assume the module is already checked out in ECVS_TOP_DIR).</dd>
+</dl>
+<dl>
+<dt>
+<b>ECVS_MODULE</b> (REQUIRED)</dt>
+<dd>
+The name of the CVS module to be fetched<div style="height: 1.00em;">
+&#160;</div>
+This must be set when cvs_src_unpack is called.  This can include several directory levels, i.e. &quot;foo/bar/baz&quot; [[ -z ${ECVS_MODULE} ]] &amp;&amp; die &quot;$ECLASS: error: ECVS_MODULE not set, cannot continue&quot;</dd>
+</dl>
+<dl>
+<dt>
+<b>ECVS_DATE</b></dt>
+<dd>
+The date of the checkout.  See the -D date_spec option in the cvs man page for more details.</dd>
+</dl>
+<dl>
+<dt>
+<b>ECVS_BRANCH</b></dt>
+<dd>
+The name of the branch/tag to use<div style="height: 1.00em;">
+&#160;</div>
+The default is &quot;HEAD&quot;.  The following default _will_ reset your branch checkout to head if used. : ${ECVS_BRANCH:=&quot;HEAD&quot;}</dd>
+</dl>
+<dl>
+<dt>
+<b>ECVS_AUTH</b> ?= <i>&quot;pserver&quot;</i></dt>
+<dd>
+Authentication method to use<div style="height: 1.00em;">
+&#160;</div>
+Possible values are &quot;pserver&quot; and &quot;ext&quot;.  If `ext' authentication is used, the remote shell to use can be specified in CVS_RSH (SSH is used by default).  Currently, the only supported remote shell for `ext' authentication is SSH.<div style="height: 1.00em;">
+&#160;</div>
+Armando Di Cianno &lt;fafhrd@gentoo.org&gt; 2004/09/27 - Added &quot;no&quot; as a server type, which uses no AUTH method, nor<br/>
+   does it login<br/>
+ e.g.<br/>
+  &quot;cvs -danoncvs@savannah.gnu.org:/cvsroot/backbone co System&quot;<br/>
+  ( from gnustep-apps/textedit )</dd>
+</dl>
+<dl>
+<dt>
+<b>ECVS_USER</b> ?= <i>&quot;anonymous&quot;</i></dt>
+<dd>
+Username to use for authentication on the remote server.</dd>
+</dl>
+<dl>
+<dt>
+<b>ECVS_PASS</b></dt>
+<dd>
+Password to use for authentication on the remote server</dd>
+</dl>
+<dl>
+<dt>
+<b>ECVS_SSH_HOST_KEY</b></dt>
+<dd>
+If SSH is used for `ext' authentication, use this variable to specify the host key of the remote server.  The format of the value should be the same format that is used for the SSH known hosts file.<div style="height: 1.00em;">
+&#160;</div>
+WARNING: If a SSH host key is not specified using this variable, the remote host key will not be verified.</dd>
+</dl>
+<dl>
+<dt>
+<b>ECVS_CLEAN</b></dt>
+<dd>
+Set this to get a clean copy when updating (passes the -C option to cvs update)</dd>
+</dl>
+<dl>
+<dt>
+<b>ECVS_RUNAS</b></dt>
+<dd>
+Specifies an alternate (non-root) user to use to run cvs.  Currently b0rked and wouldn't work with portage userpriv anyway without special magic.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+vapier@gentoo.org (and anyone who wants to help)<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/cvs.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/cvs.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

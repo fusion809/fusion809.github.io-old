@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+PYTHON-ANY-R1.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+PYTHON-ANY-R1.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+PYTHON-ANY-R1.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> python-any-r1.eclass - An eclass for packages having build-time dependency on Python.</div>
+<div class="section">
+<h1>DESCRIPTION</h1> A minimal eclass for packages which need any Python interpreter installed without a need for explicit choice and invariability. This usually involves packages requiring Python at build-time but having no other relevance to it.<div style="height: 1.00em;">
+&#160;</div>
+This eclass provides a minimal PYTHON_DEPS variable with a dependency string on any of the supported Python implementations. It also exports pkg_setup() which finds the best supported implementation and sets it as the active one.<div style="height: 1.00em;">
+&#160;</div>
+Optionally, you can define a python_check_deps() function. It will be called by the eclass with EPYTHON set to each matching Python implementation and it is expected to check whether the implementation fulfills the package requirements. You can use the locally exported PYTHON_USEDEP to check USE-dependencies of relevant packages. It should return a true value (0) if the Python implementation fulfills the requirements, a false value (non-zero) otherwise.<div style="height: 1.00em;">
+&#160;</div>
+Please note that python-any-r1 will always inherit python-utils-r1 as well. Thus, all the functions defined there can be used in the packages using python-any-r1, and there is no need ever to inherit both.<div style="height: 1.00em;">
+&#160;</div>
+For more information, please see the wiki: https://wiki.gentoo.org/wiki/Project:Python/python-any-r1</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>python_gen_any_dep</b> &lt;dependency-block&gt;</dt>
+<dd>
+Generate an any-of dependency that enforces a version match between the Python interpreter and Python packages. &lt;dependency-block&gt; needs to list one or more dependencies with verbatim '${PYTHON_USEDEP}' references (quoted!) that will get expanded inside the function.<div style="height: 1.00em;">
+&#160;</div>
+This should be used along with an appropriate python_check_deps() that checks which of the any-of blocks were matched.<div style="height: 1.00em;">
+&#160;</div>
+Example use:<br/>
+DEPEND=&quot;$(python_gen_any_dep '<br/>
+dev-python/foo[${PYTHON_USEDEP}]<br/>
+|| ( dev-python/bar[${PYTHON_USEDEP}]<br/>
+	dev-python/baz[${PYTHON_USEDEP}] )')&quot;<div class="spacer">
+</div>
+<br/>
+python_check_deps() {<br/>
+has_version &quot;dev-python/foo[${PYTHON_USEDEP}]&quot; \<br/>
+	&amp;&amp; { has_version &quot;dev-python/bar[${PYTHON_USEDEP}]&quot; \<br/>
+		|| has_version &quot;dev-python/baz[${PYTHON_USEDEP}]&quot;; }<br/>
+}<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+Example value:<br/>
+|| (<br/>
+(<br/>
+	dev-lang/python:2.7<br/>
+	dev-python/foo[python_targets_python2_7(-)?,python_single_target_python2_7(+)?]<br/>
+	|| ( dev-python/bar[python_targets_python2_7(-)?,python_single_target_python2_7(+)?]<br/>
+		dev-python/baz[python_targets_python2_7(-)?,python_single_target_python2_7(+)?] )<br/>
+)<br/>
+(<br/>
+	dev-lang/python:2.6<br/>
+	dev-python/foo[python_targets_python2_6(-)?,python_single_target_python2_6(+)?]<br/>
+	|| ( dev-python/bar[python_targets_python2_6(-)?,python_single_target_python2_6(+)?]<br/>
+		dev-python/baz[python_targets_python2_6(-)?,python_single_target_python2_6(+)?] )<br/>
+)<br/>
+)<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>python_setup</b></dt>
+<dd>
+Determine what the best installed (and supported) Python implementation is, and set the Python build environment up for it.<div style="height: 1.00em;">
+&#160;</div>
+This function will call python_check_deps() if defined.</dd>
+</dl>
+<dl>
+<dt>
+<b>python-any-r1_pkg_setup</b></dt>
+<dd>
+Runs python_setup during from-source installs.<div style="height: 1.00em;">
+&#160;</div>
+In a binary package installs is a no-op. If you need Python in pkg_* phases of a binary package, call python_setup directly.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ECLASS VARIABLES</h1><dl>
+<dt>
+<b>PYTHON_COMPAT</b> (REQUIRED)</dt>
+<dd>
+This variable contains a list of Python implementations the package supports. It must be set before the `inherit' call. It has to be an array.<div style="height: 1.00em;">
+&#160;</div>
+Example:<br/>
+PYTHON_COMPAT=( python{2_5,2_6,2_7} )<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>PYTHON_REQ_USE</b></dt>
+<dd>
+The list of USEflags required to be enabled on the Python implementations, formed as a USE-dependency string. It should be valid for all implementations in PYTHON_COMPAT, so it may be necessary to use USE defaults.<div style="height: 1.00em;">
+&#160;</div>
+Example:<br/>
+PYTHON_REQ_USE=&quot;gdbm,ncurses(-)?&quot;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+It will cause the Python dependencies to look like:<br/>
+|| ( dev-lang/python:X.Y[gdbm,ncurses(-)?] ... )<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>PYTHON_DEPS</b></dt>
+<dd>
+This is an eclass-generated Python dependency string for all implementations listed in PYTHON_COMPAT.<div style="height: 1.00em;">
+&#160;</div>
+Any of the supported interpreters will satisfy the dependency.<div style="height: 1.00em;">
+&#160;</div>
+Example use:<br/>
+DEPEND=&quot;${RDEPEND}<br/>
+${PYTHON_DEPS}&quot;<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+Example value:<br/>
+|| ( dev-lang/python:2.7[gdbm]<br/>
+	dev-lang/python:2.6[gdbm] )<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>PYTHON_USEDEP</b></dt>
+<dd>
+An eclass-generated USE-dependency string for the currently tested implementation. It is set locally for python_check_deps() call.<div style="height: 1.00em;">
+&#160;</div>
+The generate USE-flag list is compatible with packages using python-r1, python-single-r1 and python-distutils-ng eclasses. It must not be used on packages using python.eclass.<div style="height: 1.00em;">
+&#160;</div>
+Example use:<br/>
+python_check_deps() {<br/>
+has_version &quot;dev-python/foo[${PYTHON_USEDEP}]&quot;<br/>
+}<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+Example value:<br/>
+python_targets_python2_7(-)?,python_single_target_python2_7(+)?<br/>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>AUTHORS</h1><br/>
+Author: Micha&#322; G&#243;rny &lt;mgorny@gentoo.org&gt;<br/>
+Based on work of: Krzysztof Pawlik &lt;nelchael@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+Python team &lt;python@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/python-any-r1.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/python-any-r1.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

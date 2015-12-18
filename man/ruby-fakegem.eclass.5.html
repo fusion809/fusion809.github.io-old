@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+RUBY-FAKEGEM.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+RUBY-FAKEGEM.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+RUBY-FAKEGEM.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> ruby-fakegem.eclass - An eclass for installing Ruby packages to behave like RubyGems.</div>
+<div class="section">
+<h1>DESCRIPTION</h1> This eclass allows to install arbitrary Ruby libraries (including Gems), providing integration into the RubyGems system even for &quot;regular&quot; packages.</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>ruby_fakegem_gemsdir</b></dt>
+<dd>
+This function returns the gems data directory for the ruby implementation in question.<div style="height: 1.00em;">
+&#160;</div>
+Return value: Returns the gem data directory</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby_fakegem_doins</b> file [file...]</dt>
+<dd>
+Installs the specified file(s) into the gems directory.</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby_fakegem_newsins()</b> file filename</dt>
+<dd>
+Installs the specified file into the gems directory using the provided filename.</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby_fakegem_install_gemspec</b></dt>
+<dd>
+Install a .gemspec file for this package. Either use the file indicated by the RUBY_FAKEGEM_GEMSPEC variable, or generate one using ruby_fakegem_genspec.</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby_fakegem_gemspec_gemspec</b> gemspec-input gemspec-output</dt>
+<dd>
+Generates an installable version of the specification indicated by RUBY_FAKEGEM_GEMSPEC. This file is eval'ed to produce a final specification in a way similar to packaging the gemspec file.</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby_fakegem_metadata_gemspec</b> gemspec-metadata gemspec-output</dt>
+<dd>
+Generates an installable version of the specification indicated by the metadata distributed by the gem itself. This is similar to how rubygems creates an installation from a .gem file.</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby_fakegem_genspec</b> output-gemspec</dt>
+<dd>
+Generates a gemspec for the package and places it into the &quot;specifications&quot; directory of RubyGems. If the metadata normally distributed with a gem is present then that is used to generate the gemspec file.<div style="height: 1.00em;">
+&#160;</div>
+As a fallback we can generate our own version. In the gemspec, the following values are set: name, version, summary, homepage, and require_paths=[&quot;lib&quot;]. See RUBY_FAKEGEM_NAME and RUBY_FAKEGEM_VERSION for setting name and version. See RUBY_FAKEGEM_REQUIRE_PATHS for setting extra require paths.</dd>
+</dl>
+<dl>
+<dt>
+<b>ruby_fakegem_binwrapper</b> command [path] [content]</dt>
+<dd>
+Creates a new binary wrapper for a command installed by the RubyGem. path defaults to /usr/bin/$command content is optional and can be used to inject additional ruby code into the wrapper. This may be useful to e.g. force a specific version using the gem command.</dd>
+</dl>
+<dl>
+<dt>
+<b>all_fakegem_compile</b></dt>
+<dd>
+Build documentation for the package if indicated by the doc USE flag and if there is a documetation task defined.</dd>
+</dl>
+<dl>
+<dt>
+<b>all_ruby_unpack</b></dt>
+<dd>
+Unpack the source archive, including support for unpacking gems.</dd>
+</dl>
+<dl>
+<dt>
+<b>all_ruby_compile</b></dt>
+<dd>
+Compile the package.</dd>
+</dl>
+<dl>
+<dt>
+<b>each_fakegem_test</b></dt>
+<dd>
+Run tests for the package for each ruby target if the test task is defined.</dd>
+</dl>
+<dl>
+<dt>
+<b>each_fakegem_install</b></dt>
+<dd>
+Install the package for each ruby target.</dd>
+</dl>
+<dl>
+<dt>
+<b>each_ruby_install</b></dt>
+<dd>
+Install the package for each target.</dd>
+</dl>
+<dl>
+<dt>
+<b>all_fakegem_install</b></dt>
+<dd>
+Install files common to all ruby targets.</dd>
+</dl>
+<dl>
+<dt>
+<b>all_ruby_install</b></dt>
+<dd>
+Install files common to all ruby targets.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ECLASS VARIABLES</h1><dl>
+<dt>
+<b>RUBY_FAKEGEM_NAME</b></dt>
+<dd>
+Sets the Gem name for the generated fake gemspec. This variable MUST be set before inheriting the eclass. RUBY_FAKEGEM_NAME=&quot;${PN}&quot;</dd>
+</dl>
+<dl>
+<dt>
+<b>RUBY_FAKEGEM_VERSION</b></dt>
+<dd>
+Sets the Gem version for the generated fake gemspec. This variable MUST be set before inheriting the eclass. RUBY_FAKEGEM_VERSION=&quot;${PV}&quot;</dd>
+</dl>
+<dl>
+<dt>
+<b>RUBY_FAKEGEM_TASK_DOC</b></dt>
+<dd>
+Specify the rake(1) task to run to generate documentation. RUBY_FAKEGEM_TASK_DOC=&quot;rdoc&quot;</dd>
+</dl>
+<dl>
+<dt>
+<b>RUBY_FAKEGEM_RECIPE_TEST</b></dt>
+<dd>
+Specify one of the default testing function for ruby-fakegem:<br/>
+ - rake (default; see also RUBY_FAKEGEM_TASK_TEST)<br/>
+ - rspec (calls ruby-ng_rspec, adds dev-ruby/rspec:2 to the dependencies)<br/>
+ - rspec3 (calls ruby-ng_rspec, adds dev-ruby/rspec:3 to the dependencies)<br/>
+ - cucumber (calls ruby-ng_cucumber, adds dev-util/cucumber to the<br/>
+   dependencies; does not work on JRuby).<br/>
+ - none RUBY_FAKEGEM_RECIPE_TEST=&quot;rake&quot;</dd>
+</dl>
+<dl>
+<dt>
+<b>RUBY_FAKEGEM_TASK_TEST</b></dt>
+<dd>
+Specify the rake(1) task used for executing tests. Only valid if RUBY_FAKEGEM_RECIPE_TEST is set to &quot;rake&quot; (the default). RUBY_FAKEGEM_TASK_TEST=&quot;test&quot;</dd>
+</dl>
+<dl>
+<dt>
+<b>RUBY_FAKEGEM_RECIPE_DOC</b></dt>
+<dd>
+Specify one of the default API doc building function for ruby-fakegem:<br/>
+ - rake (default; see also RUBY_FAKEGEM_TASK_DOC)<br/>
+ - rdoc (calls `rdoc-2`, adds dev-ruby/rdoc to the dependencies);<br/>
+ - yard (calls `yard`, adds dev-ruby/yard to the dependencies);<br/>
+ - none RUBY_FAKEGEM_RECIPE_DOC=&quot;rake&quot;</dd>
+</dl>
+<dl>
+<dt>
+<b>RUBY_FAKEGEM_DOCDIR</b></dt>
+<dd>
+Specify the directory under which the documentation is built; if empty no documentation will be installed automatically. Note: if RUBY_FAKEGEM_RECIPE_DOC is set to `rdoc`, this variable is hardwired to `doc`. RUBY_FAKEGEM_DOCDIR=&quot;&quot;</dd>
+</dl>
+<dl>
+<dt>
+<b>RUBY_FAKEGEM_EXTRADOC</b></dt>
+<dd>
+Extra documentation to install (readme, changelogs, &#8230;). RUBY_FAKEGEM_EXTRADOC=&quot;&quot;</dd>
+</dl>
+<dl>
+<dt>
+<b>RUBY_FAKEGEM_DOC_SOURCES</b></dt>
+<dd>
+Allow settings defined sources to scan for documentation. This only applies if RUBY_FAKEGEM_DOC_TASK is set to `rdoc`. RUBY_FAKEGEM_DOC_SOURCES=&quot;lib&quot;</dd>
+</dl>
+<dl>
+<dt>
+<b>RUBY_FAKEGEM_BINWRAP</b></dt>
+<dd>
+Binaries to wrap around (relative to the bin/ directory) RUBY_FAKEGEM_BINWRAP=&quot;*&quot;</dd>
+</dl>
+<dl>
+<dt>
+<b>RUBY_FAKEGEM_REQUIRE_PATHS</b></dt>
+<dd>
+Extra require paths (beside lib) to add to the specification RUBY_FAKEGEM_REQUIRE_PATHS=&quot;&quot;</dd>
+</dl>
+<dl>
+<dt>
+<b>RUBY_FAKEGEM_GEMSPEC</b></dt>
+<dd>
+Filename of .gemspec file to install instead of generating a generic one. RUBY_FAKEGEM_GEMSPEC=&quot;&quot;</dd>
+</dl>
+<dl>
+<dt>
+<b>RUBY_FAKEGEM_EXTRAINSTALL</b></dt>
+<dd>
+List of files and directories relative to the top directory that also get installed. Some gems provide extra files such as version information, Rails generators, or data that needs to be installed as well. RUBY_FAKEGEM_EXTRAINSTALL=&quot;&quot;</dd>
+</dl>
+</div>
+<div class="section">
+<h1>AUTHORS</h1><br/>
+Author: Diego E. Petten&#242; &lt;flameeyes@gentoo.org&gt;<br/>
+Author: Alex Legler &lt;a3li@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+Ruby herd &lt;ruby@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/ruby-fakegem.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/ruby-fakegem.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

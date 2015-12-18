@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+PYTHON-UTILS-R1.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+PYTHON-UTILS-R1.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+PYTHON-UTILS-R1.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> python-utils-r1.eclass - Utility functions for packages with Python parts.</div>
+<div class="section">
+<h1>DESCRIPTION</h1> A utility eclass providing functions to query Python implementations, install Python modules and scripts.<div style="height: 1.00em;">
+&#160;</div>
+This eclass does not set any metadata variables nor export any phase functions. It can be inherited safely.<div style="height: 1.00em;">
+&#160;</div>
+For more information, please see the wiki: https://wiki.gentoo.org/wiki/Project:Python/python-utils-r1</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>python_export</b> [&lt;impl&gt;] &lt;variables&gt;...</dt>
+<dd>
+Set and export the Python implementation-relevant variables passed as parameters.<div style="height: 1.00em;">
+&#160;</div>
+The optional first parameter may specify the requested Python implementation (either as PYTHON_TARGETS value, e.g. python2_7, or an EPYTHON one, e.g. python2.7). If no implementation passed, the current one will be obtained from ${EPYTHON}.<div style="height: 1.00em;">
+&#160;</div>
+The variables which can be exported are: PYTHON, EPYTHON, PYTHON_SITEDIR. They are described more completely in the eclass variable documentation.</dd>
+</dl>
+<dl>
+<dt>
+<b>python_get_sitedir</b> [&lt;impl&gt;]</dt>
+<dd>
+Obtain and print the 'site-packages' path for the given implementation. If no implementation is provided, ${EPYTHON} will be used.<div style="height: 1.00em;">
+&#160;</div>
+If you just need to have PYTHON_SITEDIR set (and exported), then it is better to use python_export() directly instead.</dd>
+</dl>
+<dl>
+<dt>
+<b>python_get_includedir</b> [&lt;impl&gt;]</dt>
+<dd>
+Obtain and print the include path for the given implementation. If no implementation is provided, ${EPYTHON} will be used.<div style="height: 1.00em;">
+&#160;</div>
+If you just need to have PYTHON_INCLUDEDIR set (and exported), then it is better to use python_export() directly instead.</dd>
+</dl>
+<dl>
+<dt>
+<b>python_get_library_path</b> [&lt;impl&gt;]</dt>
+<dd>
+Obtain and print the Python library path for the given implementation. If no implementation is provided, ${EPYTHON} will be used.<div style="height: 1.00em;">
+&#160;</div>
+Please note that this function can be used with CPython only. Use in another implementation will result in a fatal failure.</dd>
+</dl>
+<dl>
+<dt>
+<b>python_get_CFLAGS</b> [&lt;impl&gt;]</dt>
+<dd>
+Obtain and print the compiler flags for building against Python, for the given implementation. If no implementation is provided, ${EPYTHON} will be used.<div style="height: 1.00em;">
+&#160;</div>
+Please note that this function can be used with CPython only. It requires Python and pkg-config installed, and therefore proper build-time dependencies need be added to the ebuild.</dd>
+</dl>
+<dl>
+<dt>
+<b>python_get_LIBS</b> [&lt;impl&gt;]</dt>
+<dd>
+Obtain and print the compiler flags for linking against Python, for the given implementation. If no implementation is provided, ${EPYTHON} will be used.<div style="height: 1.00em;">
+&#160;</div>
+Please note that this function can be used with CPython only. It requires Python and pkg-config installed, and therefore proper build-time dependencies need be added to the ebuild.</dd>
+</dl>
+<dl>
+<dt>
+<b>python_get_scriptdir</b> [&lt;impl&gt;]</dt>
+<dd>
+Obtain and print the script install path for the given implementation. If no implementation is provided, ${EPYTHON} will be used.</dd>
+</dl>
+<dl>
+<dt>
+<b>python_optimize</b> [&lt;directory&gt;...]</dt>
+<dd>
+Compile and optimize Python modules in specified directories (absolute paths). If no directories are provided, the default system paths are used (prepended with ${D}).</dd>
+</dl>
+<dl>
+<dt>
+<b>python_scriptinto</b> &lt;new-path&gt;</dt>
+<dd>
+Set the current scriptroot. The new value will be stored in the 'python_scriptroot' environment variable. The new value need be relative to the installation root (${ED}).<div style="height: 1.00em;">
+&#160;</div>
+Alternatively, you can set the variable directly.</dd>
+</dl>
+<dl>
+<dt>
+<b>python_doexe</b> &lt;files&gt;...</dt>
+<dd>
+Install the given executables into current python_scriptroot, for the current Python implementation (${EPYTHON}).<div style="height: 1.00em;">
+&#160;</div>
+The executable will be wrapped properly for the Python implementation, though no shebang mangling will be performed.</dd>
+</dl>
+<dl>
+<dt>
+<b>python_newexe</b> &lt;path&gt; &lt;new-name&gt;</dt>
+<dd>
+Install the given executable into current python_scriptroot, for the current Python implementation (${EPYTHON}).<div style="height: 1.00em;">
+&#160;</div>
+The executable will be wrapped properly for the Python implementation, though no shebang mangling will be performed. It will be renamed to &lt;new-name&gt;.</dd>
+</dl>
+<dl>
+<dt>
+<b>python_doscript</b> &lt;files&gt;...</dt>
+<dd>
+Install the given scripts into current python_scriptroot, for the current Python implementation (${EPYTHON}).<div style="height: 1.00em;">
+&#160;</div>
+All specified files must start with a 'python' shebang. The shebang will be converted, and the files will be wrapped properly for the Python implementation.<div style="height: 1.00em;">
+&#160;</div>
+Example:<br/>
+src_install() {<br/>
+  python_foreach_impl python_doscript ${PN}<br/>
+}<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>python_newscript</b> &lt;path&gt; &lt;new-name&gt;</dt>
+<dd>
+Install the given script into current python_scriptroot for the current Python implementation (${EPYTHON}), and name it &lt;new-name&gt;.<div style="height: 1.00em;">
+&#160;</div>
+The file must start with a 'python' shebang. The shebang will be converted, and the file will be wrapped properly for the Python implementation. It will be renamed to &lt;new-name&gt;.<div style="height: 1.00em;">
+&#160;</div>
+Example:<br/>
+src_install() {<br/>
+  python_foreach_impl python_newscript foo.py foo<br/>
+}<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>python_moduleinto</b> &lt;new-path&gt;</dt>
+<dd>
+Set the current module root. The new value will be stored in the 'python_moduleroot' environment variable. The new value need be relative to the site-packages root.<div style="height: 1.00em;">
+&#160;</div>
+Alternatively, you can set the variable directly.</dd>
+</dl>
+<dl>
+<dt>
+<b>python_domodule</b> &lt;files&gt;...</dt>
+<dd>
+Install the given modules (or packages) into the current python_moduleroot. The list can mention both modules (files) and packages (directories). All listed files will be installed for all enabled implementations, and compiled afterwards.<div style="height: 1.00em;">
+&#160;</div>
+Example:<br/>
+src_install() {<br/>
+  # (${PN} being a directory)<br/>
+  python_foreach_impl python_domodule ${PN}<br/>
+}<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>python_doheader</b> &lt;files&gt;...</dt>
+<dd>
+Install the given headers into the implementation-specific include directory. This function is unconditionally recursive, i.e. you can pass directories instead of files.<div style="height: 1.00em;">
+&#160;</div>
+Example:<br/>
+src_install() {<br/>
+  python_foreach_impl python_doheader foo.h bar.h<br/>
+}<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>python_wrapper_setup</b> [&lt;path&gt; [&lt;impl&gt;]]</dt>
+<dd>
+Create proper 'python' executable and pkg-config wrappers (if available) in the directory named by &lt;path&gt;. Set up PATH and PKG_CONFIG_PATH appropriately. &lt;path&gt; defaults to ${T}/${EPYTHON}.<div style="height: 1.00em;">
+&#160;</div>
+The wrappers will be created for implementation named by &lt;impl&gt;, or for one named by ${EPYTHON} if no &lt;impl&gt; passed.<div style="height: 1.00em;">
+&#160;</div>
+If the named directory contains a python symlink already, it will be assumed to contain proper wrappers already and only environment setup will be done. If wrapper update is requested, the directory shall be removed first.</dd>
+</dl>
+<dl>
+<dt>
+<b>python_is_python3</b> [&lt;impl&gt;]</dt>
+<dd>
+Check whether &lt;impl&gt; (or ${EPYTHON}) is a Python3k variant (i.e. uses syntax and stdlib of Python 3.*).<div style="height: 1.00em;">
+&#160;</div>
+Returns 0 (true) if it is, 1 (false) otherwise.</dd>
+</dl>
+<dl>
+<dt>
+<b>python_is_installed</b> [&lt;impl&gt;]</dt>
+<dd>
+Check whether the interpreter for &lt;impl&gt; (or ${EPYTHON}) is installed. Uses has_version with a proper dependency string.<div style="height: 1.00em;">
+&#160;</div>
+Returns 0 (true) if it is, 1 (false) otherwise.</dd>
+</dl>
+<dl>
+<dt>
+<b>python_fix_shebang</b> [-f|--force] [-q|--quiet] &lt;path&gt;...</dt>
+<dd>
+Replace the shebang in Python scripts with the current Python implementation (EPYTHON). If a directory is passed, works recursively on all Python scripts.<div style="height: 1.00em;">
+&#160;</div>
+Only files having a 'python*' shebang will be modified. Files with other shebang will either be skipped when working recursively on a directory or treated as error when specified explicitly.<div style="height: 1.00em;">
+&#160;</div>
+Shebangs matching explicitly current Python version will be left unmodified. Shebangs requesting another Python version will be treated as fatal error, unless --force is given.<div style="height: 1.00em;">
+&#160;</div>
+--force causes the function to replace even shebangs that require incompatible Python version. --quiet causes the function not to list modified files verbosely.</dd>
+</dl>
+<dl>
+<dt>
+<b>python_export_utf8_locale</b></dt>
+<dd>
+Attempts to export a usable UTF-8 locale in the LC_CTYPE variable. Does nothing if LC_ALL is defined, or if the current locale uses a UTF-8 charmap. This may be used to work around the quirky open() behavior of python3.<div style="height: 1.00em;">
+&#160;</div>
+Return value: 0 on success, 1 on failure.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ECLASS VARIABLES</h1><dl>
+<dt>
+<b>PYTHON</b></dt>
+<dd>
+The absolute path to the current Python interpreter.<div style="height: 1.00em;">
+&#160;</div>
+This variable is set automatically in the following contexts:<div style="height: 1.00em;">
+&#160;</div>
+python-r1: Set in functions called by python_foreach_impl() or after calling python_export_best().<div style="height: 1.00em;">
+&#160;</div>
+python-single-r1: Set after calling python-single-r1_pkg_setup().<div style="height: 1.00em;">
+&#160;</div>
+distutils-r1: Set within any of the python sub-phase functions.<div style="height: 1.00em;">
+&#160;</div>
+Example value:<br/>
+/usr/bin/python2.7<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>EPYTHON</b></dt>
+<dd>
+The executable name of the current Python interpreter.<div style="height: 1.00em;">
+&#160;</div>
+This variable is set automatically in the following contexts:<div style="height: 1.00em;">
+&#160;</div>
+python-r1: Set in functions called by python_foreach_impl() or after calling python_export_best().<div style="height: 1.00em;">
+&#160;</div>
+python-single-r1: Set after calling python-single-r1_pkg_setup().<div style="height: 1.00em;">
+&#160;</div>
+distutils-r1: Set within any of the python sub-phase functions.<div style="height: 1.00em;">
+&#160;</div>
+Example value:<br/>
+python2.7<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>PYTHON_SITEDIR</b></dt>
+<dd>
+The path to Python site-packages directory.<div style="height: 1.00em;">
+&#160;</div>
+Set and exported on request using python_export().<div style="height: 1.00em;">
+&#160;</div>
+Example value:<br/>
+/usr/lib64/python2.7/site-packages<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>PYTHON_INCLUDEDIR</b></dt>
+<dd>
+The path to Python include directory.<div style="height: 1.00em;">
+&#160;</div>
+Set and exported on request using python_export().<div style="height: 1.00em;">
+&#160;</div>
+Example value:<br/>
+/usr/include/python2.7<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>PYTHON_LIBPATH</b></dt>
+<dd>
+The path to Python library.<div style="height: 1.00em;">
+&#160;</div>
+Set and exported on request using python_export(). Valid only for CPython.<div style="height: 1.00em;">
+&#160;</div>
+Example value:<br/>
+/usr/lib64/libpython2.7.so<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>PYTHON_CFLAGS</b></dt>
+<dd>
+Proper C compiler flags for building against Python. Obtained from pkg-config or python-config.<div style="height: 1.00em;">
+&#160;</div>
+Set and exported on request using python_export(). Valid only for CPython. Requires a proper build-time dependency on the Python implementation and on pkg-config.<div style="height: 1.00em;">
+&#160;</div>
+Example value:<br/>
+-I/usr/include/python2.7<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>PYTHON_LIBS</b></dt>
+<dd>
+Proper C compiler flags for linking against Python. Obtained from pkg-config or python-config.<div style="height: 1.00em;">
+&#160;</div>
+Set and exported on request using python_export(). Valid only for CPython. Requires a proper build-time dependency on the Python implementation and on pkg-config.<div style="height: 1.00em;">
+&#160;</div>
+Example value:<br/>
+-lpython2.7<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>PYTHON_PKG_DEP</b></dt>
+<dd>
+The complete dependency on a particular Python package as a string.<div style="height: 1.00em;">
+&#160;</div>
+Set and exported on request using python_export().<div style="height: 1.00em;">
+&#160;</div>
+Example value:<br/>
+dev-lang/python:2.7[xml]<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>PYTHON_SCRIPTDIR</b></dt>
+<dd>
+The location where Python scripts must be installed for current impl.<div style="height: 1.00em;">
+&#160;</div>
+Set and exported on request using python_export().<div style="height: 1.00em;">
+&#160;</div>
+Example value:<br/>
+/usr/lib/python-exec/python2.7<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>python_scriptroot</b></dt>
+<dd>
+The current script destination for python_doscript(). The path is relative to the installation root (${ED}).<div style="height: 1.00em;">
+&#160;</div>
+When unset, ${DESTTREE}/bin (/usr/bin by default) will be used.<div style="height: 1.00em;">
+&#160;</div>
+Can be set indirectly through the python_scriptinto() function.<div style="height: 1.00em;">
+&#160;</div>
+Example:<br/>
+src_install() {<br/>
+  local python_scriptroot=${GAMES_BINDIR}<br/>
+  python_foreach_impl python_doscript foo<br/>
+}<br/>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>python_moduleroot</b></dt>
+<dd>
+The current module root for python_domodule(). The path can be either an absolute system path (it must start with a slash, and ${ED} will be prepended to it) or relative to the implementation's site-packages directory (then it must start with a non-slash character).<div style="height: 1.00em;">
+&#160;</div>
+When unset, the modules will be installed in the site-packages root.<div style="height: 1.00em;">
+&#160;</div>
+Can be set indirectly through the python_moduleinto() function.<div style="height: 1.00em;">
+&#160;</div>
+Example:<br/>
+src_install() {<br/>
+  local python_moduleroot=bar<br/>
+  # installs ${PYTHON_SITEDIR}/bar/baz.py<br/>
+  python_foreach_impl python_domodule baz.py<br/>
+}<br/>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h1>AUTHORS</h1><br/>
+Author: Micha&#322; G&#243;rny &lt;mgorny@gentoo.org&gt;<br/>
+Based on work of: Krzysztof Pawlik &lt;nelchael@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+Python team &lt;python@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/python-utils-r1.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/python-utils-r1.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

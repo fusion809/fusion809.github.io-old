@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+BZR.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+BZR.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+BZR.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> bzr.eclass - generic fetching functions for the Bazaar VCS</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The bzr.eclass provides functions to fetch, unpack, patch, and bootstrap sources from repositories of the Bazaar distributed version control system.  The eclass was originally derived from git.eclass.<div style="height: 1.00em;">
+&#160;</div>
+Note: Just set EBZR_REPO_URI to the URI of the branch and src_unpack() of this eclass will export the branch to ${WORKDIR}/${P}.</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>bzr_initial_fetch</b> &lt;repository URI&gt; &lt;branch directory&gt;</dt>
+<dd>
+Internal function, retrieves the source code from a repository for the first time, using ${EBZR_FETCH_CMD}.</dd>
+</dl>
+<dl>
+<dt>
+<b>bzr_update</b> &lt;repository URI&gt; &lt;branch directory&gt;</dt>
+<dd>
+Internal function, updates the source code from a repository, using ${EBZR_UPDATE_CMD}.</dd>
+</dl>
+<dl>
+<dt>
+<b>bzr_fetch</b></dt>
+<dd>
+Wrapper function to fetch sources from a Bazaar repository with bzr branch or bzr pull, depending on whether there is an existing working copy.</dd>
+</dl>
+<dl>
+<dt>
+<b>bzr_bootstrap</b></dt>
+<dd>
+Apply patches in ${EBZR_PATCHES} and run ${EBZR_BOOTSTRAP} if specified.</dd>
+</dl>
+<dl>
+<dt>
+<b>bzr_src_unpack</b></dt>
+<dd>
+Default src_unpack(), calls bzr_fetch.  For EAPIs 0 and 1, also calls bzr_src_prepare.</dd>
+</dl>
+<dl>
+<dt>
+<b>bzr_src_prepare</b></dt>
+<dd>
+Default src_prepare(), calls bzr_bootstrap.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ECLASS VARIABLES</h1><dl>
+<dt>
+<b>EBZR_STORE_DIR</b> ?= <i>${PORTAGE_ACTUAL_DISTDIR:-${DISTDIR}}/bzr-src</i></dt>
+<dd>
+The directory to store all fetched Bazaar live sources.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBZR_UNPACK_DIR</b> ?= <i>${WORKDIR}/${P}</i></dt>
+<dd>
+The working directory where the sources are copied to.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBZR_INIT_REPO_CMD</b> ?= <i>&quot;bzr init-repository --no-trees&quot;</i></dt>
+<dd>
+The Bazaar command to initialise a shared repository.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBZR_FETCH_CMD</b> ?= <i>&quot;bzr branch --no-tree&quot;</i></dt>
+<dd>
+The Bazaar command to fetch the sources.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBZR_UPDATE_CMD</b> ?= <i>&quot;bzr pull&quot;</i></dt>
+<dd>
+The Bazaar command to update the sources.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBZR_EXPORT_CMD</b> ?= <i>&quot;bzr export&quot;</i></dt>
+<dd>
+The Bazaar command to export a branch.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBZR_CHECKOUT_CMD</b> ?= <i>&quot;bzr checkout --lightweight -q&quot;</i></dt>
+<dd>
+The Bazaar command to checkout a branch.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBZR_REVNO_CMD</b> ?= <i>&quot;bzr revno&quot;</i></dt>
+<dd>
+The Bazaar command to list a revision number of the branch.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBZR_OPTIONS</b></dt>
+<dd>
+The options passed to the fetch and update commands.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBZR_REPO_URI</b> (REQUIRED)</dt>
+<dd>
+The repository URI for the source package.<div style="height: 1.00em;">
+&#160;</div>
+Note: If the ebuild uses an sftp:// URI, then in EAPI 0 or 1 it must make sure that dev-vcs/bzr was built with USE=&quot;sftp&quot;.  In EAPI 2 or later, the eclass will depend on dev-vcs/bzr[sftp].</dd>
+</dl>
+<dl>
+<dt>
+<b>EBZR_INITIAL_URI</b></dt>
+<dd>
+The URI used for initial branching of the source repository.  If this variable is set, the initial branch will be cloned from the location specified, followed by a pull from ${EBZR_REPO_URI}.  This is intended for special cases, e.g. when download from the original repository is slow, but a fast mirror exists but may be out of date.<div style="height: 1.00em;">
+&#160;</div>
+Normally, this variable needs not be set.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBZR_BOOTSTRAP</b></dt>
+<dd>
+Bootstrap script or command like autogen.sh or etc.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBZR_PATCHES</b></dt>
+<dd>
+bzr.eclass can apply patches in bzr_bootstrap().  You can use regular expressions in this variable like *.diff or *.patch and the like. Note: These patches will be applied before EBZR_BOOTSTRAP is processed.<div style="height: 1.00em;">
+&#160;</div>
+Patches are searched both in ${PWD} and ${FILESDIR}.  If not found in either location, the installation dies.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBZR_PROJECT</b> ?= <i>${PN}</i></dt>
+<dd>
+The project name of your ebuild.  Normally, the branch will be stored in the ${EBZR_STORE_DIR}/${EBZR_PROJECT} directory.<div style="height: 1.00em;">
+&#160;</div>
+If EBZR_BRANCH is set (see below), then a shared repository will be created in that directory, and the branch will be located in ${EBZR_STORE_DIR}/${EBZR_PROJECT}/${EBZR_BRANCH}.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBZR_BRANCH</b></dt>
+<dd>
+The directory where to store the branch within a shared repository, relative to ${EBZR_STORE_DIR}/${EBZR_PROJECT}.<div style="height: 1.00em;">
+&#160;</div>
+This variable should be set if there are several live ebuilds for different branches of the same upstream project.  The branches can then share the same repository in EBZR_PROJECT, which will save both data traffic volume and disk space.<div style="height: 1.00em;">
+&#160;</div>
+If there is only a live ebuild for one single branch, EBZR_BRANCH needs not be set.  In this case, the branch will be stored in a stand-alone repository directly in EBZR_PROJECT.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBZR_REVISION</b></dt>
+<dd>
+Revision to fetch, defaults to the latest (see http://bazaar-vcs.org/BzrRevisionSpec or bzr help revisionspec).</dd>
+</dl>
+<dl>
+<dt>
+<b>EBZR_OFFLINE</b> = <i>${EVCS_OFFLINE}}</i></dt>
+<dd>
+Set this variable to a non-empty value to disable automatic updating of a bzr source tree.  This is intended to be set outside the ebuild by users.</dd>
+</dl>
+<dl>
+<dt>
+<b>EBZR_WORKDIR_CHECKOUT</b></dt>
+<dd>
+If this variable is set to a non-empty value, EBZR_CHECKOUT_CMD will be used instead of EBZR_EXPORT_CMD to copy the sources to WORKDIR.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>AUTHORS</h1><br/>
+Jorge Manuel B. S. Vicetto &lt;jmbsvicetto@gentoo.org&gt;<br/>
+Mark Lee &lt;bzr-gentoo-overlay@lazymalevolence.com&gt;<br/>
+Ulrich M&#252;ller &lt;ulm@gentoo.org&gt;<br/>
+Christian Faulhammer &lt;fauli@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+Bazaar team &lt;bazaar@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/bzr.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/bzr.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

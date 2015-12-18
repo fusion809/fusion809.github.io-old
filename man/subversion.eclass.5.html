@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+SUBVERSION.ECLASS(5)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+SUBVERSION.ECLASS(5)</td>
+<td class="head-vol">
+portage</td>
+<td class="head-rtitle">
+SUBVERSION.ECLASS(5)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> subversion.eclass - The subversion eclass is written to fetch software sources from subversion repositories</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The subversion eclass provides functions to fetch, patch and bootstrap software sources from subversion repositories.</div>
+<div class="section">
+<h1>FUNCTIONS</h1><dl>
+<dt>
+<b>subversion_fetch</b> [repo_uri] [destination]</dt>
+<dd>
+Wrapper function to fetch sources from subversion via svn checkout or svn update, depending on whether there is an existing working copy in ${ESVN_STORE_DIR}.<div style="height: 1.00em;">
+&#160;</div>
+Can take two optional parameters:<br/>
+  repo_uri    - a repository URI. default is ESVN_REPO_URI.<br/>
+  destination - a check out path in S.</dd>
+</dl>
+<dl>
+<dt>
+<b>subversion_bootstrap</b></dt>
+<dd>
+Apply patches in ${ESVN_PATCHES} and run ${ESVN_BOOTSTRAP} if specified.</dd>
+</dl>
+<dl>
+<dt>
+<b>subversion_wc_info</b> [repo_uri]</dt>
+<dd>
+Get svn info for the specified repo_uri. The default repo_uri is ESVN_REPO_URI.<div style="height: 1.00em;">
+&#160;</div>
+The working copy information on the specified repository URI are set to ESVN_WC_* variables.<div style="height: 1.00em;">
+&#160;</div>
+Return value: ESVN_WC_URL, ESVN_WC_ROOT, ESVN_WC_UUID, ESVN_WC_REVISION and ESVN_WC_PATH</dd>
+</dl>
+<dl>
+<dt>
+<b>subversion_src_unpack</b></dt>
+<dd>
+Default src_unpack. Fetch and, in older EAPIs, bootstrap.</dd>
+</dl>
+<dl>
+<dt>
+<b>subversion_src_prepare</b></dt>
+<dd>
+Default src_prepare. Bootstrap.</dd>
+</dl>
+<dl>
+<dt>
+<b>subversion_pkg_preinst</b> [repo_uri]</dt>
+<dd>
+Log the svn revision of source code. Doing this in pkg_preinst because we want the logs to stick around if packages are uninstalled without messing with config protection.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>ECLASS VARIABLES</h1><dl>
+<dt>
+<b>ESVN_STORE_DIR</b> = <i>&quot;${PORTAGE_ACTUAL_DISTDIR:-${DISTDIR}}/svn-src&quot;</i></dt>
+<dd>
+subversion sources store directory. Users may override this in /etc/portage/make.conf</dd>
+</dl>
+<dl>
+<dt>
+<b>ESVN_FETCH_CMD</b> = <i>&quot;svn checkout&quot;</i></dt>
+<dd>
+subversion checkout command</dd>
+</dl>
+<dl>
+<dt>
+<b>ESVN_UPDATE_CMD</b> = <i>&quot;svn update&quot;</i></dt>
+<dd>
+subversion update command</dd>
+</dl>
+<dl>
+<dt>
+<b>ESVN_SWITCH_CMD</b> = <i>&quot;svn switch&quot;</i></dt>
+<dd>
+subversion switch command</dd>
+</dl>
+<dl>
+<dt>
+<b>ESVN_OPTIONS</b> = <i>&quot;${ESVN_OPTIONS:-}&quot;</i></dt>
+<dd>
+the options passed to checkout or update. If you want a specific revision see ESVN_REPO_URI instead of using -rREV.</dd>
+</dl>
+<dl>
+<dt>
+<b>ESVN_REPO_URI</b> = <i>&quot;${ESVN_REPO_URI:-}&quot;</i></dt>
+<dd>
+repository uri<div style="height: 1.00em;">
+&#160;</div>
+e.g. http://foo/trunk, svn://bar/trunk, svn://bar/branch/foo@1234<div style="height: 1.00em;">
+&#160;</div>
+supported URI schemes:<br/>
+  http://<br/>
+  https://<br/>
+  svn://<br/>
+  svn+ssh://<br/>
+  file://<div style="height: 1.00em;">
+&#160;</div>
+to peg to a specific revision, append @REV to the repo's uri</dd>
+</dl>
+<dl>
+<dt>
+<b>ESVN_REVISION</b> = <i>&quot;${ESVN_REVISION:-}&quot;</i></dt>
+<dd>
+User configurable revision checkout or update to from the repository<div style="height: 1.00em;">
+&#160;</div>
+Useful for live svn or trunk svn ebuilds allowing the user to peg to a specific revision<div style="height: 1.00em;">
+&#160;</div>
+Note: This should never be set in an ebuild!</dd>
+</dl>
+<dl>
+<dt>
+<b>ESVN_USER</b> = <i>&quot;${ESVN_USER:-}&quot;</i></dt>
+<dd>
+User name</dd>
+</dl>
+<dl>
+<dt>
+<b>ESVN_PASSWORD</b> = <i>&quot;${ESVN_PASSWORD:-}&quot;</i></dt>
+<dd>
+Password</dd>
+</dl>
+<dl>
+<dt>
+<b>ESVN_PROJECT</b> = <i>&quot;${ESVN_PROJECT:-${PN/-svn}}&quot;</i></dt>
+<dd>
+project name of your ebuild (= name space)<div style="height: 1.00em;">
+&#160;</div>
+subversion eclass will check out the subversion repository like:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+  ${ESVN_STORE_DIR}/${ESVN_PROJECT}/${ESVN_REPO_URI##*/}<div style="height: 1.00em;">
+&#160;</div>
+so if you define ESVN_REPO_URI as http://svn.collab.net/repo/svn/trunk or http://svn.collab.net/repo/svn/trunk/. and PN is subversion-svn. it will check out like:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+  ${ESVN_STORE_DIR}/subversion/trunk<div style="height: 1.00em;">
+&#160;</div>
+this is not used in order to declare the name of the upstream project. so that you can declare this like:<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+  # jakarta commons-loggin<br/>
+  ESVN_PROJECT=commons/logging<div style="height: 1.00em;">
+&#160;</div>
+default: ${PN/-svn}.</dd>
+</dl>
+<dl>
+<dt>
+<b>ESVN_BOOTSTRAP</b> = <i>&quot;${ESVN_BOOTSTRAP:-}&quot;</i></dt>
+<dd>
+bootstrap script or command like autogen.sh or etc..</dd>
+</dl>
+<dl>
+<dt>
+<b>ESVN_PATCHES</b> = <i>&quot;${ESVN_PATCHES:-}&quot;</i></dt>
+<dd>
+subversion eclass can apply patches in subversion_bootstrap(). you can use regexp in this variable like *.diff or *.patch or etc. NOTE: patches will be applied before ESVN_BOOTSTRAP is processed.<div style="height: 1.00em;">
+&#160;</div>
+Patches are searched both in ${PWD} and ${FILESDIR}, if not found in either location, the installation dies.</dd>
+</dl>
+<dl>
+<dt>
+<b>ESVN_RESTRICT</b> = <i>&quot;${ESVN_RESTRICT:-}&quot;</i></dt>
+<dd>
+this should be a space delimited list of subversion eclass features to restrict.<br/>
+  export)<br/>
+    don't export the working copy to S.</dd>
+</dl>
+<dl>
+<dt>
+<b>ESVN_OFFLINE</b> = <i>&quot;${ESVN_OFFLINE:-${EVCS_OFFLINE}}&quot;</i></dt>
+<dd>
+Set this variable to a non-empty value to disable the automatic updating of an svn source tree. This is intended to be set outside the subversion source tree by users.</dd>
+</dl>
+<dl>
+<dt>
+<b>ESVN_UMASK</b> = <i>&quot;${ESVN_UMASK:-${EVCS_UMASK}}&quot;</i></dt>
+<dd>
+Set this variable to a custom umask. This is intended to be set by users. By setting this to something like 002, it can make life easier for people who do development as non-root (but are in the portage group), and then switch over to building with FEATURES=userpriv.  Or vice-versa.  Shouldn't be a security issue here as anyone who has portage group write access already can screw the system over in more creative ways.</dd>
+</dl>
+<dl>
+<dt>
+<b>ESVN_UP_FREQ</b> = <i>&quot;${ESVN_UP_FREQ:=}&quot;</i></dt>
+<dd>
+Set the minimum number of hours between svn up'ing in any given svn module. This is particularly useful for split KDE ebuilds where we want to ensure that all submodules are compiled for the same revision. It should also be kept user overrideable.</dd>
+</dl>
+<dl>
+<dt>
+<b>ESCM_LOGDIR</b> = <i>&quot;${ESCM_LOGDIR:=}&quot;</i></dt>
+<dd>
+User configuration variable. If set to a path such as e.g. /var/log/scm any package inheriting from subversion.eclass will record svn revision to ${CATEGORY}/${PN}.log in that path in pkg_preinst. This is not supposed to be set by ebuilds/eclasses. It defaults to empty so users need to opt in.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>AUTHORS</h1><br/>
+Original Author: Akinori Hattori &lt;hattya@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>MAINTAINERS</h1><br/>
+Akinori Hattori &lt;hattya@gentoo.org&gt;<br/>
+</div>
+<div class="section">
+<h1>REPORTING BUGS</h1> Please report bugs via http://bugs.gentoo.org/</div>
+<div class="section">
+<h1>FILES</h1> <b>/usr/portage/eclass/subversion.eclass</b></div>
+<div class="section">
+<h1>SEE ALSO</h1> <b>ebuild</b>(5)<br/>
+https://gitweb.gentoo.org/repo/gentoo.git/log/eclass/subversion.eclass<br/>
+</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+Aug 2015</td>
+<td class="foot-os">
+Portage</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+
