@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+LLVM-AR(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+LLVM-AR(1)</td>
+<td class="head-vol">
+LLVM</td>
+<td class="head-rtitle">
+LLVM-AR(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> llvm-ar - LLVM archiver</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <b>llvm-ar</b> [-]{dmpqrtx}[Rabfikou] [relpos] [count] &lt;archive&gt; [files...]</div>
+<div class="section">
+<h1>DESCRIPTION</h1> The  <b>llvm-ar</b> command is similar to the common Unix utility, <b>ar</b>. It archives several files together into a single file. The intent for this is to produce archive libraries by LLVM bitcode that can be linked into an LLVM program. However, the archive can contain any kind of file. By default,  <b>llvm-ar</b> generates a symbol table that makes linking faster because only the symbol table needs to be consulted, not each individual file member of the archive.<div style="height: 1.00em;">
+&#160;</div>
+The <b>llvm-ar</b> command can be used to <i>read</i> SVR4, GNU and BSD style archive files. However, right now it can only write in the GNU format. If an SVR4 or BSD style archive is used with the  <b>r</b> (replace) or <b>q</b> (quick update) operations, the archive will be reconstructed in GNU format.<div style="height: 1.00em;">
+&#160;</div>
+Here's where <b>llvm-ar</b> departs from previous <b>ar</b> implementations:<div style="height: 1.00em;">
+&#160;</div>
+<i>Symbol Table</i><div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+Since <b>llvm-ar</b> supports bitcode files. The symbol table it creates is in GNU format and includes both native and bitcode files.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<i>Long Paths</i><div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+Currently <b>llvm-ar</b> can read GNU and BSD long file names, but only writes archives with the GNU format.</div>
+<br/>
+</div>
+<br/>
+</div>
+<div class="section">
+<h1>OPTIONS</h1> The options to  <b>llvm-ar</b> are compatible with other <b>ar</b> implementations. However, there are a few modifiers ( <i>R</i>) that are not found in other <b>ar</b> implementations. The options to  <b>llvm-ar</b> specify a single basic operation to perform on the archive, a variety of modifiers for that operation, the name of the archive file, and an optional list of file names. These options are used to determine how  <b>llvm-ar</b> should process the archive file.<div style="height: 1.00em;">
+&#160;</div>
+The Operations and Modifiers are explained in the sections below. The minimal set of options is at least one operator and the name of the archive. Typically archive files end with a  <b>.a</b> suffix, but this is not required. Following the  <i>archive-name</i> comes a list of <i>files</i> that indicate the specific members of the archive to operate on. If the  <i>files</i> option is not specified, it generally means either &quot;none&quot; or &quot;all&quot; members, depending on the operation.<div class="subsection">
+<h2>Operations</h2> d<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+Delete files from the archive. No modifiers are applicable to this operation. The  <i>files</i> options specify which members should be removed from the archive. It is not an error if a specified file does not appear in the archive. If no  <i>files</i> are specified, the archive is not modified.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+m[abi]<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+Move files from one location in the archive to another. The <i>a</i>, <i>b</i>, and  <i>i</i> modifiers apply to this operation. The <i>files</i> will all be moved to the location given by the modifiers. If no modifiers are used, the files will be moved to the end of the archive. If no  <i>files</i> are specified, the archive is not modified.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+p<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+Print files to the standard output. This operation simply prints the  <i>files</i> indicated to the standard output. If no <i>files</i> are specified, the entire  archive is printed.  Printing bitcode files is ill-advised as they might confuse your terminal settings. The  <i>p</i> operation never modifies the archive.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+q<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+Quickly append files to the end of the archive.  This operation quickly adds the  <i>files</i> to the archive without checking for duplicates that should be removed first. If no  <i>files</i> are specified, the archive is not modified. Because of the way that  <b>llvm-ar</b> constructs the archive file, its dubious whether the  <i>q</i> operation is any faster than the <i>r</i> operation.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+r[abu]<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+Replace or insert file members. The <i>a</i>, <i>b</i>,  and <i>u</i> modifiers apply to this operation. This operation will replace existing  <i>files</i> or insert them at the end of the archive if they do not exist. If no  <i>files</i> are specified, the archive is not modified.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+t[v]<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+Print the table of contents. Without any modifiers, this operation just prints the names of the members to the standard output. With the  <i>v</i> modifier,  <b>llvm-ar</b> also prints out the file type (B=bitcode, S=symbol table, blank=regular file), the permission mode, the owner and group, the size, and the date. If any  <i>files</i> are specified, the listing is only for those files. If no  <i>files</i> are specified, the table of contents for the whole archive is printed.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+x[oP]<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+Extract archive members back to files. The <i>o</i> modifier applies to this operation. This operation retrieves the indicated  <i>files</i> from the archive and writes them back to the operating system's file system. If no  <i>files</i> are specified, the entire archive is extract.</div>
+<br/>
+</div>
+<br/>
+</div>
+<div class="subsection">
+<h2>Modifiers (operation specific)</h2> The modifiers below are specific to certain operations. See the Operations section (above) to determine which modifiers are applicable to which operations.<div style="height: 1.00em;">
+&#160;</div>
+[a]<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+When inserting or moving member files, this option specifies the destination of the new files as being after the  <i>relpos</i> member. If <i>relpos</i> is not found, the files are placed at the end of the archive.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+[b]<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+When inserting or moving member files, this option specifies the destination of the new files as being before the  <i>relpos</i> member. If <i>relpos</i> is not found, the files are placed at the end of the archive. This modifier is identical to the  <i>i</i> modifier.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+[i]<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+A synonym for the <i>b</i> option.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+[o]<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+When extracting files, this option will cause <b>llvm-ar</b> to preserve the original modification times of the files it writes.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+[u]<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+When replacing existing files in the archive, only replace those files that have a time stamp than the time stamp of the member in the archive.</div>
+<br/>
+</div>
+<br/>
+</div>
+<div class="subsection">
+<h2>Modifiers (generic)</h2> The modifiers below may be applied to any operation.<div style="height: 1.00em;">
+&#160;</div>
+[c]<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+For all operations, <b>llvm-ar</b> will always create the archive if it doesn't exist. Normally,  <b>llvm-ar</b> will print a warning message indicating that the archive is being created. Using this modifier turns off that warning.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+[s]<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+This modifier requests that an archive index (or symbol table) be added to the archive. This is the default mode of operation. The symbol table will contain all the externally visible functions and global variables defined by all the bitcode files in the archive.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+[S]<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+This modifier is the opposite of the <i>s</i> modifier. It instructs <b>llvm-ar</b> to not build the symbol table. If both  <i>s</i> and <i>S</i> are used, the last modifier to occur in the options will prevail.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+[v]<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+This modifier instructs <b>llvm-ar</b> to be verbose about what it is doing. Each editing operation taken against the archive will produce a line of output saying what is being done.</div>
+<br/>
+</div>
+<br/>
+</div>
+</div>
+<div class="section">
+<h1>STANDARDS</h1> The  <b>llvm-ar</b> utility is intended to provide a superset of the IEEE Std 1003.2 (POSIX.2) functionality for  <b>ar</b>. <b>llvm-ar</b> can read both SVR4 and BSD4.4 (or Mac OS X) archives. If the  <b>f</b> modifier is given to the <b>x</b> or <b>r</b> operations then  <b>llvm-ar</b> will write SVR4 compatible archives. Without this modifier,  <b>llvm-ar</b> will write BSD4.4 compatible archives that have long names immediately after the header and indicated using the &quot;#1/ddd&quot; notation for the name in the header.</div>
+<div class="section">
+<h1>FILE FORMAT</h1> The file format for LLVM Archive files is similar to that of BSD 4.4 or Mac OSX archive files. In fact, except for the symbol table, the  <b>ar</b> commands on those operating systems should be able to read LLVM archive files. The details of the file format follow.<div style="height: 1.00em;">
+&#160;</div>
+Each archive begins with the archive magic number which is the eight printable characters &quot;!&lt;arch&gt;n&quot; where n represents the newline character (0x0A). Following the magic number, the file is composed of even length members that begin with an archive header and end with a n padding character if necessary (to make the length even). Each file member is composed of a header (defined below), an optional newline-terminated &quot;long file name&quot; and the contents of the file.<div style="height: 1.00em;">
+&#160;</div>
+The fields of the header are described in the items below. All fields of the header contain only ASCII characters, are left justified and are right padded with space characters.<div style="height: 1.00em;">
+&#160;</div>
+name - char[16]<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+This field of the header provides the name of the archive member. If the name is longer than 15 characters or contains a slash (/) character, then this field contains  <b>#1/nnn</b> where <b>nnn</b> provides the length of the name and the <b>#1/</b> is literal.  In this case, the actual name of the file is provided in the  <b>nnn</b> bytes immediately following the header. If the name is 15 characters or less, it is contained directly in this field and terminated with a slash (/) character.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+date - char[12]<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+This field provides the date of modification of the file in the form of a decimal encoded number that provides the number of seconds since the epoch (since 00:00:00 Jan 1, 1970) per Posix specifications.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+uid - char[6]<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+This field provides the user id of the file encoded as a decimal ASCII string. This field might not make much sense on non-Unix systems. On Unix, it is the same value as the st_uid field of the stat structure returned by the stat(2) operating system call.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+gid - char[6]<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+This field provides the group id of the file encoded as a decimal ASCII string. This field might not make much sense on non-Unix systems. On Unix, it is the same value as the st_gid field of the stat structure returned by the stat(2) operating system call.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+mode - char[8]<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+This field provides the access mode of the file encoded as an octal ASCII string. This field might not make much sense on non-Unix systems. On Unix, it is the same value as the st_mode field of the stat structure returned by the stat(2) operating system call.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+size - char[10]<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+This field provides the size of the file, in bytes, encoded as a decimal ASCII string.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+fmag - char[2]<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+This field is the archive file member magic number. Its content is always the two characters back tick (0x60) and newline (0x0A). This provides some measure utility in identifying archive files that have been corrupted.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+offset - vbr encoded 32-bit integer<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+The offset item provides the offset into the archive file where the bitcode member is stored that is associated with the symbol. The offset value is 0 based at the start of the first &quot;normal&quot; file member. To derive the actual file offset of the member, you must add the number of bytes occupied by the file signature (8 bytes) and the symbol tables. The value of this item is encoded using variable bit rate encoding to reduce the size of the symbol table. Variable bit rate encoding uses the high bit (0x80) of each byte to indicate if there are more bytes to follow. The remaining 7 bits in each byte carry bits from the value. The final byte does not have the high bit set.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+length - vbr encoded 32-bit integer<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+The length item provides the length of the symbol that follows. Like this  <i>offset</i> item, the length is variable bit rate encoded.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+symbol - character array<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+The symbol item provides the text of the symbol that is associated with the  <i>offset</i>. The symbol is not terminated by any character. Its length is provided by the  <i>length</i> field. Note that is allowed (but unwise) to use non-printing characters (even 0x00) in the symbol. This allows for multiple encodings of symbol names.</div>
+<br/>
+</div>
+<br/>
+</div>
+<div class="section">
+<h1>EXIT STATUS</h1> If  <b>llvm-ar</b> succeeds, it will exit with 0.  A usage error, results in an exit code of 1. A hard (file system typically) error results in an exit code of 2. Miscellaneous or unknown errors result in an exit code of 3.</div>
+<div class="section">
+<h1>SEE ALSO</h1> ar(1)</div>
+<div class="section">
+<h1>AUTHOR</h1> Maintained by The LLVM Team (http://llvm.org/).</div>
+<div class="section">
+<h1>COPYRIGHT</h1> 2003-2014, LLVM Project</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2014-09-05</td>
+<td class="foot-os">
+3.5</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

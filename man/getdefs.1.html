@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+getdefs(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+getdefs(1)</td>
+<td class="head-vol">
+User Commands</td>
+<td class="head-rtitle">
+getdefs(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1>  <b>getdefs</b> - AutoGen Definition Extraction Tool</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <b>getdefs</b> [ <i>option-name</i> <i>value</i>]<div style="height: 0.00ex;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+All arguments are named options.<div style="height: 0.00ex;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+If no <b>input</b> argument is provided or is set to simply &quot;-&quot;, and if  <b>stdin</b> is not a <b>tty</b>, then the list of input files will be read from  <b>stdin</b>.</div>
+<div class="section">
+<h1>DESCRIPTION</h1> This program extracts AutoGen definitions from a list of source files. Definitions are delimited by  <b>/*=&lt;entry-type&gt; &lt;entry-name&gt;0fP and</b>  <b></b><b>=*/0fP.</b></div>
+<div class="section">
+<h1>OPTIONS</h1><div class="subsection">
+<h2>Specify which definitions are of interest and what to say about them</h2><dl>
+<dt>
+Regexp to look for after the &quot;/*=&quot;.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+If you want definitions only from a particular category, or even with names matching particular patterns, then specify this regular expression for the text that must follow the  <b>/*=</b>.</dd>
+</dl>
+<dl>
+<dt>
+subblock definition names.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+This option may appear an unlimited number of times.<div style="height: 1.00em;">
+&#160;</div>
+This option is used to create shorthand entries for nested definitions. For example, with:<div style="height: 1.00em;">
+&#160;</div>
+<i>using subblock thus</i>  <b>--subblock=arg=argname,type,null</b><div style="height: 1.00em;">
+&#160;</div>
+<i>and defining an <b>arg</b> thus</i>  <b>arg: this, char *</b><div style="height: 1.00em;">
+&#160;</div>
+<i>will then expand to:</i>  <b>arg = { argname = this; type = &quot;char *&quot;; @</b>;}<div style="height: 0.00em;">
+&#160;</div>
+The &quot;this, char *&quot; string is separated at the commas, with the white space removed.  You may use characters other than commas by starting the value string with a punctuation character other than a single or double quote character.  You may also omit intermediate values by placing the commas next to each other with no intervening white space.  For example, &quot;+mumble++yes+&quot; will expand to:<div style="height: 0.00em;">
+&#160;</div>
+<b>arg = { argname = mumble; null = &quot;yes&quot;; @</b>;}.</dd>
+</dl>
+<dl>
+<dt>
+attribute with list of values.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+This option may appear an unlimited number of times.<div style="height: 1.00em;">
+&#160;</div>
+This option is used to create shorthand entries for definitions that generally appear several times.  That is, they tend to be a list of values.  For example, with:<div style="height: 0.00em;">
+&#160;</div>
+<b>listattr=foo</b> defined, the text:<div style="height: 0.00em;">
+&#160;</div>
+<b>foo: this, is, a, multi-list</b> will then expand to:<div style="height: 0.00em;">
+&#160;</div>
+<b>foo = 'this', 'is', 'a', 'multi-list';</b><div style="height: 0.00em;">
+&#160;</div>
+The texts are separated by the commas, with the white space removed.  You may use characters other than commas by starting the value string with a punctuation character other than a single or double quote character.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>specify how to number the definitions</h2><dl>
+<dt>
+Alphabetize or use named file.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The <i>no-ordering</i> form will disable the option. This option is enabled by default.<div style="height: 1.00em;">
+&#160;</div>
+By default, ordering is alphabetical by the entry name.  Use,  <b>no-ordering</b> if order is unimportant.  Use <b>ordering</b> with no argument to order without case sensitivity.  Use  <b>ordering=&lt;file-name&gt;</b> if chronological order is important. getdefs will maintain the text content of  <b>file-name</b>.  <b>file-name</b> need not exist.</dd>
+</dl>
+<dl>
+<dt>
+The first index to apply to groups.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+This option takes an integer number as its argument. The default  <i>first-index</i> for this option is:<br/>
+ 0<div style="height: 1.00em;">
+&#160;</div>
+By default, the first occurrence of a named definition will have an index of zero.  Sometimes, that needs to be a reserved value.  Provide this option to specify a different starting point.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>Definition insertion options</h2><dl>
+<dt>
+Insert source file names into defs.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+Inserts the name of each input file into the output definitions. If no argument is supplied, the format will be:<br/>
+    infile = '%s';<br/>
+If an argument is supplied, that string will be used for the entry name instead of  <b>infile</b>.</dd>
+</dl>
+<dl>
+<dt>
+Global assignments.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+This option may appear an unlimited number of times.<div style="height: 1.00em;">
+&#160;</div>
+The argument to each copy of this option will be inserted into the output definitions, with only a semicolon attached.</dd>
+</dl>
+<dl>
+<dt>
+Assignments common to all blocks.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+This option may appear an unlimited number of times.<div style="height: 1.00em;">
+&#160;</div>
+The argument to each copy of this option will be inserted into each output definition, with only a semicolon attached.</dd>
+</dl>
+<dl>
+<dt>
+File(s) to copy into definitions.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+This option may appear an unlimited number of times.<div style="height: 1.00em;">
+&#160;</div>
+The content of each file named by these options will be inserted into the output definitions.</dd>
+</dl>
+<dl>
+<dt>
+Insert source file name into each def.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+Inserts the name of the input file where a definition was found into the output definition. If no argument is supplied, the format will be:<br/>
+    srcfile = '%s';<br/>
+If an argument is supplied, that string will be used for the entry name instead of  <b>srcfile</b>.</dd>
+</dl>
+<dl>
+<dt>
+Insert source line number into each def.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+Inserts the line number in the input file where a definition was found into the output definition. If no argument is supplied, the format will be:<br/>
+    linenum = '%s';<br/>
+If an argument is supplied, that string will be used for the entry name instead of  <b>linenum</b>.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>specify which files to search for markers</h2><dl>
+<dt>
+Input file to search for defs.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+This option may appear an unlimited number of times. This option is the default option.<div style="height: 1.00em;">
+&#160;</div>
+All files that are to be searched for definitions must be named on the command line or read from  <b>stdin</b>.  If there is only one  <b>input</b> option and it is the string, &quot;-&quot;, then the input file list is read from  <b>stdin</b>.  If a command line argument is not an option name and does not contain an assignment operator ( <b>=</b>), then it defaults to being an input file name. At least one input file must be specified.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>Definition output disposition options:</h2><dl>
+<dt>
+Output file to open.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+This option is a member of the autogen class of options.<div style="height: 1.00em;">
+&#160;</div>
+If you are not sending the output to an AutoGen process, you may name an output file instead.</dd>
+</dl>
+<dl>
+<dt>
+Invoke AutoGen with defs.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The <i>no-autogen</i> form will disable the option. This option is enabled by default. This option is a member of the autogen class of options.<div style="height: 1.00em;">
+&#160;</div>
+This is the default output mode.  Specifying <b>no-autogen</b> is equivalent to  <b>output=-</b>.  If you supply an argument to this option, that program will be started as if it were AutoGen and its standard in will be set to the output definitions of this program.</dd>
+</dl>
+<dl>
+<dt>
+Template Name.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+Specifies the template name to be used for generating the final output.</dd>
+</dl>
+<dl>
+<dt>
+AutoGen Argument.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+This option may appear an unlimited number of times. This option must not appear in combination with any of the following options: output.<div style="height: 1.00em;">
+&#160;</div>
+This is a pass-through argument.  It allows you to specify any arbitrary argument to be passed to AutoGen.</dd>
+</dl>
+<dl>
+<dt>
+Base name for output file(s).</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+This option must not appear in combination with any of the following options: output.<div style="height: 1.00em;">
+&#160;</div>
+When output is going to AutoGen, a base name must either be supplied or derived.  If this option is not supplied, then it is taken from the  <b>template</b> option.  If that is not provided either, then it is set to the base name of the current directory.</dd>
+</dl>
+<dl>
+<dt>
+Display usage information and exit.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+Pass the extended usage information through a pager.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+Save the option state to <i>cfgfile</i>.  The default is the <i>last</i></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+configuration file listed in the <b>OPTION PRESETS</b> section, below. The command will exit after updating the config file.</dd>
+</dl>
+<dl>
+<dt>
+Load options from <i>cfgfile</i>.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The <i>no-load-opts</i> form will disable the loading of earlier config/rc/ini files.   <i>--no-load-opts</i> is handled early, out of order.</dd>
+</dl>
+<dl>
+<dt>
+Output version of program and exit.  The default mode is `v', a simple</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+version.  The `c' mode will print copyright information and `n' will print the full copyright notice.</dd>
+</dl>
+</div>
+</div>
+<div class="section">
+<h1>OPTION PRESETS</h1> Any option that is not marked as  <i>not presettable</i> may be preset by loading values from configuration (&quot;RC&quot; or &quot;.INI&quot;) file(s). The  <i>homerc</i> file is &quot;<i>/dev/null</i>&quot;, unless that is a directory. In that case, the file &quot; <i>.getdefsrc</i>&quot; is searched for within that directory.</div>
+<div class="section">
+<h1>FILES</h1> See  <b>OPTION PRESETS</b> for configuration files.</div>
+<div class="section">
+<h1>EXIT STATUS</h1> One of the following exit values will be returned:<dl>
+<dt>
+Successful program execution.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+The operation failed or the command syntax was not valid.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+A specified configuration file could not be loaded.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+libopts had an internal operational error.  Please report</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+it to autogen-users@lists.sourceforge.net.  Thank you.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>SEE ALSO</h1> This program is documented more fully in the Getdefs section of the Add-On chapter in the  <b>AutoGen</b> Info system documentation.</div>
+<div class="section">
+<h1>AUTHORS</h1> Bruce Korb</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright (C) 1999-2014 Bruce Korb all rights reserved. This program is released under the terms of the GNU General Public License, version 3 or later.</div>
+<div class="section">
+<h1>BUGS</h1> Please send bug reports to: autogen-users@lists.sourceforge.net</div>
+<div class="section">
+<h1>NOTES</h1> This manual page was  <i>AutoGen</i>-erated from the <b>getdefs</b> option definitions.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+22 Nov 2014</td>
+<td class="foot-os">
+GNU AutoGen (1.5)</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

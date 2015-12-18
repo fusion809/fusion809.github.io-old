@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+LLVM-SYMBOLIZER(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+LLVM-SYMBOLIZER(1)</td>
+<td class="head-vol">
+LLVM</td>
+<td class="head-rtitle">
+LLVM-SYMBOLIZER(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> llvm-symbolizer - convert addresses into source code locations</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <b>llvm-symbolizer</b> [options]</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>llvm-symbolizer</b> reads object file names and addresses from standard input and prints corresponding source code locations to standard output. If object file is specified in command line,  <b>llvm-symbolizer</b> reads only addresses from standard input. This program uses debug info sections and symbol table in the object files.</div>
+<div class="section">
+<h1>EXAMPLE</h1><div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+$ cat addr.txt<br/>
+a.out 0x4004f4<br/>
+/tmp/b.out 0x400528<br/>
+/tmp/c.so 0x710<br/>
+/tmp/mach_universal_binary:i386 0x1f84<br/>
+/tmp/mach_universal_binary:x86_64 0x100000f24<br/>
+$ llvm-symbolizer &lt; addr.txt<br/>
+main<br/>
+/tmp/a.cc:4<div class="spacer">
+</div>
+<br/>
+f(int, int)<br/>
+/tmp/b.cc:11<div class="spacer">
+</div>
+<br/>
+h_inlined_into_g<br/>
+/tmp/header.h:2<br/>
+g_inlined_into_f<br/>
+/tmp/header.h:7<br/>
+f_inlined_into_main<br/>
+/tmp/source.cc:3<br/>
+main<br/>
+/tmp/source.cc:8<div class="spacer">
+</div>
+<br/>
+_main<br/>
+/tmp/source_i386.cc:8<div class="spacer">
+</div>
+<br/>
+_main<br/>
+/tmp/source_x86_64.cc:8<br/>
+$ cat addr2.txt<br/>
+0x4004f4<br/>
+0x401000<br/>
+$ llvm-symbolizer -obj=a.out &lt; addr2.txt<br/>
+main<br/>
+/tmp/a.cc:4<div class="spacer">
+</div>
+<br/>
+foo(int)<br/>
+/tmp/a.cc:12<br/>
+</div>
+<br/>
+</div>
+<br/>
+</div>
+<div class="section">
+<h1>OPTIONS</h1><div style="margin-left: 0.00ex;">
+<dl>
+<dt>
+<b>-obj</b></dt>
+<dd>
+Path to object file to be symbolized.</dd>
+</dl>
+</div>
+<br/>
+<div style="margin-left: 0.00ex;">
+<dl>
+<dt>
+<b>-functions=[none|short|linkage]</b></dt>
+<dd>
+Specify the way function names are printed (omit function name, print short function name, or print full linkage name, respectively). Defaults to  <b>linkage</b>.</dd>
+</dl>
+</div>
+<br/>
+<div style="margin-left: 0.00ex;">
+<dl>
+<dt>
+<b>-use-symbol-table</b></dt>
+<dd>
+Prefer function names stored in symbol table to function names in debug info sections. Defaults to true.</dd>
+</dl>
+</div>
+<br/>
+<div style="margin-left: 0.00ex;">
+<dl>
+<dt>
+<b>-demangle</b></dt>
+<dd>
+Print demangled function names. Defaults to true.</dd>
+</dl>
+</div>
+<br/>
+<div style="margin-left: 0.00ex;">
+<dl>
+<dt>
+<b>-inlining</b></dt>
+<dd>
+If a source code location is in an inlined function, prints all the inlnied frames. Defaults to true.</dd>
+</dl>
+</div>
+<br/>
+<div style="margin-left: 0.00ex;">
+<dl>
+<dt>
+<b>-default-arch</b></dt>
+<dd>
+If a binary contains object files for multiple architectures (e.g. it is a Mach-O universal binary), symbolize the object file for a given architecture. You can also specify architecture by writing  <b>binary_name:arch_name</b> in the input (see example above). If architecture is not specified in either way, address will not be symbolized. Defaults to empty string.</dd>
+</dl>
+</div>
+<br/>
+</div>
+<div class="section">
+<h1>EXIT STATUS</h1>  <b>llvm-symbolizer</b> returns 0. Other exit codes imply internal program error.</div>
+<div class="section">
+<h1>AUTHOR</h1> Maintained by The LLVM Team (http://llvm.org/).</div>
+<div class="section">
+<h1>COPYRIGHT</h1> 2003-2014, LLVM Project</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2014-09-05</td>
+<td class="foot-os">
+3.5</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

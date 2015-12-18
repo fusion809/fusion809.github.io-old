@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+autogen(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+autogen(1)</td>
+<td class="head-vol">
+User Commands</td>
+<td class="head-rtitle">
+autogen(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1>  <b>autogen</b> - The Automated Program Generator</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <b>autogen</b> [ <b>-flags</b>] [ <b>-flag</b> [<i>value</i>]] [ <b>--option-name</b>[[=| ]<i>value</i>]] [ &lt;def-file&gt; ]<div style="height: 0.00ex;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+AutoGen creates text files from templates using external definitions.</div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>AutoGen</b> is designed for generating program files that contain repetitive text with varied substitutions.  The goal is to simplify the maintenance of programs that contain large amounts of repetitious text. This is especially valuable if there are several blocks of such text that must be kept synchronized.<div style="height: 1.00em;">
+&#160;</div>
+One common example is the problem of maintaining the code required for processing program options.  Processing options requires a minimum of four different constructs be kept in proper order in different places in your program.  You need at least: The flag character in the flag string, code to process the flag when it is encountered, a global state variable or two, and a line in the usage text. You will need more things besides this if you choose to implement long option names, configuration file processing, environment variables and so on.<div style="height: 1.00em;">
+&#160;</div>
+All of this can be done mechanically; with the proper templates and this program.</div>
+<div class="section">
+<h1>OPTIONS</h1><div class="subsection">
+<h2>The following options select definitions, templates and scheme functions to use</h2><dl>
+<dt>
+Search for templates in <i>DIR</i>.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+This option may appear an unlimited number of times.<div style="height: 1.00em;">
+&#160;</div>
+Add a directory to the list of directories <b>autogen</b> searches when opening a template, either as the primary template or an included one. The last entry has the highest priority in the search list.  That is to say, they are searched in reverse order.</dd>
+</dl>
+<dl>
+<dt>
+Use <i>TPL?FILE</i> for the template.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+This option may not be preset with environment variables or in initialization (rc) files.<div style="height: 1.00em;">
+&#160;</div>
+Definition files specify the standard template that is to be expanded. This option will override that name and expand a different template.</dd>
+</dl>
+<dl>
+<dt>
+Load AutoGen macros from <i>TPL?FILE</i>.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+This option may appear an unlimited number of times.<div style="height: 1.00em;">
+&#160;</div>
+DEFINE macros are saved from this template file for use in processing the main macro file.  Template text aside from the DEFINE macros is is ignored.<div style="height: 1.00em;">
+&#160;</div>
+Do not use this.  Instead, use the INCLUDE macro in your template.<div style="height: 1.00em;">
+&#160;</div>
+<b>NOTE: THIS OPTION IS DEPRECATED</b></dd>
+</dl>
+<dl>
+<dt>
+Read definitions from <i>FILE</i>.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The <i>no-definitions</i> form will disable the option. This option is enabled by default. This option may not be preset with environment variables or in initialization (rc) files.<div style="height: 1.00em;">
+&#160;</div>
+Use this argument to specify the input definitions file with a command line option.  If you do not specify this option, then there must be a command line argument that specifies the file, even if only to specify stdin with a hyphen ( <b>-</b>). Specify,  <b>--no-definitions</b> when you wish to process a template without any active AutoGen definitions.</dd>
+</dl>
+<dl>
+<dt>
+name or path name of shell to use.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+By default, when AutoGen is built, the configuration is probed for a reasonable Bourne-like shell to use for shell script processing.  If a particular template needs an alternate shell, it must be specified with this option on the command line, with an environment variable ( <b>SHELL</b>) or in the configuration/initialization file.</dd>
+</dl>
+<dl>
+<dt>
+Do not use in?mem streams.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+If the local C library supports &quot;<b>fopencookie(3GNU)</b>&quot;, or &quot; <b>funopen(3BSD)</b>&quot; then AutoGen prefers to use in-memory stream buffer opens instead of anonymous files.  This may lead to problems if there is a shortage of virtual memory.  If, for a particular application, you run out of memory, then specify this option. This is unlikely in a modern 64-bit virtual memory environment.<div style="height: 1.00em;">
+&#160;</div>
+On platforms without these functions, the option is accepted but ignored.   <b>fmemopen(POSIX)</b> is not adequate because its string buffer is not reallocatable.   <b>open_memstream(POSIX)</b> is  <i>also</i> not adequate because the stream is only opened for output.  AutoGen needs a reallocatable buffer available for both reading and writing.</dd>
+</dl>
+<dl>
+<dt>
+characters considered equivalent.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The default  <i>char-list</i> for this option is:<br/>
+ _-^<div style="height: 1.00em;">
+&#160;</div>
+This option will alter the list of characters considered equivalent. The default are the three characters, &quot;_-^&quot;.  (The last is conventional on a Tandem/HP-NonStop, and I used to do a lot of work on Tandems.)</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>The following options modify how output is handled</h2><dl>
+<dt>
+Specify <b>NAME</b> as the base name for output.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+This option may not be preset with environment variables or in initialization (rc) files.<div style="height: 1.00em;">
+&#160;</div>
+A template may specify the exact name of the output file.  Normally, it does not.  Instead, the name is composed of the base name of the definitions file with suffixes appended.  This option will override the base name derived from the definitions file name.  This is required if there is no definitions file and advisable if definitions are being read from stdin.  If the definitions are being read from standard in, the base name defaults to  <i>stdin</i>.  Any leading directory components in the name will be silently removed.  If you wish the output file to appear in a particular directory, it is recommended that you &quot;cd&quot; into that directory first, or use directory names in the format specification for the output suffix lists, see: pseudo macro.</dd>
+</dl>
+<dl>
+<dt>
+set mod times to latest source.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The <i>no-source-time</i> form will disable the option.<div style="height: 1.00em;">
+&#160;</div>
+If you stamp your output files with the <b>DNE</b> macro output, then your output files will always be different, even if the content has not really changed.  If you use this option, then the modification time of the output files will change only if the input files change. This will help reduce unneeded builds.</dd>
+</dl>
+<dl>
+<dt>
+Allow output files to be writable.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The <i>not-writable</i> form will disable the option.<div style="height: 1.00em;">
+&#160;</div>
+This option will leave output files writable. Normally, output files are read-only.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>The following options are often useful while debugging new templates</h2> They specify limits that prevent the template from taking overly long or producing more output than expected.<dl>
+<dt>
+Limit on increment loops.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+This option takes an integer number as its argument. The value of  <i>lim</i> is constrained to being:<br/>
+<br/>
+exactly -1, or<br/>
+in the range  1 through 0x1000000<br/>
+<br/>
+The default  <i>lim</i> for this option is:<br/>
+ 256<div style="height: 1.00em;">
+&#160;</div>
+This option prevents runaway loops.  For example, if you accidentally specify, &quot;FOR x (for-from 1) (for-to -1) (for-by 1)&quot;, it will take a long time to finish.  If you do have more than 256 entries in tables, you will need to specify a new limit with this option.</dd>
+</dl>
+<dl>
+<dt>
+Limit server shell operations to <b>SECONDS</b>.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+This option takes an integer number as its argument. The value of  <i>seconds</i> is constrained to being:<br/>
+<br/>
+in the range  0 through 3600<br/>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+AutoGen works with a shell server process.  Most normal commands will complete in less than 10 seconds.  If, however, your commands need more time than this, use this option.<div style="height: 1.00em;">
+&#160;</div>
+The valid range is 0 to 3600 seconds (1 hour). Zero will disable the server time limit.</dd>
+</dl>
+<dl>
+<dt>
+tracing level of detail.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+This option takes a keyword as its argument.  The argument sets an enumeration value that can be tested by comparing them against the option value macro. The available keywords are:<br/>
+<br/>
+nothing       debug-message server-shell<br/>
+templates     block-macros  expressions<br/>
+everything<br/>
+or their numeric equivalent.<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+The default  <i>level</i> for this option is:<br/>
+ nothing<div style="height: 1.00em;">
+&#160;</div>
+This option will cause AutoGen to display a trace of its template processing.  There are six levels, each level including messages from the previous levels:<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<i>nothing</i> Does no tracing at all (default)<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<i>debug-message</i> Print messages from the &quot;DEBUG&quot; AutoGen macro (see: DEBUG).<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<i>server-shell</i> Traces all input and output to the server shell.  This includes a shell &quot;independent&quot; initialization script about 30 lines long.  Its output is discarded and not inserted into any template.<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<i>templates</i> Traces the invocation of  <b>DEFINE</b>d macros and <b>INCLUDE</b>s<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<i>block-macros</i> Traces all block macros.  The above, plus  <b>IF</b>, <b>FOR</b>,  <b>CASE</b> and <b>WHILE</b>.<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<i>expressions</i> Displays the results of expression evaluations.<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+<i>everything</i> Displays the invocation of every AutoGen macro, even  <b>TEXT</b> macros (i.e. the text outside of macro quotes).  Additionally, if you rebuild the ``expr.ini'' file with debugging enabled, then all calls to AutoGen defined scheme functions will also get logged:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+    cd ${top_builddir}/agen5<br/>
+    DEBUG_ENABLED=true bash bootstrap.dir expr.ini<br/>
+    make CFLAGS='-g -DDEBUG_ENABLED=1'<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+Be aware that you cannot rebuild this source in this way without first having installed the  <b>autogen</b> executable in your search path. Because of this, &quot;expr.ini&quot; is in the distributed source list, and not in the dependencies.<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+tracing output file or filter.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+The output specified may be a file name, a file that is appended to, or, if the option argument begins with the  <b>pipe</b> operator ( <b>|</b>), a command that will receive the tracing output as standard in.  For example,  <b>--traceout='| less'</b> will run the trace output through the  <b>less</b> program.  Appending to a file is specified by preceding the file name with two greater-than characters ( <b>&gt;&gt;</b>).</dd>
+</dl>
+<dl>
+<dt>
+Show the definition tree.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+This option may not be preset with environment variables or in initialization (rc) files.<div style="height: 1.00em;">
+&#160;</div>
+This will print out the complete definition tree before processing the template.</dd>
+</dl>
+<dl>
+<dt>
+Show the definitions used.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+This option may not be preset with environment variables or in initialization (rc) files.<div style="height: 1.00em;">
+&#160;</div>
+This will print out the names of definition values searched for during the processing of the template, whether actually found or not.  There may be other referenced definitions in a template in portions of the template not evaluated.  Some of the names listed may be computed names and others AutoGen macro arguments.  This is not a means for producing a definitive, all-encompassing list of all and only the values used from a definition file.  This is intended as an aid to template documentation only.</dd>
+</dl>
+<dl>
+<dt>
+Leave a core dump on a failure exit.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+Many systems default to a zero sized core limit.  If the system has the sys/resource.h header and if this option is supplied, then in the failure exit path, autogen will attempt to set the soft core limit to whatever the hard core limit is.  If that does not work, then an administrator must raise the hard core size limit. in the definitions files and template files&quot; They specify which outputs and parts of outputs to produce.</dd>
+</dl>
+<dl>
+<dt>
+Skip the file with this <i>SUFFIX</i>.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+This option may appear an unlimited number of times. This option may not be preset with environment variables or in initialization (rc) files. This option must not appear in combination with any of the following options: select-suffix.<div style="height: 1.00em;">
+&#160;</div>
+Occasionally, it may not be desirable to produce all of the output files specified in the template.  (For example, only the  <i>.h</i> header file, but not the  <i>.c</i> program text.)  To do this specify  <b>--skip-suffix=c</b> on the command line.</dd>
+</dl>
+<dl>
+<dt>
+specify this output suffix.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+This option may appear an unlimited number of times. This option may not be preset with environment variables or in initialization (rc) files.<div style="height: 1.00em;">
+&#160;</div>
+If you wish to override the suffix specifications in the template, you can use one or more copies of this option.  See the suffix specification in the @ref{pseudo macro} section of the info doc.</dd>
+</dl>
+<dl>
+<dt>
+name to add to definition list.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+This option may appear an unlimited number of times.<div style="height: 1.00em;">
+&#160;</div>
+The AutoGen define names are used for the following purposes:<div style="height: 1.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+Sections of the AutoGen definitions may be enabled or disabled by using C-style #ifdef and #ifndef directives.<div style="height: 1.00em;">
+&#160;</div>
+When defining a value for a name, you may specify the index for a particular value.  That index may be a literal value, a define option or a value #define-d in the definitions themselves.<div style="height: 1.00em;">
+&#160;</div>
+The name of a file may be prefixed with <b>$NAME/</b>. The  <b>$NAME</b> part of the name string will be replaced with the define-d value for  <b>NAME</b>.<div style="height: 1.00em;">
+&#160;</div>
+When AutoGen is finished loading the definitions, the defined values are exported to the environment with,  <b>putenv(3)</b>. These values can then be used in shell scripts with  <b>${NAME@</b>} references and in templates with  <b>(getenv &quot;NAME&quot;)</b>.<div style="height: 1.00em;">
+&#160;</div>
+While processing a template, you may specify an index to retrieve a specific value.  That index may also be a define-d value.<div style="height: 0.00em;">
+&#160;</div>
+<div style="height: 1.00em;">
+&#160;</div>
+It is entirely equivalent to place this name in the exported environment. Internally, that is what AutoGen actually does with this option.</dd>
+</dl>
+<dl>
+<dt>
+definition list removal pattern.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+This option may appear an unlimited number of times. This option may not be preset with environment variables or in initialization (rc) files.<div style="height: 1.00em;">
+&#160;</div>
+Similar to 'C', AutoGen uses <b>#ifdef/#ifndef</b> preprocessing directives.  This option will cause the matching names to be removed from the list of defined values.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>This option is used to automate dependency tracking</h2><dl>
+<dt>
+emit make dependency file.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+This option may appear an unlimited number of times. This option may not be preset with environment variables or in initialization (rc) files.<div style="height: 1.00em;">
+&#160;</div>
+This option behaves fairly closely to the way the <b>-M</b> series of options work with the gcc compiler, except that instead of just emitting the predecessor dependencies, this also emits the successor dependencies (output target files).  By default, the output dependency information will be placed in  <b>&lt;base-name&gt;.d</b>, but may also be specified with  <b>-MF&lt;file&gt;</b>.  The time stamp on this file will be manipulated so that it will be one second older than the oldest primary output file.<div style="height: 1.00em;">
+&#160;</div>
+The target in this dependency file will normally be the dependency file name, but may also be overridden with  <b>-MT&lt;targ-name&gt;</b>. AutoGen will not alter the contents of that file, but it may create it and it will adjust the modification time to match the start time.<div style="height: 1.00em;">
+&#160;</div>
+<b>NB:</b> these second letters are part of the option argument, so  <b>-MF &lt;file&gt;</b> must have the space character quoted or omitted, and  <b>-M &quot;F &lt;file&gt;&quot;</b> is acceptable because the <b>F</b> is part of the option argument.<div style="height: 1.00em;">
+&#160;</div>
+<b>-M</b> may be followed by any of the letters M, F, P, T, Q, D, or G. However, only F, Q, T and P are meaningful.  All but F have somewhat different meanings.   <b>-MT&lt;name&gt;</b> is interpreted as meaning  <b>&lt;name&gt;</b> is a sentinel file that will depend on all inputs (templates and definition files) and all the output files will depend on this sentinel file.  It is suitable for use as a real make target. Q is treated identically to T, except dollar characters ('$') are doubled.  P causes a special clean (clobber) phoney rule to be inserted into the make file fragment.  An empty rule is always created for building the list of targets.<div style="height: 1.00em;">
+&#160;</div>
+This is the recommended usage:<br/>
+      -MFwhatever-you-like.dep -MTyour-sentinel-file -MP<br/>
+and then in your <b>Makefile</b>, make the <i>autogen</i> rule:<br/>
+      -include whatever-you-like.dep<br/>
+      clean_targets += clean-your-sentinel-file<br/>
+    .sp<br/>
+      your-sentinel-file:<br/>
+          autogen -MT$@@ -MF$*.d .....<br/>
+    .sp<br/>
+      local-clean :<br/>
+          rm -f $(clean_targets)<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+The modification time on the dependency file is adjusted to be one second before the earliest time stamp of any other output file. Consequently, it is suitable for use as the sentinel file testifying to the fact the program was successfully run.  ( <b>-include</b> is the GNU make way of specifying &quot;include it if it exists&quot;.  Your make must support that feature or your bootstrap process must create the file.)<div style="height: 1.00em;">
+&#160;</div>
+All of this may also be specified using the <b>DEPENDENCIES_OUTPUT</b> or  <b>AUTOGEN_MAKE_DEP</b> environment variables.  If defined, dependency information will be output.  If defined with white space free text that is something other than  <b>true</b>, <b>false</b>,  <b>yes</b>, <b>no</b>, <b>0</b> or <b>1</b>, then the string is taken to be an output file name.  If it contains a string of white space characters, the first token is as above and the second token is taken to be the target (sentinel) file as  <b>-MT</b> in the paragraphs above.   <b>DEPENDENCIES_OUTPUT</b> will be ignored if there are multiple sequences of white space characters or if its contents are, specifically,  <b>false</b>, <b>no</b> or <b>0</b>.</dd>
+</dl>
+</div>
+<div class="subsection">
+<h2>help, version and option handling</h2><dl>
+<dt>
+Display usage information and exit.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+Pass the extended usage information through a pager.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+Save the option state to <i>cfgfile</i>.  The default is the <i>last</i></dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+configuration file listed in the <b>OPTION PRESETS</b> section, below. The command will exit after updating the config file.</dd>
+</dl>
+<dl>
+<dt>
+Load options from <i>cfgfile</i>.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+The <i>no-load-opts</i> form will disable the loading of earlier config/rc/ini files.   <i>--no-load-opts</i> is handled early, out of order.</dd>
+</dl>
+<dl>
+<dt>
+Output version of program and exit.  The default mode is `v', a simple</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+version.  The `c' mode will print copyright information and `n' will print the full copyright notice.</dd>
+</dl>
+</div>
+</div>
+<div class="section">
+<h1>OPTION PRESETS</h1> Any option that is not marked as  <i>not presettable</i> may be preset by loading values from configuration (&quot;RC&quot; or &quot;.INI&quot;) file(s) and values from environment variables named:<br/>
+  <b>AUTOGEN_&lt;option-name&gt;</b> or <b>AUTOGEN</b><br/>
+The environmental presets take precedence (are processed later than) the configuration files. The  <i>homerc</i> files are &quot;<i>$HOME</i>&quot;, and &quot;<i>.</i>&quot;. If any of these are directories, then the file  <i>.autogenrc</i> is searched for within those directories.</div>
+<div class="section">
+<h1>ENVIRONMENT</h1> See  <b>OPTION PRESETS</b> for configuration environment variables.</div>
+<div class="section">
+<h1>FILES</h1> See  <b>OPTION PRESETS</b> for configuration files.</div>
+<div class="section">
+<h1>EXAMPLES</h1> Here is how the man page is produced:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+<br/>
+autogen -Tagman-cmd.tpl -MFman-dep -MTstamp-man opts.def<br/>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+This command produced this man page from the AutoGen option definition file.  It overrides the template specified in  <i>opts.def</i> (normally  <i>options.tpl</i>) and uses <i>agman-cmd.tpl</i>.  It also sets the make file dependency output to  <i>man-dep</i> and the sentinel file (time stamp file) to  <i>man-stamp</i>.  The base of the file name is derived from the defined  <b>prog-name</b>.<div style="height: 1.00em;">
+&#160;</div>
+The texi invocation document is produced via:<div style="height: 0.00em;">
+&#160;</div>
+<br/>
+<br/>
+autogen -Tagtexi-cmd.tpl -MFtexi-dep -MTtexi-stamp opts.def<br/>
+<br/>
+</div>
+<div class="section">
+<h1>EXIT STATUS</h1> One of the following exit values will be returned:<dl>
+<dt>
+Successful program execution.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+The command options were misconfigured.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+An error was encountered processing the template.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+The definitions could not be deciphered.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+An error was encountered during the load phase.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+a file system error stopped the program.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+Insufficient memory to operate.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+<b>autogen</b> exited due to catching a signal.  If your template includes</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+string formatting, a number argument to a &quot;%s&quot; formatting element will trigger a segmentation fault.  Autogen will catch the seg fault signal and exit with  <b>AUTOGEN_EXIT_SIGNAL(5)</b>.  Alternatively, AutoGen may have been interrupted with a  <b>kill(2)</b> signal. Subtract 128 from the actual exit code to detect the signal number.</dd>
+</dl>
+<dl>
+<dt>
+A specified configuration file could not be loaded.</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+</dd>
+</dl>
+<dl>
+<dt>
+libopts had an internal operational error.  Please report</dt>
+<dd>
+<div style="height: 0.00em;">
+&#160;</div>
+it to autogen-users@lists.sourceforge.net.  Thank you.</dd>
+</dl>
+</div>
+<div class="section">
+<h1>AUTHORS</h1> Bruce Korb</div>
+<div class="section">
+<h1>COPYRIGHT</h1> Copyright (C) 1992-2014 Bruce Korb all rights reserved. This program is released under the terms of the GNU General Public License, version 3 or later.</div>
+<div class="section">
+<h1>BUGS</h1> Please send bug reports to: autogen-users@lists.sourceforge.net</div>
+<div class="section">
+<h1>NOTES</h1> This manual page was  <i>AutoGen</i>-erated from the <b>autogen</b> option definitions.</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+30 Aug 2014</td>
+<td class="foot-os">
+GNU AutoGen (5.18.4)</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

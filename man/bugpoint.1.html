@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+table.head, table.foot { width: 100%; }
+td.head-rtitle, td.foot-os { text-align: right; }
+td.head-vol { text-align: center; }
+table.foot td { width: 50%; }
+table.head td { width: 33%; }
+div.spacer { margin: 1em 0; }
+</style>
+<title>
+BUGPOINT(1)</title>
+</head>
+<body>
+<div class="mandoc">
+<table class="head">
+<tbody>
+<tr>
+<td class="head-ltitle">
+BUGPOINT(1)</td>
+<td class="head-vol">
+LLVM</td>
+<td class="head-rtitle">
+BUGPOINT(1)</td>
+</tr>
+</tbody>
+</table>
+<div class="section">
+<h1>NAME</h1> bugpoint - automatic test case reduction tool</div>
+<div class="section">
+<h1>SYNOPSIS</h1>  <b>bugpoint</b> [<i>options</i>] [<i>input LLVM ll/bc files</i>] [<i>LLVM passes</i>] <b>--args</b>  <i>program arguments</i></div>
+<div class="section">
+<h1>DESCRIPTION</h1>  <b>bugpoint</b> narrows down the source of problems in LLVM tools and passes.  It can be used to debug three types of failures: optimizer crashes, miscompilations by optimizers, or bad native code generation (including problems in the static and JIT compilers).  It aims to reduce large test cases to small, useful ones. For more information on the design and inner workings of  <b>bugpoint</b>, as well as advice for using bugpoint, see  <i>llvm/docs/Bugpoint.html</i> in the LLVM distribution.</div>
+<div class="section">
+<h1>OPTIONS</h1>  <b>--additional-so</b> <i>library</i><div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+Load the dynamic shared object <i>library</i> into the test program whenever it is run.  This is useful if you are debugging programs which depend on non-LLVM libraries (such as the X or curses libraries) to run.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>--append-exit-code</b>=<i>{true,false}</i><div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+Append the test programs exit code to the output file so that a change in exit code is considered a test failure. Defaults to false.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>--args</b> <i>program args</i><div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+Pass all arguments specified after <b>--args</b> to the test program whenever it runs. Note that if any of the  <i>program args</i> start with a &quot;<b>-</b>&quot;, you should use:<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+bugpoint [bugpoint args] --args -- [program args]<br/>
+</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+The &quot;<b>--</b>&quot; right after the <b>--args</b> option tells <b>bugpoint</b> to consider any options starting with &quot; <b>-</b>&quot; to be part of the <b>--args</b> option, not as options to  <b>bugpoint</b> itself.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>--tool-args</b> <i>tool args</i><div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+Pass all arguments specified after <b>--tool-args</b> to the LLVM tool under test ( <b>llc</b>, <b>lli</b>, etc.) whenever it runs.  You should use this option in the following way:<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+bugpoint [bugpoint args] --tool-args -- [tool args]<br/>
+</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+The &quot;<b>--</b>&quot; right after the <b>--tool-args</b> option tells <b>bugpoint</b> to consider any options starting with &quot; <b>-</b>&quot; to be part of the <b>--tool-args</b> option, not as options to  <b>bugpoint</b> itself. (See <b>--args</b>, above.)</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>--safe-tool-args</b> <i>tool args</i><div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+Pass all arguments specified after <b>--safe-tool-args</b> to the &quot;safe&quot; execution tool.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>--gcc-tool-args</b> <i>gcc tool args</i><div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+Pass all arguments specified after <b>--gcc-tool-args</b> to the invocation of  <b>gcc</b>.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>--opt-args</b> <i>opt args</i><div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+Pass all arguments specified after <b>--opt-args</b> to the invocation of <b>opt</b>.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>--disable-{dce,simplifycfg}</b><div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+Do not run the specified passes to clean up and reduce the size of the test program. By default,  <b>bugpoint</b> uses these passes internally when attempting to reduce test programs.  If you're trying to find a bug in one of these passes,  <b>bugpoint</b> may crash.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>--enable-valgrind</b><div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+Use valgrind to find faults in the optimization phase. This will allow bugpoint to find otherwise asymptomatic problems caused by memory mis-management.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>-find-bugs</b><div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+Continually randomize the specified passes and run them on the test program until a bug is found or the user kills  <b>bugpoint</b>.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>-help</b><div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+Print a summary of command line options.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>--input</b> <i>filename</i><div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+Open <i>filename</i> and redirect the standard input of the test program, whenever it runs, to come from that file.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>--load</b> <i>plugin</i><div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+Load the dynamic object <i>plugin</i> into <b>bugpoint</b> itself.  This object should register new optimization passes.  Once loaded, the object will add new command line options to enable various optimizations.  To see the new complete list of optimizations, use the  <b>-help</b> and <b>--load</b> options together; for example:<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+bugpoint --load myNewPass.so -help<br/>
+</div>
+<br/>
+</div>
+<br/>
+</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>--mlimit</b> <i>megabytes</i><div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+Specifies an upper limit on memory usage of the optimization and codegen. Set to zero to disable the limit.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>--output</b> <i>filename</i><div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+Whenever the test program produces output on its standard output stream, it should match the contents of  <i>filename</i> (the &quot;reference output&quot;). If you do not use this option,  <b>bugpoint</b> will attempt to generate a reference output by compiling the program with the &quot;safe&quot; backend and running it.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>--run-{int,jit,llc,custom}</b><div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+Whenever the test program is compiled, <b>bugpoint</b> should generate code for it using the specified code generator.  These options allow you to choose the interpreter, the JIT compiler, the static native code compiler, or a custom command (see  <b>--exec-command</b>) respectively.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>--safe-{llc,custom}</b><div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+When debugging a code generator, <b>bugpoint</b> should use the specified code generator as the &quot;safe&quot; code generator. This is a known-good code generator used to generate the &quot;reference output&quot; if it has not been provided, and to compile portions of the program that as they are excluded from the testcase. These options allow you to choose the static native code compiler, or a custom command, (see  <b>--exec-command</b>) respectively. The interpreter and the JIT backends cannot currently be used as the &quot;safe&quot; backends.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>--exec-command</b> <i>command</i><div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+This option defines the command to use with the <b>--run-custom</b> and  <b>--safe-custom</b> options to execute the bitcode testcase. This can be useful for cross-compilation.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>--compile-command</b> <i>command</i><div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+This option defines the command to use with the <b>--compile-custom</b> option to compile the bitcode testcase. This can be useful for testing compiler output without running any link or execute stages. To generate a reduced unit test, you may add CHECK directives to the testcase and pass the name of an executable compile-command script in this form:<div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+<div style="height: 1.00em;">
+&#160;</div>
+<br/>
+#!/bin/sh<br/>
+llc &quot;$@&quot;<br/>
+not FileCheck [bugpoint input file].ll &lt; bugpoint-test-program.s<br/>
+</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+This script will &quot;fail&quot; as long as FileCheck passes. So the result will be the minimum bitcode that passes FileCheck.</div>
+<br/>
+</div>
+<br/>
+<div style="height: 1.00em;">
+&#160;</div>
+<b>--safe-path</b> <i>path</i><div style="margin-left: 0.00ex;">
+<div style="margin-left: 3.50ex;">
+This option defines the path to the command to execute with the  <b>--safe-{int,jit,llc,custom}</b> option.</div>
+<br/>
+</div>
+<br/>
+</div>
+<div class="section">
+<h1>EXIT STATUS</h1> If  <b>bugpoint</b> succeeds in finding a problem, it will exit with 0.  Otherwise, if an error occurs, it will exit with a non-zero value.</div>
+<div class="section">
+<h1>SEE ALSO</h1> opt|opt</div>
+<div class="section">
+<h1>AUTHOR</h1> Maintained by The LLVM Team (http://llvm.org/).</div>
+<div class="section">
+<h1>COPYRIGHT</h1> 2003-2014, LLVM Project</div>
+<table class="foot">
+<tr>
+<td class="foot-date">
+2014-09-05</td>
+<td class="foot-os">
+3.5</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+
