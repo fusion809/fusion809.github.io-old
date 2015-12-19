@@ -29,6 +29,10 @@ What is in square-brackets (`[...]`) are optional parts of the command (that is,
 <br/>
 {% include_relative PMS/table2-actions-for-emerge.html %}
 <br/>
+
+#### Understanding the tbz2 Binary Format
+As previously mentioned `.tbz2` is the binary package format used by Portage. It is 
+
 #### Links
 ##### Handbook
 * [AMD64 Handbook](https://wiki.gentoo.org/wiki/Handbook:AMD64/Working/Portage)
