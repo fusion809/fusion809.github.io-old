@@ -26,7 +26,7 @@ Entropy, Layman and Portage are all written in Python, Bash script and to smalle
 {% include_relative PMS/Entropy.md %}
 <br/>
 {% include_relative PMS/gentoolkit.md %}
-
+{% include_relative PMS/q-applets.md %}
 {% include_relative PMS/mixing-entropy-and-portage.md %}
 
 ## The Algorithm
