@@ -1,6 +1,6 @@
 {% capture my_capture %}
 ### Gentoolkit
-{% include links.html program="Gentoolkit" package="app-portage/gentoolkit" gw="Gentoolkit" %} is a suite of tools that make Gentoo administration easier. Examples of these tools include:
+{% include links.html program="Gentoolkit" package="app-portage/gentoolkit" gw="Gentoolkit" %} is a suite of tools written in Python and Bash script that make Gentoo administration easier. Examples of some (but not all) of these tools include:
 * [`eclean`](/man/eclean.1.html) which can be used to remove old source files and binary packages from one's system.
 * [`equery`](/man/equery.1.html) which can be used to query installed packages. For example, it can list the installed files associated with a package, as well as to determine which package an installed file belongs. It can also be used to determine an installed package's dependencies
 * [`euse`](/man/euse.1.html) which can be used to set, unset or see USE flags.
