@@ -1,0 +1,957 @@
+<!DOCTYPE html><html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Gentoo Development Guide: sed -- Stream Editor</title>
+<link rel="stylesheet" href="../../devmanual.css" type="text/css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The Gentoo Devmanual is a technical manual which covers topics such as writing ebuilds and eclasses, and policies that developers should be abiding by.">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/tyrian.min.css" rel="stylesheet" media="screen">
+<link rel="icon" href="https://www.gentoo.org/favicon.ico" type="image/x-icon">
+</head>
+<body>
+<header><div class="site-title"><div class="container"><div class="row">
+<div class="site-title-buttons"><div class="btn-group btn-group-sm">
+<a href="https://get.gentoo.org/" role="button" class="btn get-gentoo"><span class="fa fa-fw fa-download"></span><strong> Get Gentoo!</strong></a><div class="btn-group btn-group-sm">
+<a class="btn gentoo-org-sites dropdown-toggle" data-toggle="dropdown" data-target="#" href="#"><span class="fa fa-fw fa-map-o"></span><span class="hidden-xs"> gentoo.org sites </span><span class="caret"></span></a><ul class="dropdown-menu dropdown-menu-right">
+<li><a href="https://www.gentoo.org/" title="Main Gentoo website"><span class="fa fa-home fa-fw"></span> gentoo.org</a></li>
+<li><a href="https://wiki.gentoo.org/" title="Find and contribute documentation"><span class="fa fa-file-text-o fa-fw"></span> Wiki</a></li>
+<li><a href="https://bugs.gentoo.org/" title="Report issues and find common issues"><span class="fa fa-bug fa-fw"></span> Bugs</a></li>
+<li><a href="https://forums.gentoo.org/" title="Discuss with the community"><span class="fa fa-comments-o fa-fw"></span> Forums</a></li>
+<li><a href="https://packages.gentoo.org/" title="Find software for your Gentoo"><span class="fa fa-hdd-o fa-fw"></span> Packages</a></li>
+<li class="divider">
+<li><a href="https://planet.gentoo.org/" title="Find out what's going on in the developer community"><span class="fa fa-rss fa-fw"></span> Planet</a></li>
+<li><a href="https://archives.gentoo.org/" title="Read up on past discussions"><span class="fa fa-archive fa-fw"></span> Archives</a></li>
+<li><a href="https://sources.gentoo.org/" title="Browse our source code"><span class="fa fa-code fa-fw"></span> Sources</a></li>
+<li class="divider">
+<li><a href="https://infra-status.gentoo.org/" title="Get updates on the services provided by Gentoo"><span class="fa fa-server fa-fw"></span> Infra Status</a></li>
+</ul>
+</div>
+</div></div>
+<div class="logo">
+<a href="/" title="Back to the homepage" class="site-logo"><object data="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.svg" type="image/svg+xml"><img src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.png" alt="Gentoo Linux Logo"></object></a><span class="site-label">Development Guide</span>
+</div>
+</div></div></div>
+<nav class="tyrian-navbar" role="navigation"><div class="container"><div class="row">
+<div class="navbar-header"><button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button></div>
+<div class="collapse navbar-collapse navbar-main-collapse"><ul class="nav navbar-nav">
+<li><a href="../..//index.html"><span class="glyphicon glyphicon-home"></span>  Home</a></li>
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">sed -- Stream Editor<span class="caret"></span></a></li>
+<li><a href="../head-and-tail/index.html"><span class="glyphicon glyphicon-arrow-left"></span>  head-and-tail -- Line Extraction</a></li>
+<li><a href="../../tools-reference/sort/index.html">sort -- Sorting Text  <span class="glyphicon glyphicon-arrow-right"></span></a></li>
+</ul></div>
+</div></div></nav></header><div class="container"><div class="row"><div class="col-md010"><ol class="breadcrumb">
+<li><a href="../../index.html">Master Index</a></li>
+<li><a href="../index.html">Tools Reference</a></li>
+</ol></div></div></div>
+<div class="container">
+<h1 class="first-header">sed -- Stream Editor</h1>
+
+<p>
+Sometimes it is better to use regular expressions to manipulate content rather
+than patching sources. This can be used for small changes, especially those
+which are likely to create patch conflicts across versions. The canonical way of
+doing this is via <code class="docutils literal"><span class="pre">sed</span></code>:
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">This</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">plugin</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">is</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">mapped</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">to</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">'h'</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">key</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">by</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">default,</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">which</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">conflicts</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">with</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">some</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">other</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">mappings.</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Change</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">it</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">to</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">use</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">'H'</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">instead.</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">sed</span> -i 's/\(noremap &lt;buffer&gt; \)h/\1H/' info.vim <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">\</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">die</span> 'sed failed'
+</span></pre>
+
+<p>
+Another common example is appending a <code class="docutils literal"><span class="pre">-gentoo-blah</span></code> version string (some
+upstreams like us to do this so that they can tell exactly which package they're
+dealing with). Again, we can use <code class="docutils literal"><span class="pre">sed</span></code>. Note that the <code class="docutils literal"><span class="pre">${PR}</span></code> variable will
+be set to <code class="docutils literal"><span class="pre">r0</span></code> if we don't have a <code class="docutils literal"><span class="pre">-r</span></code> component in our version.
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Add</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">in</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Gentoo</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">-r</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">number</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">to</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">fluxbox</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">-version</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">output.</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">We</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">need</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">to</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">look</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">for</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">line</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">in</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">version.h.in</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">which</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">contains</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"></span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">__fluxbox_version</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">and</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">append</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">our</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">content</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">to</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">it.</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">if</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">[[</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${PR}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier"></span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span>= <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>r0<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">]]</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">;</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">then</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">suffix</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>gentoo<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">else</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">suffix</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>gentoo-<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${PR}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">fi</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">sed</span> -i <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">\</span>
+    -e <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>s~\(__fluxbox_version .@VERSION@\)~\1-<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${suffix}</span>~<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">\</span>
+    version.h.in <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">die</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>version sed failed<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+</span></pre>
+
+<p>
+It is also possible to extract content from existing files to create new files
+this way. Many <code class="docutils literal"><span class="pre">app-vim</span></code> ebuilds use this technique to extract documentation
+from the plugin files and convert it to Vim help format.
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">This</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">plugin</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">uses</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">an</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">'automatic</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">HelpExtractor'</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">variant.</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">This</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">causes</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">problems</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">for</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">us</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">during</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">unmerge.</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Fortunately,</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">sed</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">can</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">fix</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">this</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">for</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">us.</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">First,</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">we</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">extract</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">documentation:</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">sed</span> -e '1,/^<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> HelpExtractorDoc:$/d' \
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${S}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>/plugin/ZoomWin.vim <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">&gt;</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${S}</span>/doc/ZoomWin.txt <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">\</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">die</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>help extraction failed<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Then</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">we</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">remove</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">help</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">extraction</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">code</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">from</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">plugin</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">file:</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">sed</span> -i -e '/^<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> HelpExtractor:$/,$d' <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${S}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>/plugin/ZoomWin.vim \
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">die</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>help extract remove failed<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+</span></pre>
+
+<p>
+A summary of the more common ways of using <code class="docutils literal"><span class="pre">sed</span></code> and a description of
+commonly used address and token patterns follows. Note that some of these
+constructs are specific to <code class="docutils literal"><span class="pre">GNU sed 4</span></code> 
+    —
+   on non-GNU userland archs, the
+<code class="docutils literal"><span class="pre">sed</span></code> command must be aliased to GNU sed. Also note that <code class="docutils literal"><span class="pre">GNU sed 4</span></code> is
+guaranteed to be installed as part of <code class="docutils literal"><span class="pre">system</span></code>. This was not always the case,
+which is why some packages, particularly those which use <code class="docutils literal"><span class="pre">sed -i</span></code>, have
+<code class="docutils literal"><span class="pre">DEPEND</span></code> s upon <code class="docutils literal"><span class="pre">&gt;=sys-apps/sed-4</span></code>.
+</p>
+
+<div class="section">
+<h2 id="basic-sed-invocation">Basic <code class="docutils literal"><span class="pre">sed</span></code> Invocation</h2>
+
+<p>
+The basic form of a call is:
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">sed</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">[</span> option flags <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">]</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">\</span>
+    -e 'first command' <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">\</span>
+    -e 'second command' <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">\</span>
+    -e 'and so on' <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">\</span>
+    input-file <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">&gt;</span> output-file <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">\</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">die</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>Oops, sed didn't work!<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+</span></pre>
+
+<p>
+For cases where the input and output files are the same, the inplace option
+should be used. This is done by passing <code class="docutils literal"><span class="pre">-i</span></code> as one of the option flags.
+</p>
+
+<p>
+Usually <code class="docutils literal"><span class="pre">sed</span></code> prints out every line of the created content. To obtain only
+explicitly printed lines, the <code class="docutils literal"><span class="pre">-n</span></code> flag should be used.
+</p>
+
+<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+The term <i>pattern</i> refers to the description of text being matched.
+</div>
+
+</div>
+
+<div class="section">
+<h2 id="simple-text-substitution-using-sed">Simple Text Substitution using <code class="docutils literal"><span class="pre">sed</span></code>
+</h2>
+
+<p>
+The most common form of <code class="docutils literal"><span class="pre">sed</span></code> is to replace all instances of <code class="docutils literal"><span class="pre">"some text"</span></code>
+with <code class="docutils literal"><span class="pre">"different content"</span></code>. This is done as follows:
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">replace</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">all</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">instances</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">of</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"></span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">some</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">text</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">with</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"></span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">different</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">content</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">in</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">somefile.txt</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">sed</span> -i -e 's/some text/different content/g' somefile.txt <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">\</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">die</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>Sed broke!<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+</span></pre>
+
+<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+The <code class="docutils literal"><span class="pre">/g</span></code> flag is required to replace <i>all</i> occurrences. Without this
+flag, only the first match on each line is replaced.
+</div>
+
+<div class="alert alert-warning" role="alert">
+<strong>Warning:</strong>
+The above will replace <code class="docutils literal"><span class="pre">"irksome texting"</span></code> with
+<code class="docutils literal"><span class="pre">"irkdifferent contenting"</span></code>, which may not be desired.
+</div>
+
+<p>
+If the pattern or the replacement string contains the forward slash character,
+it is usually easiest to use a different delimiter. Most punctuation characters
+are allowed, although backslash and any form of brackets should be avoided.
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">replace</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">all</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">instances</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">of</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"></span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">/usr/local</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">with</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"></span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">/usr</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"></span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">sed</span> -i -e 's~/usr/local~/usr~g' somefile.txt <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">\</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">die</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>sed broke<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+</span></pre>
+
+<p>
+Patterns can be made to match only at the start or end of a line by using the
+<code class="docutils literal"><span class="pre">^</span></code> and <code class="docutils literal"><span class="pre">$</span></code> metacharacters. A <code class="docutils literal"><span class="pre">^</span></code> means "match at the start of a line
+only", and <code class="docutils literal"><span class="pre">$</span></code> means "match at the end of a line only". By using both in a
+single statement, it is possible to match exact lines.
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Replace</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">any</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"></span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">hello</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">s</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">which</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">occur</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">at</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">start</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">of</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">a</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">line</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">with</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"></span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">howdy</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">.</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">sed</span> -i -e 's!^hello!howdy!' data.in <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">die</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>sed failed<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+</span></pre>
+
+<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+There is no need for a <code class="docutils literal"><span class="pre">!g</span></code> suffix here.
+</div>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Replace</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">any</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"></span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">bye</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">s</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">which</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">occur</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">at</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">end</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">of</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">a</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">line</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">with</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"></span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">cheerio!</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">.</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">sed</span> -i -e 's,bye$,cheerio!,' data.in <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">die</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>sed failed<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+</span></pre>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Replace</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">any</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">lines</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">which</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">are</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">exactly</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"></span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">change</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">this</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">line</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">with</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"></span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">have</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">a</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">cookie</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">.</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">sed</span> -i -e 's-^change this line$-have a cookie-' data.in <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">die</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>Oops<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+</span></pre>
+
+<p>
+To ignore case in the pattern, add the <code class="docutils literal"><span class="pre">/i</span></code> flag.
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Replace</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">any</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"></span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">emacs</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">instances</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">(ignoring</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">case)</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">with</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"></span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Vim</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"></span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">sed</span> -i -e 's/emacs/Vim/gi' editors.txt <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">die</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>Ouch<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+</span></pre>
+
+<div class="alert alert-warning" role="alert">
+<strong>Warning:</strong>
+Case insensitive matching doesn't work correctly when backreferences
+are used.
+</div>
+
+</div>
+
+<div class="section">
+<h2 id="regular-expression-substitution-using-sed">Regular Expression Substitution using <code class="docutils literal"><span class="pre">sed</span></code>
+</h2>
+
+<p>
+It is also possible to do more complex matches with <code class="docutils literal"><span class="pre">sed</span></code>. Some examples could
+be:
+</p>
+
+<ul>
+  <li>
+    Match any three digits
+  </li>
+  <li>
+    Match either "foo" or "bar"
+  </li>
+  <li>
+    Match any of the letters "a", "e", "i", "o" or "u"
+  </li>
+</ul>
+
+<p>
+These types of pattern can be chained together, leading to things like "match
+any vowel followed by two digits followed by either foo or bar".
+</p>
+
+<p>
+To match any of a set of characters, a <i>character class</i> can be used. These come
+in three forms.
+</p>
+
+<ul>
+  <li>
+    A backslash followed by a letter. <code class="docutils literal"><span class="pre">\d</span></code>, for example, matches a single digit
+    (any of 0, 1, 2, ... 9). <code class="docutils literal"><span class="pre">\s</span></code> matches a single whitespace character. A table
+    of the more useful classes is provided later in this document.
+  </li>
+  <li>
+    A group of characters inside square brackets. <code class="docutils literal"><span class="pre">[aeiou]</span></code>, for example,
+    matches any one of 'a', 'e', 'i', 'o' or 'u'. Ranges are allowed, such as
+    <code class="docutils literal"><span class="pre">[0-9A-Fa-fxX]</span></code>, which could be used to match any hexadecimal digit or the
+    characters 'x' and 'X'. Inverted character classes, such as <code class="docutils literal"><span class="pre">[^aeiou]</span></code>,
+    match any single character <i>except</i> those listed.
+  </li>
+  <li>
+    A POSIX character class is a special named group of characters that are
+    locale-aware. For example, <code class="docutils literal"><span class="pre">[[:alpha:]]</span></code> matches any 'alphabet' character in
+    the current locale. A table of the more useful classes is provided later in
+    this document.
+  </li>
+</ul>
+
+<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+The regex <code class="docutils literal"><span class="pre">a[^b]</span></code> does <b>not</b> mean "match a, so long as it does not
+have a 'b' after it". It means "match a followed by exactly one character which
+is not a 'b'". This is important when one considers a line ending in the
+character 'a'.
+</div>
+
+<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+At the time of writing, the <code class="docutils literal"><span class="pre">sed</span></code> documentation (<code class="docutils literal"><span class="pre">man sed</span></code> and
+<code class="docutils literal"><span class="pre">sed.info</span></code>) does not mention that POSIX character classes are supported.
+Consult <a href="http://www.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap09.html#tag_09_03">
+IEEE1003.1-2004-9.3</a> for full details of how these <i>should</i> work, and
+the <code class="docutils literal"><span class="pre">sed</span></code> source code for full details of how these <i>actually</i> work.
+</div>
+
+<p>
+To match any one of multiple options, <i>alternation</i> can be used. The basic form
+is <code class="docutils literal"><span class="pre">first\|second\|third</span></code>.
+</p>
+
+<p>
+To group items to avoid ambiguity, the <code class="docutils literal"><span class="pre">\(parentheses\)</span></code> construct may be
+used. To match "iniquity" or "infinity", one could use <code class="docutils literal"><span class="pre">in\(iqui\|fini\)ty</span></code>.
+</p>
+
+<p>
+To optionally match an item, add a <code class="docutils literal"><span class="pre">\?</span></code> after it. For example, <code class="docutils literal"><span class="pre">colou\?r</span></code>
+matches both "colour" and "color". This can also be applied to character classes
+and groups in parentheses, for example <code class="docutils literal"><span class="pre">\(in\)\?finite\(ly\)\?</span></code>. Further atoms
+are available for matching "one or more", "zero or more", "at least n", "between
+n and m" and so on 
+    —
+   these are summarised later in this document.
+</p>
+
+<p>
+There are also some special constructs which can be used in the replacement part
+of a substitution command. To insert the contents of the pattern's first matched
+bracket group, use <code class="docutils literal"><span class="pre">\1</span></code>, for the second use <code class="docutils literal"><span class="pre">\2</span></code> and so on up to <code class="docutils literal"><span class="pre">\9</span></code>. An
+unescaped ampersand <code class="docutils literal"><span class="pre">&amp;</span></code> character can be used to insert the entire contents of
+the match. These and other replace atoms are summarised later in this document.
+</p>
+
+</div>
+
+<div class="section">
+<h2 id="addresses-in-sed">Addresses in <code class="docutils literal"><span class="pre">sed</span></code>
+</h2>
+
+<p>
+Many <code class="docutils literal"><span class="pre">sed</span></code> commands can be applied only to a certain line or range of lines.
+This could be useful if one wishes to operate only on the first ten lines of a
+document, for example.
+</p>
+
+<p>
+The simplest form of address is a single positive integer. This will cause the
+following command to be applied only to the line in question. Line numbering
+starts from 1, but the address 0 can be useful when one wishes to insert text
+<i>before</i> the first line. If the address 100 is used on a 50 line document, the
+associated command will never be executed.
+</p>
+
+<p>
+To match the last line in a document, the <code class="docutils literal"><span class="pre">$</span></code> address may be used.
+</p>
+
+<p>
+To match any lines that match a given regular expression, the form
+<code class="docutils literal"><span class="pre">/pattern/</span></code> is allowed. This can be useful for finding a particular line and
+then making certain changes to it 
+    —
+   sometimes it is simpler to handle this in
+two stages rather than using one big scary <code class="docutils literal"><span class="pre">s///</span></code> command. When used in
+ranges, it can be useful for finding all text between two given markers or
+between a given marker and the end of the document.
+</p>
+
+<p>
+To match a range of addresses, <code class="docutils literal"><span class="pre">addr1,addr2</span></code> can be used. Most address
+constructs are allowed for both the start and the end addresses.
+</p>
+
+<p>
+Addresses may be inverted with an exclamation mark. To match all lines <i>except</i>
+the last, <code class="docutils literal"><span class="pre">$!</span></code> may be used.
+</p>
+
+<p>
+Finally, if no address is given for a command, the command is applied to every
+line in the input.
+</p>
+
+<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+GNU <code class="docutils literal"><span class="pre">sed</span></code> does <b>not</b> support the <code class="docutils literal"><span class="pre">%</span></code> address forms found in some
+other implementations. It also doesn't support <code class="docutils literal"><span class="pre">/addr/+offset</span></code>, that's an
+<code class="docutils literal"><span class="pre">ex</span></code> thing...
+</div>
+
+<p>
+Other more complex options involving chaining addresses are available. These are
+not discussed in this document.
+</p>
+
+</div>
+
+<div class="section">
+<h2 id="content-deletion-using-sed">Content Deletion using <code class="docutils literal"><span class="pre">sed</span></code>
+</h2>
+
+<p>
+Lines may be deleted from a file using <code class="docutils literal"><span class="pre">address d</span></code> command. To delete the
+third line of a file, one could use <code class="docutils literal"><span class="pre">3d</span></code>, and to filter out all lines
+containing "fred", <code class="docutils literal"><span class="pre">/fred/d</span></code>.
+</p>
+
+<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+sed -e <code class="docutils literal"><span class="pre">/fred/d</span></code> is <i>not</i> the same as <code class="docutils literal"><span class="pre">s/.<i>fred.</i>//</span></code> 
+    —
+   the former
+will delete the lines including the newline, whereas the latter will delete the
+lines' contents but not the newline.
+</div>
+
+</div>
+
+<div class="section">
+<h2 id="content-extraction-using-sed">Content Extraction using <code class="docutils literal"><span class="pre">sed</span></code>
+</h2>
+
+<p>
+When the <code class="docutils literal"><span class="pre">-n</span></code> option is passed to <code class="docutils literal"><span class="pre">sed</span></code>, no output is printed by default.
+The <code class="docutils literal"><span class="pre">p</span></code> command can be used to display content. For example, to print lines
+containing "infra monkey", the command <code class="docutils literal"><span class="pre">sed -n -e '/infra monkey/p'</span></code> could be
+used. Ranges may also be printed 
+    —
+   <code class="docutils literal"><span class="pre">sed -n -e '/^START$/,/^END$/p'</span></code> is
+sometimes useful.
+</p>
+
+</div>
+
+<div class="section">
+<h2 id="inserting-content-using-sed">Inserting Content using <code class="docutils literal"><span class="pre">sed</span></code>
+</h2>
+
+<p>
+To insert text with sed use a <code class="docutils literal"><span class="pre">address a</span></code> or <code class="docutils literal"><span class="pre">i</span></code> command. The
+<code class="docutils literal"><span class="pre">a</span></code> command inserts on the line following the match while the <code class="docutils literal"><span class="pre">i</span></code>
+command inserts on the line before the match.
+</p>
+
+<p>
+As usual, an address can be either a line number or a regular
+expression: a line number command will only be executed once and a
+regular expression insert/append will be executed for each match.
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Add</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">'Bob'</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">after</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">'To:'</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">line:</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">sed</span> -i -e '/^To: <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">$/a</span>    Bob' data.in <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">die</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>Oops<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Add</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">'From:</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Alice'</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">before</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">'To:'</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">line:</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">sed</span> -i -e '/^To: <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">$/i</span>    From: Alice'
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Note</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">that</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">spacing</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">between</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">'i'</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">or</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">'a'</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">and</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">'Bob'</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">or</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">'From:</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Alice'</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">is</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">simply</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">ignored'</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Add</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">'From:</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Alice'</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">indented</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">by</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">two</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">spaces:</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">(You</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">only</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">need</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">to</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">escape</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">first</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">space)</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">sed</span> -i -e '/^To: <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">$/i\</span>  From: Alice'
+</span></pre>
+
+<p>
+Note that you should use a match instead of a line number wherever
+possible. This reduces problems if a line is added at the beginning of
+the file, for example, causing your sed script to break.
+</p>
+
+</div>
+
+<div class="section">
+<h2 id="regular-expression-atoms-in-sed">Regular Expression Atoms in <code class="docutils literal"><span class="pre">sed</span></code>
+</h2>
+
+<div class="section">
+<h3 id="basic-atoms">Basic Atoms</h3>
+
+<table class="table">
+  <tr>
+    <th>
+      Atom
+    </th>
+    <th>
+      Purpose
+    </th>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">text</span></code>
+    </td>
+    <td class="devbook">
+      Literal text
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">\( \)</span></code>
+    </td>
+    <td class="devbook">
+      Grouping
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">\|</span></code>
+    </td>
+    <td class="devbook">
+      Alternation, a <i>or</i> b
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">*</span></code> <code class="docutils literal"><span class="pre">\?</span></code> <code class="docutils literal"><span class="pre">\+</span></code> <code class="docutils literal"><span class="pre">\{\}</span></code>
+    </td>
+    <td class="devbook">
+      Repeats, see below
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">.</span></code>
+    </td>
+    <td class="devbook">
+      Any single character
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">^</span></code>
+    </td>
+    <td class="devbook">
+      Start of line
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">$</span></code>
+    </td>
+    <td class="devbook">
+      End of line
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">[abc0-9]</span></code>
+    </td>
+    <td class="devbook">
+      Any one of
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">[^abc0-9]</span></code>
+    </td>
+    <td class="devbook">
+      Any one character except
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">[[:alpha:]]</span></code>
+    </td>
+    <td class="devbook">
+      POSIX character class, see below
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">\1</span></code> .. <code class="docutils literal"><span class="pre">\9</span></code>
+    </td>
+    <td class="devbook">
+      Backreference
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">\x</span></code> (any special character)
+    </td>
+    <td class="devbook">
+      Match character literally
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">\x</span></code> (normal characters)
+    </td>
+    <td class="devbook">
+      Shortcut, see below
+    </td>
+  </tr>
+</table>
+
+</div>
+
+<div class="section">
+<h3 id="character-class-shortcuts">Character Class Shortcuts</h3>
+
+<table class="table">
+  <tr>
+    <th>
+      Atom
+    </th>
+    <th>
+      Description
+    </th>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">\a</span></code>
+    </td>
+    <td class="devbook">
+      "BEL" character
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">\f</span></code>
+    </td>
+    <td class="devbook">
+      "Form Feed" character
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">\t</span></code>
+    </td>
+    <td class="devbook">
+      "Tab" character
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">\w</span></code>
+    </td>
+    <td class="devbook">
+      "Word" (a letter, digit or underscore) character
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">\W</span></code>
+    </td>
+    <td class="devbook">
+      "Non-word" character
+    </td>
+  </tr>
+</table>
+
+</div>
+
+<div class="section">
+<h3 id="posix-character-classes">POSIX Character Classes</h3>
+
+<p>
+Read the source, it's the only place these're documented properly...
+</p>
+
+<table class="table">
+  <tr>
+    <th>
+      Class
+    </th>
+    <th>
+      Description
+    </th>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">[[:alpha:]]</span></code>
+    </td>
+    <td class="devbook">
+      Alphabetic characters
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">[[:upper:]]</span></code>
+    </td>
+    <td class="devbook">
+      Uppercase alphabetics
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">[[:lower:]]</span></code>
+    </td>
+    <td class="devbook">
+      Lowercase alphabetics
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">[[:digit:]]</span></code>
+    </td>
+    <td class="devbook">
+      Digits
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">[[:alnum:]]</span></code>
+    </td>
+    <td class="devbook">
+      Alphabetic and numeric characters
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">[[:xdigit:]]</span></code>
+    </td>
+    <td class="devbook">
+      Digits allowed in a hexadecimal number
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">[[:space:]]</span></code>
+    </td>
+    <td class="devbook">
+      Whitespace characters
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">[[:print:]]</span></code>
+    </td>
+    <td class="devbook">
+      Printable characters
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">[[:punct:]]</span></code>
+    </td>
+    <td class="devbook">
+      Punctuation characters
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">[[:graph:]]</span></code>
+    </td>
+    <td class="devbook">
+      Non-blank characters
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">[[:cntrl:]]</span></code>
+    </td>
+    <td class="devbook">
+      Control characters
+    </td>
+  </tr>
+</table>
+
+</div>
+
+<div class="section">
+<h3 id="count-specifiers">Count Specifiers</h3>
+
+<table class="table">
+  <tr>
+    <th>
+      Atom
+    </th>
+    <th>
+      Description
+    </th>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">*</span></code>
+    </td>
+    <td class="devbook">
+      Zero or more (greedy)
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">\+</span></code>
+    </td>
+    <td class="devbook">
+      One or more (greedy)
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">\?</span></code>
+    </td>
+    <td class="devbook">
+      Zero or one (greedy)
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">\{N\}</span></code>
+    </td>
+    <td class="devbook">
+      Exactly N
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">\{N,M\}</span></code>
+    </td>
+    <td class="devbook">
+      At least N and no more than M (greedy)
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">\{N,\}</span></code>
+    </td>
+    <td class="devbook">
+      At least N (greedy)
+    </td>
+  </tr>
+</table>
+
+</div>
+
+</div>
+
+<div class="section">
+<h2 id="replacement-atoms-in-sed">Replacement Atoms in <code class="docutils literal"><span class="pre">sed</span></code>
+</h2>
+
+<table class="table">
+  <tr>
+    <th>
+      Atom
+    </th>
+    <th>
+      Description
+    </th>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">\1</span></code> .. <code class="docutils literal"><span class="pre">\9</span></code>
+    </td>
+    <td class="devbook">
+      Captured <code class="docutils literal"><span class="pre">\( \)</span></code> contents
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">&amp;</span></code>
+    </td>
+    <td class="devbook">
+      The entire matched text
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">\L</span></code>
+    </td>
+    <td class="devbook">
+      All subsequent characters are converted to lowercase
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">\l</span></code>
+    </td>
+    <td class="devbook">
+      The following character is converted to lowercase
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">\U</span></code>
+    </td>
+    <td class="devbook">
+      All subsequent characters are converted to uppercase
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">\u</span></code>
+    </td>
+    <td class="devbook">
+      The following character is converted to uppercase
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">\E</span></code>
+    </td>
+    <td class="devbook">
+      Cancel the most recent <code class="docutils literal"><span class="pre">\L</span></code> or <code class="docutils literal"><span class="pre">\U</span></code>
+    </td>
+  </tr>
+</table>
+
+</div>
+
+<div class="section">
+<h2 id="details-of-sed-match-mechanics">Details of <code class="docutils literal"><span class="pre">sed</span></code> Match Mechanics</h2>
+
+<p>
+GNU <code class="docutils literal"><span class="pre">sed</span></code> uses a traditional (non-POSIX) nondeterministic finite automaton with
+extensions to support capturing to do its matching. This means that in all
+cases, the match with the leftmost starting position will be favoured. Of all
+the leftmost possible matches, favour will be given to leftmost alternation
+options. Finally, all other things being equal favour will be given to the
+longest of the leftmost counting options.
+</p>
+
+<p>
+Most of this is in violation of strict POSIX compliance, so it's best not
+to rely upon it. It <i>is</i> safe to assume that <code class="docutils literal"><span class="pre">sed</span></code> will always pick the leftmost
+match, and that it will match greedily with priority given to items earlier in
+the pattern.
+</p>
+
+</div>
+
+<div class="section">
+<h2 id="notes-on-performance-with-sed">Notes on Performance with <code class="docutils literal"><span class="pre">sed</span></code>
+</h2>
+
+<div class="alert alert-success" role="alert">
+<strong>Todo:</strong>
+write this
+</div>
+
+</div>
+
+<div class="section">
+<h2 id="recommended-further-reading-for-regular-expressions">Recommended Further Reading for Regular Expressions</h2>
+
+<p>
+The author recommends <i>Mastering Regular Expressions</i> by Jeffrey E. F. Friedl
+for those who wish to learn more about regexes. This text is remarkably devoid
+of phrases like "let <code class="docutils literal"><span class="pre">t</span></code> be a finite contiguous sequence such that <code class="docutils literal"><span class="pre">t[n] ∈ ∑
+∀ n</span></code>", and was <i>not</i> written by someone whose pay cheque depended upon them being
+able to express simple concepts with pages upon pages of mathematical and Greek
+symbols.
+</p>
+
+</div>
+
+
+</div>
+<footer><div class="container">
+<div class="row">
+<div class="col-xs-12 col-md-offset-2 col-md-7"></div>
+<div class="col-xs-12 col-md-3">
+<h3 class="footerhead">Questions or comments?</h3>
+              Please feel free to <a href="https://www.gentoo.org/inside-gentoo/contact/">contact us</a>.
+            </div>
+</div>
+<div class="row">
+<div class="col-xs-2 col-sm-3 col-md-2"><ul class="footerlinks three-icons">
+<li><a href="http://twitter.com/gentoo" title="@Gentoo on Twitter"><span class="fa fa-twitter fa-fw"></span></a></li>
+<li><a href="https://plus.google.com/+Gentoo" title="+Gentoo on Google+"><span class="fa fa-google-plus fa-fw"></span></a></li>
+<li><a href="https://www.facebook.com/gentoo.org" title="Gentoo on Facebook"><span class="fa fa-facebook fa-fw"></span></a></li>
+</ul></div>
+<div class="col-xs-10 col-sm-9 col-md-10">
+<strong>Copyright (C) 2001-2015 Gentoo Foundation, Inc.</strong><br><small>
+                Gentoo is a trademark of the Gentoo Foundation, Inc.
+                The text of this document is distributed under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Attribution-ShareAlike 2.0 License</a>.
+                The <a href="https://www.gentoo.org/inside-gentoo/foundation/name-logo-guidelines.html">Gentoo Name and Logo Usage Guidelines</a> apply.
+              </small>
+</div>
+</div>
+</div></footer><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/jquery.min.js"></script><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.js"></script>
+</body>
+</html>

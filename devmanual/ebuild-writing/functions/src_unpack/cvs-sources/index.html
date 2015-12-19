@@ -1,0 +1,249 @@
+<!DOCTYPE html><html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Gentoo Development Guide: CVS Sources</title>
+<link rel="stylesheet" href="../../../../devmanual.css" type="text/css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The Gentoo Devmanual is a technical manual which covers topics such as writing ebuilds and eclasses, and policies that developers should be abiding by.">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/tyrian.min.css" rel="stylesheet" media="screen">
+<link rel="icon" href="https://www.gentoo.org/favicon.ico" type="image/x-icon">
+</head>
+<body>
+<header><div class="site-title"><div class="container"><div class="row">
+<div class="site-title-buttons"><div class="btn-group btn-group-sm">
+<a href="https://get.gentoo.org/" role="button" class="btn get-gentoo"><span class="fa fa-fw fa-download"></span><strong> Get Gentoo!</strong></a><div class="btn-group btn-group-sm">
+<a class="btn gentoo-org-sites dropdown-toggle" data-toggle="dropdown" data-target="#" href="#"><span class="fa fa-fw fa-map-o"></span><span class="hidden-xs"> gentoo.org sites </span><span class="caret"></span></a><ul class="dropdown-menu dropdown-menu-right">
+<li><a href="https://www.gentoo.org/" title="Main Gentoo website"><span class="fa fa-home fa-fw"></span> gentoo.org</a></li>
+<li><a href="https://wiki.gentoo.org/" title="Find and contribute documentation"><span class="fa fa-file-text-o fa-fw"></span> Wiki</a></li>
+<li><a href="https://bugs.gentoo.org/" title="Report issues and find common issues"><span class="fa fa-bug fa-fw"></span> Bugs</a></li>
+<li><a href="https://forums.gentoo.org/" title="Discuss with the community"><span class="fa fa-comments-o fa-fw"></span> Forums</a></li>
+<li><a href="https://packages.gentoo.org/" title="Find software for your Gentoo"><span class="fa fa-hdd-o fa-fw"></span> Packages</a></li>
+<li class="divider">
+<li><a href="https://planet.gentoo.org/" title="Find out what's going on in the developer community"><span class="fa fa-rss fa-fw"></span> Planet</a></li>
+<li><a href="https://archives.gentoo.org/" title="Read up on past discussions"><span class="fa fa-archive fa-fw"></span> Archives</a></li>
+<li><a href="https://sources.gentoo.org/" title="Browse our source code"><span class="fa fa-code fa-fw"></span> Sources</a></li>
+<li class="divider">
+<li><a href="https://infra-status.gentoo.org/" title="Get updates on the services provided by Gentoo"><span class="fa fa-server fa-fw"></span> Infra Status</a></li>
+</ul>
+</div>
+</div></div>
+<div class="logo">
+<a href="/" title="Back to the homepage" class="site-logo"><object data="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.svg" type="image/svg+xml"><img src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.png" alt="Gentoo Linux Logo"></object></a><span class="site-label">Development Guide</span>
+</div>
+</div></div></div>
+<nav class="tyrian-navbar" role="navigation"><div class="container"><div class="row">
+<div class="navbar-header"><button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button></div>
+<div class="collapse navbar-collapse navbar-main-collapse"><ul class="nav navbar-nav">
+<li><a href="../../../..//index.html"><span class="glyphicon glyphicon-home"></span>  Home</a></li>
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">CVS Sources<span class="caret"></span></a></li>
+<li><a href="../index.html"><span class="glyphicon glyphicon-arrow-left"></span>  src_unpack</a></li>
+<li><a href="../../../../ebuild-writing/functions/src_unpack/svn-sources/index.html">Subversion Sources  <span class="glyphicon glyphicon-arrow-right"></span></a></li>
+</ul></div>
+</div></div></nav></header><div class="container"><div class="row"><div class="col-md010"><ol class="breadcrumb">
+<li><a href="../../../../index.html">Master Index</a></li>
+<li><a href="../../../index.html">Ebuild Writing</a></li>
+<li><a href="../../index.html">Ebuild Functions</a></li>
+<li><a href="../index.html">src_unpack</a></li>
+</ol></div></div></div>
+<div class="container">
+<h1 class="first-header">CVS Sources</h1>
+<p>
+Rather than working with a source tarball, it is possible to use
+upstream's CVS server directly. This can be useful when there is a
+need to test unreleased snapshots on a regular basis.
+</p>
+<div class="section">
+<h2 id="disadvantages-of-cvs-sources">Disadvantages of CVS Sources</h2>
+
+<p>
+Note that CVS ebuilds should <b>not</b> generally be added to the tree
+for the following reasons:
+</p>
+
+<ul>
+  <li>
+  Upstream CVS servers tend to be far less reliable than our mirroring
+  system.
+  </li>
+  <li>
+  CVS ebuilds create a very heavy server load 
+    —
+   not only is CVS not
+  mirrored, but allowing a CVS checkout is considerably more work for
+  a server than simply serving up a file via HTTP or FTP.
+  </li>
+  <li>
+  Many users who are behind strict firewalls cannot use CVS.
+  </li>
+</ul>
+
+<p>
+It is safer to make a snapshot instead. For example, vim snapshots are made using:
+</p>
+
+<pre>
+$ cvs -z3 -d :pserver:anonymous@cvs.sourceforge.net:/cvsroot/vim export -r HEAD vim
+</pre>
+</div>
+<div class="section">
+<h2 id="disadvantages-of-cvs-live-sources">Disadvantages of CVS Live Sources</h2>
+
+<p>
+CVS ebuilds which work against CVS <code class="docutils literal"><span class="pre">HEAD</span></code> rather than a specific
+date or revision are even worse candidates for tree inclusion:
+</p>
+
+<ul>
+  <li>
+  You can never be sure whether upstream's CVS will actually
+  build at any given point; which will most likely cause QA issues.
+  </li>
+  <li>
+  It is extremely difficult to track down bugs when you cannot install
+  the same version of a package as the reporter.
+  </li>
+  <li>
+  Many upstream package maintainers tend to get upset if people aren't
+  using a specific released version.
+  </li>
+</ul>
+
+</div>
+<div class="section">
+<h2 id="using-cvs-sources">Using CVS Sources</h2>
+
+<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+CVS ebuilds must be either with empty <code class="docutils literal"><span class="pre">KEYWORDS</span></code> or
+package.masked (but <i>not</i> both). Empty <code class="docutils literal"><span class="pre">KEYWORDS</span></code> are
+strongly preferred. This applies to "live" ebuilds (<code class="docutils literal"><span class="pre">-9999</span></code>) and
+to ebuilds that extract a static revision but still use CVS for
+fetching.
+</div>
+
+<p>
+To use a CVS source, <code class="docutils literal"><span class="pre">cvs.eclass</span></code> must be inherited, and then a
+number of variables must be set. The following variables are often
+useful:
+</p>
+
+<table class="table">
+  <tr>
+    <th>Variable</th>
+    <th>Purpose</th>
+    <th>Example</th>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">ECVS_SERVER</span></code></td>
+    <td class="devbook">Server and path</td>
+    <td class="devbook"><code class="docutils literal"><span class="pre">"cvs.sourceforge.net:/cvsroot/vim"</span></code></td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">ECVS_MODULE</span></code></td>
+    <td class="devbook">Module</td>
+    <td class="devbook"><code class="docutils literal"><span class="pre">"vim"</span></code></td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">ECVS_BRANCH</span></code></td>
+    <td class="devbook">Branch</td>
+    <td class="devbook"><code class="docutils literal"><span class="pre">"HEAD"</span></code></td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">ECVS_AUTH</span></code></td>
+    <td class="devbook">Auth method</td>
+    <td class="devbook"><code class="docutils literal"><span class="pre">"ext"</span></code></td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">ECVS_USER</span></code></td>
+    <td class="devbook">Username</td>
+    <td class="devbook"><code class="docutils literal"><span class="pre">"anoncvs"</span></code></td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">ECVS_PASS</span></code></td>
+    <td class="devbook">Password</td>
+    <td class="devbook"><code class="docutils literal"><span class="pre">""</span></code></td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">ECVS_TOPDIR</span></code></td>
+    <td class="devbook">Unpack location</td>
+    <td class="devbook"><code class="docutils literal"><span class="pre">"${DISTDIR}/cvs-src/${ECVS_MODULE}"</span></code></td>
+  </tr>
+</table>
+
+<p>
+See the eclass itself for the full range of options. To perform the
+actual checkout, use the <code class="docutils literal"><span class="pre">cvs_src_unpack</span></code> function.
+</p>
+
+<p>
+Here's a simple example, based upon the CVS options in vim.eclass:
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">inherit</span> cvs
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">SRC_URI</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_unpack()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">ECVS_SERVER</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>cvs.sourceforge.net:/cvsroot/vim<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">ECVS_USER</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>anonymous<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">ECVS_PASS</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">ECVS_AUTH</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>pserver<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">if</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">[[</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">$(</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">get_major_version</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">-ge</span> 7 <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">]]</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">;</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">then</span>
+        <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">ECVS_MODULE</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>vim7<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">else</span>
+        <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">ECVS_MODULE</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>vim<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">fi</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">ECVS_TOP_DIR</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${DISTDIR}</span>/cvs-src/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${ECVS_MODULE}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">cvs_src_unpack</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+</span></pre>
+
+<p>
+Here's another approach, based upon the <code class="docutils literal"><span class="pre">emacs-cvs</span></code> ebuild, which
+relies upon the default <code class="docutils literal"><span class="pre">src_unpack</span></code> provided in the eclass; this
+approach is simpler but less flexible:
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">inherit</span> cvs
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">ECVS_AUTH</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>ext<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">CVS_RSH</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>ssh<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">ECVS_SERVER</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>savannah.gnu.org:/cvsroot/emacs<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">ECVS_MODULE</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>emacs<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">ECVS_BRANCH</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>emacs-unicode-2<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">ECVS_USER</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>anoncvs<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">ECVS_PASS</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">ECVS_CVS_OPTIONS</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>-dP<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">...and</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">so</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">on.</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">No</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">src_unpack()</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">is</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">specified.</span>
+</span></pre>
+
+</div>
+</div>
+<footer><div class="container">
+<div class="row">
+<div class="col-xs-12 col-md-offset-2 col-md-7"></div>
+<div class="col-xs-12 col-md-3">
+<h3 class="footerhead">Questions or comments?</h3>
+              Please feel free to <a href="https://www.gentoo.org/inside-gentoo/contact/">contact us</a>.
+            </div>
+</div>
+<div class="row">
+<div class="col-xs-2 col-sm-3 col-md-2"><ul class="footerlinks three-icons">
+<li><a href="http://twitter.com/gentoo" title="@Gentoo on Twitter"><span class="fa fa-twitter fa-fw"></span></a></li>
+<li><a href="https://plus.google.com/+Gentoo" title="+Gentoo on Google+"><span class="fa fa-google-plus fa-fw"></span></a></li>
+<li><a href="https://www.facebook.com/gentoo.org" title="Gentoo on Facebook"><span class="fa fa-facebook fa-fw"></span></a></li>
+</ul></div>
+<div class="col-xs-10 col-sm-9 col-md-10">
+<strong>Copyright (C) 2001-2015 Gentoo Foundation, Inc.</strong><br><small>
+                Gentoo is a trademark of the Gentoo Foundation, Inc.
+                The text of this document is distributed under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Attribution-ShareAlike 2.0 License</a>.
+                The <a href="https://www.gentoo.org/inside-gentoo/foundation/name-logo-guidelines.html">Gentoo Name and Logo Usage Guidelines</a> apply.
+              </small>
+</div>
+</div>
+</div></footer><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/jquery.min.js"></script><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.js"></script>
+</body>
+</html>

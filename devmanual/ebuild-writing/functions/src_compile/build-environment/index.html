@@ -1,0 +1,203 @@
+<!DOCTYPE html><html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Gentoo Development Guide: Configuring Build Environment</title>
+<link rel="stylesheet" href="../../../../devmanual.css" type="text/css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The Gentoo Devmanual is a technical manual which covers topics such as writing ebuilds and eclasses, and policies that developers should be abiding by.">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/tyrian.min.css" rel="stylesheet" media="screen">
+<link rel="icon" href="https://www.gentoo.org/favicon.ico" type="image/x-icon">
+</head>
+<body>
+<header><div class="site-title"><div class="container"><div class="row">
+<div class="site-title-buttons"><div class="btn-group btn-group-sm">
+<a href="https://get.gentoo.org/" role="button" class="btn get-gentoo"><span class="fa fa-fw fa-download"></span><strong> Get Gentoo!</strong></a><div class="btn-group btn-group-sm">
+<a class="btn gentoo-org-sites dropdown-toggle" data-toggle="dropdown" data-target="#" href="#"><span class="fa fa-fw fa-map-o"></span><span class="hidden-xs"> gentoo.org sites </span><span class="caret"></span></a><ul class="dropdown-menu dropdown-menu-right">
+<li><a href="https://www.gentoo.org/" title="Main Gentoo website"><span class="fa fa-home fa-fw"></span> gentoo.org</a></li>
+<li><a href="https://wiki.gentoo.org/" title="Find and contribute documentation"><span class="fa fa-file-text-o fa-fw"></span> Wiki</a></li>
+<li><a href="https://bugs.gentoo.org/" title="Report issues and find common issues"><span class="fa fa-bug fa-fw"></span> Bugs</a></li>
+<li><a href="https://forums.gentoo.org/" title="Discuss with the community"><span class="fa fa-comments-o fa-fw"></span> Forums</a></li>
+<li><a href="https://packages.gentoo.org/" title="Find software for your Gentoo"><span class="fa fa-hdd-o fa-fw"></span> Packages</a></li>
+<li class="divider">
+<li><a href="https://planet.gentoo.org/" title="Find out what's going on in the developer community"><span class="fa fa-rss fa-fw"></span> Planet</a></li>
+<li><a href="https://archives.gentoo.org/" title="Read up on past discussions"><span class="fa fa-archive fa-fw"></span> Archives</a></li>
+<li><a href="https://sources.gentoo.org/" title="Browse our source code"><span class="fa fa-code fa-fw"></span> Sources</a></li>
+<li class="divider">
+<li><a href="https://infra-status.gentoo.org/" title="Get updates on the services provided by Gentoo"><span class="fa fa-server fa-fw"></span> Infra Status</a></li>
+</ul>
+</div>
+</div></div>
+<div class="logo">
+<a href="/" title="Back to the homepage" class="site-logo"><object data="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.svg" type="image/svg+xml"><img src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.png" alt="Gentoo Linux Logo"></object></a><span class="site-label">Development Guide</span>
+</div>
+</div></div></div>
+<nav class="tyrian-navbar" role="navigation"><div class="container"><div class="row">
+<div class="navbar-header"><button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button></div>
+<div class="collapse navbar-collapse navbar-main-collapse"><ul class="nav navbar-nav">
+<li><a href="../../../..//index.html"><span class="glyphicon glyphicon-home"></span>  Home</a></li>
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Configuring Build Environment<span class="caret"></span></a></li>
+<li><a href="../index.html"><span class="glyphicon glyphicon-arrow-left"></span>  src_compile</a></li>
+<li><a href="../../../../ebuild-writing/functions/src_compile/building/index.html">Building a Package  <span class="glyphicon glyphicon-arrow-right"></span></a></li>
+</ul></div>
+</div></div></nav></header><div class="container"><div class="row"><div class="col-md010"><ol class="breadcrumb">
+<li><a href="../../../../index.html">Master Index</a></li>
+<li><a href="../../../index.html">Ebuild Writing</a></li>
+<li><a href="../../index.html">Ebuild Functions</a></li>
+<li><a href="../index.html">src_compile</a></li>
+</ol></div></div></div>
+<div class="container">
+<h1 class="first-header">Configuring Build Environment</h1>
+<p>
+Sometimes it is necessary to manipulate certain aspects of the user's
+build environment before running <code class="docutils literal"><span class="pre">./configure</span></code>. The <code class="docutils literal"><span class="pre">flag-o-matic</span></code>
+eclass is the best choice for manipulating <code class="docutils literal"><span class="pre">CFLAGS</span></code>, <code class="docutils literal"><span class="pre">LDFLAGS</span></code>
+and suchlike.
+</p>
+
+<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+Except where otherwise specified, any function which operates on
+<code class="docutils literal"><span class="pre">CFLAGS</span></code> also operates on <code class="docutils literal"><span class="pre">CXXFLAGS</span></code>.
+</div>
+
+<p>
+Ebuilds must not simply ignore user CFLAGS, CXXFLAGS or LDFLAGS
+    —
+   see
+<a href="../../../../general-concepts/user-environment/index.html#not-filtering-variables">Not Filtering Variables</a>.
+</p>
+<div class="section">
+<h2 id="guidelines-for-flag-filtering">Guidelines for Flag Filtering</h2>
+
+<p>
+If a package breaks with any reasonable <code class="docutils literal"><span class="pre">CFLAGS</span></code>, it is best to filter the
+problematic flag if a bug report is received. Reasonable <code class="docutils literal"><span class="pre">CFLAGS</span></code> are
+<code class="docutils literal"><span class="pre">-march=</span></code>, <code class="docutils literal"><span class="pre">-mcpu=</span></code>, <code class="docutils literal"><span class="pre">-mtune=</span></code> (depending upon
+arch), <code class="docutils literal"><span class="pre">-O2</span></code>, <code class="docutils literal"><span class="pre">-Os</span></code> and <code class="docutils literal"><span class="pre">-fomit-frame-pointer</span></code>. Note that
+<code class="docutils literal"><span class="pre">-Os</span></code> should usually be replaced with <code class="docutils literal"><span class="pre">-O2</span></code> rather than being
+stripped entirely. The <code class="docutils literal"><span class="pre">-fstack-protector</span></code> flag should probably be
+in this group too, although our hardened team claim that this flag
+never ever breaks anything...
+</p>
+
+<p>
+The <code class="docutils literal"><span class="pre">-pipe</span></code> flag doesn't affect the generated code, so it's not really
+relevant here, but it's a sensible flag to have set globally.
+</p>
+
+<p>
+If a package breaks with other (insane) <code class="docutils literal"><span class="pre">CFLAGS</span></code>, it is perfectly
+OK to close the bug with a <b>WONTFIX</b> suggesting that the user
+picks more sensible global <code class="docutils literal"><span class="pre">CFLAGS</span></code>. Similarly, if you suspect
+that a bug is caused by insane <code class="docutils literal"><span class="pre">CFLAGS</span></code>, an <b>INVALID</b> resolution is
+suitable.
+</p>
+
+<p>
+All of the following assumes that the ebuild has an <code class="docutils literal"><span class="pre">inherit flag-o-matic</span></code>
+line in the correct place.
+</p>
+
+</div>
+<div class="section">
+<h2 id="simple-flag-stripping">Simple Flag Stripping</h2>
+
+<p>
+The <code class="docutils literal"><span class="pre">filter-flags</span></code> function can be used to remove a particular flag from
+<code class="docutils literal"><span class="pre">{C,CPP,CXX,CCAS,F,FC,LD}FLAGS</span></code>. Multiple arguments can be supplied; each is the name of a flag to
+remove.
+</p>
+
+<pre><span class="Constant">    <span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">-fomit-frame-pointer</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">leads</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">to</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">nasty</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">broken</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">code</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">on</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">sparc</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">thanks</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">to</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">a</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">rather</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">icky</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">asm</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">function</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">use</span> sparc <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">&amp;&amp;</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">filter-flags</span> -fomit-frame-pointer
+</span></pre>
+
+<p>
+There is a <code class="docutils literal"><span class="pre">filter-ldflags</span></code> function available which does the equivalent
+for <code class="docutils literal"><span class="pre">LDFLAGS</span></code>.
+</p>
+
+<p>
+If a package is known to be very <code class="docutils literal"><span class="pre">CFLAGS</span></code> sensitive, the
+<code class="docutils literal"><span class="pre">strip-flags</span></code> function will remove most flags, leaving only a minimal
+conservative set of flags.
+</p>
+
+<pre><span class="Constant">    <span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Our</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">app</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">hates</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">screwy</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">flags</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">strip-flags</span>
+</span></pre>
+
+</div>
+<div class="section">
+<h2 id="flag-replacement">Flag Replacement</h2>
+
+<p>
+To replace a flag with a different one, use <code class="docutils literal"><span class="pre">replace-flags</span></code>. This
+is most commonly used to replace <code class="docutils literal"><span class="pre">-Os</span></code> with <code class="docutils literal"><span class="pre">-O2</span></code>
+(or <code class="docutils literal"><span class="pre">-O3</span></code> with <code class="docutils literal"><span class="pre">-O2</span></code> if you are feeling kind).
+</p>
+
+<pre><span class="Constant">    <span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Seems</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">to</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">have</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">issues</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">with</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">-Os,</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">switch</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">to</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">-O2</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">replace-flags</span> -Os -O2
+</span></pre>
+
+<p>
+There is also a special function named <code class="docutils literal"><span class="pre">replace-cpu-flags</span></code> for
+replacing CPU (<code class="docutils literal"><span class="pre">-mtune</span></code>, <code class="docutils literal"><span class="pre">-mcpu</span></code>, <code class="docutils literal"><span class="pre">-march</span></code>) designation
+flags. The last argument is the flag to use; previous arguments are
+the flags to be replaced.
+</p>
+
+<pre><span class="Constant">    <span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Can't</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">use</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">ultrasparc</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">or</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">ultrasparc3</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">code,</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">drop</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">to</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">v9</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">replace-cpu-flags</span> ultrasparc ultrasparc3 v9
+</span></pre>
+
+</div>
+<div class="section">
+<h2 id="adding-additional-flags">Adding Additional Flags</h2>
+<p>
+Sometimes it is necessary to add in additional <code class="docutils literal"><span class="pre">CFLAGS</span></code>
+or <code class="docutils literal"><span class="pre">LDFLAGS</span></code>. The <code class="docutils literal"><span class="pre">append-flags</span></code> and <code class="docutils literal"><span class="pre">append-ldflags</span></code>
+functions can be used here.
+</p>
+
+<pre><span class="Constant">    <span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">If</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">we're</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">using</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">selinux,</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">we</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">need</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">to</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">add</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">a</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">-D</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">use</span> selinux <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">&amp;&amp;</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">append-flags</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>-DWITH_SELINUX<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Secure</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">linking</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">needed,</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">since</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">we're</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">setuid</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">root</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">append-ldflags</span> -Wl,-z,now
+</span></pre>
+
+<p>
+See <a href="../../../../eclass-reference/flag-o-matic.eclass/index.html">flag-o-matic.eclass</a> for a full reference.
+</p>
+</div>
+</div>
+<footer><div class="container">
+<div class="row">
+<div class="col-xs-12 col-md-offset-2 col-md-7"></div>
+<div class="col-xs-12 col-md-3">
+<h3 class="footerhead">Questions or comments?</h3>
+              Please feel free to <a href="https://www.gentoo.org/inside-gentoo/contact/">contact us</a>.
+            </div>
+</div>
+<div class="row">
+<div class="col-xs-2 col-sm-3 col-md-2"><ul class="footerlinks three-icons">
+<li><a href="http://twitter.com/gentoo" title="@Gentoo on Twitter"><span class="fa fa-twitter fa-fw"></span></a></li>
+<li><a href="https://plus.google.com/+Gentoo" title="+Gentoo on Google+"><span class="fa fa-google-plus fa-fw"></span></a></li>
+<li><a href="https://www.facebook.com/gentoo.org" title="Gentoo on Facebook"><span class="fa fa-facebook fa-fw"></span></a></li>
+</ul></div>
+<div class="col-xs-10 col-sm-9 col-md-10">
+<strong>Copyright (C) 2001-2015 Gentoo Foundation, Inc.</strong><br><small>
+                Gentoo is a trademark of the Gentoo Foundation, Inc.
+                The text of this document is distributed under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Attribution-ShareAlike 2.0 License</a>.
+                The <a href="https://www.gentoo.org/inside-gentoo/foundation/name-logo-guidelines.html">Gentoo Name and Logo Usage Guidelines</a> apply.
+              </small>
+</div>
+</div>
+</div></footer><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/jquery.min.js"></script><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.js"></script>
+</body>
+</html>

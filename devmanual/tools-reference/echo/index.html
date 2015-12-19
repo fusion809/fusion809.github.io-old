@@ -1,0 +1,161 @@
+<!DOCTYPE html><html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Gentoo Development Guide: echo -- Print Strings</title>
+<link rel="stylesheet" href="../../devmanual.css" type="text/css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The Gentoo Devmanual is a technical manual which covers topics such as writing ebuilds and eclasses, and policies that developers should be abiding by.">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/tyrian.min.css" rel="stylesheet" media="screen">
+<link rel="icon" href="https://www.gentoo.org/favicon.ico" type="image/x-icon">
+</head>
+<body>
+<header><div class="site-title"><div class="container"><div class="row">
+<div class="site-title-buttons"><div class="btn-group btn-group-sm">
+<a href="https://get.gentoo.org/" role="button" class="btn get-gentoo"><span class="fa fa-fw fa-download"></span><strong> Get Gentoo!</strong></a><div class="btn-group btn-group-sm">
+<a class="btn gentoo-org-sites dropdown-toggle" data-toggle="dropdown" data-target="#" href="#"><span class="fa fa-fw fa-map-o"></span><span class="hidden-xs"> gentoo.org sites </span><span class="caret"></span></a><ul class="dropdown-menu dropdown-menu-right">
+<li><a href="https://www.gentoo.org/" title="Main Gentoo website"><span class="fa fa-home fa-fw"></span> gentoo.org</a></li>
+<li><a href="https://wiki.gentoo.org/" title="Find and contribute documentation"><span class="fa fa-file-text-o fa-fw"></span> Wiki</a></li>
+<li><a href="https://bugs.gentoo.org/" title="Report issues and find common issues"><span class="fa fa-bug fa-fw"></span> Bugs</a></li>
+<li><a href="https://forums.gentoo.org/" title="Discuss with the community"><span class="fa fa-comments-o fa-fw"></span> Forums</a></li>
+<li><a href="https://packages.gentoo.org/" title="Find software for your Gentoo"><span class="fa fa-hdd-o fa-fw"></span> Packages</a></li>
+<li class="divider">
+<li><a href="https://planet.gentoo.org/" title="Find out what's going on in the developer community"><span class="fa fa-rss fa-fw"></span> Planet</a></li>
+<li><a href="https://archives.gentoo.org/" title="Read up on past discussions"><span class="fa fa-archive fa-fw"></span> Archives</a></li>
+<li><a href="https://sources.gentoo.org/" title="Browse our source code"><span class="fa fa-code fa-fw"></span> Sources</a></li>
+<li class="divider">
+<li><a href="https://infra-status.gentoo.org/" title="Get updates on the services provided by Gentoo"><span class="fa fa-server fa-fw"></span> Infra Status</a></li>
+</ul>
+</div>
+</div></div>
+<div class="logo">
+<a href="/" title="Back to the homepage" class="site-logo"><object data="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.svg" type="image/svg+xml"><img src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.png" alt="Gentoo Linux Logo"></object></a><span class="site-label">Development Guide</span>
+</div>
+</div></div></div>
+<nav class="tyrian-navbar" role="navigation"><div class="container"><div class="row">
+<div class="navbar-header"><button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button></div>
+<div class="collapse navbar-collapse navbar-main-collapse"><ul class="nav navbar-nav">
+<li><a href="../..//index.html"><span class="glyphicon glyphicon-home"></span>  Home</a></li>
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">echo -- Print Strings<span class="caret"></span></a></li>
+<li><a href="../echangelog/index.html"><span class="glyphicon glyphicon-arrow-left"></span>  echangelog -- ChangeLog Generation</a></li>
+<li><a href="../../tools-reference/ekeyword/index.html">ekeyword -- Keywording  <span class="glyphicon glyphicon-arrow-right"></span></a></li>
+</ul></div>
+</div></div></nav></header><div class="container"><div class="row"><div class="col-md010"><ol class="breadcrumb">
+<li><a href="../../index.html">Master Index</a></li>
+<li><a href="../index.html">Tools Reference</a></li>
+</ol></div></div></div>
+<div class="container">
+<h1 class="first-header">
+<code class="docutils literal"><span class="pre">echo</span></code> -- Print Strings</h1>
+
+<p>
+The <code class="docutils literal"><span class="pre">echo</span></code> command can be used to print strings. The standard
+usage is <code class="docutils literal"><span class="pre">echo firstString secondString ...</span></code>. Also, it provides
+additional parameters for formatting of the output.
+</p>
+
+<div class="section">
+<h2 id="abuse-of-echo">Abuse of <code class="docutils literal"><span class="pre">echo</span></code>
+</h2>
+<p>
+If you find yourself about to use <code class="docutils literal"><span class="pre">echo</span></code> in an ebuild, stop and
+reconsider. It is almost always unnecessary.
+</p>
+
+<p>
+First of all, for printing messages in standard portage scripts, you
+can use the <code class="docutils literal"><span class="pre">einfo</span></code>, and <code class="docutils literal"><span class="pre">eerror</span></code> functions along with their
+corresponding functions, <code class="docutils literal"><span class="pre">einfon</span></code>, <code class="docutils literal"><span class="pre">eerrorn</span></code>, etc, which are
+the same as the former, but they won't print the trailing newline
+(<code class="docutils literal"><span class="pre">\n</span></code>).
+</p>
+
+<p>
+All usage of the form <code class="docutils literal"><span class="pre">echo ${somevar} | grep substring</span></code> just to
+check if the contents of the <code class="docutils literal"><span class="pre">${somevar}</span></code> variable
+contains <code class="docutils literal"><span class="pre">substring</span></code>, or more often, <code class="docutils literal"><span class="pre">echo ${somevar} |
+command</span></code>, are deprecated and should be (and in most cases, can be)
+used as less as possible: doing so involves for no reason an
+additional shell session and a pipe. The "here strings" section
+describes the preferred way of dealing with such cases.
+</p>
+</div>
+
+<div class="section">
+<h2 id="here-strings">Here Strings</h2>
+<p>
+As of &gt;=bash-2.05b, the so-called "here strings" have been
+introduced. Using "here strings", you can pass contents of an
+environment variable to the standard input of an application, using
+<code class="docutils literal"><span class="pre">&lt;&lt;&lt;word</span></code> redirection: what actually happens is
+that <code class="docutils literal"><span class="pre">bash</span></code> expands word and passes the result to the standard
+input.
+</p>
+
+<p>
+A common example would be verifying if a variable <code class="docutils literal"><span class="pre">${foo}</span></code>
+contains the bar substring with the following construct: <code class="docutils literal"><span class="pre">grep bar
+&lt;&lt;&lt; ${foo}</span></code>. This replaces the deprecated and more
+wasteful behaviour of using <code class="docutils literal"><span class="pre">echo ${foo} | grep bar</span></code>.
+</p>
+</div>
+
+<div class="section">
+<h2 id="standard-usage-of-echo">Standard usage of <code class="docutils literal"><span class="pre">echo</span></code>
+</h2>
+<p>
+In standard calls, the <code class="docutils literal"><span class="pre">echo</span></code> command with no additional options,
+outputs the arguments passed to the standard output, separated by
+whitespace and with a trailing newline character (<code class="docutils literal"><span class="pre">\n</span></code>).
+</p>
+
+<p>
+If one wants to exclude the trailing newline character, the <code class="docutils literal"><span class="pre">-n</span></code>
+option can be passed, as in: <code class="docutils literal"><span class="pre">echo -n "no trailing newline"</span></code>.
+</p>
+
+<p>
+Special characters, like tabs (<code class="docutils literal"><span class="pre">\t</span></code>), newline characters
+(<code class="docutils literal"><span class="pre">\n</span></code>), carriage return characters (<code class="docutils literal"><span class="pre">\r</span></code>) (i.e. for
+translating newlines from DOS format to Unix format), and any other
+ASCII character given by its code value) can be passed to the echo
+command with the <code class="docutils literal"><span class="pre">-e</span></code> option. For example, to output three
+strings, each on different lines, in a single <code class="docutils literal"><span class="pre">echo</span></code> command,
+use: <code class="docutils literal"><span class="pre">echo -e "first line\nsecond line\nthird line"</span></code>.
+</p>
+
+<p>
+Other escape sequences and additional parameters for the <code class="docutils literal"><span class="pre">echo</span></code>
+command are available in the bash man page.
+</p>
+
+</div>
+
+
+</div>
+<footer><div class="container">
+<div class="row">
+<div class="col-xs-12 col-md-offset-2 col-md-7"></div>
+<div class="col-xs-12 col-md-3">
+<h3 class="footerhead">Questions or comments?</h3>
+              Please feel free to <a href="https://www.gentoo.org/inside-gentoo/contact/">contact us</a>.
+            </div>
+</div>
+<div class="row">
+<div class="col-xs-2 col-sm-3 col-md-2"><ul class="footerlinks three-icons">
+<li><a href="http://twitter.com/gentoo" title="@Gentoo on Twitter"><span class="fa fa-twitter fa-fw"></span></a></li>
+<li><a href="https://plus.google.com/+Gentoo" title="+Gentoo on Google+"><span class="fa fa-google-plus fa-fw"></span></a></li>
+<li><a href="https://www.facebook.com/gentoo.org" title="Gentoo on Facebook"><span class="fa fa-facebook fa-fw"></span></a></li>
+</ul></div>
+<div class="col-xs-10 col-sm-9 col-md-10">
+<strong>Copyright (C) 2001-2015 Gentoo Foundation, Inc.</strong><br><small>
+                Gentoo is a trademark of the Gentoo Foundation, Inc.
+                The text of this document is distributed under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Attribution-ShareAlike 2.0 License</a>.
+                The <a href="https://www.gentoo.org/inside-gentoo/foundation/name-logo-guidelines.html">Gentoo Name and Logo Usage Guidelines</a> apply.
+              </small>
+</div>
+</div>
+</div></footer><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/jquery.min.js"></script><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.js"></script>
+</body>
+</html>

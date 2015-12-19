@@ -1,0 +1,898 @@
+<!DOCTYPE html><html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Gentoo Development Guide: EAPI Usage and Description</title>
+<link rel="stylesheet" href="../../devmanual.css" type="text/css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The Gentoo Devmanual is a technical manual which covers topics such as writing ebuilds and eclasses, and policies that developers should be abiding by.">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/tyrian.min.css" rel="stylesheet" media="screen">
+<link rel="icon" href="https://www.gentoo.org/favicon.ico" type="image/x-icon">
+</head>
+<body>
+<header><div class="site-title"><div class="container"><div class="row">
+<div class="site-title-buttons"><div class="btn-group btn-group-sm">
+<a href="https://get.gentoo.org/" role="button" class="btn get-gentoo"><span class="fa fa-fw fa-download"></span><strong> Get Gentoo!</strong></a><div class="btn-group btn-group-sm">
+<a class="btn gentoo-org-sites dropdown-toggle" data-toggle="dropdown" data-target="#" href="#"><span class="fa fa-fw fa-map-o"></span><span class="hidden-xs"> gentoo.org sites </span><span class="caret"></span></a><ul class="dropdown-menu dropdown-menu-right">
+<li><a href="https://www.gentoo.org/" title="Main Gentoo website"><span class="fa fa-home fa-fw"></span> gentoo.org</a></li>
+<li><a href="https://wiki.gentoo.org/" title="Find and contribute documentation"><span class="fa fa-file-text-o fa-fw"></span> Wiki</a></li>
+<li><a href="https://bugs.gentoo.org/" title="Report issues and find common issues"><span class="fa fa-bug fa-fw"></span> Bugs</a></li>
+<li><a href="https://forums.gentoo.org/" title="Discuss with the community"><span class="fa fa-comments-o fa-fw"></span> Forums</a></li>
+<li><a href="https://packages.gentoo.org/" title="Find software for your Gentoo"><span class="fa fa-hdd-o fa-fw"></span> Packages</a></li>
+<li class="divider">
+<li><a href="https://planet.gentoo.org/" title="Find out what's going on in the developer community"><span class="fa fa-rss fa-fw"></span> Planet</a></li>
+<li><a href="https://archives.gentoo.org/" title="Read up on past discussions"><span class="fa fa-archive fa-fw"></span> Archives</a></li>
+<li><a href="https://sources.gentoo.org/" title="Browse our source code"><span class="fa fa-code fa-fw"></span> Sources</a></li>
+<li class="divider">
+<li><a href="https://infra-status.gentoo.org/" title="Get updates on the services provided by Gentoo"><span class="fa fa-server fa-fw"></span> Infra Status</a></li>
+</ul>
+</div>
+</div></div>
+<div class="logo">
+<a href="/" title="Back to the homepage" class="site-logo"><object data="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.svg" type="image/svg+xml"><img src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.png" alt="Gentoo Linux Logo"></object></a><span class="site-label">Development Guide</span>
+</div>
+</div></div></div>
+<nav class="tyrian-navbar" role="navigation"><div class="container"><div class="row">
+<div class="navbar-header"><button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button></div>
+<div class="collapse navbar-collapse navbar-main-collapse"><ul class="nav navbar-nav">
+<li><a href="../..//index.html"><span class="glyphicon glyphicon-home"></span>  Home</a></li>
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">EAPI Usage and Description<span class="caret"></span></a></li>
+<li><a href="../file-format/index.html"><span class="glyphicon glyphicon-arrow-left"></span>  Ebuild File Format</a></li>
+<li><a href="../../ebuild-writing/use-conditional-code/index.html">USE Flag Conditional Code  <span class="glyphicon glyphicon-arrow-right"></span></a></li>
+</ul></div>
+</div></div></nav></header><div class="container"><div class="row"><div class="col-md010"><ol class="breadcrumb">
+<li><a href="../../index.html">Master Index</a></li>
+<li><a href="../index.html">Ebuild Writing</a></li>
+</ol></div></div></div>
+<div class="container">
+<h1 class="first-header">EAPI Usage and Description</h1>
+<p>
+The Package Manager Specification (PMS) is a standardization
+effort to ensure that the ebuild file format, the ebuild repository format
+(of which the portage tree is Gentoo's main incarnation) as well as behavior
+of the package managers interacting with these ebuilds is properly written
+down and agreed upon.
+</p>
+
+<p>
+EAPI is a version defined in ebuilds and other package manager related files
+which inform the package manager about the file syntax and content. It is,
+in effect, the version of the package manager specification (PMS) that the
+file adheres to.
+</p>
+
+<p>
+This section provides usage and descriptions of the different EAPIs.
+</p>
+
+<div class="section">
+<h2 id="usage-of-eapis">Usage of EAPIs</h2>
+<div class="alert alert-info" role="alert">
+<strong>Important:</strong>
+An overview about the important features of each EAPI is provided in the
+appendix of the Package Manager Specification.  The two-page leaflet
+can be printed out, consulted for reference and is available
+as <code class="docutils literal"><span class="pre">app-doc/pms</span></code> in the main tree.
+</div>
+<p>
+If EAPI is undefined in an ebuild, then EAPI=0 is selected.  You should
+set the EAPI variable, by specifying it at the top of the ebuild:
+</p>
+
+<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+Most developers prefer to set the EAPI version without quotes. However, the PMS allows single and double quotes as well.
+</div>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Copyright</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">1999-2015</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Gentoo</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Foundation</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Distributed</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">under</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">terms</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">of</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">GNU</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">General</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Public</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">License</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">v2</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">$Id$</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">EAPI</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span>5
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">inherit</span> eutils
+
+</span></pre>
+
+<div class="alert alert-info" role="alert">
+<strong>Important:</strong>
+EAPI must only be defined in ebuild files, not eclasses. (eclasses may have
+EAPI-conditional code)
+</div>
+
+<p>
+When writing new ebuilds developers can choose whathever EAPI they think
+is the best.  Using the features of the latest EAPI is encouraged.
+</p>
+
+</div>
+
+<div class="section">
+<h2 id="eapi=1">EAPI=1</h2>
+
+<ul>
+	<li>
+		<p><b>Default src_compile Phase Function</b></p>
+		<p>
+		Support for the <code class="docutils literal"><span class="pre">ECONF_SOURCE</span></code> variable, which is also supported by
+		<code class="docutils literal"><span class="pre">econf</span></code>, has been added to the default <code class="docutils literal"><span class="pre">src_compile</span></code> implementation.
+		</p>
+		<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_compile()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+	<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">if</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">[[</span> -x <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${ECONF_SOURCE:-.}</span>/configure <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">]]</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">;</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">then</span>
+		<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">econf</span>
+	<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">fi</span>
+	<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">if</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">[</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">-f</span> Makefile <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">]</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">[</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">-f</span> GNUmakefile <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">]</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">[</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">-f</span> makefile <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">]</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">;</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">then</span>
+		<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">emake</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">die</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>emake failed<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+	<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">fi</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+		</span></pre>
+	</li>
+	<li>
+		<p><b>SLOT dependencies</b></p>
+		<p>
+		Any valid atom can be constrained to match a specific SLOT. This
+		is accomplished by appending a colon to the atom, followed by a
+		SLOT value.
+		</p>
+		<p>
+		<b>SLOT dependency examples:</b>
+		<ul>
+			<li><code class="docutils literal"><span class="pre">x11-libs/qt:3</span></code></li>
+			<li><code class="docutils literal"><span class="pre">~x11-libs/qt-3.3.8:3</span></code></li>
+			<li><code class="docutils literal"><span class="pre">&gt;=x11-libs/qt-3.3.8:3</span></code></li>
+			<li><code class="docutils literal"><span class="pre">=x11-libs/qt-3.3*:3</span></code></li>
+		</ul>
+		</p>
+	</li>
+	<li>
+		<p><b>IUSE defaults</b></p>
+		<p>
+		Add + or - before the name of the use flag in IUSE to turn it on or off by
+		default.
+		</p>
+
+		<div class="alert alert-info" role="alert">
+<strong>Important:</strong>
+		The default USE-ordering is <code class="docutils literal"><span class="pre">USE_ORDER="env:pkg:conf:defaults:pkginternal:env.d"</span></code>
+		(see man make.conf)
+		</div>
+		<div class="alert alert-info" role="alert">
+<strong>Important:</strong>
+		Disabling default IUSE is pretty much useless as it does not
+		override the profile and user config (make.conf and package.use)
+		</div>
+
+		<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Copyright</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">1999-2015</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Gentoo</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Foundation</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Distributed</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">under</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">terms</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">of</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">GNU</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">General</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Public</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">License</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">v2</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">$Id$</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">EAPI</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span>1
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">IUSE</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>foo +bar<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+
+		</span></pre>
+	</li>
+</ul>
+
+</div>
+
+
+<div class="section">
+<h2 id="eapi=2">EAPI=2</h2>
+
+<div class="section">
+<h3 id="helpers">Helpers</h3>
+<ul>
+	<li>
+		<p><b>doman Language Support</b></p>
+		<p>
+		<code class="docutils literal"><span class="pre">doman</span></code> automatically detects language codes and puts it in the
+		appropriate directory.
+		<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">doman</span> foo.1
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">will</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">go</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">into</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">/usr/share/man/man1/foo.1</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">doman</span> foo.lang.1
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">will</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">go</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">into</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">/usr/share/man/lang/man1/foo.1</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">with</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">EAPI=2</span>
+		</span></pre>
+		</p>
+	</li>
+</ul>
+</div>
+
+<div class="section">
+<h3 id="metadata">Metadata</h3>
+<ul>
+	<li>
+		<p><b>Blocker Atoms</b></p>
+		<p>
+		<ul>
+			<li>
+				<p><b>New Meaning for Old Syntax</b></p>
+				<p>
+				Blocker atoms which use the previously existing !atom syntax now
+				have a slightly different meaning. These blocker atoms indicate
+				that conflicting packages may be temporarily installed
+				simultaneously. When temporary simultaneous installation of
+				conflicting packages occurs, the installation of a newer package
+				may overwrite any colliding files that belong to an older package
+				which is explicitly blocked. When such file collisions occur, the
+				colliding files cease to belong to the older package, and they
+				remain installed after the older package is eventually
+				uninstalled. The older package is uninstalled only after any newer
+				blocking packages have been merged on top of it.
+			</p>
+			</li>
+			<li>
+				<p><b>New !!atom Syntax</b></p>
+				<p>
+				A new !!atom syntax is now supported, for use in special cases for
+				which temporary simultaneous installation of conflicting packages
+				should not be allowed. If a given package happens to be blocked by
+				a mixture of atoms consisting of both the !atom and !!atom
+				syntaxes, the !!atom syntax takes precedence over the !atom
+				syntax.
+				</p>
+			</li>
+		</ul>
+		</p>
+	</li>
+	<li>
+		<p><b>USE Dependencies</b></p>
+		<p>
+		It is possible to depend on USE-flags of packages.
+		</p>
+		<p>Examples:
+		<ul>
+			<li>
+<code class="docutils literal"><span class="pre">foo[bar]</span></code> means that package foo must have USE-flag bar
+			enabled</li>
+			<li>
+<code class="docutils literal"><span class="pre">foo[bar,baz]</span></code> means that the package foo must have both
+				the bar and baz USE-flags enabled
+			</li>
+			<li>
+<code class="docutils literal"><span class="pre">foo[-bar,baz]</span></code> means that the package foo must have the
+				bar USE-flag disabled and baz USE-flag enabled</li>
+			<li>
+<code class="docutils literal"><span class="pre">foo[bar?]</span></code> means <code class="docutils literal"><span class="pre">bar? ( foo[bar] ) !bar? ( foo )</span></code>
+</li>
+			<li>
+<code class="docutils literal"><span class="pre">foo[!bar?]</span></code> means <code class="docutils literal"><span class="pre">bar? ( foo ) !bar? ( foo[-bar] )</span></code>
+</li>
+			<li>
+<code class="docutils literal"><span class="pre">foo[bar=]</span></code> means <code class="docutils literal"><span class="pre">bar? ( foo[bar] ) !bar? ( foo[-bar] )</span></code>
+</li>
+			<li>
+<code class="docutils literal"><span class="pre">foo[!bar=]</span></code> means <code class="docutils literal"><span class="pre">bar? ( foo[-bar] ) !bar? ( foo[bar] )</span></code>
+</li>
+		</ul>
+		</p>
+	</li>
+	<li>
+		<p><b>Customization of Output File Names in SRC_URI</b></p>
+		<p>
+		A new syntax is supported which allows customization of the output
+		file name for a given URI. In order to customize the output file
+		name, a given URI should be followed by a "<code class="docutils literal"><span class="pre">-&gt;</span></code>" operator which, in
+		turn, should be followed by the desired output file name. As
+		usual, all tokens, including the operator and output file name,
+		should be separated by whitespace.
+		</p>
+		<p>Example:</p>
+		<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">SRC_URI</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>http://dl.google.com/earth/client/GE4/release_4_3/GoogleEarthLinux.bin
+                        -&gt; GoogleEarthLinux-<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${PV}</span>.bin<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+		</span></pre>
+	</li>
+</ul>
+</div>
+
+<div class="section">
+<h3 id="phases">Phases</h3>
+<ul>
+	<li>
+		<p><b>New <code class="docutils literal"><span class="pre">src_prepare</span></code> Phase Function</b></p>
+		<p>
+		A new src_prepare function is called after the <code class="docutils literal"><span class="pre">src_unpack</span></code>
+		function, with cwd initially set to <code class="docutils literal"><span class="pre">$S</span></code>.
+		</p>
+	</li>
+	<li>
+		<p><b>New <code class="docutils literal"><span class="pre">src_configure</span></code> Phase Function</b></p>
+		<p>
+		The configure portion of the <code class="docutils literal"><span class="pre">src_compile</span></code> function has been split
+		into a separate function which is named <code class="docutils literal"><span class="pre">src_configure</span></code>. The
+		<code class="docutils literal"><span class="pre">src_configure</span></code> function is called in-between the <code class="docutils literal"><span class="pre">src_prepare</span></code> and
+		<code class="docutils literal"><span class="pre">src_compile</span></code> functions.
+		</p>
+		<p>The default <code class="docutils literal"><span class="pre">src_configure</span></code> and <code class="docutils literal"><span class="pre">src_compile</span></code>
+		functions in EAPI=2:
+		<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_configure()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+	<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">if</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">[[</span> -x <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${ECONF_SOURCE:-.}</span>/configure <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">]]</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">;</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">then</span>
+		<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">econf</span>
+	<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">fi</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_compile()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+	<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">if</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">[</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">-f</span> Makefile <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">]</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">[</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">-f</span> GNUmakefile <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">]</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">[</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">-f</span> makefile <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">]</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">;</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">then</span>
+		<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">emake</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">die</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>emake failed<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+	<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">fi</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+		</span></pre>
+		</p>
+	</li>
+	<li>
+		<p><b>Execution Order of Phase Functions</b></p>
+		<p>
+		<ul>
+			<li><code class="docutils literal"><span class="pre">pkg_setup</span></code></li>
+			<li><code class="docutils literal"><span class="pre">src_unpack</span></code></li>
+			<li><code class="docutils literal"><span class="pre">src_prepare</span></code></li>
+			<li><code class="docutils literal"><span class="pre">src_configure</span></code></li>
+			<li><code class="docutils literal"><span class="pre">src_compile</span></code></li>
+			<li><code class="docutils literal"><span class="pre">src_test</span></code></li>
+			<li><code class="docutils literal"><span class="pre">src_install</span></code></li>
+			<li><code class="docutils literal"><span class="pre">pkg_preinst</span></code></li>
+			<li><code class="docutils literal"><span class="pre">pkg_postinst</span></code></li>
+			<li><code class="docutils literal"><span class="pre">pkg_prerm</span></code></li>
+			<li><code class="docutils literal"><span class="pre">pkg_postrm</span></code></li>
+		</ul>
+		</p>
+	</li>
+	<li>
+		<p><b>Default Phase Functions</b></p>
+		<p>
+		The default <code class="docutils literal"><span class="pre">pkg_nofetch</span></code> and <code class="docutils literal"><span class="pre">src_*</span></code> phase functions are now
+		accessible via a function having a name that begins with <code class="docutils literal"><span class="pre">default_</span></code>
+		and ends with the respective phase function name. For example, a
+		call to a function with the name <code class="docutils literal"><span class="pre">default_src_compile</span></code> is equivalent
+		to a call to the default <code class="docutils literal"><span class="pre">src_compile</span></code> implementation.
+		</p>
+		<p>The default phase functions are:
+		<ul>
+			<li><code class="docutils literal"><span class="pre">default_pkg_nofetch</span></code></li>
+			<li><code class="docutils literal"><span class="pre">default_src_unpack</span></code></li>
+			<li><code class="docutils literal"><span class="pre">default_src_prepare</span></code></li>
+			<li><code class="docutils literal"><span class="pre">default_src_configure</span></code></li>
+			<li><code class="docutils literal"><span class="pre">default_src_compile</span></code></li>
+			<li><code class="docutils literal"><span class="pre">default_src_test</span></code></li>
+		</ul>
+		</p>
+	</li>
+	<li>
+		<p><b>Default Phase Function Alias</b></p>
+		<p>
+		A function named "<code class="docutils literal"><span class="pre">default</span></code>" is redefined for each phase so that it
+		will call the <code class="docutils literal"><span class="pre">default_*</span></code> function corresponding to the current
+		phase. For example, a call to the function named "<code class="docutils literal"><span class="pre">default</span></code>" during
+		the <code class="docutils literal"><span class="pre">src_compile</span></code> phase is equivalent to a call to the function
+		named <code class="docutils literal"><span class="pre">default_src_compile</span></code>.
+		</p>
+	</li>
+</ul>
+</div>
+
+</div>
+<div class="section">
+<h2 id="eapi=3">EAPI=3</h2>
+
+<ul>
+	<li>
+		<p><b>Gentoo Prefix support</b></p>
+		<p>
+			Support for the <code class="docutils literal"><span class="pre">EPREFIX</span></code>, <code class="docutils literal"><span class="pre">EROOT</span></code>, and <code class="docutils literal"><span class="pre">ED</span></code>
+			variables. If an ebuild uses one of these, it must be EAPI3 aware.
+			See <a href="https://www.gentoo.org/proj/en/gentoo-alt/prefix/techdocs.xml#doc_chap2">Gentoo Prefix Techdocs</a> for more information.
+		</p>
+	</li>
+	<li>
+		<p><b>unpack supports .xz and .tar.xz</b></p>
+		<p>
+			The <code class="docutils literal"><span class="pre">unpack</span></code> command supports xz-archives and xz-compressed tar
+			files.
+		</p>
+	</li>
+</ul>
+
+</div>
+
+<div class="section">
+<h2 id="eapi=4">EAPI=4</h2>
+
+<div class="section">
+<h3 id="helpers">Helpers</h3>
+<ul>
+	<li>
+		<p><b>utilities die on their own, unless the nonfatal command is used</b></p>
+		<p>
+			
+			Ebuild functions all die on their own in EAPI=4. In case that this
+			non-zero exit status is expected, you may call <code class="docutils literal"><span class="pre">nonfatal function
+			[arg,...]</span></code>.
+		</p>
+		<p>Example:</p>
+		<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">EAPI</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span>1
+...
+<span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_install()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+	<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">emake</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">DESTDIR</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${D}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> install <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">die</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>make install failed<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+	<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">dodoc</span> ChangeLog README
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+		</span></pre>
+		<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">EAPI</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span>4
+...
+<span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_install()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+	<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">emake</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">DESTDIR</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${D}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> install
+	nonfatal <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">dodoc</span> ChangeLog README
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+		</span></pre>
+	</li>
+	<li>
+		<p><b>recursive dodoc</b></p>
+		<p>
+			<code class="docutils literal"><span class="pre">dodoc</span></code> supports <code class="docutils literal"><span class="pre">-r</span></code> as the first argument, which leads
+			<code class="docutils literal"><span class="pre">dodoc</span></code> to install the specified documentation directory
+			recursively into the docdir.
+		</p>
+		<p>Example:</p>
+		<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_install()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+	default
+	<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">dodoc</span> ChangeLog
+	<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">dodoc</span> -r doc/
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+		</span></pre>
+	</li>
+	<li>
+		<p><b>doins symlink supports</b></p>
+		<p>
+			Within EAPI=4, <code class="docutils literal"><span class="pre">doins</span></code> supports installing symlinks as symlinks
+			when installing recursively. For older EAPIs, the symlink behaviour
+			is undefined.
+		</p>
+	</li>
+	<li>
+		<p><b>dosed and dohard are banned</b></p>
+		<p>
+			The <code class="docutils literal"><span class="pre">dosed</span></code> and <code class="docutils literal"><span class="pre">dohard</span></code> commands are banned in this EAPI.
+		</p>
+	</li>
+	<li>
+		<p><b>econf adds --disable-dependency-tracking</b></p>
+		<p>
+			Within EAPI=4, <code class="docutils literal"><span class="pre">econf</span></code> adds
+			<code class="docutils literal"><span class="pre">--disable-dependency-tracking</span></code> to the default configure
+			options.
+		</p>
+	</li>
+	<li>
+		<p><b>controllable compression via docompress</b></p>
+		<p>
+			To compress files in the destination-folder <code class="docutils literal"><span class="pre">${D}</span></code>, the
+			<code class="docutils literal"><span class="pre">docompress</span></code> command may be used in <code class="docutils literal"><span class="pre">src_install</span></code>.
+			To control which items should be compressed and which shouldn't
+			be compressed, you may include or exclude directories or plain
+			files. The default inclusion list contains:
+			<ul>
+				<li><code class="docutils literal"><span class="pre">/usr/share/doc</span></code></li>
+				<li><code class="docutils literal"><span class="pre">/usr/share/info</span></code></li>
+				<li><code class="docutils literal"><span class="pre">/usr/share/man</span></code></li>
+			</ul>
+			The default exclusion list contains:
+			<ul>
+				<li><code class="docutils literal"><span class="pre">/usr/share/doc/${PF}/html</span></code></li>
+			</ul>
+			When a directory is in- or excluded, all files and directories in
+			the given directories shall be added to the corresponding list.
+			If a file is in- or excluded, the file shall be added to the
+			corresponding list (exclusion is stronger than inclusion 
+    —
+  
+			if a file is in both lists, the inclusion will be ignored).
+		</p>
+		<p>
+			If the first argument of <code class="docutils literal"><span class="pre">docompress</span></code> is <code class="docutils literal"><span class="pre">-x</span></code>, the items
+			specified will be added to the exclusion list, otherwise they will
+			be added to the inclusion list.
+		</p>
+		<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+			When <code class="docutils literal"><span class="pre">docompress</span></code> is called, it is <i>not</i> required that
+			the paths specified as its arguments are pointing to existing files
+			or directories. However, if a file still doesn't exist when
+			<code class="docutils literal"><span class="pre">src_install</span></code> has completed, it will be ignored with a
+			warning.
+		</div>
+	</li>
+</ul>
+</div>
+
+<div class="section">
+<h3 id="metadata">Metadata</h3>
+<ul>
+	<li>
+		<p><b>use dependencies default</b></p>
+		<p>
+			In addition to the use-deps specified in EAPI=2, a <code class="docutils literal"><span class="pre">(+)</span></code> or
+			<code class="docutils literal"><span class="pre">(-)</span></code> may be added to the use-dep to define a default-value in
+			case the use-flag does not exist in the given package. The
+			<code class="docutils literal"><span class="pre">(+)</span></code> means that this use-flag is assumed to be enabled,
+			<code class="docutils literal"><span class="pre">(-)</span></code> the opposite.
+			<p>Example:</p>
+			<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">DEPEND</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+	<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">&gt;</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span>dev-libs/boost-1.32[boost(+)]
+	sys-devel/gcc[openmp(-)]<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+			</span></pre>
+		</p>
+	</li>
+</ul>
+</div>
+
+<div class="section">
+<h3 id="phases">Phases</h3>
+<ul>
+	<li>
+		<p><b>new pkg_pretend phase</b></p>
+		<p>
+			The new <code class="docutils literal"><span class="pre">pkg_pretend</span></code> phase can be used to do sanity checks
+			before the main phase function sequence is run (meaning this phase is
+			executed after the package manager has calculated the dependencies
+			and before installing them).
+			This phase typically checks for a kernel configuration and may
+			<code class="docutils literal"><span class="pre">eerror</span></code> and <code class="docutils literal"><span class="pre">die</span></code> when needed.
+			<div class="alert alert-info" role="alert">
+<strong>Important:</strong>
+				There is no guarantee that the ebuild's dependencies are installed
+				when this phase is called.
+			</div>
+			<div class="alert alert-info" role="alert">
+<strong>Important:</strong>
+				As <code class="docutils literal"><span class="pre">pkg_pretend</span></code> is not called in the main phase function
+				sequence, environment saving is not guaranteed.
+			</div>
+		</p>
+		<p>Example:</p>
+		<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Copyright</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">1999-2015</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Gentoo</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Foundation</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Distributed</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">under</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">terms</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">of</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">GNU</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">General</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Public</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">License</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">v2</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">$Id$</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">EAPI</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span>4
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">inherit</span> linux-info
+...
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">CONFIG_CHECK</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>FUSE_FS<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">ERROR_FUSE_FS</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>this is an unrealistic testcase...<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Special">pkg_pretend()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+	<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">if</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">use</span> kernel_linux <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">;</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">then</span>
+		<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">if</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">[[</span> -e <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${ROOT}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>/usr/src/linux/.config <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">]]</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">;</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">then</span>
+			<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">if</span> kernel_is lt 2 6 30 <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">;</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">then</span>
+				check_extra_config
+			<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">fi</span>
+		<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">fi</span>
+	<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">fi</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+		</span></pre>
+	</li>
+	<li>
+		<p><b>default src_install is no longer a no-op</b></p>
+		<p>
+			The default <code class="docutils literal"><span class="pre">src_install</span></code> function in EAPI=4:
+		</p>
+		<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_install()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+	<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">if</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">[[</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">-f</span> Makefile <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">]]</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">[[</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">-f</span> GNUmakefile]] <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">[[</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">-f</span> makefile <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">]]</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">;</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">then</span>
+		<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">emake</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">DESTDIR</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${D}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> install
+	<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">fi</span>
+
+	<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">if</span> ! declare -p DOCS &gt;/dev/null 2&gt;&amp;1 <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">;</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">then</span>
+		<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">local</span> d
+		<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">for</span> d <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">in</span> README* ChangeLog AUTHORS NEWS TODO CHANGES THANKS BUGS <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">\</span>
+				FAQ CREDITS CHANGELOG <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">;</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">do</span>
+			<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">[[</span> -s <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${d}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">]]</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">&amp;&amp;</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">dodoc</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${d}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+		<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">done</span>
+	<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">elif</span> declare -p DOCS <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">|</span> grep -q <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>^declare -a <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">;</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">then</span>
+		<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">dodoc</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${DOCS[@]}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+	<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">else</span>
+		<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">dodoc</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${DOCS}</span>
+	<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">fi</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+		</span></pre>
+	</li>
+	<li>
+		<p><b>pkg_info for non-installed packages</b></p>
+		<p>
+			The <code class="docutils literal"><span class="pre">pkg_info</span></code> function may also be called by the
+			package manager for non-installed packages.
+			Ebuild writers should note that dependencies may not be
+			available.
+		</p>
+	</li>
+</ul>
+</div>
+
+<div class="section">
+<h3 id="variables">Variables</h3>
+<ul>
+	<li>
+		<p><b>REQUIRED_USE</b></p>
+		<p>
+			The <code class="docutils literal"><span class="pre">REQUIRED_USE</span></code> variable contains a list of assertions that
+			must be met by the configuration of USE flags to be valid for this
+			ebuild. In order to be matched, a USE flag in a terminal element
+			must be enabled (or disabled if it has an exclamation mark prefix).
+		</p>
+		<p>
+			Essentially, <code class="docutils literal"><span class="pre">REQUIRED_USE</span></code> is an analogue of <code class="docutils literal"><span class="pre">DEPEND</span></code>
+			style syntax. For example, to state that some combination is
+			forbidden, i.e. "if <code class="docutils literal"><span class="pre">foo</span></code> is set, <code class="docutils literal"><span class="pre">bar</span></code> must be unset":
+		</p>
+		<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">REQUIRED_USE</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>foo? <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> !bar <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+		</span></pre>
+		<p>
+			To state "if <code class="docutils literal"><span class="pre">foo</span></code> is set, then at least one of <code class="docutils literal"><span class="pre">bar</span></code>,
+			<code class="docutils literal"><span class="pre">baz</span></code>, and <code class="docutils literal"><span class="pre">quux</span></code> must be activated":
+		</p>
+		<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">REQUIRED_USE</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>foo? <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> || <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> bar baz quux <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+		</span></pre>
+		<p>
+			To state "exactly one of <code class="docutils literal"><span class="pre">foo</span></code>, <code class="docutils literal"><span class="pre">bar</span></code>, or <code class="docutils literal"><span class="pre">baz</span></code> must
+			be set, but not several":
+		</p>
+		<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">REQUIRED_USE</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>^^ <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> foo bar baz <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+		</span></pre>
+		<p>
+			Note that the last relationship is that of an Exclusive OR (XOR).
+			While an XOR could be formed from usual <code class="docutils literal"><span class="pre">DEPEND</span></code> syntax, a
+			specific <code class="docutils literal"><span class="pre">^^</span></code> operator has been added for this case.
+		</p>
+		<p>
+			Finally, to state "at least one of <code class="docutils literal"><span class="pre">foo</span></code>, <code class="docutils literal"><span class="pre">bar</span></code>, or
+			<code class="docutils literal"><span class="pre">baz</span></code> must be set":
+		</p>
+		<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">REQUIRED_USE</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>|| <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> foo bar baz <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+		</span></pre>
+
+		<div class="alert alert-info" role="alert">
+<strong>Important:</strong>
+			See section
+			<a href="../../general-concepts/use-flags/index.html#conflicting-use-flags">conflicting-use-flags</a>
+			for when (and when not) to use <code class="docutils literal"><span class="pre">REQUIRED_USE</span></code>.
+		</div>
+	</li>
+	<li>
+		<p><b>REPLACING_VERSIONS and REPLACED_BY_VERSION</b></p>
+		<p>
+			The <code class="docutils literal"><span class="pre">REPLACING_VERSIONS</span></code> variable contains a
+			whitespace-separated list of all versions (<code class="docutils literal"><span class="pre">PVR</span></code>) of this
+			package that are being replaced (uninstalled or overwritten) as a
+			result of this install. It is a list, not a single optional value,
+			to handle pathological cases such as installing <code class="docutils literal"><span class="pre">foo-2:2</span></code> to
+			replace <code class="docutils literal"><span class="pre">foo-2:1</span></code> and <code class="docutils literal"><span class="pre">foo-3:2</span></code>.
+		</p>
+		<p>
+			<code class="docutils literal"><span class="pre">REPLACING_VERSIONS</span></code> is valid in <code class="docutils literal"><span class="pre">pkg_preinst</span></code> and
+			<code class="docutils literal"><span class="pre">pkg_postinst</span></code>. In addition, it may be available in
+			<code class="docutils literal"><span class="pre">pkg_pretend</span></code> and <code class="docutils literal"><span class="pre">pkg_setup</span></code>, although you should take
+			care to handle binary package creation and installation correctly
+			when using it in these phases.
+		</p>
+		<p>
+			The <code class="docutils literal"><span class="pre">REPLACED_BY_VERSION</span></code> variable contains the single version
+			(<code class="docutils literal"><span class="pre">PVR</span></code>) of this package that is replacing us, if we are being
+			uninstalled as part of an install, or an empty string otherwise.
+			It is valid in <code class="docutils literal"><span class="pre">pkg_prerm</span></code> and <code class="docutils literal"><span class="pre">pkg_postrm</span></code>.
+		</p>
+	</li>
+	<li>
+		<p><b>MERGE_TYPE</b></p>
+		<p>
+			The <code class="docutils literal"><span class="pre">MERGE_TYPE</span></code> variable contains the type of package that
+			is being merged. Possible values are:
+			<dl>
+				<dt><code class="docutils literal"><span class="pre">source</span></code></dt>
+				<dd>
+					if building and installing a package from source,
+				</dd>
+				<dt><code class="docutils literal"><span class="pre">binary</span></code></dt>
+				<dd>
+					if installing a binary package,
+				</dd>
+				<dt><code class="docutils literal"><span class="pre">buildonly</span></code></dt>
+				<dd>
+					if building a binary package without installing it.
+				</dd>
+			</dl>
+		</p>
+	</li>
+	<li>
+		<p><b>DOCS</b></p>
+		<p>
+			The <code class="docutils literal"><span class="pre">DOCS</span></code> variable is an array or whitespace-separated list
+			of documentation files for the default <code class="docutils literal"><span class="pre">src_install</span></code> function
+			to install using <code class="docutils literal"><span class="pre">dodoc</span></code>. If undefined, a reasonable default
+			list is used. See the default <code class="docutils literal"><span class="pre">src_install</span></code> function above.
+		</p>
+	</li>
+	<li>
+		<p><b>AA and KV variables are gone</b></p>
+		<p>
+			The <code class="docutils literal"><span class="pre">AA</span></code> and <code class="docutils literal"><span class="pre">KV</span></code> variables are no longer set in EAPI=4.
+		</p>
+	</li>
+	<li>
+		<p><b>no more RDEPEND="${DEPEND}"</b></p>
+		<p>
+			When <code class="docutils literal"><span class="pre">RDEPEND</span></code> is unset, there will no longer be an automatic
+			assignment of <code class="docutils literal"><span class="pre">RDEPEND="${DEPEND}"</span></code>.
+		</p>
+	</li>
+</ul>
+</div>
+
+</div>
+
+<div class="section">
+<h2 id="eapi=5">EAPI=5</h2>
+
+<div class="section">
+<h3 id="metadata">Metadata</h3>
+<ul>
+	<li>
+		<p><b>REQUIRED_USE supports new at-most-one-of operator</b></p>
+		<p>
+		The new <b>at-most-one-of</b> operator consists of the string <code class="docutils literal"><span class="pre">'??'</span></code>, and is satisfied if zero or one (but no more) of its child elements is matched.
+		</p>
+	</li>
+	<li>
+		<p><b>SLOT supports optional "sub-slot" part</b></p>
+		<p>
+		The <code class="docutils literal"><span class="pre">SLOT</span></code> variable may contain an optional <b>sub-slot</b> part that follows the regular slot and is delimited by a <code class="docutils literal"><span class="pre">/</span></code> character. The sub-slot must be a valid slot name. The sub-slot is used to represent cases in which an upgrade to a new version of a package with a different sub-slot may require dependent packages to be rebuilt. When the sub-slot part is omitted from the SLOT definition, the package is considered to have an implicit sub-slot which is equal to the regular slot.
+		</p>
+	</li>
+	<li>
+		<p><b>Slot operators and sub-slots in dependencies</b></p>
+		<p>
+		A slot dependency may contain an optional sub-slot part that follows the regular slot and is delimited by a <code class="docutils literal"><span class="pre">/</span></code> character. This can be useful for packages installing pre-built binaries that require a library with a specific soname version which corresponds to the sub-slot. For example:
+		</p>
+		<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">RDEPEND</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>dev-libs/foo:0/3<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+		</span></pre>
+		<p>
+		Dependency atoms can use <b>slot operators</b> to clarify what should happen if the slot and/or sub-slot of a runtime dependency changes:
+		</p>
+		<ul>
+			<li>
+			<code class="docutils literal"><span class="pre">:*</span></code> Indicates that any slot value is acceptable. In addition, for runtime dependencies, indicates that the package specifying the dependency will not break if the package matching the dependency is replaced by a different matching package with a different slot and/or sub-slot.
+			</li>
+			<li>
+			<code class="docutils literal"><span class="pre">:=</span></code> Indicates that any slot value is acceptable. In addition, for runtime dependencies, indicates that the package specifying the dependency will break unless there is available a package matching the dependency and whose slot and sub-slot are equal to the slot and sub-slot of the best installed version that had matched this dependency at the time when the package specifying this dependency had been installed.
+			</li>
+			<li>
+			<code class="docutils literal"><span class="pre">:slot=</span></code> Indicates that only a specific slot value is acceptable, and otherwise behaves identically to the <code class="docutils literal"><span class="pre">:=</span></code> operator.
+				<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+				use <code class="docutils literal"><span class="pre">:slot/subslot</span></code> without a <code class="docutils literal"><span class="pre">=</span></code> to depend on a specific slot and sub-slot pair; it's a syntax error to use <code class="docutils literal"><span class="pre">:slot/subslot=</span></code> in an ebuild.
+				</div>
+			</li>
+		</ul>
+		<p>
+		The <code class="docutils literal"><span class="pre">:slot</span></code> dependency syntax continues to behave like in EAPI=4 or earlier, i.e. it indicates that only the specific slot value is acceptable, but the package will not break when the version matching the runtime dependency is replaced by a version with a different sub-slot.
+		</p>
+		<p>
+		For example:
+		</p>
+		<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">RDEPEND</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>dev-libs/foo:2=
+	<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">&gt;</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span>dev-libs/bar-0.9:=
+	media-gfx/baz:*
+	x11-misc/wombat:0<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+		</span></pre>
+		<p>
+		means that the package should be rebuilt when <code class="docutils literal"><span class="pre">foo:2</span></code> or <code class="docutils literal"><span class="pre">&gt;=bar-0.9</span></code> are upgraded to versions with different subslots, but that changes in subslots of <code class="docutils literal"><span class="pre">baz</span></code> or <code class="docutils literal"><span class="pre">wombat:0</span></code> should be ignored.
+		</p>
+	</li>
+</ul>
+</div>
+
+<div class="section">
+<h3 id="profiles">Profiles</h3>
+<ul>
+	<li>
+		<p><b>Profile stable USE forcing and masking</b></p>
+		<p>
+		In profile directories with an EAPI supporting stable masking, new USE configuration files are supported: <code class="docutils literal"><span class="pre">use.stable.mask</span></code>, <code class="docutils literal"><span class="pre">use.stable.force</span></code>, <code class="docutils literal"><span class="pre">package.use.stable.mask</span></code> and <code class="docutils literal"><span class="pre">package.use.stable.force</span></code>. These files behave similarly to previously supported USE configuration files, except that they only influence packages that are merged due to a stable keyword.
+		</p>
+	</li>
+</ul>
+</div>
+
+<div class="section">
+<h3 id="helpers">Helpers</h3>
+<ul>
+	<li>
+		<p><b>econf adds --disable-silent-rules</b></p>
+		<p>
+		This option will automatically be passed if <code class="docutils literal"><span class="pre">--disable-silent-rules</span></code> occurs in the output of <code class="docutils literal"><span class="pre">configure --help</span></code>.
+		</p>
+	</li>
+	<li>
+		<p><b>new* commands can read from standard input</b></p>
+		<p>
+		Standard input is read when the first parameter is <code class="docutils literal"><span class="pre">-</span></code> (a hyphen).
+		</p>
+	</li>
+	<li>
+		<p><b>New option --host-root for {has,best}_version</b></p>
+		<p>
+		This option <code class="docutils literal"><span class="pre">--host-root</span></code> will cause the query to apply to the host root instead of ROOT.
+		</p>
+	</li>
+	<li>
+		<p><b>New doheader helper function</b></p>
+		<p>
+		Installs the given header files into <code class="docutils literal"><span class="pre">/usr/include/</span></code>, by default with file mode <code class="docutils literal"><span class="pre">0644</span></code>. This can be overridden by setting <code class="docutils literal"><span class="pre">INSOPTIONS</span></code> with the <code class="docutils literal"><span class="pre">insopts</span></code> function.
+		</p>
+	</li>
+	<li>
+		<p><b>New usex helper function</b></p>
+		<p>
+		
+		<pre>
+USAGE: usex 〈USE flag〉 [true output] [false output] [true suffix] [false suffix]
+DESCRIPTION:
+If USE flag is set, echo [true output][true suffix] (defaults to "yes"),
+ otherwise echo [false output][false suffix] (defaults to "no").
+		</pre>
+		</p>
+	</li>
+</ul>
+</div>
+
+<div class="section">
+<h3 id="phases">Phases</h3>
+<ul>
+	<li>
+		<p><b>src_test supports parallel tests</b></p>
+		<p>
+		Unlike older EAPIs, the default <code class="docutils literal"><span class="pre">src_test</span></code> implementation will not pass the -j1 option to emake.
+		</p>
+	</li>
+</ul>
+</div>
+
+<div class="section">
+<h3 id="variables">Variables</h3>
+<ul>
+	<li>
+		<p><b>EBUILD_PHASE_FUNC</b></p>
+		<p>
+		During execution of an ebuild phase function (such as <code class="docutils literal"><span class="pre">pkg_setup</span></code> or <code class="docutils literal"><span class="pre">src_unpack</span></code>),
+		the <code class="docutils literal"><span class="pre">EBUILD_PHASE_FUNC</span></code> variable will contain the name of the phase function that is currently executing.
+		</p>
+	</li>
+</ul>
+</div>
+
+</div>
+
+
+</div>
+<footer><div class="container">
+<div class="row">
+<div class="col-xs-12 col-md-offset-2 col-md-7"></div>
+<div class="col-xs-12 col-md-3">
+<h3 class="footerhead">Questions or comments?</h3>
+              Please feel free to <a href="https://www.gentoo.org/inside-gentoo/contact/">contact us</a>.
+            </div>
+</div>
+<div class="row">
+<div class="col-xs-2 col-sm-3 col-md-2"><ul class="footerlinks three-icons">
+<li><a href="http://twitter.com/gentoo" title="@Gentoo on Twitter"><span class="fa fa-twitter fa-fw"></span></a></li>
+<li><a href="https://plus.google.com/+Gentoo" title="+Gentoo on Google+"><span class="fa fa-google-plus fa-fw"></span></a></li>
+<li><a href="https://www.facebook.com/gentoo.org" title="Gentoo on Facebook"><span class="fa fa-facebook fa-fw"></span></a></li>
+</ul></div>
+<div class="col-xs-10 col-sm-9 col-md-10">
+<strong>Copyright (C) 2001-2015 Gentoo Foundation, Inc.</strong><br><small>
+                Gentoo is a trademark of the Gentoo Foundation, Inc.
+                The text of this document is distributed under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Attribution-ShareAlike 2.0 License</a>.
+                The <a href="https://www.gentoo.org/inside-gentoo/foundation/name-logo-guidelines.html">Gentoo Name and Logo Usage Guidelines</a> apply.
+              </small>
+</div>
+</div>
+</div></footer><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/jquery.min.js"></script><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.js"></script>
+</body>
+</html>

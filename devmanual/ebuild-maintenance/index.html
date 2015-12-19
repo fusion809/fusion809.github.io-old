@@ -1,0 +1,530 @@
+<!DOCTYPE html><html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Gentoo Development Guide: Ebuild Maintenance</title>
+<link rel="stylesheet" href="../devmanual.css" type="text/css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The Gentoo Devmanual is a technical manual which covers topics such as writing ebuilds and eclasses, and policies that developers should be abiding by.">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/tyrian.min.css" rel="stylesheet" media="screen">
+<link rel="icon" href="https://www.gentoo.org/favicon.ico" type="image/x-icon">
+</head>
+<body>
+<header><div class="site-title"><div class="container"><div class="row">
+<div class="site-title-buttons"><div class="btn-group btn-group-sm">
+<a href="https://get.gentoo.org/" role="button" class="btn get-gentoo"><span class="fa fa-fw fa-download"></span><strong> Get Gentoo!</strong></a><div class="btn-group btn-group-sm">
+<a class="btn gentoo-org-sites dropdown-toggle" data-toggle="dropdown" data-target="#" href="#"><span class="fa fa-fw fa-map-o"></span><span class="hidden-xs"> gentoo.org sites </span><span class="caret"></span></a><ul class="dropdown-menu dropdown-menu-right">
+<li><a href="https://www.gentoo.org/" title="Main Gentoo website"><span class="fa fa-home fa-fw"></span> gentoo.org</a></li>
+<li><a href="https://wiki.gentoo.org/" title="Find and contribute documentation"><span class="fa fa-file-text-o fa-fw"></span> Wiki</a></li>
+<li><a href="https://bugs.gentoo.org/" title="Report issues and find common issues"><span class="fa fa-bug fa-fw"></span> Bugs</a></li>
+<li><a href="https://forums.gentoo.org/" title="Discuss with the community"><span class="fa fa-comments-o fa-fw"></span> Forums</a></li>
+<li><a href="https://packages.gentoo.org/" title="Find software for your Gentoo"><span class="fa fa-hdd-o fa-fw"></span> Packages</a></li>
+<li class="divider">
+<li><a href="https://planet.gentoo.org/" title="Find out what's going on in the developer community"><span class="fa fa-rss fa-fw"></span> Planet</a></li>
+<li><a href="https://archives.gentoo.org/" title="Read up on past discussions"><span class="fa fa-archive fa-fw"></span> Archives</a></li>
+<li><a href="https://sources.gentoo.org/" title="Browse our source code"><span class="fa fa-code fa-fw"></span> Sources</a></li>
+<li class="divider">
+<li><a href="https://infra-status.gentoo.org/" title="Get updates on the services provided by Gentoo"><span class="fa fa-server fa-fw"></span> Infra Status</a></li>
+</ul>
+</div>
+</div></div>
+<div class="logo">
+<a href="/" title="Back to the homepage" class="site-logo"><object data="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.svg" type="image/svg+xml"><img src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.png" alt="Gentoo Linux Logo"></object></a><span class="site-label">Development Guide</span>
+</div>
+</div></div></div>
+<nav class="tyrian-navbar" role="navigation"><div class="container"><div class="row">
+<div class="navbar-header"><button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button></div>
+<div class="collapse navbar-collapse navbar-main-collapse"><ul class="nav navbar-nav">
+<li><a href="..//index.html"><span class="glyphicon glyphicon-home"></span>  Home</a></li>
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Ebuild Maintenance<span class="caret"></span></a></li>
+<li><a href="../ebuild-writing/common-mistakes/index.html"><span class="glyphicon glyphicon-arrow-left"></span>  Common Mistakes</a></li>
+<li><a href="../eclass-writing/index.html">Eclass Writing Guide  <span class="glyphicon glyphicon-arrow-right"></span></a></li>
+</ul></div>
+</div></div></nav></header><div class="container"><div class="row"><div class="col-md010"><ol class="breadcrumb"><li><a href="../index.html">Master Index</a></li></ol></div></div></div>
+<div class="container">
+<h1 class="first-header">Ebuild Maintenance</h1>
+<p>
+This guide aims to explain common everyday ebuild maintenance
+routines, as well as other rarer maintenance routines which
+developers may not be familiar with.
+</p>
+
+<div class="section">
+<h2 id="adding-a-new-ebuild">Adding a new ebuild</h2>
+
+<div class="section">
+<h3 id="what-(not)-to-put-in-the-portage-tree">What (not) to put in the Portage tree</h3>
+
+<p>
+Before writing a new ebuild, check 
+<a href="https://bugs.gentoo.org/">bugs.gentoo.org</a> 
+to see if an ebuild has already been written for the package, but has not yet 
+been added to the Portage tree.  Go to <a href="https://bugs.gentoo.org/">bugs.gentoo.org</a>, choose query and select 
+Advanced Search; as product select <i>Gentoo Linux</i>, as component select 
+<i>ebuilds</i>.  In the search field put the name of the ebuild and as status 
+select NEW, ASSIGNED, REOPENED and RESOLVED (RESOLVED is important), then 
+submit the query.  For you lazy people, click <a href="https://bugs.gentoo.org/query.cgi?product=Gentoo%20Linux&amp;component=Ebuilds&amp;bug_status=UNCONFIRMED&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;bug_status=RESOLVED">here</a>.
+</p>
+
+<p>
+In general, the Portage tree should only be used for storing 
+.ebuild files, as well as any relatively small companion
+files, such as patches or sample configuration files.  These types of
+files should be placed in the /usr/portage/mycat/mypkg/files
+directory to keep the main mycat/mypkg directory uncluttered.
+Exceptions to this rule are for larger patch files (we recommend this for patches
+above 20KB) which should be distributed as tarballs via the
+<a href="../general-concepts/mirrors/index.html#suitable-download-hosts">Gentoo mirror system</a>
+so that people do not waste excessive amounts of bandwidth and hard drive
+space. Also, you should not add binary (non-ASCII) files to the
+Portage CVS tree. If you need to do this in another CVS tree, for
+example, if you need to add a small PNG graphic for whatever reason,
+be sure to add it to CVS by using the <code class="docutils literal"><span class="pre">-kb</span></code> option, like so:
+</p>
+
+<pre>
+# cvs add -kb myphoto.png
+</pre>
+
+<p>
+The <code class="docutils literal"><span class="pre">-kb</span></code> option tells CVS that myphoto.png is a binary
+file and should be treated specially.  For example, merging the 
+differences between two different versions of this file should not be 
+allowed to happen, for obvious reasons.  Also, speaking of merging 
+changes, any patches you add to Portage should generally <i>not</i> be 
+compressed.  This will allow CVS to merge changes and correctly inform 
+developers of conflicts.
+</p>
+
+<p>
+Remember, the packages that you commit must be <i>ready</i> <i>out of the 
+box</i> for end users when committed as stable.  Make sure that you have a good 
+set of default settings that will satisfy the majority of systems and 
+users that will use your package.  If your package is broken, and you are 
+not sure how to get it to work, check some other distributions that have 
+done their own versions of the package.  You can check 
+<a href="http://cvs.mandriva.com/cgi-bin/viewvc.cgi/SPECS/">Mandriva</a>
+or <a href="http://www.debian.org/distrib/packages">Debian</a> or 
+<a href="http://cvs.fedora.redhat.com/">Fedora</a> for some 
+examples.
+</p>
+
+<p>
+When committing to CVS, all developers should use <code class="docutils literal"><span class="pre">repoman commit</span></code> 
+instead of <code class="docutils literal"><span class="pre">cvs commit</span></code> to submit their ebuilds.  Before committing, 
+please run <code class="docutils literal"><span class="pre">repoman full</span></code> to make sure you didn't forget something.
+</p>
+
+</div>
+
+<div class="section">
+<h3 id="initial-architecture-keywords">Initial Architecture Keywords</h3>
+<p>
+When adding a new ebuild, you should only include <code class="docutils literal"><span class="pre">KEYWORDS</span></code> for
+architectures on which you have actually tested the ebuild, confirming
+that it works as it should and that <code class="docutils literal"><span class="pre">USE</span></code> flags are properly
+honoured in the resulting package which would be installed. If
+possible, you should give the actual library or application thorough
+testing as well, since you would be responsible for any breakages for
+your architecture(s). Minimal testing such as checking that the
+application starts up without any errors should always be performed.
+</p>
+
+<p>
+If you are adding a user-submitted ebuild, do not assume that the
+submitter has done testing on various architectures: often, <code class="docutils literal"><span class="pre">KEYWORDS</span></code>
+are cloned across packages or generated from documentation in the
+source packages, which does not signify that the package does indeed
+work on those architectures.
+</p>
+
+</div>
+
+<div class="section">
+<h3 id="cvs-commit-policy">CVS Commit Policy</h3>
+
+<ul>
+<li>Always run <code class="docutils literal"><span class="pre">repoman scan</span></code> before you commit.</li>
+<li>Please run <code class="docutils literal"><span class="pre">repoman full</span></code> before you commit.</li>
+<li>Always test that package.mask is okay by doing 
+<code class="docutils literal"><span class="pre">emerge --pretend mypkg</span></code> before you commit and check 
+that it doesn't contain any conflicts.</li>
+<li>Always update the ChangeLog before you commit.</li>
+<li>Always commit the updated package.mask before 
+the updated package, in case conflicts occur while you commit 
+package.mask.</li>
+<li>Always do atomic commits; if you commit a package with a new license, 
+or that is masked, then first commit the revised package.mask and/or license, 
+then commit the ebuild, ChangeLog, patches
+and <a href="../ebuild-writing/misc-files/metadata/index.html">metadata.xml</a> all in <b>one</b> go
+to avoid breaking users' installations.</li>
+</ul>
+
+</div>
+
+<div class="section">
+<h3 id="the-files-directory">The files Directory</h3>
+
+<p>
+As noted earlier, under each package subdirectory is
+a files/ directory. Any patches, configuration files, or
+other ancillary files your package might require should be added to
+this directory; any files bigger than 20KB-or-so should go to the
+mirrors to lower the amount of (unneeded) files our users have to
+download. You may want to consider naming patches you create yourself
+just to get your package to build with a version-specific name, such
+as mypkg-1.0-gentoo.diff, or more
+simply, 1.0-gentoo.diff.  Also note that the
+gentoo extension informs people that this patch was created 
+by us, the Gentoo Linux developers, rather than having been grabbed from a 
+mailing list or somewhere else. Again, you should not compress these 
+patches because CVS does not play well with binary files.
+</p>
+
+<p>
+Consider prefixing or suffixing (such as mypkg-1.0) every file 
+you put into the files/ directory, so that the files used for 
+each individual version on an ebuild are distinguishable from one another, and 
+so that the changes between different revisions are visible.  This is generally 
+a really good idea :).  You may want to use a different suffix if you wish to 
+convey more meaning with the patch name.
+</p>
+
+<p>
+If you have many files that should go into the files/ directory, 
+consider creating subdirectories such as files/1.0/ and putting the
+relevant files in the appropriate subdirectory.  If you use this method, 
+you do not need to add version information to the names of the files, 
+which is often more convenient.
+</p>
+
+</div>
+
+</div>
+
+<div class="section">
+<h2 id="touching-other-developers-ebuilds">Touching other developers ebuilds</h2>
+<p>Usually you don't just change other developers ebuilds without permission unless you know that developer does not mind or if you are part of the herd involved in maintenance (this information can typically be found in metadata.xml). Start with filing a bug or trying to catch them on IRC or via email. Sometimes you cannot reach them, or there is no response to your bug. It's a good idea to consult other developers on how to handle the situation, especially if it's a critical issue that needs to be handled ASAP. Otherwise a soft limit of 2 to 4 weeks depending on the severity of the bug is an acceptable time frame before you go ahead and fix it yourself.</p> 
+<div class="alert alert-info" role="alert">
+<strong>Important:</strong> Common sense dictates to us that toolchain/base-system/core packages and eclasses or anything else which is delicate (e.g. glibc) or widely used (e.g. gtk+) should usually be left to those maintainers. If in doubt, don't touch it.</div>
+
+<p>
+Respect developers' coding preferences. Unnecessarily changing the
+syntax of an ebuild can cause complications for others. Syntax changes
+should only be done if there is a real benefit, such as faster
+compilation, improved information for the end user, or compliance with
+Gentoo policies.
+</p>
+
+</div>
+
+<div class="section">
+<h2 id="stabilizing-ebuilds">Stabilizing ebuilds</h2>
+
+<p>
+Only architecture maintainers for a given architecture should mark packages as 
+stable on that architecture. The maintainer of the package should always be 
+contacted just in case there are reasons not to do so. The exception to this 
+is if you are part of an architecture team, in which case you may mark the 
+package stable for that architecture. If you are not part of an architecture 
+team, you should consult the guidelines below; if the architecture you are 
+looking for is not listed then please consult the relevant lead.
+</p>
+
+<p>
+You should <i>never</i> stabilize packages on
+architectures for which you cannot test and instead you should file a bug to
+the relevant architecture team, such as 
+sparc@gentoo.org asking them to stabilize the
+ebuild. Alternatively, you may be able to find Gentoo developers on
+IRC who could help you with your request.
+</p>
+
+<p>
+It is best to not use 
+arch-maintainers@gentoo.org, adding architecture teams onto a
+bug's CC list individually instead. That way teams can remove
+themselves from the list when they are done, giving a clear indication
+of which teams still have to stabilize a package.
+</p>
+
+</div>
+
+<div class="section">
+<h2 id="stabilization-rules">Stabilization rules</h2>
+
+<p>
+SPARC: You must have prior permission from the arch lead. Usually we expect
+you to be on the sparc alias for QA reasons, although other arrangements
+can be made if you will only be working with a small group of packages.
+</p>
+
+<p>
+ALPHA: Maintainers may keyword their own packages but are reminded to inform
+the Alpha team if they can help out with testing and keywording packages so
+the team can keep an eye out for possible keywording mistakes.
+</p>
+
+<p>
+Exotic architectures (like alpha, ia64, sparc, hppa, ppc*) are short on manpower, so it's best if you avoid opening stabilization bugs for them unless it is absolutely necessary (eg, a reverse dependency for your package). More about keywording policies can be found in the <a href="../keywording/index.html">keywording</a> section.
+</p>
+<p>
+Some architectures (like m68k, mips, s390, sh) do not maintain a stable keyword. So there is no use in marking a package stable for one of these architectures.
+</p>
+</div>
+
+<div class="section">
+<h2 id="upgrading-ebuilds">Upgrading ebuilds</h2>
+
+<p>
+New ebuilds should rarely go in with "<code class="docutils literal"><span class="pre">arch</span></code>" keywords and even if they do
+not, the package <i>must</i> be tested on any architectures listed in the
+<code class="docutils literal"><span class="pre">KEYWORDS</span></code> variable of the new ebuild.
+</p>
+
+<p>
+Exceptions to the no "<code class="docutils literal"><span class="pre">arch</span></code>" rule are major bug fixes, or
+security fixes. If the previous version of the ebuild
+contains <code class="docutils literal"><span class="pre">KEYWORDS</span></code> which you cannot test for, you should
+downgrade them: turn any "<code class="docutils literal"><span class="pre">arch</span></code>" keyword to "<code class="docutils literal"><span class="pre">~arch</span></code>". If you
+think that your package may not work at all even on "<code class="docutils literal"><span class="pre">~arch</span></code>"
+then it is best to leave the keyword out and request testing from the
+relevant team: if you are to do this, you must file a bug to the team
+in question.
+</p>
+
+<p>
+If a new version introduces new dependencies which are not available
+on some architectures, then you should file a bug or ask on IRC before
+you upgrade the package. If you really need to get the ebuild added in
+a hurry, for example, for a security fix, then you should drop
+any <code class="docutils literal"><span class="pre">KEYWORDS</span></code> which are causing problems and CC the relevant
+architectures on the bug - you should file a new bug to the
+architecture in question regarding this if no bug is already
+available.
+</p>
+
+<p>
+If there are no new dependencies, do not remove keywords if your
+commit fails with repoman - please try a full <code class="docutils literal"><span class="pre">cvs update</span></code> and if
+you still have problems, then commit with <code class="docutils literal"><span class="pre">repoman -I</span></code> and file a
+bug to the broken architecture, noting it in your CVS commit message.
+</p>
+
+
+When committing, make sure that you reference any bugs in the
+ChangeLog as well as the CVS message. Failing to do so is considered
+to be in very poor taste and may result in disciplinary action.
+
+
+</div>
+
+<div class="section">
+<h2 id="moving-ebuilds">Moving ebuilds</h2>
+
+<p>
+Moving ebuilds is a two-step process:
+</p>
+
+<p>
+Firstly, you need to move the ebuild in CVS. To do this, you should
+copy the ebuild to its new location and commit that as you would with
+a <a href="#adding-a-new-ebuild">new ebuild</a>.
+</p>
+
+<p>
+After this, you should change any ebuilds which <code class="docutils literal"><span class="pre">DEPEND</span></code> on the
+old ebuild to depend on the new one. After this, should add an entry to the
+latest file in profiles/updates/ in the Portage tree in the in
+the following format:
+</p>
+
+<pre>
+move net-misc/fwbuilder net-firewall/fwbuilder
+</pre>
+
+<p>
+This example would transparently move net-misc/fwbuilder to
+net-firewall/fwbuilder if users have it installed. This
+way, users would now automatically receive updates
+for net-firewall/fwbuilder when they are available.
+</p>
+
+<p>
+Once this step is concluded, you are allowed to remove the old package.
+Simply issue a <code class="docutils literal"><span class="pre">cvs remove -Rf $PN</span></code> in the package category and commit
+the changes afterwards with a meaningful commit message. Don't forget to update
+entries in files such as profiles/package.mask to reflect the new category. Finally
+remember to change the title to open bugs related to this package if needed.
+</p>
+
+<pre>
+net-misc # cvs rm -Rf fwbuilder
+cvs remove: use `cvs commit' to remove these files permanently
+net-misc # cvs ci -m "Moving net-misc/fwbuilder to net-firewall/fwbuilder."
+</pre>
+
+<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+CVS cannot destroy directories: it will simply not re-create them if
+they are blank, providing you use CVS with the <code class="docutils literal"><span class="pre">-P</span></code> flag.
+</div>
+
+</div>
+
+<div class="section">
+<h2 id="changing-ebuild's-slot">Changing ebuild's SLOT</h2>
+<p>
+The process for changing the ebuild's SLOT is very similar to the previous process.
+Besides changing the SLOT in the ebuild file, you also need to create a new entry
+in profiles/updates/ in the Portage tree in the following format:
+</p>
+
+<pre>
+slotmove app-text/gtkspell 0 2
+</pre>
+
+<p>Make sure that you have fixed all the reverse dependencies and that you have
+updated every file in profiles/ directory that happens to contain an
+entry which may be affected by your change.
+</p>
+
+</div>
+
+<div class="section">
+<h2 id="removing-ebuilds">Removing ebuilds</h2>
+
+<p>
+When removing an ebuild make sure that no dependencies in Portage are broken
+due to the removal - additionally, your CVS commit message should explain
+clearly why the ebuild is being removed from CVS.
+</p>
+
+<p>
+If you need to remove ebuilds, make sure you do not accidentally remove
+the newest/only stable ebuild for any architecture. If you would like to
+get a newer version marked stable, then please file a bug or ask on IRC.
+</p>
+
+<p>
+You should also not cause an unnecessary downgrade for any "<code class="docutils literal"><span class="pre">~arch</span></code>"
+when removing ebuilds - instead, it is best to get the newest version
+marked "<code class="docutils literal"><span class="pre">~arch</span></code>" first and then remove redundant versions of the ebuild.
+</p>
+
+</div>
+
+<div class="section">
+<h2 id="removing-a-package">Removing a package</h2>
+
+<p>
+When removing packages follow these steps:
+</p>
+
+<ol>
+  <li>Make sure that no dependencies in Portage are broken due to the removal</li>
+  <li>Send last rites to gentoo-dev-announce and gentoo-dev</li>
+  <li>Mask the package</li>
+  <li>Wait 30 days (or more)</li>
+  <li>Remove from CVS unless the reason for removal has been fixed</li>
+  <li>Remove package.mask entry</li>
+  <li>Close open bugs as WONTFIX</li>
+</ol> 
+
+<p>
+In order to remove a package completely from CVS, delete any files from the
+directory and commit this, CVS will take care of removing empty directories
+itself.
+</p>
+
+<pre># cd app-admin
+# cvs rm -Rf scotty
+# cvs ci -m "app-admin/scotty removal (pending 21st July 2006), see #77501 for reference." scotty</pre>
+
+</div>
+
+<div class="section">
+<h2 id="conflicting-files">Conflicting files</h2>
+
+<p>
+When you encounter a package that is trying to install files that are
+already provided by another package (detectable with
+<code class="docutils literal"><span class="pre">FEATURES=collision-protect</span></code> for example) you have to fix this
+situation before you can commit the ebuild or, if you encounter this
+with an existing package, file a bug about that package (see below for
+a few exceptions). The reason file conflicts are critical is because
+if "foo" provides the file /usr/bin/example and "bar" is
+going to overwrite it, and later "bar" is unmerged, Portage will remove
+/usr/bin/example and it is therefore likely it will break
+"foo".
+</p>
+
+<p>
+The most obvious fix is to add a blocking dependency to both packages
+that want to install that file, so they can't be installed at the same
+time. But unless there are also other reasons for those packages to
+block each other you should avoid this if possible and rather fix the
+package, which could include one or more of the following steps:
+</p>
+
+<ul>
+  <li>Make "foo" (R)DEPEND on "bar" and not install the conflicting 
+  file.</li>
+  <li>Remove conflicting files from "foo" in <code class="docutils literal"><span class="pre">src_install</span></code>
+  or <code class="docutils literal"><span class="pre">pkg_preinst</span></code>.</li>
+  <li>Move conflicting files into a new subpackage and make "foo" and
+  "bar" both (R)DEPEND on that package.</li>
+  <li>Change the location where "foo" or "bar" installs conflicting
+  files.</li>
+</ul>
+
+<p>
+In some cases conflicting files can't be really fixed or aren't
+critical, currently known exceptions are Perl module manpages
+(overwriting the ones from Perl itself) and <code class="docutils literal"><span class="pre">CONFIG_PROTECT</span></code>'ed
+files (which should still be fixed, but aren't critical as Portage
+won't overwrite them).
+</p>
+
+</div>
+
+<div class="section">
+<h2 id="homepage-unavailable">Homepage unavailable</h2>
+
+<p>
+If the <code class="docutils literal"><span class="pre">HOMEPAGE</span></code> of your package seems to be unavailable or it 
+never existed at all, please set the HOMEPAGE variable in every ebuild
+to <a href="https://wiki.gentoo.org/wiki/No_homepage">
+https://wiki.gentoo.org/wiki/No_homepage</a>
+</p>
+
+</div>
+
+
+</div>
+<footer><div class="container">
+<div class="row">
+<div class="col-xs-12 col-md-offset-2 col-md-7"></div>
+<div class="col-xs-12 col-md-3">
+<h3 class="footerhead">Questions or comments?</h3>
+              Please feel free to <a href="https://www.gentoo.org/inside-gentoo/contact/">contact us</a>.
+            </div>
+</div>
+<div class="row">
+<div class="col-xs-2 col-sm-3 col-md-2"><ul class="footerlinks three-icons">
+<li><a href="http://twitter.com/gentoo" title="@Gentoo on Twitter"><span class="fa fa-twitter fa-fw"></span></a></li>
+<li><a href="https://plus.google.com/+Gentoo" title="+Gentoo on Google+"><span class="fa fa-google-plus fa-fw"></span></a></li>
+<li><a href="https://www.facebook.com/gentoo.org" title="Gentoo on Facebook"><span class="fa fa-facebook fa-fw"></span></a></li>
+</ul></div>
+<div class="col-xs-10 col-sm-9 col-md-10">
+<strong>Copyright (C) 2001-2015 Gentoo Foundation, Inc.</strong><br><small>
+                Gentoo is a trademark of the Gentoo Foundation, Inc.
+                The text of this document is distributed under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Attribution-ShareAlike 2.0 License</a>.
+                The <a href="https://www.gentoo.org/inside-gentoo/foundation/name-logo-guidelines.html">Gentoo Name and Logo Usage Guidelines</a> apply.
+              </small>
+</div>
+</div>
+</div></footer><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/jquery.min.js"></script><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,275 @@
+<!DOCTYPE html><html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Gentoo Development Guide: find -- Finding Files</title>
+<link rel="stylesheet" href="../../devmanual.css" type="text/css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The Gentoo Devmanual is a technical manual which covers topics such as writing ebuilds and eclasses, and policies that developers should be abiding by.">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/tyrian.min.css" rel="stylesheet" media="screen">
+<link rel="icon" href="https://www.gentoo.org/favicon.ico" type="image/x-icon">
+</head>
+<body>
+<header><div class="site-title"><div class="container"><div class="row">
+<div class="site-title-buttons"><div class="btn-group btn-group-sm">
+<a href="https://get.gentoo.org/" role="button" class="btn get-gentoo"><span class="fa fa-fw fa-download"></span><strong> Get Gentoo!</strong></a><div class="btn-group btn-group-sm">
+<a class="btn gentoo-org-sites dropdown-toggle" data-toggle="dropdown" data-target="#" href="#"><span class="fa fa-fw fa-map-o"></span><span class="hidden-xs"> gentoo.org sites </span><span class="caret"></span></a><ul class="dropdown-menu dropdown-menu-right">
+<li><a href="https://www.gentoo.org/" title="Main Gentoo website"><span class="fa fa-home fa-fw"></span> gentoo.org</a></li>
+<li><a href="https://wiki.gentoo.org/" title="Find and contribute documentation"><span class="fa fa-file-text-o fa-fw"></span> Wiki</a></li>
+<li><a href="https://bugs.gentoo.org/" title="Report issues and find common issues"><span class="fa fa-bug fa-fw"></span> Bugs</a></li>
+<li><a href="https://forums.gentoo.org/" title="Discuss with the community"><span class="fa fa-comments-o fa-fw"></span> Forums</a></li>
+<li><a href="https://packages.gentoo.org/" title="Find software for your Gentoo"><span class="fa fa-hdd-o fa-fw"></span> Packages</a></li>
+<li class="divider">
+<li><a href="https://planet.gentoo.org/" title="Find out what's going on in the developer community"><span class="fa fa-rss fa-fw"></span> Planet</a></li>
+<li><a href="https://archives.gentoo.org/" title="Read up on past discussions"><span class="fa fa-archive fa-fw"></span> Archives</a></li>
+<li><a href="https://sources.gentoo.org/" title="Browse our source code"><span class="fa fa-code fa-fw"></span> Sources</a></li>
+<li class="divider">
+<li><a href="https://infra-status.gentoo.org/" title="Get updates on the services provided by Gentoo"><span class="fa fa-server fa-fw"></span> Infra Status</a></li>
+</ul>
+</div>
+</div></div>
+<div class="logo">
+<a href="/" title="Back to the homepage" class="site-logo"><object data="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.svg" type="image/svg+xml"><img src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.png" alt="Gentoo Linux Logo"></object></a><span class="site-label">Development Guide</span>
+</div>
+</div></div></div>
+<nav class="tyrian-navbar" role="navigation"><div class="container"><div class="row">
+<div class="navbar-header"><button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button></div>
+<div class="collapse navbar-collapse navbar-main-collapse"><ul class="nav navbar-nav">
+<li><a href="../..//index.html"><span class="glyphicon glyphicon-home"></span>  Home</a></li>
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">find -- Finding Files<span class="caret"></span></a></li>
+<li><a href="../false-and-true/index.html"><span class="glyphicon glyphicon-arrow-left"></span>  false and true -- Generating Return Codes</a></li>
+<li><a href="../../tools-reference/grep/index.html">grep -- Text Filtering  <span class="glyphicon glyphicon-arrow-right"></span></a></li>
+</ul></div>
+</div></div></nav></header><div class="container"><div class="row"><div class="col-md010"><ol class="breadcrumb">
+<li><a href="../../index.html">Master Index</a></li>
+<li><a href="../index.html">Tools Reference</a></li>
+</ol></div></div></div>
+<div class="container">
+<h1 class="first-header">
+<code class="docutils literal"><span class="pre">find</span></code> -- Finding Files</h1>
+
+<p>
+The <code class="docutils literal"><span class="pre">find</span></code> utility can be used to search for and perform commands upon
+groups of files matching a given set of criteria. The basic usage is
+<code class="docutils literal"><span class="pre">find path rules</span></code>.
+</p>
+
+<p>
+For portability purposes, <b>always</b> specify a path. Do not rely
+upon <code class="docutils literal"><span class="pre">find</span></code> defaulting to the current working directory if no
+path is provided.
+</p>
+
+<p>
+Useful rules include:
+</p>
+
+<table class="table">
+  <tr>
+    <th>Rule</th>
+    <th>Effect</th>
+    <th>POSIX?</th>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">-name "blah"</span></code></td>
+    <td class="devbook">
+      Only find files named <code class="docutils literal"><span class="pre">blah</span></code>. The <code class="docutils literal"><span class="pre">*</span></code> and <code class="docutils literal"><span class="pre">?</span></code>
+      wildcards may be used but should be quoted as in <code class="docutils literal"><span class="pre">-name 'blah*'</span></code>.
+    </td>
+    <td class="devbook">yes</td>
+  </tr>
+    <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">\! -name "blah"</span></code></td>
+    <td class="devbook">
+      Only find files not named <code class="docutils literal"><span class="pre">blah</span></code>.
+    </td>
+    <td class="devbook">yes</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">-type f</span></code></td>
+    <td class="devbook">Find only regular files, not directories.</td>
+    <td class="devbook">yes</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">-type d</span></code></td>
+    <td class="devbook">Find only directories.</td>
+    <td class="devbook">yes</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">-type l</span></code></td>
+    <td class="devbook">Find only symbolic links.</td>
+    <td class="devbook">yes</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">-user foo</span></code></td>
+    <td class="devbook">
+      Find only files belonging to user <code class="docutils literal"><span class="pre">foo</span></code>. It is best to use
+      named users rather than numeric UIDs. In particular, <code class="docutils literal"><span class="pre">root</span></code>
+      may not be UID 0 on some systems.
+    </td>
+    <td class="devbook">yes</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">-group foo</span></code></td>
+    <td class="devbook">
+      Find only files belonging to group <code class="docutils literal"><span class="pre">foo</span></code>. It is best to use
+      named groups rather than numeric GIDs.
+    </td>
+    <td class="devbook">yes</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">-maxdepth 3</span></code></td>
+    <td class="devbook">
+     Only descend 3 levels into subdirectories.
+     <code class="docutils literal"><span class="pre">-maxdepth 1</span></code> will ignore all subdiretories of the specified path.
+    </td>
+    <td class="devbook">no, GNU and BSD</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">-mindepth 2</span></code></td>
+    <td class="devbook">
+     Ignore the first 2 directory levels before a match occurs.
+     <code class="docutils literal"><span class="pre">-mindepth 1</span></code> will process all files except the command line arguments.
+    </td>
+    <td class="devbook">no, GNU and BSD</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">-exec foo '{}'</span></code></td>
+    <td class="devbook">
+     Execute a command. <code class="docutils literal"><span class="pre">{}</span></code> is replaced by the name of the
+     current matched file. See examples below.
+    </td>
+    <td class="devbook">yes</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">-execdir foo '{}'</span></code></td>
+    <td class="devbook">
+     Same as <code class="docutils literal"><span class="pre">-exec</span></code> but runs the command from within the basedir
+     of the match.
+    </td>
+    <td class="devbook">no, GNU and BSD</td>
+  </tr>
+    <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">-delete</span></code></td>
+    <td class="devbook">
+     Delete the match.
+    </td>
+    <td class="devbook">no, GNU and FBSD</td>
+  </tr>
+</table>
+
+<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+EAPI&gt;=5 assumes GNU find, so it is safe to use GNU extensions in
+ebuild context for those EAPIs.
+</div>
+
+<p>
+By default, <code class="docutils literal"><span class="pre">find</span></code> will echo a list of matching files to the
+standard output. This can be used in a <code class="docutils literal"><span class="pre">while</span></code> loop:
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">while</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">read</span> f <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">;</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">do</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">einfo</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>Doing unholy things to <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${f}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">done</span> &lt; &lt;(find <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${S}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> -type f<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span>
+</span></pre>
+
+<p>
+Or a <code class="docutils literal"><span class="pre">for</span></code> loop (for small numbers of files):
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">for</span> f <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">in</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">$(</span>find <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${S}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> -type f<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">;</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">do</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">einfo</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>Calling down holy vengance upon <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${f}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">done</span>
+</span></pre>
+
+<div class="alert alert-warning" role="alert">
+<strong>Warning:</strong>
+In both cases, files with weird characters or spaces in their names
+may cause serious problems.
+</div>
+
+<p>
+As an alternative you can use the <code class="docutils literal"><span class="pre">-exec</span></code> argument. Be careful
+with escaping to ensure that <code class="docutils literal"><span class="pre">bash</span></code> doesn't gobble up the special
+characters:
+</p>
+
+<pre><span class="Constant">find <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${S}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> -name '*.data' -exec mv '{}' <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${S}</span>/data/<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> \;
+</span></pre>
+
+<p>
+When <code class="docutils literal"><span class="pre">-exec</span></code> is terminated by a <code class="docutils literal"><span class="pre">;</span></code> character
+(needs escaping or quoting) then the command line is built separately
+for every match.
+If it is terminated by a <code class="docutils literal"><span class="pre">+</span></code> character then the command line is
+built by appending each selected file name at the end.
+</p>
+
+<p>
+The syntax below is useful if the command you want to run accepts multiple
+arguments such as <code class="docutils literal"><span class="pre">doins</span></code> and is more efficient in that case:
+</p>
+
+<pre><span class="Constant">find <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${S}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> -name '*.so*' -exec <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">doexe</span> '{}' +
+</span></pre>
+
+<p>
+Find also supports negative matches:
+</p>
+
+<pre><span class="Constant">find <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${S}</span>/bundled-libs<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> \! -name 'libbass.so' -delete
+</span></pre>
+
+<p>
+This will delete all files in the "bundled-libs" folder except "libbass.so".
+Make sure you always escape the <code class="docutils literal"><span class="pre">!</span></code> character, so it's not
+interpreted by the shell.
+</p>
+
+<div class="alert alert-warning" role="alert">
+<strong>Warning:</strong>
+The <code class="docutils literal"><span class="pre">-exec</span></code> argument has security issues, because of
+<a href="https://www.gnu.org/software/findutils/manual/html_mono/find.html#Race-Conditions-with-_002dexec">race conditions</a>
+(this is also true for <code class="docutils literal"><span class="pre">find . -print0 | xargs ...</span></code> constructs).
+This should not be a problem in ebuild context, because directories
+typically aren't writeable by random users. However you should
+consider <code class="docutils literal"><span class="pre">-execdir</span></code> as an alternative approach which runs the
+command from inside the basedir of the match (note that <code class="docutils literal"><span class="pre">-execdir</span></code>
+is not POSIX, see the table).
+</div>
+
+<p>
+See find-1 and
+<a href="http://www.opengroup.org/onlinepubs/000095399/utilities/find.html">
+IEEE1003.1-2004-find</a> for further details and examples.
+</p>
+
+
+</div>
+<footer><div class="container">
+<div class="row">
+<div class="col-xs-12 col-md-offset-2 col-md-7"></div>
+<div class="col-xs-12 col-md-3">
+<h3 class="footerhead">Questions or comments?</h3>
+              Please feel free to <a href="https://www.gentoo.org/inside-gentoo/contact/">contact us</a>.
+            </div>
+</div>
+<div class="row">
+<div class="col-xs-2 col-sm-3 col-md-2"><ul class="footerlinks three-icons">
+<li><a href="http://twitter.com/gentoo" title="@Gentoo on Twitter"><span class="fa fa-twitter fa-fw"></span></a></li>
+<li><a href="https://plus.google.com/+Gentoo" title="+Gentoo on Google+"><span class="fa fa-google-plus fa-fw"></span></a></li>
+<li><a href="https://www.facebook.com/gentoo.org" title="Gentoo on Facebook"><span class="fa fa-facebook fa-fw"></span></a></li>
+</ul></div>
+<div class="col-xs-10 col-sm-9 col-md-10">
+<strong>Copyright (C) 2001-2015 Gentoo Foundation, Inc.</strong><br><small>
+                Gentoo is a trademark of the Gentoo Foundation, Inc.
+                The text of this document is distributed under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Attribution-ShareAlike 2.0 License</a>.
+                The <a href="https://www.gentoo.org/inside-gentoo/foundation/name-logo-guidelines.html">Gentoo Name and Logo Usage Guidelines</a> apply.
+              </small>
+</div>
+</div>
+</div></footer><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/jquery.min.js"></script><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.js"></script>
+</body>
+</html>

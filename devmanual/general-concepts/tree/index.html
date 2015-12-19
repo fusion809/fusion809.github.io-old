@@ -1,0 +1,242 @@
+<!DOCTYPE html><html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Gentoo Development Guide: The Portage Tree</title>
+<link rel="stylesheet" href="../../devmanual.css" type="text/css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The Gentoo Devmanual is a technical manual which covers topics such as writing ebuilds and eclasses, and policies that developers should be abiding by.">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/tyrian.min.css" rel="stylesheet" media="screen">
+<link rel="icon" href="https://www.gentoo.org/favicon.ico" type="image/x-icon">
+</head>
+<body>
+<header><div class="site-title"><div class="container"><div class="row">
+<div class="site-title-buttons"><div class="btn-group btn-group-sm">
+<a href="https://get.gentoo.org/" role="button" class="btn get-gentoo"><span class="fa fa-fw fa-download"></span><strong> Get Gentoo!</strong></a><div class="btn-group btn-group-sm">
+<a class="btn gentoo-org-sites dropdown-toggle" data-toggle="dropdown" data-target="#" href="#"><span class="fa fa-fw fa-map-o"></span><span class="hidden-xs"> gentoo.org sites </span><span class="caret"></span></a><ul class="dropdown-menu dropdown-menu-right">
+<li><a href="https://www.gentoo.org/" title="Main Gentoo website"><span class="fa fa-home fa-fw"></span> gentoo.org</a></li>
+<li><a href="https://wiki.gentoo.org/" title="Find and contribute documentation"><span class="fa fa-file-text-o fa-fw"></span> Wiki</a></li>
+<li><a href="https://bugs.gentoo.org/" title="Report issues and find common issues"><span class="fa fa-bug fa-fw"></span> Bugs</a></li>
+<li><a href="https://forums.gentoo.org/" title="Discuss with the community"><span class="fa fa-comments-o fa-fw"></span> Forums</a></li>
+<li><a href="https://packages.gentoo.org/" title="Find software for your Gentoo"><span class="fa fa-hdd-o fa-fw"></span> Packages</a></li>
+<li class="divider">
+<li><a href="https://planet.gentoo.org/" title="Find out what's going on in the developer community"><span class="fa fa-rss fa-fw"></span> Planet</a></li>
+<li><a href="https://archives.gentoo.org/" title="Read up on past discussions"><span class="fa fa-archive fa-fw"></span> Archives</a></li>
+<li><a href="https://sources.gentoo.org/" title="Browse our source code"><span class="fa fa-code fa-fw"></span> Sources</a></li>
+<li class="divider">
+<li><a href="https://infra-status.gentoo.org/" title="Get updates on the services provided by Gentoo"><span class="fa fa-server fa-fw"></span> Infra Status</a></li>
+</ul>
+</div>
+</div></div>
+<div class="logo">
+<a href="/" title="Back to the homepage" class="site-logo"><object data="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.svg" type="image/svg+xml"><img src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.png" alt="Gentoo Linux Logo"></object></a><span class="site-label">Development Guide</span>
+</div>
+</div></div></div>
+<nav class="tyrian-navbar" role="navigation"><div class="container"><div class="row">
+<div class="navbar-header"><button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button></div>
+<div class="collapse navbar-collapse navbar-main-collapse"><ul class="nav navbar-nav">
+<li><a href="../..//index.html"><span class="glyphicon glyphicon-home"></span>  Home</a></li>
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">The Portage Tree<span class="caret"></span></a></li>
+<li><a href="../slotting/index.html"><span class="glyphicon glyphicon-arrow-left"></span>  Slotting</a></li>
+<li><a href="../../general-concepts/use-flags/index.html">USE Flags  <span class="glyphicon glyphicon-arrow-right"></span></a></li>
+</ul></div>
+</div></div></nav></header><div class="container"><div class="row"><div class="col-md010"><ol class="breadcrumb">
+<li><a href="../../index.html">Master Index</a></li>
+<li><a href="../index.html">General Concepts</a></li>
+</ol></div></div></div>
+<div class="container">
+<h1 class="first-header">The Portage Tree</h1>
+<p>
+The basic layout of the portage tree is as follows:
+</p>
+
+<ul>
+  <li>
+  Categories, for example <code class="docutils literal"><span class="pre">app-editors</span></code>, <code class="docutils literal"><span class="pre">sys-apps</span></code>
+  <ul>
+    <li>Category metadata, for example <code class="docutils literal"><span class="pre">app-admin/metadata.xml</span></code>
+</li>
+    <li>
+    Package directories for example <code class="docutils literal"><span class="pre">app-editors/vim</span></code>
+    <ul>
+      <li>Package metadata, for example <code class="docutils literal"><span class="pre">app-editors/vim/metadata.xml</span></code>
+</li>
+      <li>Package changelog, for example <code class="docutils literal"><span class="pre">app-editors/vim/ChangeLog</span></code>
+</li>
+      <li>Package Manifest, for example <code class="docutils literal"><span class="pre">app-editors/vim/Manifest</span></code>
+</li>
+      <li>
+      Ebuilds, for example <code class="docutils literal"><span class="pre">app-editors/vim/vim-6.3.068.ebuild</span></code>,
+      <code class="docutils literal"><span class="pre">app-editors/vim/vim-7.0_alpha20050326.ebuild</span></code>
+      </li>
+      <li>
+      Package files directory, for example <code class="docutils literal"><span class="pre">app-editors/vim/files</span></code>
+      <ul>
+        <li>
+        Small patches and other miscellaneous files, for example
+        <code class="docutils literal"><span class="pre">app-editors/vim/files/vim-completion</span></code>
+        </li>
+      </ul>
+      </li>
+    </ul>
+    </li>
+  </ul>
+  </li>
+  <li>Eclasses directory, <code class="docutils literal"><span class="pre">eclass/</span></code>
+</li>
+  <li>Licenses directory, <code class="docutils literal"><span class="pre">licenses/</span></code>
+</li>
+  <li>
+  Profiles directory, <code class="docutils literal"><span class="pre">profiles/</span></code>
+  <ul>
+    <li>
+    Various control and documentation files, for example <code class="docutils literal"><span class="pre">categories</span></code>,
+    <code class="docutils literal"><span class="pre">info_pkgs</span></code>, <code class="docutils literal"><span class="pre">info_vars</span></code>, <code class="docutils literal"><span class="pre">package.mask</span></code>, <code class="docutils literal"><span class="pre">use.desc</span></code>
+    </li>
+    <li>
+    Updates directory, <code class="docutils literal"><span class="pre">profiles/updates/</span></code>
+    <ul>
+      <li>Updates files, for example <code class="docutils literal"><span class="pre">profiles/updates/1Q-2005</span></code>
+</li>
+    </ul>
+    </li>
+    <li>
+    Main profile cascade
+    </li>
+  </ul>
+  </li>
+  <li>Scripts directory, <code class="docutils literal"><span class="pre">scripts/</span></code>
+</li>
+  <li>
+  Distfiles directory, <code class="docutils literal"><span class="pre">distfiles/</span></code>. This is not included in the main
+  CVS tree, but it will be found on most user systems.
+  </li>
+  <li>
+  Packages directory, <code class="docutils literal"><span class="pre">packages</span></code>. Again, this is found on user systems but not
+  in the main CVS tree.
+  </li>
+</ul>
+<div class="section">
+<h2 id="what-belongs-in-the-tree?">What Belongs in the Tree?</h2>
+
+<p>
+Things that do <b>not</b> belong in the tree:
+</p>
+
+<ul>
+  <li>Large patches</li>
+  <li>Non-text files</li>
+  <li>Photos of teletubbies</li>
+  <li>Files whose name contains characters outside <code class="docutils literal"><span class="pre">[A-Za-z0-9._+-]</span></code>
+</li>
+  <li>Files whose name starts with a dot, a hyphen, or a plus sign</li>
+</ul>
+
+<p>
+Software-wise, in general all of the following should be met in order for a package to be included in the tree:
+</p>
+
+<dl>
+<dt>Active, Cooperative Upstream</dt>
+<dd>
+<p class="first">
+  If a package is undeveloped or unmaintained upstream, it can be extremely
+  difficult to get problems fixed. If a package does not have an active
+  upstream, the developers who add the package to the tree must ensure that
+  they are able to fix any issues which may arise.
+  </p>
+<p class="last">
+  Sometimes upstream may have a reason for not wanting their package included
+  in the tree. This should be respected.
+  </p>
+</dd>
+
+<dt>Reasonably Stable</dt>
+<dd>
+  Keep super-experimental things out of the tree. If you must commit them,
+  consider using <code class="docutils literal"><span class="pre">package.mask</span></code> until things calm down, or better yet make
+  them available as overlay ebuilds.
+  </dd>
+
+<dt>Reasonably Useful</dt>
+<dd>
+  Don't feel obliged to include "Joe's '1337 XMMS Skinz Collection" or "Hans'
+  Super Cool Fast File System" in the tree just because a few users ask for
+  it. Stick to things that might actually be of use.
+  </dd>
+
+<dt>Properly Packaged</dt>
+<dd>
+  If something is only available in live CVS or dodgy autopackage format,
+  don't include it until upstream can come up with a decent source package.
+  Similarly, avoid things that don't have a proper build system (where
+  relevant) 
+    —
+   these are very tricky to maintain.
+  </dd>
+
+<dt>Patching and Distribution Permitted</dt>
+<dd>
+<p class="first">
+  If we can't patch packages as necessary ourselves, we end up relying
+  entirely upon upstream for support. This can be problematic, especially if
+  upstream are slow at fixing things. We don't want to be in the situation
+  where we can't stable a critical package because we're still waiting for a
+  closed-source vendor to get their act together.
+  </p>
+<p class="last">
+  Similarly, not being able to mirror and distribute tarballs ourselves makes
+  us rely entirely upon upstream mirrors. Experience has shown that these are
+  often extremely unreliable, with files changing, moving or vanishing at
+  random.
+  </p>
+</dd>
+
+<dt>Working Ebuilds</dt>
+<dd>
+  If you don't have a <i>working</i> ebuild, don't include it.
+  </dd>
+
+<dt>Portable</dt>
+<dd>
+  If software is unportable, it's generally because it's badly written.
+  Remember that although x86 has a market majority <i>now</i>, it probably won't in
+  the not too distant future once x86-64 catches on.
+  </dd>
+
+<dt>Reasonable Security Record</dt>
+<dd>
+  Don't include software that has a terrible security record. Each
+  vulnerability is a <i>lot</i> of work for a lot of people (security teams, arch
+  teams and package maintainers).
+  </dd>
+</dl>
+
+</div>
+</div>
+<footer><div class="container">
+<div class="row">
+<div class="col-xs-12 col-md-offset-2 col-md-7"></div>
+<div class="col-xs-12 col-md-3">
+<h3 class="footerhead">Questions or comments?</h3>
+              Please feel free to <a href="https://www.gentoo.org/inside-gentoo/contact/">contact us</a>.
+            </div>
+</div>
+<div class="row">
+<div class="col-xs-2 col-sm-3 col-md-2"><ul class="footerlinks three-icons">
+<li><a href="http://twitter.com/gentoo" title="@Gentoo on Twitter"><span class="fa fa-twitter fa-fw"></span></a></li>
+<li><a href="https://plus.google.com/+Gentoo" title="+Gentoo on Google+"><span class="fa fa-google-plus fa-fw"></span></a></li>
+<li><a href="https://www.facebook.com/gentoo.org" title="Gentoo on Facebook"><span class="fa fa-facebook fa-fw"></span></a></li>
+</ul></div>
+<div class="col-xs-10 col-sm-9 col-md-10">
+<strong>Copyright (C) 2001-2015 Gentoo Foundation, Inc.</strong><br><small>
+                Gentoo is a trademark of the Gentoo Foundation, Inc.
+                The text of this document is distributed under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Attribution-ShareAlike 2.0 License</a>.
+                The <a href="https://www.gentoo.org/inside-gentoo/foundation/name-logo-guidelines.html">Gentoo Name and Logo Usage Guidelines</a> apply.
+              </small>
+</div>
+</div>
+</div></footer><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/jquery.min.js"></script><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.js"></script>
+</body>
+</html>

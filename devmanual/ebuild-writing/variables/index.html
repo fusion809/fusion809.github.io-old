@@ -1,0 +1,515 @@
+<!DOCTYPE html><html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Gentoo Development Guide: Variables</title>
+<link rel="stylesheet" href="../../devmanual.css" type="text/css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The Gentoo Devmanual is a technical manual which covers topics such as writing ebuilds and eclasses, and policies that developers should be abiding by.">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/tyrian.min.css" rel="stylesheet" media="screen">
+<link rel="icon" href="https://www.gentoo.org/favicon.ico" type="image/x-icon">
+</head>
+<body>
+<header><div class="site-title"><div class="container"><div class="row">
+<div class="site-title-buttons"><div class="btn-group btn-group-sm">
+<a href="https://get.gentoo.org/" role="button" class="btn get-gentoo"><span class="fa fa-fw fa-download"></span><strong> Get Gentoo!</strong></a><div class="btn-group btn-group-sm">
+<a class="btn gentoo-org-sites dropdown-toggle" data-toggle="dropdown" data-target="#" href="#"><span class="fa fa-fw fa-map-o"></span><span class="hidden-xs"> gentoo.org sites </span><span class="caret"></span></a><ul class="dropdown-menu dropdown-menu-right">
+<li><a href="https://www.gentoo.org/" title="Main Gentoo website"><span class="fa fa-home fa-fw"></span> gentoo.org</a></li>
+<li><a href="https://wiki.gentoo.org/" title="Find and contribute documentation"><span class="fa fa-file-text-o fa-fw"></span> Wiki</a></li>
+<li><a href="https://bugs.gentoo.org/" title="Report issues and find common issues"><span class="fa fa-bug fa-fw"></span> Bugs</a></li>
+<li><a href="https://forums.gentoo.org/" title="Discuss with the community"><span class="fa fa-comments-o fa-fw"></span> Forums</a></li>
+<li><a href="https://packages.gentoo.org/" title="Find software for your Gentoo"><span class="fa fa-hdd-o fa-fw"></span> Packages</a></li>
+<li class="divider">
+<li><a href="https://planet.gentoo.org/" title="Find out what's going on in the developer community"><span class="fa fa-rss fa-fw"></span> Planet</a></li>
+<li><a href="https://archives.gentoo.org/" title="Read up on past discussions"><span class="fa fa-archive fa-fw"></span> Archives</a></li>
+<li><a href="https://sources.gentoo.org/" title="Browse our source code"><span class="fa fa-code fa-fw"></span> Sources</a></li>
+<li class="divider">
+<li><a href="https://infra-status.gentoo.org/" title="Get updates on the services provided by Gentoo"><span class="fa fa-server fa-fw"></span> Infra Status</a></li>
+</ul>
+</div>
+</div></div>
+<div class="logo">
+<a href="/" title="Back to the homepage" class="site-logo"><object data="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.svg" type="image/svg+xml"><img src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.png" alt="Gentoo Linux Logo"></object></a><span class="site-label">Development Guide</span>
+</div>
+</div></div></div>
+<nav class="tyrian-navbar" role="navigation"><div class="container"><div class="row">
+<div class="navbar-header"><button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button></div>
+<div class="collapse navbar-collapse navbar-main-collapse"><ul class="nav navbar-nav">
+<li><a href="../..//index.html"><span class="glyphicon glyphicon-home"></span>  Home</a></li>
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Variables<span class="caret"></span></a></li>
+<li><a href="../messages/index.html"><span class="glyphicon glyphicon-arrow-left"></span>  Messages</a></li>
+<li><a href="../../ebuild-writing/using-eclasses/index.html">Using Eclasses  <span class="glyphicon glyphicon-arrow-right"></span></a></li>
+</ul></div>
+</div></div></nav></header><div class="container"><div class="row"><div class="col-md010"><ol class="breadcrumb">
+<li><a href="../../index.html">Master Index</a></li>
+<li><a href="../index.html">Ebuild Writing</a></li>
+</ol></div></div></div>
+<div class="container">
+<h1 class="first-header">Variables</h1>
+<p>
+There are a number of special variables which must be set in ebuilds, and many
+more which can optionally be specified. There are also some predefined variables
+which are of use throughout the ebuild.
+</p>
+<div class="section">
+<h2 id="predefined-read-only-variables">Predefined Read-Only Variables</h2>
+
+<p>
+The following variables are defined for you. You must not attempt to set
+them.
+</p>
+
+<table class="table">
+  <tr>
+    <th>Variable</th>
+    <th>Purpose</th>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">P</span></code></td>
+    <td class="devbook">Package name and version (excluding revision, if any), for example <code class="docutils literal"><span class="pre">vim-6.3</span></code>.</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">PN</span></code></td>
+    <td class="devbook">Package name, for example <code class="docutils literal"><span class="pre">vim</span></code>.</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">PV</span></code></td>
+    <td class="devbook">Package version (excluding revision, if any), for example <code class="docutils literal"><span class="pre">6.3</span></code>. It should reflect the upstream versioning scheme.</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">PR</span></code></td>
+    <td class="devbook">Package revision, or <code class="docutils literal"><span class="pre">r0</span></code> if no revision exists.</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">PVR</span></code></td>
+    <td class="devbook">Package version and revision (if any), for example <code class="docutils literal"><span class="pre">6.3</span></code>, <code class="docutils literal"><span class="pre">6.3-r1</span></code>.</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">PF</span></code></td>
+    <td class="devbook">Full package name, <code class="docutils literal"><span class="pre">${PN}-${PVR}</span></code>, for example <code class="docutils literal"><span class="pre">vim-6.3-r1</span></code>.</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">A</span></code></td>
+    <td class="devbook">
+      All the source files for the package (excluding those
+      which are not available because of <code class="docutils literal"><span class="pre">USE</span></code> flags).
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">CATEGORY</span></code></td>
+    <td class="devbook">Package's category, for example <code class="docutils literal"><span class="pre">app-editors</span></code>.</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">FILESDIR</span></code></td>
+    <td class="devbook">
+      Path to the ebuild's <code class="docutils literal"><span class="pre">files/</span></code> directory, commonly used
+      for small patches and files. Value:
+      <code class="docutils literal"><span class="pre">"${PORTDIR}/${CATEGORY}/${PN}/files"</span></code>.
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">WORKDIR</span></code></td>
+    <td class="devbook">
+      Path to the ebuild's root build directory. Value:
+      <code class="docutils literal"><span class="pre">"${PORTAGE_BUILDDIR}/work"</span></code>.
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">T</span></code></td>
+    <td class="devbook">
+       Path to a temporary directory which may be used by the
+       ebuild. Value: <code class="docutils literal"><span class="pre">"${PORTAGE_BUILDDIR}/temp"</span></code>.
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">D</span></code></td>
+    <td class="devbook">
+      Path to the temporary install directory. Value:
+      <code class="docutils literal"><span class="pre">"${PORTAGE_BUILDDIR}/image"</span></code>.
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">ROOT</span></code></td>
+    <td class="devbook">
+      Path to the root directory. When not using <code class="docutils literal"><span class="pre">${D}</span></code>,
+      always prepend <code class="docutils literal"><span class="pre">${ROOT}</span></code> to the path.
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">DISTDIR</span></code></td>
+    <td class="devbook">
+      Contains the path to the directory where all the files
+      fetched for the package are stored.
+    </td>
+  </tr>
+</table>
+
+</div>
+<div class="section">
+<h2 id="ebuild-defined-variables">Ebuild-defined Variables</h2>
+
+<p>
+The following variables may or must be defined by every ebuild.
+</p>
+
+<table class="table">
+  <tr>
+    <th>Variable</th>
+    <th>Purpose</th>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">EAPI</span></code></td>
+    <td class="devbook">
+    The EAPI. See <a href="../../ebuild-writing/eapi/index.html">EAPI Usage and Description</a>.
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">DESCRIPTION</span></code></td>
+    <td class="devbook">
+    A short (less than 80 characters) description of the package's
+    purpose. Mandatory.
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">HOMEPAGE</span></code></td>
+    <td class="devbook">
+    Package's homepage. Mandatory (except for virtuals). If you are
+    unable to locate an official one, try to provide a link to
+    <a href="http://freshmeat.net">freshmeat.net</a> or a similar
+    package tracking site. Never refer to a variable name in the
+    string; include only raw text.
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">SRC_URI</span></code></td>
+    <td class="devbook">
+    A list of source URIs for the package. Can contain
+    <code class="docutils literal"><span class="pre">USE</span></code>-conditional parts, see
+    <a href="../../ebuild-writing/variables/index.html#src_uri">SRC_URI</a>.
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">LICENSE</span></code></td>
+    <td class="devbook">
+    The package's license, corresponding exactly (including case)
+    to a file in <code class="docutils literal"><span class="pre">licenses/</span></code>. Mandatory (except for virtuals).
+    See <a href="../../ebuild-writing/variables/index.html#license">LICENSE</a>.
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">SLOT</span></code></td>
+    <td class="devbook">
+    The package's <code class="docutils literal"><span class="pre">SLOT</span></code>. Mandatory.
+    See <a href="../../ebuild-writing/variables/index.html#slot">SLOT</a>.
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">KEYWORDS</span></code></td>
+    <td class="devbook">
+    See <a href="../../ebuild-writing/variables/index.html#keywords">KEYWORDS</a> and
+    <a href="../../keywording/index.html">Keywording</a>.
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">IUSE</span></code></td>
+    <td class="devbook">
+    A list of all <code class="docutils literal"><span class="pre">USE</span></code> flags (excluding arch flags, but
+    including <code class="docutils literal"><span class="pre">USE_EXPAND</span></code> flags) used within the ebuild. See
+    <a href="../../ebuild-writing/variables/index.html#iuse">IUSE</a>.
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">REQUIRED_USE</span></code></td>
+    <td class="devbook">
+    A list of assertions that must be met by the configuration of
+    <code class="docutils literal"><span class="pre">USE</span></code> flags to be valid for this ebuild. (Requires
+    <a href="../../ebuild-writing/eapi/index.html#eapi=4">EAPI&gt;=4</a>.)
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">RESTRICT</span></code></td>
+    <td class="devbook">
+    A space-delimited list of portage features to restrict.
+    Valid values are <code class="docutils literal"><span class="pre">fetch</span></code>, <code class="docutils literal"><span class="pre">mirror</span></code>, <code class="docutils literal"><span class="pre">strip</span></code>, <code class="docutils literal"><span class="pre">test</span></code> and
+    <code class="docutils literal"><span class="pre">userpriv</span></code>. See <code class="docutils literal"><span class="pre">man 5 ebuild</span></code> for details.
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">DEPEND</span></code></td>
+    <td class="devbook">
+    A list of the package's build dependencies.  See
+    <a href="../../general-concepts/dependencies/index.html">Dependencies</a>.
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">RDEPEND</span></code></td>
+    <td class="devbook">
+    A list of the package's runtime dependencies. See
+    <a href="../../general-concepts/dependencies/index.html">Dependencies</a>.
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">PDEPEND</span></code></td>
+    <td class="devbook">
+    A list of packages to be installed (if possible) after the package
+    is merged. Use this only when <code class="docutils literal"><span class="pre">RDEPEND</span></code> would cause cyclic
+    dependencies. See <a href="../../general-concepts/dependencies/index.html">Dependencies</a>.
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">S</span></code></td>
+    <td class="devbook">
+    Path to the temporary build directory, used by
+    <code class="docutils literal"><span class="pre">src_compile</span></code> and <code class="docutils literal"><span class="pre">src_install</span></code>. Default:
+    <code class="docutils literal"><span class="pre">"${WORKDIR}/${P}"</span></code>. Ebuilds should <b>not</b> provide a
+    value for this variable if it is the same as the default value.
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">PROPERTIES</span></code></td>
+    <td class="devbook">
+    A space-delimited list of properties, with conditional
+    syntax support. <code class="docutils literal"><span class="pre">interactive</span></code> is the only valid value
+    for now.
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">DOCS</span></code></td>
+    <td class="devbook">
+    An array or space-delimited list of documentation files for
+    the default src_install function to install using dodoc. If
+    undefined, a reasonable default list is used. (Requires
+    <a href="../../ebuild-writing/eapi/index.html#eapi=4">EAPI&gt;=4</a>.)
+    </td>
+  </tr>
+</table>
+
+</div>
+<div class="section">
+<h2 id="slot">SLOT</h2>
+
+<p>
+When slots are not needed, use <code class="docutils literal"><span class="pre">SLOT="0"</span></code>. Do <b>not</b> use <code class="docutils literal"><span class="pre">SLOT=""</span></code>, as
+this will disable slotting for this package.
+</p>
+
+<p>
+See <a href="../../general-concepts/slotting/index.html">Slotting</a> for more information on this variable.
+</p>
+
+</div>
+<div class="section">
+<h2 id="keywords">KEYWORDS</h2>
+
+<p>
+The only valid construct involving a <code class="docutils literal"><span class="pre">*</span></code> inside <code class="docutils literal"><span class="pre">KEYWORDS</span></code> is a <code class="docutils literal"><span class="pre">-*</span></code>. Do
+<b>not</b> use <code class="docutils literal"><span class="pre">KEYWORDS="*"</span></code> or <code class="docutils literal"><span class="pre">KEYWORDS="~*"</span></code>.
+</p>
+
+<p>
+See <a href="../../keywording/index.html">Keywording</a> for how to handle this variable.
+</p>
+
+</div>
+<div class="section">
+<h2 id="src_uri">SRC_URI</h2>
+<div class="section">
+<h3 id="conditional-sources">Conditional Sources</h3>
+
+<p>
+Conditional source files based upon USE flags are allowed using the usual
+<code class="docutils literal"><span class="pre">flag? ( )</span></code> syntax. This is often useful for arch-specific code or for binary
+packages 
+    —
+   downloading sparc binaries on ppc would be a waste of bandwidth.
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">SRC_URI</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>http://example.com/files/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${P}</span>-core.tar.bz2
+    x86?   <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> http://example.com/files/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${P}</span>/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${P}</span>-sse-asm.tar.bz2 <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span>
+    ppc?   <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> http://example.com/files/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${P}</span>/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${P}</span>-vmx-asm.tar.bz2 <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span>
+    sparc? <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> http://example.com/files/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${P}</span>/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${P}</span>-vis-asm.tar.bz2 <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span>
+    doc?   <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> http://example.com/files/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${P}</span>/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${P}</span>-docs.tar.bz2 <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+</span></pre>
+
+<p>
+If a <code class="docutils literal"><span class="pre">USE_EXPAND</span></code> variable is used to control whether certain optional
+components are installed, the correct thing to do if the variable is unset is
+generally to install <i>all</i> available components.
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">SRC_URI</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>http://example.com/files/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${P}</span>-core.tar.bz2
+        examplecards_foo?  <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> http://example.com/files/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${P}</span>-foo.tar.bz2 <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span>
+        examplecards_bar?  <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> http://example.com/files/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${P}</span>-bar.tar.bz2 <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span>
+        examplecards_baz?  <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> http://example.com/files/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${P}</span>-baz.tar.bz2 <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span>
+        !examplecards_foo? <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> !examplecards_bar? <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> !examplecards_baz? <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span>
+            http://example.com/files/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${P}</span>-foo.tar.bz2
+            http://example.com/files/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${P}</span>-bar.tar.bz2
+            http://example.com/files/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${P}</span>-baz.tar.bz2 <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+</span></pre>
+
+</div>
+<div class="section">
+<h3 id="renaming-sources">Renaming Sources</h3>
+
+<p>
+Sometimes the upstream URI uses generic names that can easily clash with other
+packages when creating a single mirror. Using the <code class="docutils literal"><span class="pre">-&gt;</span></code> syntax allows
+you to rename the file when it's fetched from upstream for storing on mirrors
+and in the local distdir.
+</p>
+
+<p>
+Here we download a file from upstream which has a plain name like
+<code class="docutils literal"><span class="pre">1.0.tar.gz</span></code> and save/mirror it with a better name like
+<code class="docutils literal"><span class="pre">thepackage-1.0.tar.gz</span></code>.
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">SRC_URI</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>http://example.com/files/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${PV}</span>.tar.gz -&gt; <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${P}</span>.tar.gz<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+</span></pre>
+
+</div>
+</div>
+<div class="section">
+<h2 id="iuse">IUSE</h2>
+
+<p>
+Note that the <code class="docutils literal"><span class="pre">IUSE</span></code> variable is cumulative, so there is no need to specify
+USE flags used only within inherited eclasses within the ebuild's IUSE.
+</p>
+<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+You need not assign the IUSE variable in your ebuild if it is empty.
+</div>
+
+<p>
+Arch USE flags (<code class="docutils literal"><span class="pre">sparc</span></code>, <code class="docutils literal"><span class="pre">mips</span></code>, <code class="docutils literal"><span class="pre">x86-fbsd</span></code> and so on) should not be
+listed.
+</p>
+
+</div>
+<div class="section">
+<h2 id="license">LICENSE</h2>
+
+<p>
+It is possible to specify multiple <code class="docutils literal"><span class="pre">LICENSE</span></code> entries, and entries which only
+apply if a particular <code class="docutils literal"><span class="pre">USE</span></code> flag is set. The format is the same as for
+<code class="docutils literal"><span class="pre">DEPEND</span></code>. See <a href="https://wiki.gentoo.org/wiki/GLEP:23">
+GLEP 23</a> for details.
+</p>
+
+</div>
+<div class="section">
+<h2 id="version-and-name-formatting-issues">Version and Name Formatting Issues</h2>
+
+<p>
+Often upstream's tarball versioning or naming format doesn't quite follow Gentoo
+conventions. Using capital letters in names or differences in how underscores and hyphens
+are used in versions are particularly common. For example, what Gentoo calls <code class="docutils literal"><span class="pre">foo-1.2.3b</span></code> may be
+expecting a tarball named <code class="docutils literal"><span class="pre">Foo-1.2-3b.tar.bz2</span></code>. Rather than hard coding the package string,
+it is preferable to make <code class="docutils literal"><span class="pre">MY_PN</span></code>, <code class="docutils literal"><span class="pre">MY_PV</span></code> and <code class="docutils literal"><span class="pre">MY_P</span></code> variables and use those to define the
+upstream naming. The easy way of redefining the version, which should be used unless you are sure
+you know what you are doing, is to use the <code class="docutils literal"><span class="pre">versionator</span></code> eclass:
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">inherit</span> versionator
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">MY_PN</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>Foo<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">MY_PV</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">$(</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">replace_version_separator</span> 2 '-'<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">MY_P</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${MY_PN}</span>-<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${MY_PV}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+</span></pre>
+
+<p>
+This code has the advantage that it will carry on working even if upstream
+switches to a format like <code class="docutils literal"><span class="pre">Foo-1.3-4.5.tar.bz2</span></code> (yes, this really happens).
+</p>
+
+<p>
+It is also possible to use bash substitution to achieve the same effect (this is
+how versionator works internally), but this is complicated, error prone and hard
+to read.
+</p>
+
+<p>
+Some ebuilds use calls to <code class="docutils literal"><span class="pre">sed</span></code>, <code class="docutils literal"><span class="pre">awk</span></code> and / or <code class="docutils literal"><span class="pre">cut</span></code> to do this. This
+must <i>not</i> be done for any new code, and should be fixed to use either
+versionator or bash substitution where possible. Global scope non-bash code is
+highly discouraged.
+</p>
+
+<p>
+The <code class="docutils literal"><span class="pre">versionator</span></code> eclass can also be used to extract particular components
+from a version string. See <code class="docutils literal"><span class="pre">man versionator.eclass</span></code> and the eclass source code
+for further documentation and examples. A brief summary of the functions
+follows.
+</p>
+
+<table class="table">
+  <tr>
+    <th>Function</th>
+    <th>Purpose</th>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">get_all_version_components</span></code></td>
+    <td class="devbook">Split up a version string into its component parts.</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">get_version_components</span></code></td>
+    <td class="devbook">Get important version components, excluding '.', '-' and '_'.</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">get_major_version</span></code></td>
+    <td class="devbook">Get the major version.</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">get_version_component_range</span></code></td>
+    <td class="devbook">Extract a range of subparts from a version string.</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">get_after_major_version</span></code></td>
+    <td class="devbook">Get everything after the major version.</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">replace_version_separator</span></code></td>
+    <td class="devbook">Replace a particular version separator.</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">replace_all_version_separators</span></code></td>
+    <td class="devbook">Replace all version separators.</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">delete_version_separator</span></code></td>
+    <td class="devbook">Delete a version separator.</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">delete_all_version_separators</span></code></td>
+    <td class="devbook">Delete all version separators.</td>
+  </tr>
+</table>
+
+</div>
+</div>
+<footer><div class="container">
+<div class="row">
+<div class="col-xs-12 col-md-offset-2 col-md-7"></div>
+<div class="col-xs-12 col-md-3">
+<h3 class="footerhead">Questions or comments?</h3>
+              Please feel free to <a href="https://www.gentoo.org/inside-gentoo/contact/">contact us</a>.
+            </div>
+</div>
+<div class="row">
+<div class="col-xs-2 col-sm-3 col-md-2"><ul class="footerlinks three-icons">
+<li><a href="http://twitter.com/gentoo" title="@Gentoo on Twitter"><span class="fa fa-twitter fa-fw"></span></a></li>
+<li><a href="https://plus.google.com/+Gentoo" title="+Gentoo on Google+"><span class="fa fa-google-plus fa-fw"></span></a></li>
+<li><a href="https://www.facebook.com/gentoo.org" title="Gentoo on Facebook"><span class="fa fa-facebook fa-fw"></span></a></li>
+</ul></div>
+<div class="col-xs-10 col-sm-9 col-md-10">
+<strong>Copyright (C) 2001-2015 Gentoo Foundation, Inc.</strong><br><small>
+                Gentoo is a trademark of the Gentoo Foundation, Inc.
+                The text of this document is distributed under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Attribution-ShareAlike 2.0 License</a>.
+                The <a href="https://www.gentoo.org/inside-gentoo/foundation/name-logo-guidelines.html">Gentoo Name and Logo Usage Guidelines</a> apply.
+              </small>
+</div>
+</div>
+</div></footer><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/jquery.min.js"></script><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,494 @@
+<!DOCTYPE html><html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Gentoo Development Guide: Quickstart Ebuild Guide</title>
+<link rel="stylesheet" href="../devmanual.css" type="text/css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The Gentoo Devmanual is a technical manual which covers topics such as writing ebuilds and eclasses, and policies that developers should be abiding by.">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/tyrian.min.css" rel="stylesheet" media="screen">
+<link rel="icon" href="https://www.gentoo.org/favicon.ico" type="image/x-icon">
+</head>
+<body>
+<header><div class="site-title"><div class="container"><div class="row">
+<div class="site-title-buttons"><div class="btn-group btn-group-sm">
+<a href="https://get.gentoo.org/" role="button" class="btn get-gentoo"><span class="fa fa-fw fa-download"></span><strong> Get Gentoo!</strong></a><div class="btn-group btn-group-sm">
+<a class="btn gentoo-org-sites dropdown-toggle" data-toggle="dropdown" data-target="#" href="#"><span class="fa fa-fw fa-map-o"></span><span class="hidden-xs"> gentoo.org sites </span><span class="caret"></span></a><ul class="dropdown-menu dropdown-menu-right">
+<li><a href="https://www.gentoo.org/" title="Main Gentoo website"><span class="fa fa-home fa-fw"></span> gentoo.org</a></li>
+<li><a href="https://wiki.gentoo.org/" title="Find and contribute documentation"><span class="fa fa-file-text-o fa-fw"></span> Wiki</a></li>
+<li><a href="https://bugs.gentoo.org/" title="Report issues and find common issues"><span class="fa fa-bug fa-fw"></span> Bugs</a></li>
+<li><a href="https://forums.gentoo.org/" title="Discuss with the community"><span class="fa fa-comments-o fa-fw"></span> Forums</a></li>
+<li><a href="https://packages.gentoo.org/" title="Find software for your Gentoo"><span class="fa fa-hdd-o fa-fw"></span> Packages</a></li>
+<li class="divider">
+<li><a href="https://planet.gentoo.org/" title="Find out what's going on in the developer community"><span class="fa fa-rss fa-fw"></span> Planet</a></li>
+<li><a href="https://archives.gentoo.org/" title="Read up on past discussions"><span class="fa fa-archive fa-fw"></span> Archives</a></li>
+<li><a href="https://sources.gentoo.org/" title="Browse our source code"><span class="fa fa-code fa-fw"></span> Sources</a></li>
+<li class="divider">
+<li><a href="https://infra-status.gentoo.org/" title="Get updates on the services provided by Gentoo"><span class="fa fa-server fa-fw"></span> Infra Status</a></li>
+</ul>
+</div>
+</div></div>
+<div class="logo">
+<a href="/" title="Back to the homepage" class="site-logo"><object data="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.svg" type="image/svg+xml"><img src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.png" alt="Gentoo Linux Logo"></object></a><span class="site-label">Development Guide</span>
+</div>
+</div></div></div>
+<nav class="tyrian-navbar" role="navigation"><div class="container"><div class="row">
+<div class="navbar-header"><button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button></div>
+<div class="collapse navbar-collapse navbar-main-collapse"><ul class="nav navbar-nav">
+<li><a href="..//index.html"><span class="glyphicon glyphicon-home"></span>  Home</a></li>
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Quickstart Ebuild Guide<span class="caret"></span></a></li>
+<li><a href="../index.html"><span class="glyphicon glyphicon-arrow-left"></span>  Master Index</a></li>
+<li><a href="../general-concepts/index.html">General Concepts  <span class="glyphicon glyphicon-arrow-right"></span></a></li>
+</ul></div>
+</div></div></nav></header><div class="container"><div class="row"><div class="col-md010"><ol class="breadcrumb"><li><a href="../index.html">Master Index</a></li></ol></div></div></div>
+<div class="container">
+<h1 class="first-header">Quickstart Ebuild Guide</h1>
+<p>
+This page provides a <i>very</i> brief introduction to ebuild
+writing. It does not attempt to cover many of the details or problems
+that will be encountered by developers 
+    —
+   rather, it gives some
+trivial examples which may be of use when trying to grasp the basic
+idea of how ebuilds work.
+</p>
+
+<p>
+For proper coverage of all the ins and outs, see <a href="../ebuild-writing/index.html">Ebuild Writing</a>.
+The <a href="../general-concepts/index.html">General Concepts</a> chapter will also be of use.
+</p>
+
+<p>
+Note that the examples used here, whilst based upon real tree ebuilds,
+have had several parts chopped out, changed and simplified.
+</p>
+<div class="section">
+<h2 id="first-ebuild">First Ebuild</h2>
+<p>
+We'll start with an ebuild for the <i>Exuberant Ctags</i> utility, a source code
+indexing tool. Here's a simplified <code class="docutils literal"><span class="pre">dev-util/ctags/ctags-5.5.4.ebuild</span></code> (you
+can see real ebuilds in the main tree).
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Copyright</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">1999-2015</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Gentoo</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Foundation</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Distributed</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">under</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">terms</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">of</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">GNU</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">General</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Public</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">License</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">v2</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">$Id$</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">EAPI</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span>5
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">DESCRIPTION</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>Exuberant ctags generates tags files for quick source navigation<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">HOMEPAGE</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>http://ctags.sourceforge.net<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">SRC_URI</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>mirror://sourceforge/ctags/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${P}</span>.tar.gz<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">LICENSE</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>GPL-2<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">SLOT</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>0<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">KEYWORDS</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>~mips ~sparc ~x86<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_configure()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">econf</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">--</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">with-posix-regex</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_install()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">emake</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">DESTDIR</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${D}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> install
+
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">dodoc</span> FAQ NEWS README
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">dohtml</span> EXTENDING.html ctags.html
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+</span></pre>
+<div class="section">
+<h3 id="basic-format">Basic Format</h3>
+<p>
+As you can see, ebuilds are just <code class="docutils literal"><span class="pre">bash</span></code> scripts that are executed within a
+special environment.
+</p>
+
+<p>
+At the top of the ebuild is a header block. This is present in all ebuilds.
+</p>
+
+<p>
+Ebuilds are indented using tabs, with each tab representing four places. See
+<a href="../ebuild-writing/file-format/index.html">Ebuild File Format</a>.
+</p>
+</div>
+<div class="section">
+<h3 id="information-variables">Information Variables</h3>
+<p>
+Next, there are a series of variables. These tell Portage various things about
+the ebuild and package in question.
+</p>
+
+<p>
+The <code class="docutils literal"><span class="pre">EAPI</span></code> of the ebuild, see <a href="../ebuild-writing/eapi/index.html">EAPI Usage and Description</a>.
+</p>
+
+<p>
+The <code class="docutils literal"><span class="pre">DESCRIPTION</span></code> variable is set to a <i>short</i> description
+of the package and its purpose.
+</p>
+
+<p>
+The <code class="docutils literal"><span class="pre">HOMEPAGE</span></code> is a link to the package's homepage (remember to
+include the <code class="docutils literal"><span class="pre">http://</span></code> part).
+</p>
+
+<p>
+The <code class="docutils literal"><span class="pre">SRC_URI</span></code> tells Portage the address to use for downloading
+the source tarball. Here, <code class="docutils literal"><span class="pre">mirror://sourceforge/</span></code> is a special
+notation meaning "any of the Sourceforge mirrors".
+<code class="docutils literal"><span class="pre">${P}</span></code> is a read-only variable set by Portage which is the package's
+name and version 
+    —
+   in this case, it would be <code class="docutils literal"><span class="pre">ctags-5.5.4</span></code>.
+</p>
+
+<p>
+The <code class="docutils literal"><span class="pre">LICENSE</span></code> is <code class="docutils literal"><span class="pre">GPL-2</span></code> (the GNU General Public License version 2).
+</p>
+
+<p>
+The <code class="docutils literal"><span class="pre">SLOT</span></code> variable tells Portage which slot this package installs to. If
+you've not seen slots before, either just use <code class="docutils literal"><span class="pre">"0"</span></code> or read
+<a href="../general-concepts/slotting/index.html">Slotting</a>.
+</p>
+
+<p>
+The <code class="docutils literal"><span class="pre">KEYWORDS</span></code> variable is set to archs upon which this ebuild has been
+tested. We use <code class="docutils literal"><span class="pre">~</span></code> keywords for newly written ebuilds 
+    —
+   packages are not
+committed straight to stable, even if they seem to work. See <a href="../keywording/index.html">Keywording</a> for
+details.
+</p>
+</div>
+<div class="section">
+<h3 id="build-functions">Build Functions</h3>
+<p>
+Next, a function named <code class="docutils literal"><span class="pre">src_configure</span></code>. Portage will call this
+function when it wants to <i>configure</i> the package. The <code class="docutils literal"><span class="pre">econf</span></code>
+function is a wrapper for calling <code class="docutils literal"><span class="pre">./configure</span></code>. If for some reason
+an error occurs in <code class="docutils literal"><span class="pre">econf</span></code>, Portage will stop rather than trying to
+continue with the install.
+</p>
+
+<p>
+The <code class="docutils literal"><span class="pre">src_install</span></code> function is called by Portage when it wants
+to <i>install</i> the package. A slight subtlety here 
+    —
+   rather than
+installing straight to the live filesystem, we must install to a
+special location which is given by the <code class="docutils literal"><span class="pre">${D}</span></code> variable (Portage sets
+this 
+    —
+   see <a href="../general-concepts/install-destinations/index.html">Install Destinations</a> and
+<a href="../general-concepts/sandbox/index.html">Sandbox</a>).
+</p>
+
+<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+The canonical install method is <code class="docutils literal"><span class="pre">emake DESTDIR="${D}"
+install</span></code>. This will work with any properly written standard
+<code class="docutils literal"><span class="pre">Makefile</span></code>. If this gives sandbox errors, try <code class="docutils literal"><span class="pre">einstall</span></code>
+instead. If this still fails, see <a href="../ebuild-writing/functions/src_install/index.html">src_install</a> for how to do manual
+installs.
+</div>
+
+<p>
+The <code class="docutils literal"><span class="pre">dodoc</span></code> and <code class="docutils literal"><span class="pre">dohtml</span></code> are helper functions for installing
+files into the relevant part of <code class="docutils literal"><span class="pre">/usr/share/doc</span></code>.
+</p>
+
+<p>
+Ebuilds can define other functions (see <a href="../ebuild-writing/functions/index.html">Ebuild Functions</a>).
+In all cases, Portage provides a reasonable default implementation which
+quite often does the 'right thing'. There was no need to define
+<code class="docutils literal"><span class="pre">src_unpack</span></code> and <code class="docutils literal"><span class="pre">src_compile</span></code> functions here, for example
+
+    —
+   the <code class="docutils literal"><span class="pre">src_unpack</span></code> function is used to do any unpacking of
+tarballs or patching of source files, but the default implementation
+does everything we need in this case.
+Similarly, the default <code class="docutils literal"><span class="pre">src_compile</span></code> function will call
+<code class="docutils literal"><span class="pre">emake</span></code> which is a wrapper for <code class="docutils literal"><span class="pre">make</span></code>.
+</p>
+
+<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+Formerly, the <code class="docutils literal"><span class="pre">|| die</span></code> construct had to be used after every command
+to check for errors. This is no longer necessary in EAPI 4 
+    —
+  
+functions provided by Portage will die by themselves if something
+failed.
+</div>
+</div>
+</div>
+<div class="section">
+<h2 id="ebuild-with-dependencies">Ebuild with Dependencies</h2>
+<p>
+In the ctags example, we didn't tell Portage about any dependencies. As it
+happens, that's ok, because ctags only needs a basic toolchain to compile and
+run (see <a href="../general-concepts/dependencies/index.html#implicit-system-dependency">Implicit System Dependency</a>
+for why we don't need to depend upon those explicitly). However, life is rarely
+that simple.
+</p>
+
+<p>
+Here's <code class="docutils literal"><span class="pre">app-misc/detox/detox-1.1.1.ebuild</span></code>:
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Copyright</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">1999-2015</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Gentoo</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Foundation</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Distributed</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">under</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">terms</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">of</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">GNU</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">General</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Public</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">License</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">v2</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">$Id$</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">EAPI</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span>5
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">DESCRIPTION</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>detox safely removes spaces and strange characters from filenames<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">HOMEPAGE</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>http://detox.sourceforge.net/<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">SRC_URI</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>mirror://sourceforge/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${PN}</span>/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${P}</span>.tar.bz2<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">LICENSE</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>BSD<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">SLOT</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>0<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">KEYWORDS</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>~hppa ~mips sparc x86<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">RDEPEND</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>dev-libs/popt<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">DEPEND</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${RDEPEND}</span>
+    sys-devel/flex
+    sys-devel/bison<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_configure()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">econf</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">--</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">with-popt</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_install()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">emake</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">DESTDIR</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${D}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> install
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">dodoc</span> README CHANGES
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+</span></pre>
+
+<p>
+Again, you can see the ebuild header and the various informational variables. In
+<code class="docutils literal"><span class="pre">SRC_URI</span></code>, <code class="docutils literal"><span class="pre">${PN}</span></code> is used to get the package's
+name <i>without</i> the version suffix (there are more of these
+variables 
+    —
+   see
+<a href="../ebuild-writing/variables/index.html#predefined-read-only-variables">Predefined Read-Only Variables</a>).
+</p>
+
+<p>
+Again, we define <code class="docutils literal"><span class="pre">src_configure</span></code> and <code class="docutils literal"><span class="pre">src_install</span></code> functions.
+</p>
+
+<p>
+The <code class="docutils literal"><span class="pre">DEPEND</span></code> and <code class="docutils literal"><span class="pre">RDEPEND</span></code> variables are how Portage determines which
+packages are needed to build and run the package. The <code class="docutils literal"><span class="pre">DEPEND</span></code> variable lists
+compile-time dependencies, and the <code class="docutils literal"><span class="pre">RDEPEND</span></code> lists runtime dependencies. See
+<a href="../general-concepts/dependencies/index.html">Dependencies</a> for some more complex examples.
+</p>
+
+</div>
+<div class="section">
+<h2 id="ebuild-with-patches">Ebuild with Patches</h2>
+<p>
+Often we need to apply patches. This is done in the <code class="docutils literal"><span class="pre">src_prepare</span></code>
+function using the <code class="docutils literal"><span class="pre">epatch</span></code> helper function. To use <code class="docutils literal"><span class="pre">epatch</span></code>
+one must first tell Portage that the <code class="docutils literal"><span class="pre">eutils</span></code> eclass (an eclass is
+like a library) is required 
+    —
+  
+this is done via <code class="docutils literal"><span class="pre">inherit eutils</span></code> at the top of the ebuild. Here's
+<code class="docutils literal"><span class="pre">app-misc/detox/detox-1.1.0.ebuild</span></code>:
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Copyright</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">1999-2015</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Gentoo</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Foundation</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Distributed</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">under</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">terms</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">of</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">GNU</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">General</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Public</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">License</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">v2</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">$Id$</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">EAPI</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span>5
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">inherit</span> eutils
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">DESCRIPTION</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>detox safely removes spaces and strange characters from filenames<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">HOMEPAGE</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>http://detox.sourceforge.net/<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">SRC_URI</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>mirror://sourceforge/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${PN}</span>/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${P}</span>.tar.bz2<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">LICENSE</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>BSD<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">SLOT</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>0<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">KEYWORDS</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>~hppa ~mips ~sparc ~x86<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">RDEPEND</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>dev-libs/popt<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">DEPEND</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${RDEPEND}</span>
+    sys-devel/flex
+    sys-devel/bison<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_prepare()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">epatch</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${FILESDIR}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${P}</span>-destdir.patch <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">\</span>
+        <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${FILESDIR}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${P}</span>-parallel_build.patch
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_configure()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">econf</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">--</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">with-popt</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_install()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">emake</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">DESTDIR</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${D}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> install
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">dodoc</span> README CHANGES
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+</span></pre>
+
+<p>
+Note the <code class="docutils literal"><span class="pre">${FILESDIR}/${P}-destdir.patch</span></code> 
+    —
+   this refers to
+<code class="docutils literal"><span class="pre">detox-1.1.0-destdir.patch</span></code>, which lives in the <code class="docutils literal"><span class="pre">files/</span></code>
+subdirectory in the Portage tree. Larger patch files must go on your
+developer's space at <code class="docutils literal"><span class="pre">dev.gentoo.org</span></code> rather than in <code class="docutils literal"><span class="pre">files/</span></code> or
+mirrors 
+    —
+   see <a href="../general-concepts/mirrors/index.html#gentoo-mirrors">Gentoo Mirrors</a> and <a href="../ebuild-writing/functions/src_prepare/epatch/index.html">Patching with epatch</a>.
+</p>
+
+</div>
+<div class="section">
+<h2 id="ebuild-with-use-flags">Ebuild with USE Flags</h2>
+<p>
+Now for some <code class="docutils literal"><span class="pre">USE</span></code> flags. Here's <code class="docutils literal"><span class="pre">dev-libs/libiconv/libiconv-1.9.2.ebuild</span></code>, a
+replacement iconv for <code class="docutils literal"><span class="pre">libc</span></code> implementations which don't have their own.
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Copyright</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">1999-2015</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Gentoo</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Foundation</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Distributed</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">under</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">terms</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">of</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">GNU</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">General</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Public</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">License</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">v2</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">$Id$</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">EAPI</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span>5
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">DESCRIPTION</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>GNU charset conversion library for libc which doesn't implement it<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">HOMEPAGE</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>http://www.gnu.org/software/libiconv/<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">SRC_URI</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>ftp://ftp.gnu.org/pub/gnu/libiconv/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${P}</span>.tar.gz<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">LICENSE</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>LGPL-2.1<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">SLOT</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>0<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">KEYWORDS</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>~amd64 ~ppc ~sparc ~x86<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">IUSE</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>nls<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">DEPEND</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>!sys-libs/glibc<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_configure()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">econf</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">$(</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">use_enable</span> nls<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_install()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">emake</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">DESTDIR</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${D}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> install
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+</span></pre>
+
+<p>
+Note the <code class="docutils literal"><span class="pre">IUSE</span></code> variable. This lists all (non-special) use flags that are used
+by the ebuild. This is used for the <code class="docutils literal"><span class="pre">emerge -pv</span></code> output, amongst other things.
+</p>
+
+<p>
+The package's <code class="docutils literal"><span class="pre">./configure</span></code> script takes the usual <code class="docutils literal"><span class="pre">--enable-nls</span></code> or
+<code class="docutils literal"><span class="pre">--disable-nls</span></code> argument. We use the <code class="docutils literal"><span class="pre">use_enable</span></code> utility function to
+generate this automatically, depending on the user's <code class="docutils literal"><span class="pre">USE</span></code> flags (see
+<a href="../function-reference/query-functions/index.html">Query Functions Reference</a>).
+</p>
+
+<p>
+Another more complicated example, this time based upon
+<code class="docutils literal"><span class="pre">mail-client/sylpheed/sylpheed-1.0.4.ebuild</span></code>:
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Copyright</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">1999-2015</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Gentoo</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Foundation</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Distributed</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">under</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">terms</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">of</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">GNU</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">General</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Public</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">License</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">v2</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">$Id$</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">EAPI</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span>5
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">inherit</span> eutils
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">DESCRIPTION</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>A lightweight email client and newsreader<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">HOMEPAGE</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>http://sylpheed.good-day.net/<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">SRC_URI</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>mirror://sourceforge/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${PN}</span>/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${P}</span>.tar.bz2<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">LICENSE</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>GPL-2<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">SLOT</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>0<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">KEYWORDS</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>alpha amd64 hppa ia64 ppc ppc64 sparc x86<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">IUSE</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>crypt imlib ipv6 ldap nls pda ssl xface<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">RDEPEND</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>=x11-libs/gtk+-2*
+    crypt? <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">&gt;</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span>app-crypt/gpgme-0.4.5 <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span>
+    imlib? <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> media-libs/imlib2 <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span>
+    ldap? <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">&gt;</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span>net-nds/openldap-2.0.11 <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span>
+    pda? <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> app-pda/jpilot <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span>
+    ssl? <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> dev-libs/openssl <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span>
+    xface? <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">&gt;</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span>media-libs/compface-1.4 <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span>
+    app-misc/mime-types
+    x11-misc/shared-mime-info<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">DEPEND</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${RDEPEND}</span>
+    dev-util/pkgconfig
+    nls? <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">&gt;</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span>sys-devel/gettext-0.12.1 <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_prepare()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">epatch</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${FILESDIR}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${PN}</span>-namespace.diff <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">\</span>
+        <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${FILESDIR}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>/<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${PN}</span>-procmime.diff
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_configure()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">econf</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">\</span>
+        <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">$(</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">use_enable</span> nls<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">\</span>
+        <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">$(</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">use_enable</span> ssl<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">\</span>
+        <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">$(</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">use_enable</span> crypt gpgme<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">\</span>
+        <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">$(</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">use_enable</span> pda jpilot<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">\</span>
+        <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">$(</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">use_enable</span> ldap<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">\</span>
+        <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">$(</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">use_enable</span> ipv6<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">\</span>
+        <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">$(</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">use_enable</span> imlib<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">\</span>
+        <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">$(</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">use_enable</span> xface compface<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_install()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">emake</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">DESTDIR</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${D}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> install
+
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">doicon</span> sylpheed.png
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">domenu</span> sylpheed.desktop
+
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">dodoc</span> [A-Z][A-Z]* ChangeLog*
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+</span></pre>
+
+<p>
+Note the optional dependencies. Some of the <code class="docutils literal"><span class="pre">use_enable</span></code> lines use the
+two-argument version 
+    —
+   this is helpful when the USE flag name does not exactly
+match the <code class="docutils literal"><span class="pre">./configure</span></code> argument.
+</p>
+</div>
+</div>
+<footer><div class="container">
+<div class="row">
+<div class="col-xs-12 col-md-offset-2 col-md-7"></div>
+<div class="col-xs-12 col-md-3">
+<h3 class="footerhead">Questions or comments?</h3>
+              Please feel free to <a href="https://www.gentoo.org/inside-gentoo/contact/">contact us</a>.
+            </div>
+</div>
+<div class="row">
+<div class="col-xs-2 col-sm-3 col-md-2"><ul class="footerlinks three-icons">
+<li><a href="http://twitter.com/gentoo" title="@Gentoo on Twitter"><span class="fa fa-twitter fa-fw"></span></a></li>
+<li><a href="https://plus.google.com/+Gentoo" title="+Gentoo on Google+"><span class="fa fa-google-plus fa-fw"></span></a></li>
+<li><a href="https://www.facebook.com/gentoo.org" title="Gentoo on Facebook"><span class="fa fa-facebook fa-fw"></span></a></li>
+</ul></div>
+<div class="col-xs-10 col-sm-9 col-md-10">
+<strong>Copyright (C) 2001-2015 Gentoo Foundation, Inc.</strong><br><small>
+                Gentoo is a trademark of the Gentoo Foundation, Inc.
+                The text of this document is distributed under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Attribution-ShareAlike 2.0 License</a>.
+                The <a href="https://www.gentoo.org/inside-gentoo/foundation/name-logo-guidelines.html">Gentoo Name and Logo Usage Guidelines</a> apply.
+              </small>
+</div>
+</div>
+</div></footer><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/jquery.min.js"></script><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.js"></script>
+</body>
+</html>

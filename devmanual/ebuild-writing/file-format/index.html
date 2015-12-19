@@ -1,0 +1,250 @@
+<!DOCTYPE html><html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Gentoo Development Guide: Ebuild File Format</title>
+<link rel="stylesheet" href="../../devmanual.css" type="text/css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The Gentoo Devmanual is a technical manual which covers topics such as writing ebuilds and eclasses, and policies that developers should be abiding by.">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/tyrian.min.css" rel="stylesheet" media="screen">
+<link rel="icon" href="https://www.gentoo.org/favicon.ico" type="image/x-icon">
+</head>
+<body>
+<header><div class="site-title"><div class="container"><div class="row">
+<div class="site-title-buttons"><div class="btn-group btn-group-sm">
+<a href="https://get.gentoo.org/" role="button" class="btn get-gentoo"><span class="fa fa-fw fa-download"></span><strong> Get Gentoo!</strong></a><div class="btn-group btn-group-sm">
+<a class="btn gentoo-org-sites dropdown-toggle" data-toggle="dropdown" data-target="#" href="#"><span class="fa fa-fw fa-map-o"></span><span class="hidden-xs"> gentoo.org sites </span><span class="caret"></span></a><ul class="dropdown-menu dropdown-menu-right">
+<li><a href="https://www.gentoo.org/" title="Main Gentoo website"><span class="fa fa-home fa-fw"></span> gentoo.org</a></li>
+<li><a href="https://wiki.gentoo.org/" title="Find and contribute documentation"><span class="fa fa-file-text-o fa-fw"></span> Wiki</a></li>
+<li><a href="https://bugs.gentoo.org/" title="Report issues and find common issues"><span class="fa fa-bug fa-fw"></span> Bugs</a></li>
+<li><a href="https://forums.gentoo.org/" title="Discuss with the community"><span class="fa fa-comments-o fa-fw"></span> Forums</a></li>
+<li><a href="https://packages.gentoo.org/" title="Find software for your Gentoo"><span class="fa fa-hdd-o fa-fw"></span> Packages</a></li>
+<li class="divider">
+<li><a href="https://planet.gentoo.org/" title="Find out what's going on in the developer community"><span class="fa fa-rss fa-fw"></span> Planet</a></li>
+<li><a href="https://archives.gentoo.org/" title="Read up on past discussions"><span class="fa fa-archive fa-fw"></span> Archives</a></li>
+<li><a href="https://sources.gentoo.org/" title="Browse our source code"><span class="fa fa-code fa-fw"></span> Sources</a></li>
+<li class="divider">
+<li><a href="https://infra-status.gentoo.org/" title="Get updates on the services provided by Gentoo"><span class="fa fa-server fa-fw"></span> Infra Status</a></li>
+</ul>
+</div>
+</div></div>
+<div class="logo">
+<a href="/" title="Back to the homepage" class="site-logo"><object data="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.svg" type="image/svg+xml"><img src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.png" alt="Gentoo Linux Logo"></object></a><span class="site-label">Development Guide</span>
+</div>
+</div></div></div>
+<nav class="tyrian-navbar" role="navigation"><div class="container"><div class="row">
+<div class="navbar-header"><button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button></div>
+<div class="collapse navbar-collapse navbar-main-collapse"><ul class="nav navbar-nav">
+<li><a href="../..//index.html"><span class="glyphicon glyphicon-home"></span>  Home</a></li>
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Ebuild File Format<span class="caret"></span></a></li>
+<li><a href="../index.html"><span class="glyphicon glyphicon-arrow-left"></span>  Ebuild Writing</a></li>
+<li><a href="../../ebuild-writing/eapi/index.html">EAPI Usage and Description  <span class="glyphicon glyphicon-arrow-right"></span></a></li>
+</ul></div>
+</div></div></nav></header><div class="container"><div class="row"><div class="col-md010"><ol class="breadcrumb">
+<li><a href="../../index.html">Master Index</a></li>
+<li><a href="../index.html">Ebuild Writing</a></li>
+</ol></div></div></div>
+<div class="container">
+<h1 class="first-header">Ebuild File Format</h1>
+<p>
+An ebuild is a <code class="docutils literal"><span class="pre">bash</span></code> script which is executed within a special environment.
+Files should be simple text files with a <code class="docutils literal"><span class="pre">.ebuild</span></code> extension.
+</p>
+<div class="section">
+<h2 id="file-naming-rules">File Naming Rules</h2>
+
+<p>
+An ebuild should be named in the form <code class="docutils literal"><span class="pre">name-version.ebuild</span></code>.
+</p>
+
+<p>
+The name section should contain only lowercase non-accented letters, the digits
+0-9, hyphens, underscores and plus characters. Uppercase characters are strongly
+discouraged, but technically valid.
+</p>
+
+<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+This is the same as
+<a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap03.html#tag_03_278">
+IEEE Std 1003.1-2013, section 3.278</a>, with the exception of the period
+character and with the addition of the plus character to keep GTK+ and friends
+happy.
+</div>
+
+<p>
+The name must not begin with a hyphen or a plus sign, and must not end
+in a hyphen followed by anything that could be mistaken for a version.
+</p>
+
+<p>
+The version section is more complicated. It consists of one or more numbers
+separated by full stop (or period, or dot, or decimal point) characters (eg
+<code class="docutils literal"><span class="pre">1.2.3</span></code>, <code class="docutils literal"><span class="pre">20050108</span></code>). The final number may have a single letter following it
+(e.g. <code class="docutils literal"><span class="pre">1.2b</span></code>). This letter should not be used to indicate 'beta' status 
+    —
+  
+portage treats <code class="docutils literal"><span class="pre">1.2b</span></code> as being a later version than <code class="docutils literal"><span class="pre">1.2</span></code> or <code class="docutils literal"><span class="pre">1.2a</span></code>.
+</p>
+
+<p>
+There can be a suffix to version indicating the kind of release. In the following table,
+what portage considers to be the 'lowest' version comes first.
+</p>
+
+<table class="table">
+  <tr>
+    <th>Suffix</th>
+    <th>Meaning</th>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">_alpha</span></code></td>
+    <td class="devbook">Alpha release (earliest)</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">_beta</span></code></td>
+    <td class="devbook">Beta release</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">_pre</span></code></td>
+    <td class="devbook">Pre release</td>
+  </tr>
+  <tr>
+    <td class="devbook"><code class="docutils literal"><span class="pre">_rc</span></code></td>
+    <td class="devbook">Release candidate</td>
+  </tr>
+  <tr>
+    <td class="devbook">(no suffix)</td>
+    <td class="devbook">Normal release</td>
+  </tr>
+  <tr>
+    <td class="devbook">_p</td>
+    <td class="devbook">Patch release</td>
+  </tr>
+</table>
+
+<p>
+Any of these suffixes may be followed by a non-zero positive integer.
+</p>
+
+<p>
+These suffixes can be chained together and will be processed iteratively.  To
+give some examples (the following list is from lowest version to highest):
+
+<ul>
+  <li>foo-1.0.0_alpha_pre</li>
+  <li>foo-1.0.0_alpha_rc1</li>
+  <li>foo-1.0.0_beta_pre</li>
+  <li>foo-1.0.0_beta_p1</li>
+</ul>
+</p>
+
+<p>
+No integer part of the version may be longer than 18 digits.
+</p>
+
+<p>
+Finally, version may have a Gentoo revision number in the form <code class="docutils literal"><span class="pre">-r1</span></code>. The initial
+Gentoo version should have no revision suffix, the first revision should be
+<code class="docutils literal"><span class="pre">-r1</span></code>, the second <code class="docutils literal"><span class="pre">-r2</span></code> and so on. See <a href="../../general-concepts/ebuild-revisions/index.html">Ebuild Revisions</a>.
+Revision numbers are distinguished from patch releases by revision bumps being
+changes by Gentoo developers, while patch releases are new releases by upstream (with the exception
+of snapshots, see below).
+</p>
+
+<p>
+Overall, this gives us a filename like <code class="docutils literal"><span class="pre">libfoo-1.2.5b_pre5-r2.ebuild</span></code>.
+</p>
+
+<p>
+When packaging a snapshot of a source repository, there are two commonly used formats. The first
+treats the snapshot as a patch to the previous version, and so the ebuild version is in the format
+$(last-released-version)_pYYYYMMDD. Alternatively, the snapshot may be treated as a pre-release to
+an upcoming version, usually used when a release is anticipated but not out yet. The format for this
+is $(upcoming-version)_preYYYYMMDD.
+</p>
+
+<p>
+The policy for so-called <i>live</i> ebuilds
+(see <a href="../../ebuild-writing/functions/src_unpack/index.html#src_unpack-actions">src_unpack-actions</a>)
+is to use <code class="docutils literal"><span class="pre">9999</span></code> as the version (or as the last version component).
+</p>
+
+</div>
+<div class="section">
+<h2 id="ebuild-header">Ebuild Header</h2>
+
+<p>
+All ebuilds committed to the tree should have a three line header immediately at
+the start indicating copyright. This must be an exact copy of the contents of
+<code class="docutils literal"><span class="pre">$(portageq get_repo_path / gentoo)/header.txt</span></code>. Ensure that the <code class="docutils literal"><span class="pre">$Id$</span></code> line is not
+modified manually 
+    —
+   will be expanded on staging box. See <a href="../../general-concepts/git-to-rsync/index.html">Git to RSYNC</a>.
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Copyright</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">1999-2015</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Gentoo</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Foundation</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Distributed</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">under</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">terms</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">of</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">GNU</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">General</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Public</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">License</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">v2</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">$Id$</span>
+</span></pre>
+
+</div>
+<div class="section">
+<h2 id="indenting-and-whitespace">Indenting and Whitespace</h2>
+
+<p>
+Indenting in ebuilds must be done with tabs, one tab per indent
+level. Each tab represents four spaces. Tabs should only be used for
+indenting, never inside strings.
+</p>
+
+<p>
+Avoid trailing whitespace: repoman will warn you about this if your
+ebuild contains trailing or leading whitespace (whitespace instead of
+tabs for indentation) when you commit.
+</p>
+
+<p>
+Where possible, try to keep lines no wider than 80 positions. A
+'position' is generally the same as a character 
+    —
+   tabs are four
+positions wide, and multibyte characters are just one position wide.
+</p>
+
+</div>
+<div class="section">
+<h2 id="character-set">Character Set</h2>
+<p>
+All ebuilds (and eclasses, metadata files and ChangeLogs) must use the
+UTF-8 character set. See <a href="https://wiki.gentoo.org/wiki/GLEP:31">GLEP 31</a>
+for details.
+</p>
+</div>
+</div>
+<footer><div class="container">
+<div class="row">
+<div class="col-xs-12 col-md-offset-2 col-md-7"></div>
+<div class="col-xs-12 col-md-3">
+<h3 class="footerhead">Questions or comments?</h3>
+              Please feel free to <a href="https://www.gentoo.org/inside-gentoo/contact/">contact us</a>.
+            </div>
+</div>
+<div class="row">
+<div class="col-xs-2 col-sm-3 col-md-2"><ul class="footerlinks three-icons">
+<li><a href="http://twitter.com/gentoo" title="@Gentoo on Twitter"><span class="fa fa-twitter fa-fw"></span></a></li>
+<li><a href="https://plus.google.com/+Gentoo" title="+Gentoo on Google+"><span class="fa fa-google-plus fa-fw"></span></a></li>
+<li><a href="https://www.facebook.com/gentoo.org" title="Gentoo on Facebook"><span class="fa fa-facebook fa-fw"></span></a></li>
+</ul></div>
+<div class="col-xs-10 col-sm-9 col-md-10">
+<strong>Copyright (C) 2001-2015 Gentoo Foundation, Inc.</strong><br><small>
+                Gentoo is a trademark of the Gentoo Foundation, Inc.
+                The text of this document is distributed under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Attribution-ShareAlike 2.0 License</a>.
+                The <a href="https://www.gentoo.org/inside-gentoo/foundation/name-logo-guidelines.html">Gentoo Name and Logo Usage Guidelines</a> apply.
+              </small>
+</div>
+</div>
+</div></footer><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/jquery.min.js"></script><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.js"></script>
+</body>
+</html>

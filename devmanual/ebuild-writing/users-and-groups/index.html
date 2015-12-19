@@ -1,0 +1,153 @@
+<!DOCTYPE html><html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Gentoo Development Guide: Users and Groups</title>
+<link rel="stylesheet" href="../../devmanual.css" type="text/css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The Gentoo Devmanual is a technical manual which covers topics such as writing ebuilds and eclasses, and policies that developers should be abiding by.">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/tyrian.min.css" rel="stylesheet" media="screen">
+<link rel="icon" href="https://www.gentoo.org/favicon.ico" type="image/x-icon">
+</head>
+<body>
+<header><div class="site-title"><div class="container"><div class="row">
+<div class="site-title-buttons"><div class="btn-group btn-group-sm">
+<a href="https://get.gentoo.org/" role="button" class="btn get-gentoo"><span class="fa fa-fw fa-download"></span><strong> Get Gentoo!</strong></a><div class="btn-group btn-group-sm">
+<a class="btn gentoo-org-sites dropdown-toggle" data-toggle="dropdown" data-target="#" href="#"><span class="fa fa-fw fa-map-o"></span><span class="hidden-xs"> gentoo.org sites </span><span class="caret"></span></a><ul class="dropdown-menu dropdown-menu-right">
+<li><a href="https://www.gentoo.org/" title="Main Gentoo website"><span class="fa fa-home fa-fw"></span> gentoo.org</a></li>
+<li><a href="https://wiki.gentoo.org/" title="Find and contribute documentation"><span class="fa fa-file-text-o fa-fw"></span> Wiki</a></li>
+<li><a href="https://bugs.gentoo.org/" title="Report issues and find common issues"><span class="fa fa-bug fa-fw"></span> Bugs</a></li>
+<li><a href="https://forums.gentoo.org/" title="Discuss with the community"><span class="fa fa-comments-o fa-fw"></span> Forums</a></li>
+<li><a href="https://packages.gentoo.org/" title="Find software for your Gentoo"><span class="fa fa-hdd-o fa-fw"></span> Packages</a></li>
+<li class="divider">
+<li><a href="https://planet.gentoo.org/" title="Find out what's going on in the developer community"><span class="fa fa-rss fa-fw"></span> Planet</a></li>
+<li><a href="https://archives.gentoo.org/" title="Read up on past discussions"><span class="fa fa-archive fa-fw"></span> Archives</a></li>
+<li><a href="https://sources.gentoo.org/" title="Browse our source code"><span class="fa fa-code fa-fw"></span> Sources</a></li>
+<li class="divider">
+<li><a href="https://infra-status.gentoo.org/" title="Get updates on the services provided by Gentoo"><span class="fa fa-server fa-fw"></span> Infra Status</a></li>
+</ul>
+</div>
+</div></div>
+<div class="logo">
+<a href="/" title="Back to the homepage" class="site-logo"><object data="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.svg" type="image/svg+xml"><img src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.png" alt="Gentoo Linux Logo"></object></a><span class="site-label">Development Guide</span>
+</div>
+</div></div></div>
+<nav class="tyrian-navbar" role="navigation"><div class="container"><div class="row">
+<div class="navbar-header"><button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button></div>
+<div class="collapse navbar-collapse navbar-main-collapse"><ul class="nav navbar-nav">
+<li><a href="../..//index.html"><span class="glyphicon glyphicon-home"></span>  Home</a></li>
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Users and Groups<span class="caret"></span></a></li>
+<li><a href="../error-handling/index.html"><span class="glyphicon glyphicon-arrow-left"></span>  Error Handling</a></li>
+<li><a href="../../ebuild-writing/messages/index.html">Messages  <span class="glyphicon glyphicon-arrow-right"></span></a></li>
+</ul></div>
+</div></div></nav></header><div class="container"><div class="row"><div class="col-md010"><ol class="breadcrumb">
+<li><a href="../../index.html">Master Index</a></li>
+<li><a href="../index.html">Ebuild Writing</a></li>
+</ol></div></div></div>
+<div class="container">
+<h1 class="first-header">Users and Groups</h1>
+<p>
+If your ebuild requires a user or group to be added for a daemon, for example,
+this should be performed via the functions available in <code class="docutils literal"><span class="pre">user.eclass</span></code>.
+Regardless of whether you are adding a group or a user, this should be performed
+in the <code class="docutils literal"><span class="pre">pkg_setup</span></code> function: <code class="docutils literal"><span class="pre">pkg_setup</span></code> is sandbox-safe,
+is called before the compile process so a build that requires the user to exist will
+have it, and is also called for both binary and source packages. You may also
+use the <code class="docutils literal"><span class="pre">pkg_preinst</span></code> or <code class="docutils literal"><span class="pre">pkg_postinst</span></code> functions for user creation, if
+the user is not required during or before <code class="docutils literal"><span class="pre">src_install</span></code>.
+</p>
+<div class="section">
+<h2 id="adding-groups">Adding Groups</h2>
+
+<p>
+To add a group, use the <code class="docutils literal"><span class="pre">enewgroup</span></code> function:
+</p>
+
+<pre>
+enewgroup &lt;name&gt; [gid]
+</pre>
+
+<p>
+By default the next available group ID is selected. To set a specfic group ID,
+pass it an extra argument to <code class="docutils literal"><span class="pre">enewgroup</span></code>.
+</p>
+
+<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+Group IDs should rarely be hardcoded. If this is the case, you should
+probably check first on gentoo-dev.
+</div>
+
+</div>
+<div class="section">
+<h2 id="adding-users">Adding Users</h2>
+
+<p>
+To add a user, use the <code class="docutils literal"><span class="pre">enewuser</span></code> function:
+</p>
+
+<pre>
+enewuser &lt;user&gt; [uid] [shell] [homedir] [groups] [params]
+</pre>
+
+<p>
+By default, both <code class="docutils literal"><span class="pre">enewuser</span></code> and <code class="docutils literal"><span class="pre">enewgroup</span></code> allocate the next available user
+ID or group ID to the new user or group - if not, you explicitly have to specify
+one.
+</p>
+
+<p>
+Arguments for <code class="docutils literal"><span class="pre">enewuser</span></code> must be passed in the order as shown above: if you do
+not want to specify a fixed user ID however but do want to set a specific shell,
+for example, use <code class="docutils literal"><span class="pre">-1</span></code> for the <code class="docutils literal"><span class="pre">uid</span></code> parameter. The same applies for any other
+parameter where you want to keep the default setting.
+</p>
+
+<p>
+Groups for the <code class="docutils literal"><span class="pre">groups</span></code> argument should be separated by a comma (<code class="docutils literal"><span class="pre">,</span></code>) and
+wrapped correctly, for example:
+</p>
+
+<pre>
+enewuser frozd -1 -1 -1 "backup,frozd"
+</pre>
+
+<p>
+Finally, any data left over for the <code class="docutils literal"><span class="pre">params</span></code> argument is passed directly to
+useradd.
+</p>
+
+<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+User IDs should rarely be hardcoded. If this is the case, you should
+probably check first on gentoo-dev.
+</div>
+
+</div>
+</div>
+<footer><div class="container">
+<div class="row">
+<div class="col-xs-12 col-md-offset-2 col-md-7"></div>
+<div class="col-xs-12 col-md-3">
+<h3 class="footerhead">Questions or comments?</h3>
+              Please feel free to <a href="https://www.gentoo.org/inside-gentoo/contact/">contact us</a>.
+            </div>
+</div>
+<div class="row">
+<div class="col-xs-2 col-sm-3 col-md-2"><ul class="footerlinks three-icons">
+<li><a href="http://twitter.com/gentoo" title="@Gentoo on Twitter"><span class="fa fa-twitter fa-fw"></span></a></li>
+<li><a href="https://plus.google.com/+Gentoo" title="+Gentoo on Google+"><span class="fa fa-google-plus fa-fw"></span></a></li>
+<li><a href="https://www.facebook.com/gentoo.org" title="Gentoo on Facebook"><span class="fa fa-facebook fa-fw"></span></a></li>
+</ul></div>
+<div class="col-xs-10 col-sm-9 col-md-10">
+<strong>Copyright (C) 2001-2015 Gentoo Foundation, Inc.</strong><br><small>
+                Gentoo is a trademark of the Gentoo Foundation, Inc.
+                The text of this document is distributed under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Attribution-ShareAlike 2.0 License</a>.
+                The <a href="https://www.gentoo.org/inside-gentoo/foundation/name-logo-guidelines.html">Gentoo Name and Logo Usage Guidelines</a> apply.
+              </small>
+</div>
+</div>
+</div></footer><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/jquery.min.js"></script><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.js"></script>
+</body>
+</html>

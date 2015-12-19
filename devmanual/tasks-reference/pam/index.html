@@ -1,0 +1,343 @@
+<!DOCTYPE html><html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Gentoo Development Guide: Working with PAM</title>
+<link rel="stylesheet" href="../../devmanual.css" type="text/css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The Gentoo Devmanual is a technical manual which covers topics such as writing ebuilds and eclasses, and policies that developers should be abiding by.">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/tyrian.min.css" rel="stylesheet" media="screen">
+<link rel="icon" href="https://www.gentoo.org/favicon.ico" type="image/x-icon">
+</head>
+<body>
+<header><div class="site-title"><div class="container"><div class="row">
+<div class="site-title-buttons"><div class="btn-group btn-group-sm">
+<a href="https://get.gentoo.org/" role="button" class="btn get-gentoo"><span class="fa fa-fw fa-download"></span><strong> Get Gentoo!</strong></a><div class="btn-group btn-group-sm">
+<a class="btn gentoo-org-sites dropdown-toggle" data-toggle="dropdown" data-target="#" href="#"><span class="fa fa-fw fa-map-o"></span><span class="hidden-xs"> gentoo.org sites </span><span class="caret"></span></a><ul class="dropdown-menu dropdown-menu-right">
+<li><a href="https://www.gentoo.org/" title="Main Gentoo website"><span class="fa fa-home fa-fw"></span> gentoo.org</a></li>
+<li><a href="https://wiki.gentoo.org/" title="Find and contribute documentation"><span class="fa fa-file-text-o fa-fw"></span> Wiki</a></li>
+<li><a href="https://bugs.gentoo.org/" title="Report issues and find common issues"><span class="fa fa-bug fa-fw"></span> Bugs</a></li>
+<li><a href="https://forums.gentoo.org/" title="Discuss with the community"><span class="fa fa-comments-o fa-fw"></span> Forums</a></li>
+<li><a href="https://packages.gentoo.org/" title="Find software for your Gentoo"><span class="fa fa-hdd-o fa-fw"></span> Packages</a></li>
+<li class="divider">
+<li><a href="https://planet.gentoo.org/" title="Find out what's going on in the developer community"><span class="fa fa-rss fa-fw"></span> Planet</a></li>
+<li><a href="https://archives.gentoo.org/" title="Read up on past discussions"><span class="fa fa-archive fa-fw"></span> Archives</a></li>
+<li><a href="https://sources.gentoo.org/" title="Browse our source code"><span class="fa fa-code fa-fw"></span> Sources</a></li>
+<li class="divider">
+<li><a href="https://infra-status.gentoo.org/" title="Get updates on the services provided by Gentoo"><span class="fa fa-server fa-fw"></span> Infra Status</a></li>
+</ul>
+</div>
+</div></div>
+<div class="logo">
+<a href="/" title="Back to the homepage" class="site-logo"><object data="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.svg" type="image/svg+xml"><img src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.png" alt="Gentoo Linux Logo"></object></a><span class="site-label">Development Guide</span>
+</div>
+</div></div></div>
+<nav class="tyrian-navbar" role="navigation"><div class="container"><div class="row">
+<div class="navbar-header"><button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button></div>
+<div class="collapse navbar-collapse navbar-main-collapse"><ul class="nav navbar-nav">
+<li><a href="../..//index.html"><span class="glyphicon glyphicon-home"></span>  Home</a></li>
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Working with PAM<span class="caret"></span></a></li>
+<li><a href="../init-scripts/index.html"><span class="glyphicon glyphicon-arrow-left"></span>  Init Scripts</a></li>
+<li><a href="../../tasks-reference/perl-modules/index.html">Perl Modules  <span class="glyphicon glyphicon-arrow-right"></span></a></li>
+</ul></div>
+</div></div></nav></header><div class="container"><div class="row"><div class="col-md010"><ol class="breadcrumb">
+<li><a href="../../index.html">Master Index</a></li>
+<li><a href="../index.html">Tasks Reference</a></li>
+</ol></div></div></div>
+<div class="container">
+<h1 class="first-header">Working with PAM</h1>
+
+<p>
+PAM (Pluggable Authentication Modules) is a mechanism which allows different
+applications to authenticate using various specified parameters, using for
+example a passwd/shadow file, a Kerberos server, an LDAP server or an a NT
+Domain server (using Samba).
+</p>
+
+<p>
+With PAM, a program just needs to require authentication for a given login class
+(defined in a <code class="docutils literal"><span class="pre">pam.d</span></code> file), and PAM framework will take care of calling the
+modules which will provide authentication.
+</p>
+
+<p>
+There are different PAM implementations. Gentoo Linux, by default, uses the
+Linux-PAM implementation which is installed via <code class="docutils literal"><span class="pre">sys-libs/pam</span></code>; FreeBSD and
+NetBSD (and hence Gentoo/FreeBSD) use OpenPAM, which is a minimal version.  The
+different implementations can provide different authentication modules, and can
+differ in some details of the configuration.
+</p>
+
+<div class="section">
+<h2 id="structure-of-a-pamd-file">Structure of a <code class="docutils literal"><span class="pre">pamd</span></code> File</h2>
+
+<p>
+But let's see the structure of a <code class="docutils literal"><span class="pre">pamd</span></code> file. First of all, the <code class="docutils literal"><span class="pre">pamd </span></code>files
+are placed in <code class="docutils literal"><span class="pre">/etc/pam.d</span></code>, and they are structured as one statement per line.
+The statement is composed of 3 or 4 tokens:
+</p>
+
+<ul>
+  <li>
+    The first token specifies the type of service for which the statement is done.
+    There are four types:
+  </li>
+  <ul>
+    <li>
+      <i>account</i>, which checks for validity of the user account.
+    </li>
+    <li>
+      <i>auth</i>, which verifies that the user is who is claim to be, using passwords
+      or other ways such as biometric and smart-card devices.
+    </li>
+    <li>
+      <i>password</i>, which takes care of changing users' password.
+    </li>
+    <li>
+      <i>session</i>, which covers tasks such as checks for the user validity or
+      mount/umount of home directories, executed both before starting and after
+      closing the user session.
+    </li>
+  </ul>
+  <li>
+    The second token is the control that tells PAM how to behave with failures and
+    success of the authentication for the module specified:
+  </li>
+  <ul>
+    <li>
+      <i>requisite</i>, a failure results in the termination of the process.
+    </li>
+    <li>
+      <i>required</i>, a failure will lead in a failure for the service, but before
+      this, all the other modules are being executed.
+    </li>
+    <li>
+      <i>sufficient</i>, a success in this module leads to a success in authentication
+      if no <i>required</i> module failed before of it.
+    </li>
+    <li>
+      <i>optional</i>, in which case the failure or the success are ignored if this is
+      not the only module present, in which case a success or a failure of it
+      makes the authentication succeed or fail.
+    </li>
+  </ul>
+  <li>
+    The third token is the module to execute for that type of service; PAM modules
+    are extensible and, as the name says, pluggable. The result is that there are
+    a small number of default modules and some external optional modules which can
+    be built against PAM implementation to define additional authentication
+    methods.  Some documentation states that we need to specify the full path of
+    the module, but this creates problems because not all the systems install the
+    modules in the same place: Linux-PAM on Gentoo is generally set up to load
+    them from <code class="docutils literal"><span class="pre">/lib/security</span></code>, but for example on AMD64 this become
+    <code class="docutils literal"><span class="pre">/lib64/security</span></code>, and on OpenPAM they are just in <code class="docutils literal"><span class="pre">/usr/lib(64)</span></code>. The
+    result is that providing the full path will lead to non-working <code class="docutils literal"><span class="pre">pamd</span></code>
+    files, and the right way to handle this is just states the module name 
+    —
+   the
+    PAM implementation will take care of finding the module.
+  </li>
+  <li>
+    The last token, which can consist of multiple items, describe the parameters
+    passed to the module. These are module-dependent.
+  </li>
+</ul>
+
+<p>
+As the number and the type of modules shipped with the implementation depends on
+the implementations themselves (Linux-PAM provides a full working set of
+modules, OpenPAM doesn't provide modules at all, and it's the operating system
+which provides them, as FreeBSD or NetBSD do), there are just a few modules
+which can be used directly in <code class="docutils literal"><span class="pre">pamd</span></code> files without the risk of providing a
+non-working configuration file:
+</p>
+
+<ul>
+  <li>
+    <code class="docutils literal"><span class="pre">pam_deny.so</span></code>, <code class="docutils literal"><span class="pre">pam_permit.so</span></code> 
+    —
+   they just report a failure or a success
+  </li>
+  <li>
+    <code class="docutils literal"><span class="pre">pam_rootok.so</span></code> reports success if the user is root, else a failure
+  </li>
+  <li>
+    <code class="docutils literal"><span class="pre">pam_nologin.so</span></code> checks for presence of /etc/nologin file with a reason for
+    blocking user logins 
+    —
+   it's used for example when it's better to avoid users
+    logging in on a compromised system
+  </li>
+  <li>
+    <code class="docutils literal"><span class="pre">pam_securetty.so</span></code> checks that the login is done in a tty which is
+    considered secure by a configuration file (depends on the implementation)
+  </li>
+  <li>
+    <code class="docutils literal"><span class="pre">pam_unix.so</span></code> is the base module for Unix systems, it just checks the
+    user/password pair with <code class="docutils literal"><span class="pre">/etc/passwd</span></code> and <code class="docutils literal"><span class="pre">/etc/shadow</span></code>.
+  </li>
+</ul>
+
+<p>
+There are also other modules which can be used for more complex authentication
+against a database (mysql or postgresql), against an LDAP directory or against
+an NT domain (using samba). This is useful on thin or fat clients where the
+users have an unique login for all the machines.  Another place where this is
+useful is a cluster of servers which needs to authenticate against a single
+source for some services, such as mail and ftp servers.
+</p>
+
+<p>
+But for desktop systems, all the different services, such as mail servers, ftp
+servers, ssh and so on, just need to authenticate in the same way the users logs
+in to the system.
+</p>
+
+<p>
+To achieve this, RedHat developed for Linux-PAM (which hadn't had a way to rely
+on another authentication scheme) a <code class="docutils literal"><span class="pre">pam_stack.so</span></code> module which accepted as
+parameter <code class="docutils literal"><span class="pre">"login=&lt;login service to use&gt;"</span></code>, telling PAM to execute the auth
+stack for the service stated.
+</p>
+
+<p>
+Unfortunately that module relied upon internal data structures of Linux-PAM and
+assumptions which aren't valid for other PAM implementations, so it is
+completely non-portable. It is not used in all the implementations of Linux-PAM
+(see for example MacOS X, which uses Linux-PAM but doesn't provide
+<code class="docutils literal"><span class="pre">pam_stack.so</span></code>), and so it's not present on all Linux distributions.
+</p>
+
+<p>
+A solution came when AltLinux developers added a new instruction for the control
+token: <i>include</i>. That control token can be used on Linux-PAM 0.78 and on
+OpenPAM to do the same as a <code class="docutils literal"><span class="pre">required pam_stack.so</span></code>, replacing the module name
+with the name of the login class to mimic.
+</p>
+
+<p>
+In this way, instead of loading a module which in turn reloads pam, the option
+is parsed directly by the PAM implementation which loads the other login class
+and takes care of executing it, and the same syntax is valid on both Linux-PAM
+and OpenPAM systems.
+</p>
+
+<p>
+New packages (and new versions of old packages) should then use the <code class="docutils literal"><span class="pre">include</span></code>
+directive instead of <code class="docutils literal"><span class="pre">pam_stack.so</span></code> module, but to do that they need to depend
+on a later version of <code class="docutils literal"><span class="pre">sys-libs/pam</span></code> or on <code class="docutils literal"><span class="pre">sys-libs/openpam</span></code> (note: openpam
+is for now just on G/FreeBSD's project overlay) 
+    —
+   to resolve this,
+<code class="docutils literal"><span class="pre">virtual/pam</span></code> is set up to add the right dependency for the use of the include
+directive.
+</p>
+
+</div>
+
+<div class="section">
+<h2 id="installing-pamd-files">Installing <code class="docutils literal"><span class="pre">pamd</span></code> Files</h2>
+
+<p>
+The right place for <code class="docutils literal"><span class="pre">pamd</span></code> files is <code class="docutils literal"><span class="pre">/etc/pam.d</span></code>, but installing them by
+hand checking for <code class="docutils literal"><span class="pre">pam</span></code> USE flag is tricky and doesn't follow the same path as
+initd and confd files, so the solution is to use the <code class="docutils literal"><span class="pre">pam</span></code> eclass.
+</p>
+
+<p>
+In the <code class="docutils literal"><span class="pre">pam</span></code> eclass there are functions which provide installation facilities
+for <code class="docutils literal"><span class="pre">pamd</span></code> files (<code class="docutils literal"><span class="pre">dopamd</span></code> and <code class="docutils literal"><span class="pre">newpamd</span></code>, whose usage is the same as
+similar <code class="docutils literal"><span class="pre">do*</span></code> and <code class="docutils literal"><span class="pre">new*</span></code> functions) and the <code class="docutils literal"><span class="pre">/etc/security</span></code> files
+(<code class="docutils literal"><span class="pre">dopamsecurity</span></code> and <code class="docutils literal"><span class="pre">newpamsecurity</span></code>, which need the first argument to be
+the subdirectory of <code class="docutils literal"><span class="pre">/etc/security</span></code> in which the files are to be installed).
+Those groups of functions already takes care of verifying whether the <code class="docutils literal"><span class="pre">pam</span></code>
+USE flag is made optional for the package 
+    —
+   if this is the case, and the flag
+is disabled, the <code class="docutils literal"><span class="pre">pamd</span></code> files are just skipped.
+</p>
+
+<p>
+Many <code class="docutils literal"><span class="pre">pamd</span></code> files just uses one or more auth types from <code class="docutils literal"><span class="pre">system-auth</span></code> login class,
+which is the base one which provides login facilities for most services on
+common desktop systems.  Instead of adding a <code class="docutils literal"><span class="pre">pamd</span></code> file in <code class="docutils literal"><span class="pre">${FILESDIR}</span></code>
+for this, one can use the <code class="docutils literal"><span class="pre">pamd_mimic_system</span></code> function. This function takes a series
+of parameters 
+    —
+   the first one is the name of the login class (the name of the
+<code class="docutils literal"><span class="pre">pamd</span></code> file in /etc/pam.d); the others are the auth types for which system-auth
+needs to be used.
+</p>
+
+<p>
+For example, a call like:
+</p>
+
+<pre>
+pamd_mimic_system foo auth password
+</pre>
+
+<p>
+installs an <code class="docutils literal"><span class="pre">/etc/pam.d/foo</span></code> file which contains:
+</p>
+
+<pre>
+auth        include     system-auth
+password    include     system-auth
+</pre>
+
+<p>
+which just uses <code class="docutils literal"><span class="pre">system-auth</span></code> login class.
+</p>
+
+</div>
+
+<div class="section">
+<h2 id="installing-pam-modules">Installing PAM Modules</h2>
+
+<p>
+As PAM modules are looked for in different directories on different
+implementations, which also depends on the libdir's name for ARCHs with more
+than one ABI, usually is not possible to trust the default directory stated by
+the module (always if the module state a default directory). The solution for
+this is also in <code class="docutils literal"><span class="pre">pam</span></code> eclass. The function <code class="docutils literal"><span class="pre">getpam_mod_dir</span></code> returns the
+correct directory to use for the current implementation/arch.
+</p>
+
+<p>
+When the PAM module doesn't provide a way to install the package by itself, such
+as a <code class="docutils literal"><span class="pre">Makefile</span></code> or an installation script, there are also the <code class="docutils literal"><span class="pre">dopammod</span></code> and
+<code class="docutils literal"><span class="pre">newpammod</span></code> functions which takes care of install the module in the right
+directory.
+</p>
+
+</div>
+
+
+</div>
+<footer><div class="container">
+<div class="row">
+<div class="col-xs-12 col-md-offset-2 col-md-7"></div>
+<div class="col-xs-12 col-md-3">
+<h3 class="footerhead">Questions or comments?</h3>
+              Please feel free to <a href="https://www.gentoo.org/inside-gentoo/contact/">contact us</a>.
+            </div>
+</div>
+<div class="row">
+<div class="col-xs-2 col-sm-3 col-md-2"><ul class="footerlinks three-icons">
+<li><a href="http://twitter.com/gentoo" title="@Gentoo on Twitter"><span class="fa fa-twitter fa-fw"></span></a></li>
+<li><a href="https://plus.google.com/+Gentoo" title="+Gentoo on Google+"><span class="fa fa-google-plus fa-fw"></span></a></li>
+<li><a href="https://www.facebook.com/gentoo.org" title="Gentoo on Facebook"><span class="fa fa-facebook fa-fw"></span></a></li>
+</ul></div>
+<div class="col-xs-10 col-sm-9 col-md-10">
+<strong>Copyright (C) 2001-2015 Gentoo Foundation, Inc.</strong><br><small>
+                Gentoo is a trademark of the Gentoo Foundation, Inc.
+                The text of this document is distributed under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Attribution-ShareAlike 2.0 License</a>.
+                The <a href="https://www.gentoo.org/inside-gentoo/foundation/name-logo-guidelines.html">Gentoo Name and Logo Usage Guidelines</a> apply.
+              </small>
+</div>
+</div>
+</div></footer><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/jquery.min.js"></script><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.js"></script>
+</body>
+</html>

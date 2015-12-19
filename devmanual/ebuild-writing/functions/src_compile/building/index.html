@@ -1,0 +1,150 @@
+<!DOCTYPE html><html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Gentoo Development Guide: Building a Package</title>
+<link rel="stylesheet" href="../../../../devmanual.css" type="text/css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The Gentoo Devmanual is a technical manual which covers topics such as writing ebuilds and eclasses, and policies that developers should be abiding by.">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/tyrian.min.css" rel="stylesheet" media="screen">
+<link rel="icon" href="https://www.gentoo.org/favicon.ico" type="image/x-icon">
+</head>
+<body>
+<header><div class="site-title"><div class="container"><div class="row">
+<div class="site-title-buttons"><div class="btn-group btn-group-sm">
+<a href="https://get.gentoo.org/" role="button" class="btn get-gentoo"><span class="fa fa-fw fa-download"></span><strong> Get Gentoo!</strong></a><div class="btn-group btn-group-sm">
+<a class="btn gentoo-org-sites dropdown-toggle" data-toggle="dropdown" data-target="#" href="#"><span class="fa fa-fw fa-map-o"></span><span class="hidden-xs"> gentoo.org sites </span><span class="caret"></span></a><ul class="dropdown-menu dropdown-menu-right">
+<li><a href="https://www.gentoo.org/" title="Main Gentoo website"><span class="fa fa-home fa-fw"></span> gentoo.org</a></li>
+<li><a href="https://wiki.gentoo.org/" title="Find and contribute documentation"><span class="fa fa-file-text-o fa-fw"></span> Wiki</a></li>
+<li><a href="https://bugs.gentoo.org/" title="Report issues and find common issues"><span class="fa fa-bug fa-fw"></span> Bugs</a></li>
+<li><a href="https://forums.gentoo.org/" title="Discuss with the community"><span class="fa fa-comments-o fa-fw"></span> Forums</a></li>
+<li><a href="https://packages.gentoo.org/" title="Find software for your Gentoo"><span class="fa fa-hdd-o fa-fw"></span> Packages</a></li>
+<li class="divider">
+<li><a href="https://planet.gentoo.org/" title="Find out what's going on in the developer community"><span class="fa fa-rss fa-fw"></span> Planet</a></li>
+<li><a href="https://archives.gentoo.org/" title="Read up on past discussions"><span class="fa fa-archive fa-fw"></span> Archives</a></li>
+<li><a href="https://sources.gentoo.org/" title="Browse our source code"><span class="fa fa-code fa-fw"></span> Sources</a></li>
+<li class="divider">
+<li><a href="https://infra-status.gentoo.org/" title="Get updates on the services provided by Gentoo"><span class="fa fa-server fa-fw"></span> Infra Status</a></li>
+</ul>
+</div>
+</div></div>
+<div class="logo">
+<a href="/" title="Back to the homepage" class="site-logo"><object data="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.svg" type="image/svg+xml"><img src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.png" alt="Gentoo Linux Logo"></object></a><span class="site-label">Development Guide</span>
+</div>
+</div></div></div>
+<nav class="tyrian-navbar" role="navigation"><div class="container"><div class="row">
+<div class="navbar-header"><button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button></div>
+<div class="collapse navbar-collapse navbar-main-collapse"><ul class="nav navbar-nav">
+<li><a href="../../../..//index.html"><span class="glyphicon glyphicon-home"></span>  Home</a></li>
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Building a Package<span class="caret"></span></a></li>
+<li><a href="../build-environment/index.html"><span class="glyphicon glyphicon-arrow-left"></span>  Configuring Build Environment</a></li>
+<li><a href="../../../../ebuild-writing/functions/src_compile/no-build-system/index.html">No Build System  <span class="glyphicon glyphicon-arrow-right"></span></a></li>
+</ul></div>
+</div></div></nav></header><div class="container"><div class="row"><div class="col-md010"><ol class="breadcrumb">
+<li><a href="../../../../index.html">Master Index</a></li>
+<li><a href="../../../index.html">Ebuild Writing</a></li>
+<li><a href="../../index.html">Ebuild Functions</a></li>
+<li><a href="../index.html">src_compile</a></li>
+</ol></div></div></div>
+<div class="container">
+<h1 class="first-header">Building a Package</h1>
+<p>
+The <code class="docutils literal"><span class="pre">emake</span></code> function should be used to call <code class="docutils literal"><span class="pre">make</span></code>. This will ensure that
+the user's <code class="docutils literal"><span class="pre">MAKEOPTS</span></code> are used correctly. The <code class="docutils literal"><span class="pre">emake</span></code> function passes on
+any arguments provided, so it can be used to make non-default targets (<code class="docutils literal"><span class="pre">emake
+extras</span></code>), for example. Occasionally you might encounter a screwy non-autotools
+<code class="docutils literal"><span class="pre">Makefile</span></code> that explodes with <code class="docutils literal"><span class="pre">emake</span></code>, but this is rare.
+</p>
+
+<p>
+Builds should be tested with various <code class="docutils literal"><span class="pre">-j</span></code> settings in <code class="docutils literal"><span class="pre">MAKEOPTS</span></code> to ensure
+that the build parallelises properly. If a package does <i>not</i> parallelise
+cleanly, it should be patched.
+</p>
+
+<p>
+If patching <i>really</i> isn't an option, <code class="docutils literal"><span class="pre">emake -j1</span></code> should be
+used. However, when doing this please remember that you are seriously
+hurting build times for many non-x86 users in particular. Forcing
+a <code class="docutils literal"><span class="pre">-j1</span></code> can increase build times from a few minutes to an hour on
+some MIPS and SPARC systems.
+</p>
+<div class="section">
+<h2 id="fixing-compiler-usage">Fixing Compiler Usage</h2>
+
+<p>
+Sometimes a package will try to use a bizarre compiler, or will need to be told
+which compiler to use. In these situations, the <code class="docutils literal"><span class="pre">tc-getCC()</span></code> function from
+<a href="../../../../eclass-reference/toolchain-funcs.eclass/index.html">toolchain-funcs.eclass</a> should be used. Other similar functions are available
+
+    —
+   these are documented in <code class="docutils literal"><span class="pre">man toolchain-funcs.eclass</span></code>.
+</p>
+
+<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+It is <i>not</i> correct to use the <code class="docutils literal"><span class="pre">${CC}</span></code> variable for this purpose.
+</div>
+
+<p>
+Sometimes a package will not use the user's <code class="docutils literal"><span class="pre">${CFLAGS}</span></code> or <code class="docutils literal"><span class="pre">${LDFLAGS}</span></code>.
+This must be worked around, as sometimes these variables are used for specifying
+critical ABI options. In these cases, the build scripts should be modified (for
+example, with <code class="docutils literal"><span class="pre">sed</span></code>) to use <code class="docutils literal"><span class="pre">${CFLAGS}</span></code> or <code class="docutils literal"><span class="pre">${LDFLAGS}</span></code> correctly.
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">inherit</span> flag-o-matic toolchain-funcs
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_compile()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">-Os</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">not</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">happy</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">replace-flags</span> -Os -O2
+
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">We</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">have</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">a</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">weird</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">build.sh</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">to</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">work</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">with</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">which</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">ignores</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">our</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">compiler</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">preferences.</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">yay!</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">sed</span> -i -e <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>s:cc -O2:<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">$(</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">tc-getCC</span><span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${CFLAGS}</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${LDFLAGS}</span>:<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> build.sh <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">\</span>
+        <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">die</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>sed fix failed. Uh-oh...<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+    ./build.sh <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">die</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>Build failed!<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+</span></pre>
+
+<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+When using <code class="docutils literal"><span class="pre">sed</span></code> with <code class="docutils literal"><span class="pre">CFLAGS</span></code> or <code class="docutils literal"><span class="pre">LDFLAGS</span></code>, it is not safe to use
+a comma or a slash as a delimiter. The recommended character is a colon.
+</div>
+
+<p>
+Portage performs a QA check which verifies if LDFLAGS are respected. This QA check
+is enabled only when <code class="docutils literal"><span class="pre">LDFLAGS</span></code> variable contains <code class="docutils literal"><span class="pre">-Wl,--hash-style=gnu</span></code>.
+(This flag can be used only on systems which use <code class="docutils literal"><span class="pre">sys-libs/glibc</span></code> except for
+machines with a MIPS CPU.)
+</p>
+
+</div>
+</div>
+<footer><div class="container">
+<div class="row">
+<div class="col-xs-12 col-md-offset-2 col-md-7"></div>
+<div class="col-xs-12 col-md-3">
+<h3 class="footerhead">Questions or comments?</h3>
+              Please feel free to <a href="https://www.gentoo.org/inside-gentoo/contact/">contact us</a>.
+            </div>
+</div>
+<div class="row">
+<div class="col-xs-2 col-sm-3 col-md-2"><ul class="footerlinks three-icons">
+<li><a href="http://twitter.com/gentoo" title="@Gentoo on Twitter"><span class="fa fa-twitter fa-fw"></span></a></li>
+<li><a href="https://plus.google.com/+Gentoo" title="+Gentoo on Google+"><span class="fa fa-google-plus fa-fw"></span></a></li>
+<li><a href="https://www.facebook.com/gentoo.org" title="Gentoo on Facebook"><span class="fa fa-facebook fa-fw"></span></a></li>
+</ul></div>
+<div class="col-xs-10 col-sm-9 col-md-10">
+<strong>Copyright (C) 2001-2015 Gentoo Foundation, Inc.</strong><br><small>
+                Gentoo is a trademark of the Gentoo Foundation, Inc.
+                The text of this document is distributed under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Attribution-ShareAlike 2.0 License</a>.
+                The <a href="https://www.gentoo.org/inside-gentoo/foundation/name-logo-guidelines.html">Gentoo Name and Logo Usage Guidelines</a> apply.
+              </small>
+</div>
+</div>
+</div></footer><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/jquery.min.js"></script><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.js"></script>
+</body>
+</html>

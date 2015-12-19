@@ -1,0 +1,717 @@
+<!DOCTYPE html><html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Gentoo Development Guide: The Basics of Autotools</title>
+<link rel="stylesheet" href="../../devmanual.css" type="text/css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The Gentoo Devmanual is a technical manual which covers topics such as writing ebuilds and eclasses, and policies that developers should be abiding by.">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/tyrian.min.css" rel="stylesheet" media="screen">
+<link rel="icon" href="https://www.gentoo.org/favicon.ico" type="image/x-icon">
+</head>
+<body>
+<header><div class="site-title"><div class="container"><div class="row">
+<div class="site-title-buttons"><div class="btn-group btn-group-sm">
+<a href="https://get.gentoo.org/" role="button" class="btn get-gentoo"><span class="fa fa-fw fa-download"></span><strong> Get Gentoo!</strong></a><div class="btn-group btn-group-sm">
+<a class="btn gentoo-org-sites dropdown-toggle" data-toggle="dropdown" data-target="#" href="#"><span class="fa fa-fw fa-map-o"></span><span class="hidden-xs"> gentoo.org sites </span><span class="caret"></span></a><ul class="dropdown-menu dropdown-menu-right">
+<li><a href="https://www.gentoo.org/" title="Main Gentoo website"><span class="fa fa-home fa-fw"></span> gentoo.org</a></li>
+<li><a href="https://wiki.gentoo.org/" title="Find and contribute documentation"><span class="fa fa-file-text-o fa-fw"></span> Wiki</a></li>
+<li><a href="https://bugs.gentoo.org/" title="Report issues and find common issues"><span class="fa fa-bug fa-fw"></span> Bugs</a></li>
+<li><a href="https://forums.gentoo.org/" title="Discuss with the community"><span class="fa fa-comments-o fa-fw"></span> Forums</a></li>
+<li><a href="https://packages.gentoo.org/" title="Find software for your Gentoo"><span class="fa fa-hdd-o fa-fw"></span> Packages</a></li>
+<li class="divider">
+<li><a href="https://planet.gentoo.org/" title="Find out what's going on in the developer community"><span class="fa fa-rss fa-fw"></span> Planet</a></li>
+<li><a href="https://archives.gentoo.org/" title="Read up on past discussions"><span class="fa fa-archive fa-fw"></span> Archives</a></li>
+<li><a href="https://sources.gentoo.org/" title="Browse our source code"><span class="fa fa-code fa-fw"></span> Sources</a></li>
+<li class="divider">
+<li><a href="https://infra-status.gentoo.org/" title="Get updates on the services provided by Gentoo"><span class="fa fa-server fa-fw"></span> Infra Status</a></li>
+</ul>
+</div>
+</div></div>
+<div class="logo">
+<a href="/" title="Back to the homepage" class="site-logo"><object data="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.svg" type="image/svg+xml"><img src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.png" alt="Gentoo Linux Logo"></object></a><span class="site-label">Development Guide</span>
+</div>
+</div></div></div>
+<nav class="tyrian-navbar" role="navigation"><div class="container"><div class="row">
+<div class="navbar-header"><button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button></div>
+<div class="collapse navbar-collapse navbar-main-collapse"><ul class="nav navbar-nav">
+<li><a href="../..//index.html"><span class="glyphicon glyphicon-home"></span>  Home</a></li>
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">The Basics of Autotools<span class="caret"></span></a></li>
+<li><a href="../index.html"><span class="glyphicon glyphicon-arrow-left"></span>  General Concepts</a></li>
+<li><a href="../../general-concepts/config-protect/index.html">Configuration File Protection  <span class="glyphicon glyphicon-arrow-right"></span></a></li>
+</ul></div>
+</div></div></nav></header><div class="container"><div class="row"><div class="col-md010"><ol class="breadcrumb">
+<li><a href="../../index.html">Master Index</a></li>
+<li><a href="../index.html">General Concepts</a></li>
+</ol></div></div></div>
+<div class="container">
+<h1 class="first-header">The Basics of Autotools</h1>
+<div class="alert alert-success" role="alert">
+<strong>Todo:</strong>
+This is too long for <a href="../../general-concepts/index.html">General Concepts</a>. It needs to be split up and
+moved somewhere, either to a top-level of its own or into <a href="../../appendices/index.html">Appendices</a>.
+</div>
+
+<p>
+An understanding of GNU autotools (<code class="docutils literal"><span class="pre">automake</span></code>, <code class="docutils literal"><span class="pre">autoconf</span></code> etc.) can be useful
+when working with ebuilds:
+</p>
+
+<ul>
+  <li>
+    Finding and correcting build issues is often easier if the build system is
+    not seen simply as a scary black box.
+  </li>
+  <li>
+    The autotools input files can help when determining a package's build-time
+    dependencies.
+  </li>
+  <li>
+    The risk of accidentally breaking something by patching the wrong file at the
+    wrong time is greatly reduced if the relationship between the build system
+    files is understood.
+  </li>
+</ul>
+<div class="section">
+<h2 id="major-autotools-components">Major Autotools Components</h2>
+<p>
+Autotools is a collection of related packages which, when used together, remove
+much of the difficulty involved in creating portable software. These tools,
+together with a few relatively simple upstream-supplied input files, are used to
+create the build system for a package.
+</p>
+
+<div class="figure">
+<div class="image"><img alt="How autotools fits together" src="diagram.png"></div>
+<p class="caption">
+A basic overview of how the main autotools components fit together.
+</p>
+</div>
+
+<p>
+In a simple setup:
+</p>
+
+<ul>
+  <li>
+    The <code class="docutils literal"><span class="pre">autoconf</span></code> program produces a <code class="docutils literal"><span class="pre">configure</span></code> script from either
+    <code class="docutils literal"><span class="pre">configure.in</span></code> or <code class="docutils literal"><span class="pre">configure.ac</span></code> (see note below).
+  </li>
+  <li>
+    The <code class="docutils literal"><span class="pre">automake</span></code> program produces a <code class="docutils literal"><span class="pre">Makefile.in</span></code> from a <code class="docutils literal"><span class="pre">Makefile.am</span></code>.
+  </li>
+  <li>
+    The <code class="docutils literal"><span class="pre">configure</span></code> script is run to produce one or more <code class="docutils literal"><span class="pre">Makefile</span></code> files from
+    <code class="docutils literal"><span class="pre">Makefile.in</span></code> files.
+  </li>
+  <li>
+    The <code class="docutils literal"><span class="pre">make</span></code> program uses the <code class="docutils literal"><span class="pre">Makefile</span></code> to compile the program.
+  </li>
+</ul>
+
+
+<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+The <code class="docutils literal"><span class="pre">configure.in</span></code> name used to be standard. However, the GNU
+documentation now recommends <code class="docutils literal"><span class="pre">configure.ac</span></code> as it is more obvious which
+program should be used when processing it. The files perform the same purpose
+and have the same format 
+    —
+   the only difference is the name.
+</div>
+
+<p>
+  You may see autotools being used in a variety of phase
+  functions. Prior to EAPI2, the QA team preferred that the source
+  code be manipulated in <code class="docutils literal"><span class="pre">src_unpack</span></code>
+    —
+  the rationale being that
+  <code class="docutils literal"><span class="pre">src_unpack</span></code> handles "getting the package ready to be
+  compiled."
+</p>
+
+<p>
+  EAPI2, however, introduced a new phase function: <a href="../../ebuild-writing/functions/src_prepare/index.html">src_prepare</a>. This is now the
+  appropriate place to manipulate the source code prior to
+  configuration and compilation. In particular, <code class="docutils literal"><span class="pre">src_prepare</span></code> is
+  called before <a href="../../ebuild-writing/functions/src_configure/index.html">src_configure</a>, which usually expects the <code class="docutils literal"><span class="pre">configure</span></code> script to exist.
+</p>
+
+<p>
+The <code class="docutils literal"><span class="pre">autoreconf</span></code> tool supposedly runs <code class="docutils literal"><span class="pre">autoconf</span></code> (and <code class="docutils literal"><span class="pre">automake</span></code>,
+<code class="docutils literal"><span class="pre">autoheader</span></code>, <code class="docutils literal"><span class="pre">aclocal</span></code>, <code class="docutils literal"><span class="pre">autopoint</span></code> and <code class="docutils literal"><span class="pre">libtoolize</span></code>) as necessary.
+Sometimes it works. Some packages ship a shell script named <code class="docutils literal"><span class="pre">autogen.sh</span></code> which
+does the same thing (this is <i>not</i> related to <code class="docutils literal"><span class="pre">autogen</span></code>).
+The autotools.eclass contains helper functions for the stand-alone tools with their
+corresponding names e.g. <code class="docutils literal"><span class="pre">eautoconf</span></code> and <code class="docutils literal"><span class="pre">eautomake</span></code>.
+</p>
+
+<div class="alert alert-warning" role="alert">
+<strong>Warning:</strong>
+You must <b>not</b> attempt to modify any of the generated files in
+between running <code class="docutils literal"><span class="pre">configure</span></code> and <code class="docutils literal"><span class="pre">make</span></code>. This can lead to autotools
+trying to be clever and recreate the files, in turn leading to your changes
+being removed. In some situations this will also result in <code class="docutils literal"><span class="pre">./configure</span></code>
+arguments being silently dropped, which can give broken dependencies.
+The best way to proceed is usually to work with the <code class="docutils literal"><span class="pre">.ac</span></code> / <code class="docutils literal"><span class="pre">.in</span></code> files
+instead.
+</div>
+
+</div>
+<div class="section">
+<h2 id="simple-autotools-patching-example">Simple Autotools Patching Example</h2>
+
+<p>
+The following snippet illustrates the correct way to proceed after patching
+either <code class="docutils literal"><span class="pre">Makefile.am</span></code> or <code class="docutils literal"><span class="pre">configure.ac</span></code>:
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">EAPI</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span>5
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">inherit</span> autotools
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_prepare()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Remove</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">problematic</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">LDFLAGS</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">declaration</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">sed</span> -i -e '/^LDFLAGS/d' src/Makefile.am <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">die</span>
+
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Rerun</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">autotools</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">einfo</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>Regenerating autotools files...<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">WANT_AUTOCONF</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span>2.5 eautoconf
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">WANT_AUTOMAKE</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span>1.9 eautomake
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_compile()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">econf</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">$(</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">use_enable</span> nls<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">emake</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+</span></pre>
+
+<p>
+The <code class="docutils literal"><span class="pre">einfo</span></code> message before running autotools is not mandatory. However, these
+steps can sometimes take a while and may produce no output, so it may make sense
+to let the user know that something is still happening. See
+<a href="../../ebuild-writing/messages/index.html">Messages</a>.
+</p>
+
+</div>
+<div class="section">
+<h2 id="the-configure.ac-file">The <code class="docutils literal"><span class="pre">configure.ac</span></code> File</h2>
+
+<p>
+The <code class="docutils literal"><span class="pre">configure.ac</span></code> file is used to create the <code class="docutils literal"><span class="pre">./configure</span></code> script. It
+consists of a series of macros which are processed and expanded by <code class="docutils literal"><span class="pre">autoconf</span></code>.
+These macros can check for packages and libraries, handle <code class="docutils literal"><span class="pre">--enable</span></code> and
+<code class="docutils literal"><span class="pre">--with</span></code> switches, and generate various files.
+</p>
+
+<div class="section">
+<h3 id="basic-format-of-configure.ac">Basic Format of <code class="docutils literal"><span class="pre">configure.ac</span></code>
+</h3>
+
+<p>
+The <code class="docutils literal"><span class="pre">configure.ac</span></code> file is a basic text file. Indenting and whitespace are
+largely irrelevant. Comments are indicated by the string <code class="docutils literal"><span class="pre">dnl</span></code> (<code class="docutils literal"><span class="pre">dnl</span></code> is
+actually a macro which discards the remainder of the input 
+    —
+   it stands for
+"discard new line").
+</p>
+
+<p>
+If the previous sentence made you uneasy, you should probably stop reading this
+page. It gets far worse.
+</p>
+
+<p>
+A typical file might start with something like the following:
+</p>
+
+<pre><span class=""><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">dnl</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Process</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">this</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">file</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">with</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">autoconf</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_INIT</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">(</span>appname<span xmlns="http://www.w3.org/1999/xhtml" class="Special">,</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Constant">0.1</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">)</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_PREREQ</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">(</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">2.5</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">)</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_CONFIG_SRCDIR</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">(</span>src/main.c<span xmlns="http://www.w3.org/1999/xhtml" class="Special">)</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_CONFIG_AUX_DIR</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">(</span>config<span xmlns="http://www.w3.org/1999/xhtml" class="Special">)</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AM_INIT_AUTOMAKE</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">(</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">1.8</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">)</span>
+</span></pre>
+
+<p>
+The <code class="docutils literal"><span class="pre">AC_PREREQ</span></code> line, if present, tells you which <code class="docutils literal"><span class="pre">autoconf</span></code> version you
+need. This is useful, because <code class="docutils literal"><span class="pre">autoconf</span></code> is not compatible between versions.
+In the above example, we need <code class="docutils literal"><span class="pre">=autoconf-2.5*</span></code>. and we should
+<code class="docutils literal"><span class="pre">export WANT_AUTOCONF="2.5"</span></code> (or use the <code class="docutils literal"><span class="pre">autoconf-2.59</span></code> script) when calling
+<code class="docutils literal"><span class="pre">autoconf</span></code>.
+</p>
+
+<p>
+The <code class="docutils literal"><span class="pre">AM_INIT_AUTOMAKE</span></code> line tells us which <code class="docutils literal"><span class="pre">automake</span></code> version we need.
+Again, there is little chance that an <code class="docutils literal"><span class="pre">automake-1.7</span></code> script will work properly
+with <code class="docutils literal"><span class="pre">automake-1.8</span></code>. Setting <code class="docutils literal"><span class="pre">WANT_AUTOMAKE="1.8"</span></code> in the environment can be
+used to make an unversioned <code class="docutils literal"><span class="pre">automake</span></code> call run the correct version.
+</p>
+
+<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+The <code class="docutils literal"><span class="pre">WANT_</span></code> variables are a Gentoo feature that originally came from
+Mandrake. Other distributions may handle things differently.
+</div>
+
+<p>
+Usually, some standard checks will follow:
+</p>
+
+<pre><span class=""><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">dnl</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Check</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">for</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">toolchain</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">and</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">install</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">components</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_PROG_CC</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_PROG_INSTALL</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_PROG_LN_S</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_PROG_RANLIB</span>
+</span></pre>
+
+<p>
+For non-standard applications, you may also see manual checks:
+</p>
+
+<pre><span class=""><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">dnl</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Check</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">for</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">sed</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_CHECK_PROGS</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">(</span>regex_cmd<span xmlns="http://www.w3.org/1999/xhtml" class="Special">,</span> sed<span xmlns="http://www.w3.org/1999/xhtml" class="Special">)</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">if</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">test</span> x$regex_cmd <span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">x</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">;</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">then</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_MSG_ERROR</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">(</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">[</span>sed is required to build the data files.]<span xmlns="http://www.w3.org/1999/xhtml" class="Special">)</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">fi</span>
+</span></pre>
+
+<p>
+You may also see checks for compiler features:
+</p>
+
+<pre><span class=""><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">dnl</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Check</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">that</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">our</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">compiler</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">can</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">do</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">const</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">and</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">inline</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_C_CONST</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_C_INLINE</span>
+</span></pre>
+
+<p>
+Library and header checks:
+</p>
+
+<pre><span class=""><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">dnl</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Check</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">for</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">standard</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">headers:</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_HEADER_STDC</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_HEADER_DIRENT</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_CHECK_HEADERS</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">(</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">[</span>stdlib.h stdio.h libintl.h locale.h]<span xmlns="http://www.w3.org/1999/xhtml" class="Special">)</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Comment">dnl</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Check</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">for</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">libraries:</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_CHECK_LIB</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">(</span>ssl<span xmlns="http://www.w3.org/1999/xhtml" class="Special">,</span> SSL_free<span xmlns="http://www.w3.org/1999/xhtml" class="Special">)</span>
+</span></pre>
+
+<p>
+And function checks:
+</p>
+
+<pre><span class=""><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">dnl</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Check</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">for</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">functions:</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_CHECK_FUNCS</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">(</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">[</span>setlocale strtol]<span xmlns="http://www.w3.org/1999/xhtml" class="Special">)</span>
+</span></pre>
+
+<p>
+Often these will be all jumbled together without any useful comments. In some
+cases, many of the checks done won't even be necessary for the application in
+question 
+    —
+   most autotools code is copy/pasted rather than written from scratch,
+and <code class="docutils literal"><span class="pre">autoscan</span></code> (a tool which helps write <code class="docutils literal"><span class="pre">configure.ac</span></code>) is sometimes
+over-eager to add in checks.
+</p>
+
+<p>
+The file will finish with some output functions:
+</p>
+
+<pre><span class=""><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AM_CONFIG_HEADER</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">(</span>config.h<span xmlns="http://www.w3.org/1999/xhtml" class="Special">)</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_OUTPUT</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">(</span>Makefile src/Makefile nls/Makefile man/Makefile tests/Makefile<span xmlns="http://www.w3.org/1999/xhtml" class="Special">)</span>
+</span></pre>
+
+<p>
+These are used to make the <code class="docutils literal"><span class="pre">./configure</span></code> script generate the relevant files.
+</p>
+
+</div>
+<div class="section">
+<h3 id="enable-and-disable-checks">Enable and Disable Checks</h3>
+
+<p>
+So far we've only seen 'hard' dependencies. Many packages have <i>optional</i>
+support for various extras (graphics toolkits, libraries which add
+functionality, interpreters, features, ...). This is (if we're lucky) handled
+via <code class="docutils literal"><span class="pre">--enable-foo</span></code> and <code class="docutils literal"><span class="pre">--disable-foo</span></code> switches to <code class="docutils literal"><span class="pre">./configure</span></code>. which
+are generated from <code class="docutils literal"><span class="pre">autoconf</span></code> rules.
+</p>
+
+<p>
+A simple <code class="docutils literal"><span class="pre">--enable</span></code> / <code class="docutils literal"><span class="pre">--disable</span></code> function might look something like the
+following:
+</p>
+
+<pre><span class=""><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_MSG_CHECKING</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">(</span>--enable-cscope argument<span xmlns="http://www.w3.org/1999/xhtml" class="Special">)</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_ARG_ENABLE</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">(</span>cscope<span xmlns="http://www.w3.org/1999/xhtml" class="Special">,</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Special">[</span>  --enable-cscope         Include cscope interface.<span xmlns="http://www.w3.org/1999/xhtml" class="Special">],</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Special">[</span>enable_cscope<span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span>$enableval<span xmlns="http://www.w3.org/1999/xhtml" class="Special">],</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Special">[</span>enable_cscope<span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">no</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">]</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">)</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_MSG_RESULT</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">(</span>$enable_cscope<span xmlns="http://www.w3.org/1999/xhtml" class="Special">)</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">if</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">test</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant"><span class="Identifier">$enable_cscope</span></span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">yes</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">;</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">then</span>
+  <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_DEFINE</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">(</span>FEAT_CSCOPE<span xmlns="http://www.w3.org/1999/xhtml" class="Special">)</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">fi</span>
+</span></pre>
+
+<p>
+Sometimes more complicated checks are included based upon whether or not an
+option is enabled. There are also some predefined macros which include
+<code class="docutils literal"><span class="pre">AC_ARG_ENABLE</span></code>. so grepping <code class="docutils literal"><span class="pre">configure.ac</span></code> for <code class="docutils literal"><span class="pre">AC_ARG_ENABLE</span></code> may not
+give a complete list. A better way is to use <code class="docutils literal"><span class="pre">./configure --help</span></code> and check
+the output.
+</p>
+
+<div class="alert alert-info" role="alert">
+<strong>Important:</strong>
+The third argument is used when a <code class="docutils literal"><span class="pre">--enable</span></code> or <code class="docutils literal"><span class="pre">--disable</span></code>
+switch to <code class="docutils literal"><span class="pre">./configure</span></code> is provided, and the fourth is used when such a
+switch is <i>not</i> passed. A common misconception is that the third is enable
+and the fourth is disable 
+    —
+   this is <b>not</b> the case. You may encounter
+packages that get this wrong.
+</div>
+
+<p>
+A simple way to check that a package is using this macro properly is to
+install the optional dependency, and then try all of <code class="docutils literal"><span class="pre">./configure</span></code>.
+<code class="docutils literal"><span class="pre">./configure --enable-foo</span></code> and <code class="docutils literal"><span class="pre">./configure --disable-foo</span></code>. If the second
+and third runs give the same results, something is wrong. If the first run gives
+a <i>different</i> result to the second and third, there is a good chance that a
+misunderstanding of the <code class="docutils literal"><span class="pre">AC_ARG_ENABLE</span></code> arguments is to blame.
+</p>
+
+</div>
+<div class="section">
+<h3 id="with-and-without-checks">With and Without Checks</h3>
+
+<p>
+A simple <code class="docutils literal"><span class="pre">--with</span></code> / <code class="docutils literal"><span class="pre">--without</span></code> check might look like:
+</p>
+
+<pre><span class=""><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_MSG_CHECKING</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">(</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">[</span>whether to enable foo]<span xmlns="http://www.w3.org/1999/xhtml" class="Special">)</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_ARG_WITH</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">(</span>foo<span xmlns="http://www.w3.org/1999/xhtml" class="Special">,</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Special">[</span>  --with-foo           enable foo support<span xmlns="http://www.w3.org/1999/xhtml" class="Special">],</span>
+    with_foo<span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span>$withval<span xmlns="http://www.w3.org/1999/xhtml" class="Special">,</span>
+    with_foo<span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span>yes<span xmlns="http://www.w3.org/1999/xhtml" class="Special">)</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_MSG_RESULT</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">(</span>$with_foo<span xmlns="http://www.w3.org/1999/xhtml" class="Special">)</span>
+</span></pre>
+
+<p>
+Again, the third argument is for 'specified' and the fourth for 'not specified',
+and there are standard macros which include <code class="docutils literal"><span class="pre">with</span></code> options.
+</p>
+
+</div>
+<div class="section">
+<h3 id="automatic-checks">Automatic Checks</h3>
+
+<p>
+It's possible to write autoconf rules which bypass the manual enable / disable
+convention (or which just ignore what the user asks for). If your package does
+this, it must be fixed to avoid dependency problems.
+</p>
+
+<p>
+The most common form is packages which simply use <code class="docutils literal"><span class="pre">AC_CHECK_LIB</span></code> to decide
+whether or not to enable a feature. If you find a package which does this, you
+<b>must</b> change the behaviour.
+</p>
+
+</div>
+<div class="section">
+<h3 id="quoting-rules-for-configure.ac">Quoting Rules for <code class="docutils literal"><span class="pre">configure.ac</span></code>
+</h3>
+
+<p>
+Behind the scenes, <code class="docutils literal"><span class="pre">autoconf</span></code> makes heavy use of the <code class="docutils literal"><span class="pre">m4</span></code> macro processor to
+do the work. The <code class="docutils literal"><span class="pre">m4</span></code> quote characters are set by <code class="docutils literal"><span class="pre">autoconf</span></code> to be <code class="docutils literal"><span class="pre">[</span></code> and
+<code class="docutils literal"><span class="pre">]</span></code> for opening and closing quotes respectively. Using <code class="docutils literal"><span class="pre">"</span></code> or <code class="docutils literal"><span class="pre">'</span></code> may
+produce unexpected results.
+</p>
+
+<p>
+To include a literal left square bracket, the easiest thing to do is to use the
+special string <code class="docutils literal"><span class="pre">@&lt;:@</span></code>. For a right bracket, use <code class="docutils literal"><span class="pre">@:&gt;@</span></code>.
+</p>
+
+<p>
+For example:
+</p>
+
+<pre><span class=""><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_MSG_RESULT</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">(</span>the first<span xmlns="http://www.w3.org/1999/xhtml" class="Special">)</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_MSG_RESULT</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">(</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">[</span>the second]<span xmlns="http://www.w3.org/1999/xhtml" class="Special">)</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_MSG_RESULT</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">(</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">the</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">third</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">)</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_MSG_RESULT</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">(</span>@&lt;:@the fourth@:&gt;@<span xmlns="http://www.w3.org/1999/xhtml" class="Special">)</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AC_MSG_RESULT</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">(</span><span xmlns="http://www.w3.org/1999/xhtml" class="Special">[</span>@&lt;:@the fifth@:&gt;@]<span xmlns="http://www.w3.org/1999/xhtml" class="Special">)</span>
+</span></pre>
+
+<p>
+gives:
+</p>
+
+<pre>
+    the first
+    the second
+    "the third"
+    [the fourth]
+    [the fifth]
+</pre>
+
+<p>
+When in doubt, it is generally safest to quote macro arguments using <code class="docutils literal"><span class="pre">[ ]</span></code>
+rather than leaving things unquoted.
+</p>
+
+</div>
+</div>
+<div class="section">
+<h2 id="the-makefile.am-files">The <code class="docutils literal"><span class="pre">Makefile.am</span></code> Files</h2>
+
+<p>
+The <code class="docutils literal"><span class="pre">Makefile.am</span></code> file is processed by <code class="docutils literal"><span class="pre">automake</span></code> to create <code class="docutils literal"><span class="pre">Makefile.in</span></code>,
+which is in turn processed by <code class="docutils literal"><span class="pre">configure</span></code> to create <code class="docutils literal"><span class="pre">Makefile</span></code>, which is in
+turn used by <code class="docutils literal"><span class="pre">make</span></code> to build the software.
+</p>
+
+<p>
+The basic format is like that of a <code class="docutils literal"><span class="pre">Makefile</span></code>. However, you will see various
+'special' variables being set, rather than every rule being written manually.
+</p>
+
+<p>
+A very simple example:
+</p>
+
+<pre><span class=""><span xmlns="http://www.w3.org/1999/xhtml" class="Type">bin_PROGRAMS</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span> myapp
+<span xmlns="http://www.w3.org/1999/xhtml" class="Type">myapp_SOURCES</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span> myapp_commandline.c myapp.c
+</span></pre>
+
+<p>
+All the standard GNU rules will be generated, so <code class="docutils literal"><span class="pre">make</span></code>. <code class="docutils literal"><span class="pre">make clean</span></code>.
+<code class="docutils literal"><span class="pre">make distclean</span></code>. <code class="docutils literal"><span class="pre">make dist</span></code> and so on will all work here.
+</p>
+
+<p>
+You may also see some standard <code class="docutils literal"><span class="pre">Makefile</span></code> constructs showing up whenever there
+isn't a standard <code class="docutils literal"><span class="pre">automake</span></code> way of handling a certain task. For example:
+</p>
+
+<pre><span class=""><span xmlns="http://www.w3.org/1999/xhtml" class="Type">CLEANFILES</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span> glep31check.1
+<span xmlns="http://www.w3.org/1999/xhtml" class="Type">man_MANS</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span> glep31check.1
+<span xmlns="http://www.w3.org/1999/xhtml" class="Type">EXTRA_DIST</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span> glep31check.in
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">%.1</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">:</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">%.in</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">@regex_cmd@</span> -e <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">s,\@VERSION\@<span class="Special">,</span><span class="Identifier">$(VERSION)</span>,g</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">$?</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">&gt;</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">$@</span>
+</span></pre>
+
+<p>
+Here, the <code class="docutils literal"><span class="pre">@regex_cmd@</span></code> variable will be substituted with whatever
+<code class="docutils literal"><span class="pre">configure</span></code> detects (<code class="docutils literal"><span class="pre">sed</span></code> in this case) when creating the <code class="docutils literal"><span class="pre">Makefile</span></code>.
+This is handled via the macro <code class="docutils literal"><span class="pre">AC_SUBST(VARNAME)</span></code> in <code class="docutils literal"><span class="pre">configure.ac</span></code>.
+</p>
+
+<div class="section">
+<h3 id="makefile-variables">Makefile Variables</h3>
+
+<p>
+Sometimes, badly behaved <code class="docutils literal"><span class="pre">Makefile.am</span></code> files will override user variables such
+as <code class="docutils literal"><span class="pre">CFLAGS</span></code>. This must not be allowed 
+    —
+   see
+<a href="../../general-concepts/user-environment/index.html#not-filtering-variables">Not Filtering Variables</a>. There
+are separate special variables which should be used in these situations 
+    —
+   for
+setting <code class="docutils literal"><span class="pre">CFLAGS</span></code>. for example, a <code class="docutils literal"><span class="pre">Makefile.am</span></code> should use <code class="docutils literal"><span class="pre">AM_CFLAGS</span></code> so
+that user preferences are not ignored.
+</p>
+
+<p>
+So, if a <code class="docutils literal"><span class="pre">Makefile.am</span></code> contains, say:
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">CFLAGS</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>-Wall<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+</span></pre>
+
+<p>
+You should <code class="docutils literal"><span class="pre">sed</span></code> or <code class="docutils literal"><span class="pre">patch</span></code> it to use:
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">AM_CFLAGS</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>-Wall<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+</span></pre>
+
+<p>
+Remember to manually run <code class="docutils literal"><span class="pre">autoconf</span></code> then <code class="docutils literal"><span class="pre">automake</span></code> if you do this.
+</p>
+
+</div>
+</div>
+<div class="section">
+<h2 id="the-config.h.in-file">The <code class="docutils literal"><span class="pre">config.h.in</span></code> File</h2>
+
+<p>
+The <code class="docutils literal"><span class="pre">config.h.in</span></code> file is generated by <code class="docutils literal"><span class="pre">autoheader</span></code>. You shouldn't have to
+worry about this usually, but occasionally you may need to run <code class="docutils literal"><span class="pre">autoheader</span></code>
+manually as part of the build process if upstream do not ship a pre-generated
+version.
+</p>
+
+</div>
+<div class="section">
+<h2 id="aclocal-and-m4-files">
+<code class="docutils literal"><span class="pre">aclocal</span></code> and <code class="docutils literal"><span class="pre">m4</span></code> Files</h2>
+
+<p>
+In the <code class="docutils literal"><span class="pre">configure.ac</span></code> or <code class="docutils literal"><span class="pre">configure.in</span></code> files you can call not only the
+default macros defined by <code class="docutils literal"><span class="pre">autoconf</span></code> and <code class="docutils literal"><span class="pre">automake</span></code>. but also other
+functions which can be defined by specific packages like libraries and programs
+to check for their features in the correct manner.
+</p>
+
+<p>
+Those functions are (usually) defined in <code class="docutils literal"><span class="pre">m4</span></code> files placed in
+the <code class="docutils literal"><span class="pre">/usr/share/aclocal</span></code> directory by packages. Problems can arise when you
+need to regenerate the <code class="docutils literal"><span class="pre">autotools</span></code> files, because the functions used by the
+<code class="docutils literal"><span class="pre">configure.ac</span></code> file can be defined in an <code class="docutils literal"><span class="pre">m4</span></code> macro file which isn't
+installed on the user's system. This is the case for example for some optional
+features which require libraries and are disabled by <code class="docutils literal"><span class="pre">USE</span></code> flags. If the
+<code class="docutils literal"><span class="pre">m4</span></code> files aren't installed in the user's system, the <code class="docutils literal"><span class="pre">autoconf</span></code> step will
+fail.
+</p>
+
+<p>
+To resolve this, most packages just ship the <code class="docutils literal"><span class="pre">m4</span></code> macro files needed for their
+<code class="docutils literal"><span class="pre">configure.ac</span></code> in an <code class="docutils literal"><span class="pre">m4</span></code> subdirectory in the source package. Unfortunately,
+not all <code class="docutils literal"><span class="pre">m4</span></code> directories are complete, even if they are present.
+</p>
+
+<p>
+In those cases you need to find out the <code class="docutils literal"><span class="pre">m4</span></code> file, usually installed by the
+dependency in <code class="docutils literal"><span class="pre">/usr/share/aclocal</span></code>. and make sure that the <code class="docutils literal"><span class="pre">src_unpack</span></code>
+stage both makes available those files to the autotools and calls <code class="docutils literal"><span class="pre">aclocal</span></code> to
+recreate the <code class="docutils literal"><span class="pre">aclocal.m4</span></code> file which is used by <code class="docutils literal"><span class="pre">autoconf</span></code> when creating the
+configure script.
+</p>
+
+<p>
+Usually it's more than one <code class="docutils literal"><span class="pre">m4</span></code> file which is missing, so you probably want to
+package them in a tarball, and add it to <code class="docutils literal"><span class="pre">SRC_URI</span></code>. After making sure that the
+tarball is extracted somewhere in <code class="docutils literal"><span class="pre">${WORKDIR}</span></code> (say, in a <code class="docutils literal"><span class="pre">gentoo-m4</span></code>
+directory), you usually have two general ways to handle those macro files, one
+for packages which ships with an incomplete <code class="docutils literal"><span class="pre">m4</span></code> directory and one for
+packages which ships without the <code class="docutils literal"><span class="pre">m4</span></code> directory.
+</p>
+
+<p>
+In the first case you usually want to do something like:
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">einfo</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>Regenerating autotools files...<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+cp <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${WORKDIR}</span>/gentoo-m4<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${S}</span>/m4<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">die</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>m4 copy failed<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">WANT_AUTOCONF</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>2.5<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> aclocal -I <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${S}</span>/m4<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">die</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>aclocal failed<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">WANT_AUTOCONF</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>2.5<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> autoconf <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">die</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>autoconf failed<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+</span></pre>
+
+<p>
+and so on. In the second case you can simplify it in this way:
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">einfo</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>Regenerating autotools files...<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">WANT_AUTOCONF</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>2.5<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> aclocal -I <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${WORKDIR}</span>/gentoo-m4<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">die</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>aclocal failed<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">WANT_AUTOCONF</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>2.5<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> autoconf <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">die</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>autoconf failed<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+</span></pre>
+
+<p>
+without need to copy the files.
+</p>
+
+<p>
+It's always better inform upstream when the needed <code class="docutils literal"><span class="pre">m4</span></code> files are missing in
+the distribution, asking them to add all the needed files in the source tarball
+to avoid version conflicts if the macro changes.
+</p>
+
+</div>
+<div class="section">
+<h2 id="libtool">Libtool</h2>
+
+<div class="alert alert-success" role="alert">
+<strong>Todo:</strong>
+Stuff about libtool, libtoolize, elibtoolize, libtool.eclass. Which I
+know almost nothing about... Yay!
+</div>
+
+</div>
+<div class="section">
+<h2 id="further-autotools-reading">Further Autotools Reading</h2>
+
+<p>
+For more details on autotools:
+</p>
+
+<ul>
+  <li>
+    The book "GNU Autoconf, Automake and Libtool" by Gary V. Vaughan, Ben
+    Elliston, Tom Tromey  and Ian Lance Taylor   (often called "The Autobook")
+    provides a good but somewhat outdated description of autotools. It is
+    <a href="http://sources.redhat.com/autobook/">freely available online</a>.
+  </li>
+  <li>
+    The GNU documentation for the various autotools components is of varying
+    quality and completeness:
+  </li>
+  <ul>
+    <li>
+      <a href="http://www.gnu.org/software/automake/manual/automake.html">
+        GNU automake Manual
+      </a>
+    </li>
+    <li>
+      <a href="http://www.gnu.org/software/autoconf/manual/">GNU autoconf Manual</a>
+    </li>
+    <li>
+      <a href="http://www.gnu.org/software/libtool/manual/">GNU libtool Manual</a>
+    </li>
+    <li>
+      <a href="http://www.gnu.org/software/m4/manual/m4.html">GNU m4 Manual</a>
+    </li>
+  </ul>
+  <li>
+    There are some good overview lectures available online. <a href="http://www.shlomifish.org/lecture/Autotools/">These
+    slides</a> are one example.
+  </li>
+</ul>
+
+</div>
+</div>
+<footer><div class="container">
+<div class="row">
+<div class="col-xs-12 col-md-offset-2 col-md-7"></div>
+<div class="col-xs-12 col-md-3">
+<h3 class="footerhead">Questions or comments?</h3>
+              Please feel free to <a href="https://www.gentoo.org/inside-gentoo/contact/">contact us</a>.
+            </div>
+</div>
+<div class="row">
+<div class="col-xs-2 col-sm-3 col-md-2"><ul class="footerlinks three-icons">
+<li><a href="http://twitter.com/gentoo" title="@Gentoo on Twitter"><span class="fa fa-twitter fa-fw"></span></a></li>
+<li><a href="https://plus.google.com/+Gentoo" title="+Gentoo on Google+"><span class="fa fa-google-plus fa-fw"></span></a></li>
+<li><a href="https://www.facebook.com/gentoo.org" title="Gentoo on Facebook"><span class="fa fa-facebook fa-fw"></span></a></li>
+</ul></div>
+<div class="col-xs-10 col-sm-9 col-md-10">
+<strong>Copyright (C) 2001-2015 Gentoo Foundation, Inc.</strong><br><small>
+                Gentoo is a trademark of the Gentoo Foundation, Inc.
+                The text of this document is distributed under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Attribution-ShareAlike 2.0 License</a>.
+                The <a href="https://www.gentoo.org/inside-gentoo/foundation/name-logo-guidelines.html">Gentoo Name and Logo Usage Guidelines</a> apply.
+              </small>
+</div>
+</div>
+</div></footer><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/jquery.min.js"></script><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.js"></script>
+</body>
+</html>

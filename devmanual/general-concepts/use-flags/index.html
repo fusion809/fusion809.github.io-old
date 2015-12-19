@@ -1,0 +1,333 @@
+<!DOCTYPE html><html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Gentoo Development Guide: USE Flags</title>
+<link rel="stylesheet" href="../../devmanual.css" type="text/css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The Gentoo Devmanual is a technical manual which covers topics such as writing ebuilds and eclasses, and policies that developers should be abiding by.">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/tyrian.min.css" rel="stylesheet" media="screen">
+<link rel="icon" href="https://www.gentoo.org/favicon.ico" type="image/x-icon">
+</head>
+<body>
+<header><div class="site-title"><div class="container"><div class="row">
+<div class="site-title-buttons"><div class="btn-group btn-group-sm">
+<a href="https://get.gentoo.org/" role="button" class="btn get-gentoo"><span class="fa fa-fw fa-download"></span><strong> Get Gentoo!</strong></a><div class="btn-group btn-group-sm">
+<a class="btn gentoo-org-sites dropdown-toggle" data-toggle="dropdown" data-target="#" href="#"><span class="fa fa-fw fa-map-o"></span><span class="hidden-xs"> gentoo.org sites </span><span class="caret"></span></a><ul class="dropdown-menu dropdown-menu-right">
+<li><a href="https://www.gentoo.org/" title="Main Gentoo website"><span class="fa fa-home fa-fw"></span> gentoo.org</a></li>
+<li><a href="https://wiki.gentoo.org/" title="Find and contribute documentation"><span class="fa fa-file-text-o fa-fw"></span> Wiki</a></li>
+<li><a href="https://bugs.gentoo.org/" title="Report issues and find common issues"><span class="fa fa-bug fa-fw"></span> Bugs</a></li>
+<li><a href="https://forums.gentoo.org/" title="Discuss with the community"><span class="fa fa-comments-o fa-fw"></span> Forums</a></li>
+<li><a href="https://packages.gentoo.org/" title="Find software for your Gentoo"><span class="fa fa-hdd-o fa-fw"></span> Packages</a></li>
+<li class="divider">
+<li><a href="https://planet.gentoo.org/" title="Find out what's going on in the developer community"><span class="fa fa-rss fa-fw"></span> Planet</a></li>
+<li><a href="https://archives.gentoo.org/" title="Read up on past discussions"><span class="fa fa-archive fa-fw"></span> Archives</a></li>
+<li><a href="https://sources.gentoo.org/" title="Browse our source code"><span class="fa fa-code fa-fw"></span> Sources</a></li>
+<li class="divider">
+<li><a href="https://infra-status.gentoo.org/" title="Get updates on the services provided by Gentoo"><span class="fa fa-server fa-fw"></span> Infra Status</a></li>
+</ul>
+</div>
+</div></div>
+<div class="logo">
+<a href="/" title="Back to the homepage" class="site-logo"><object data="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.svg" type="image/svg+xml"><img src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.png" alt="Gentoo Linux Logo"></object></a><span class="site-label">Development Guide</span>
+</div>
+</div></div></div>
+<nav class="tyrian-navbar" role="navigation"><div class="container"><div class="row">
+<div class="navbar-header"><button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button></div>
+<div class="collapse navbar-collapse navbar-main-collapse"><ul class="nav navbar-nav">
+<li><a href="../..//index.html"><span class="glyphicon glyphicon-home"></span>  Home</a></li>
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">USE Flags<span class="caret"></span></a></li>
+<li><a href="../tree/index.html"><span class="glyphicon glyphicon-arrow-left"></span>  The Portage Tree</a></li>
+<li><a href="../../general-concepts/user-environment/index.html">User Environment  <span class="glyphicon glyphicon-arrow-right"></span></a></li>
+</ul></div>
+</div></div></nav></header><div class="container"><div class="row"><div class="col-md010"><ol class="breadcrumb">
+<li><a href="../../index.html">Master Index</a></li>
+<li><a href="../index.html">General Concepts</a></li>
+</ol></div></div></div>
+<div class="container">
+<h1 class="first-header">USE Flags</h1>
+<p>
+	<code class="docutils literal"><span class="pre">USE</span></code> flags are to control optional dependencies and settings which
+	the user may reasonably want to select. For example, <code class="docutils literal"><span class="pre">app-editors/vim</span></code>
+	can optionally build with support for the <code class="docutils literal"><span class="pre">ruby</span></code> interpreter, and it
+	needs <code class="docutils literal"><span class="pre">dev-lang/ruby</span></code> installed to do this 
+    —
+   we use the ruby
+	<code class="docutils literal"><span class="pre">USE</span></code> flag to provide this option. On the other hand,
+	<code class="docutils literal"><span class="pre">app-text/glark</span></code> requires <code class="docutils literal"><span class="pre">ruby</span></code> no matter what, so no <code class="docutils literal"><span class="pre">USE</span></code>
+	flag is used there.
+</p>
+
+<p>
+	No combination of <code class="docutils literal"><span class="pre">USE</span></code> flags should cause a package to fail to build
+	because users can set any combination of flags.
+</p>
+
+<p>
+	Packages should not configure and link based upon what is available at
+	compile time 
+    —
+   any autodetection must be overridden. This is commonly
+	referred to as the dependency being "automagic" - This is bad because the
+	dependency is not detected by the package manager tools and can easily
+	break, among other issues.
+</p>
+
+<p>
+	The usage of a <code class="docutils literal"><span class="pre">USE</span></code> flag should not control runtime dependencies when
+	the package does not link to it. Doing so will create extra
+	configuration for the package and re-compilation for no underlying file
+	change on disk. This should be avoided and instead can be conveyed to the
+	user via post install messages if needed.
+</p>
+
+<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+	The status of USE flags is saved in the VDB, and their value in
+	<code class="docutils literal"><span class="pre">pkg_prerm</span></code> and <code class="docutils literal"><span class="pre">pkg_postrm</span></code> is taken from there. This means that
+	setting or unsetting a USE flag between merge and unmerge has no effect.
+</div>
+<div class="section">
+<h2 id="noblah-use-flags">
+<code class="docutils literal"><span class="pre">noblah</span></code> USE Flags</h2>
+<p>
+	Avoid <code class="docutils literal"><span class="pre">noblah</span></code> style <code class="docutils literal"><span class="pre">USE</span></code> flags. These break <code class="docutils literal"><span class="pre">use.mask</span></code> and
+	cause all sorts of complications for arch developers. Here's why:
+</p>
+
+<p>
+	Consider a hypothetical package named 'vplayer', which plays videos. This
+	package has optional support, via <code class="docutils literal"><span class="pre">USE</span></code> flags, for various sound and
+	video output methods, various video codecs and so on.
+</p>
+
+<p>
+	One of vplayer's optional features is support for the 'fakemedia' codec,
+	which is unfortunately only available as a dodgy x86 binary. We <i>could</i>
+	handle this by doing something like:
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">RDEPEND</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>x86? <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> fakemedia? <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> &gt;=media-libs/fakemedia-1.1 <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+</span></pre>
+
+<p>
+	Except this is pretty nasty 
+    —
+   what happens when an AMD64 binary is made
+	as well? Also, users on other archs will see fakemedia listed in
+	<code class="docutils literal"><span class="pre">emerge -pv</span></code> output, even though it is not actually available.
+</p>
+
+<p>
+	Similarly, say vplayer supports output via the ALSA codec as one option.
+	However, ALSA isn't (or wasn't when this example was written) available on
+	SPARC or Alpha. So we could do:
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">DEPEND</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>!sparc? <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> !alpha? <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> alsa? <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> media-libs/alsa-lib <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+</span></pre>
+
+<p>
+	Again, it's messy, and ALSA still shows up in the <code class="docutils literal"><span class="pre">emerge -p</span></code> output.
+	Also, once ALSA starts working on SPARC, every ebuild that does this would
+	have to be manually edited.
+</p>
+
+<p>
+	The solution is <code class="docutils literal"><span class="pre">use.mask</span></code>, which is documented in
+	<a href="../../profiles/use.mask/index.html">Profiles use.mask File</a>. Each profile can have a <code class="docutils literal"><span class="pre">use.mask</span></code>
+	file which can be used to forcibly disable certain USE flags on a given
+	arch (or subarch, or subprofile). So, if the <code class="docutils literal"><span class="pre">fakemedia</span></code> USE flag was
+	use.masked on every non-x86 profile, the following would be totally legal
+	and wouldn't break anything:
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">RDEPEND</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>fakemedia? <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span> &gt;=media-libs/fakemedia-1-1 <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+</span></pre>
+
+<p>
+	Users of non-x86 would see the following when doing
+	<code class="docutils literal"><span class="pre">emerge -pv vplayer</span></code>:
+</p>
+
+<pre>
+	[ebuild   R   ] media-video/vplayer-1.2 alsa -blah (-fakemedia) xyz
+</pre>
+
+<p>
+	To get a flag added to <code class="docutils literal"><span class="pre">use.mask</span></code>, ask the relevant arch team.
+</p>
+
+</div>
+<div class="section">
+<h2 id="local-and-global-use-flags">Local and Global USE Flags</h2>
+
+<p>
+	USE flags are categorised as either local or global. A global USE flag must
+	satisfy several criteria:
+</p>
+
+<ul>
+	<li>It is used by many different packages, at least 5 seems to be agreed
+		upon.</li>
+  <li>It has a general non-specific purpose.</li>
+</ul>
+
+<p>
+	The second point is important. If the effect of the USE flag upon
+	<code class="docutils literal"><span class="pre">pkg-one</span></code> is substantially different from the effect it has upon
+	<code class="docutils literal"><span class="pre">pkg-two</span></code>, then the flag is not a suitable candidate for being made a
+	global flag. In particular, note that if <code class="docutils literal"><span class="pre">client</span></code> and <code class="docutils literal"><span class="pre">server</span></code>
+	USE flags are ever introduced, they can not be global USE flags for this
+	reason.
+</p>
+
+<p>
+	Before introducing a new global USE flag, it must be discussed on the
+	gentoo-dev mailing list.
+</p>
+
+</div>
+<div class="section">
+<h2 id="use-flag-descriptions">USE Flag Descriptions</h2>
+<p>
+	All USE flags must be described in either <code class="docutils literal"><span class="pre">use.desc</span></code> in the
+	<code class="docutils literal"><span class="pre">profiles/</span></code> directory or <code class="docutils literal"><span class="pre">metadata.xml</span></code> in the package's
+	directory. See <code class="docutils literal"><span class="pre">man portage</span></code> or the comments in these files for an
+	explanation of the format. Remember to keep these files sorted. The file
+	<code class="docutils literal"><span class="pre">use.local.desc</span></code> is automatically generated from entries in the
+	package's <code class="docutils literal"><span class="pre">metadata.xml</span></code> and may be used by tools that parse the tree.
+	Since <code class="docutils literal"><span class="pre">use.local.desc</span></code> is automatically generated it must never be
+	manually editted in the tree.
+	See
+	<a href="https://wiki.gentoo.org/wiki/GLEP:56">GLEP 56</a>
+	for more info.
+</p>
+<p>
+	The exceptions to this are <code class="docutils literal"><span class="pre">USE_EXPAND</span></code> flags, which must be
+	documented in the <code class="docutils literal"><span class="pre">profiles/desc/</span></code> directory. One file per
+	<code class="docutils literal"><span class="pre">USE_EXPAND</span></code> variable is required, which must contain descriptions of
+	the possible values this variable can take. See the comments in these files
+	for the format, and remember to keep them sorted.
+</p>
+</div>
+<div class="section">
+<h2 id="conflicting-use-flags">Conflicting USE Flags</h2>
+<p>
+	Occasionally, ebuilds will have conflicting USE flags for functionality.
+	Checking for them and returning an error is <i>not</i> a viable solution.
+	Instead, you must pick one of the USE flags in conflict to favour and should
+	alert the user that a particular flag is being used instead.
+</p>
+
+<p>
+	One example comes from the <code class="docutils literal"><span class="pre">mail-mta/msmtp</span></code> ebuilds. The package can
+	use either SSL with GnuTLS, SSL with OpenSSL, or no SSL at all. Because
+	GnuTLS is more featureful than OpenSSL, it is favoured:
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_compile()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">local</span> myconf
+
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">if</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">use</span> ssl <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">&amp;&amp;</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">use</span> gnutls <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">;</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">then</span>
+        <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">myconf</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${myconf}</span> --enable-ssl --with-ssl=gnutls<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">elif</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">use</span> ssl <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">&amp;&amp;</span> ! <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">use</span> gnutls <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">;</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">then</span>
+        <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">myconf</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${myconf}</span> --enable-ssl --with-ssl=openssl<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">else</span>
+        <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">myconf</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${myconf}</span> --disable-ssl<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">fi</span>
+
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">econf</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">\</span>
+        <span xmlns="http://www.w3.org/1999/xhtml" class="Comment">#</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Other</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">stuff</span>
+        <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${myconf}</span>
+
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">emake</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">die</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>make failed<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+</span></pre>
+
+<p>
+	In some exceptional cases, above policy would break reverse USE
+	dependencies. To avoid this, the ebuild can specify allowed USE flag
+	combinations with <code class="docutils literal"><span class="pre">REQUIRED_USE</span></code> (available in EAPI 4). See section
+	<a href="../../ebuild-writing/eapi/index.html#eapi=4">eapi=4</a> for a description
+	of its syntax.
+</p>
+
+<p>
+	For example, if a package <code class="docutils literal"><span class="pre">dev-libs/foo</span></code> can be built with either
+	<code class="docutils literal"><span class="pre">USE="a"</span></code> or <code class="docutils literal"><span class="pre">USE="b"</span></code> but not with both, then preferring one of
+	the flags would break packages that depend on either <code class="docutils literal"><span class="pre">dev-libs/foo[a]</span></code>
+	or <code class="docutils literal"><span class="pre">dev-libs/foo[b]</span></code>. Therefore, the ebuild should specify
+	<code class="docutils literal"><span class="pre">REQUIRED_USE="a? ( !b )"</span></code> in this case.
+</p>
+
+<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+	In order to avoid forcing users to micro-manage flags too much,
+	<code class="docutils literal"><span class="pre">REQUIRED_USE</span></code> should be used sparingly. Follow the normal policy
+	whenever it is possible to do a build that will presumably suit the user's
+	needs.
+</div>
+</div>
+<div class="section">
+<h2 id="use_expand-and-arch-use-flags">USE_EXPAND and ARCH USE Flags</h2>
+
+<p>
+	The <code class="docutils literal"><span class="pre">VIDEO_CARDS</span></code>, <code class="docutils literal"><span class="pre">INPUT_DEVICES</span></code> and <code class="docutils literal"><span class="pre">LINGUAS</span></code> variables
+	are automatically expanded into USE flags. These are known as
+	<code class="docutils literal"><span class="pre">USE_EXPAND</span></code> variables. If the user has <code class="docutils literal"><span class="pre">LINGUAS="en fr"</span></code> in
+	<code class="docutils literal"><span class="pre">make.conf</span></code>, for example, then <code class="docutils literal"><span class="pre">USE="linguas_en linguas_fr"</span></code> will
+	automatically be set by Portage.
+</p>
+
+<p>
+	The <code class="docutils literal"><span class="pre">USE_EXPAND</span></code> list is set in <code class="docutils literal"><span class="pre">profiles/base/make.defaults</span></code> as of
+	Portage 2.0.51.20. This must not be modified without discussion on the
+	gentoo-dev list, and it must not be modified in any subprofile.
+</p>
+
+<p>
+	The current architecture (e.g. <code class="docutils literal"><span class="pre">x86</span></code>, <code class="docutils literal"><span class="pre">sparc</span></code>, <code class="docutils literal"><span class="pre">ppc-macos</span></code>)
+	will automatically be set as a USE flag as well. See
+	<code class="docutils literal"><span class="pre">profiles/arch.list</span></code> for a full list of valid architecture keywords,
+	and
+	<a href="https://wiki.gentoo.org/wiki/GLEP:22">GLEP 22</a>
+	for an explanation of the format.
+</p>
+
+<div class="alert alert-warning" role="alert">
+<strong>Warning:</strong>
+	It is a common misconception that the architecture variable is somehow
+	related to <code class="docutils literal"><span class="pre">ACCEPT_KEYWORDS</span></code>. It isn't. Accepting <code class="docutils literal"><span class="pre">x86</span></code> keywords
+	on <code class="docutils literal"><span class="pre">sparc</span></code>, for example, won't set <code class="docutils literal"><span class="pre">USE="x86"</span></code>. Similarly, there
+	are no <code class="docutils literal"><span class="pre">~arch</span></code> USE flags, so don't try <code class="docutils literal"><span class="pre">if use ~x86</span></code>.
+</div>
+
+</div>
+</div>
+<footer><div class="container">
+<div class="row">
+<div class="col-xs-12 col-md-offset-2 col-md-7"></div>
+<div class="col-xs-12 col-md-3">
+<h3 class="footerhead">Questions or comments?</h3>
+              Please feel free to <a href="https://www.gentoo.org/inside-gentoo/contact/">contact us</a>.
+            </div>
+</div>
+<div class="row">
+<div class="col-xs-2 col-sm-3 col-md-2"><ul class="footerlinks three-icons">
+<li><a href="http://twitter.com/gentoo" title="@Gentoo on Twitter"><span class="fa fa-twitter fa-fw"></span></a></li>
+<li><a href="https://plus.google.com/+Gentoo" title="+Gentoo on Google+"><span class="fa fa-google-plus fa-fw"></span></a></li>
+<li><a href="https://www.facebook.com/gentoo.org" title="Gentoo on Facebook"><span class="fa fa-facebook fa-fw"></span></a></li>
+</ul></div>
+<div class="col-xs-10 col-sm-9 col-md-10">
+<strong>Copyright (C) 2001-2015 Gentoo Foundation, Inc.</strong><br><small>
+                Gentoo is a trademark of the Gentoo Foundation, Inc.
+                The text of this document is distributed under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Attribution-ShareAlike 2.0 License</a>.
+                The <a href="https://www.gentoo.org/inside-gentoo/foundation/name-logo-guidelines.html">Gentoo Name and Logo Usage Guidelines</a> apply.
+              </small>
+</div>
+</div>
+</div></footer><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/jquery.min.js"></script><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.js"></script>
+</body>
+</html>

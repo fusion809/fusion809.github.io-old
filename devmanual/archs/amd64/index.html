@@ -1,0 +1,639 @@
+<!DOCTYPE html><html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Gentoo Development Guide: Arch Specific Notes -- AMD64/EM64T</title>
+<link rel="stylesheet" href="../../devmanual.css" type="text/css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The Gentoo Devmanual is a technical manual which covers topics such as writing ebuilds and eclasses, and policies that developers should be abiding by.">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/tyrian.min.css" rel="stylesheet" media="screen">
+<link rel="icon" href="https://www.gentoo.org/favicon.ico" type="image/x-icon">
+</head>
+<body>
+<header><div class="site-title"><div class="container"><div class="row">
+<div class="site-title-buttons"><div class="btn-group btn-group-sm">
+<a href="https://get.gentoo.org/" role="button" class="btn get-gentoo"><span class="fa fa-fw fa-download"></span><strong> Get Gentoo!</strong></a><div class="btn-group btn-group-sm">
+<a class="btn gentoo-org-sites dropdown-toggle" data-toggle="dropdown" data-target="#" href="#"><span class="fa fa-fw fa-map-o"></span><span class="hidden-xs"> gentoo.org sites </span><span class="caret"></span></a><ul class="dropdown-menu dropdown-menu-right">
+<li><a href="https://www.gentoo.org/" title="Main Gentoo website"><span class="fa fa-home fa-fw"></span> gentoo.org</a></li>
+<li><a href="https://wiki.gentoo.org/" title="Find and contribute documentation"><span class="fa fa-file-text-o fa-fw"></span> Wiki</a></li>
+<li><a href="https://bugs.gentoo.org/" title="Report issues and find common issues"><span class="fa fa-bug fa-fw"></span> Bugs</a></li>
+<li><a href="https://forums.gentoo.org/" title="Discuss with the community"><span class="fa fa-comments-o fa-fw"></span> Forums</a></li>
+<li><a href="https://packages.gentoo.org/" title="Find software for your Gentoo"><span class="fa fa-hdd-o fa-fw"></span> Packages</a></li>
+<li class="divider">
+<li><a href="https://planet.gentoo.org/" title="Find out what's going on in the developer community"><span class="fa fa-rss fa-fw"></span> Planet</a></li>
+<li><a href="https://archives.gentoo.org/" title="Read up on past discussions"><span class="fa fa-archive fa-fw"></span> Archives</a></li>
+<li><a href="https://sources.gentoo.org/" title="Browse our source code"><span class="fa fa-code fa-fw"></span> Sources</a></li>
+<li class="divider">
+<li><a href="https://infra-status.gentoo.org/" title="Get updates on the services provided by Gentoo"><span class="fa fa-server fa-fw"></span> Infra Status</a></li>
+</ul>
+</div>
+</div></div>
+<div class="logo">
+<a href="/" title="Back to the homepage" class="site-logo"><object data="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.svg" type="image/svg+xml"><img src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.png" alt="Gentoo Linux Logo"></object></a><span class="site-label">Development Guide</span>
+</div>
+</div></div></div>
+<nav class="tyrian-navbar" role="navigation"><div class="container"><div class="row">
+<div class="navbar-header"><button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button></div>
+<div class="collapse navbar-collapse navbar-main-collapse"><ul class="nav navbar-nav">
+<li><a href="../..//index.html"><span class="glyphicon glyphicon-home"></span>  Home</a></li>
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Arch Specific Notes -- AMD64/EM64T<span class="caret"></span></a></li>
+<li><a href="../alpha/index.html"><span class="glyphicon glyphicon-arrow-left"></span>  Arch Specific Notes -- Alpha</a></li>
+<li><a href="../../archs/mips/index.html">Arch Specific Notes -- MIPS  <span class="glyphicon glyphicon-arrow-right"></span></a></li>
+</ul></div>
+</div></div></nav></header><div class="container"><div class="row"><div class="col-md010"><ol class="breadcrumb">
+<li><a href="../../index.html">Master Index</a></li>
+<li><a href="../index.html">Arch Specific Notes</a></li>
+</ol></div></div></div>
+<div class="container">
+<h1 class="first-header">Arch Specific Notes -- AMD64/EM64T</h1>
+
+<div class="section">
+<h2 id="position-independent-code-issues">Position Independent Code Issues</h2>
+
+<p>
+Gentoo Policy demands all shared objects to be compiled with <code class="docutils literal"><span class="pre">-fPIC</span></code>
+in <code class="docutils literal"><span class="pre">CFLAGS</span></code>. Since this is only a rule, you <i>can</i> break it on some arches.
+You might never notice it. On AMD64, this is a necessity, if shared objects aren't
+built with support for position independent code, the build process bails out
+with an error message like this:
+</p>
+
+<pre>
+foo.o: relocation R_X86_64_32 can not be used when making a shared
+object; recompile with -fPIC
+</pre>
+
+<div class="section">
+<h3 id="how-to-fix--fpic-issues">How to fix -fPIC issues</h3>
+
+<p>
+There are several ways to enforce <code class="docutils literal"><span class="pre">-fPIC</span></code> on shared objects, each with its
+pros and cons.
+</p>
+
+<div class="section">
+<h4 id="sed'ing-the-makefile">
+<code class="docutils literal"><span class="pre">sed</span></code>'ing the Makefile</h4>
+
+<p>
+Sometimes, a simple <code class="docutils literal"><span class="pre">sed</span></code> command is enough to fix it, however, the statements
+normally aren't very readable and may fail when upstream changes the file.
+Please verify that you only change the <code class="docutils literal"><span class="pre">CFLAGS</span></code> for <i>shared</i> objects, not for
+the whole package.
+</p>
+
+</div>
+
+<div class="section">
+<h4 id="patching-makefile.in/configure">Patching <code class="docutils literal"><span class="pre">Makefile.in</span></code>/<code class="docutils literal"><span class="pre">configure</span></code>
+</h4>
+
+<p>
+This is more readable, and easier to send upstream.
+</p>
+
+</div>
+
+</div>
+
+<div class="section">
+<h3 id="how-not-to-fix--fpic-issues">How <b>not</b> to fix -fPIC issues</h3>
+
+<p>
+Do <b>not</b> patch the <code class="docutils literal"><span class="pre">Makefile</span></code> itself, since it is usually generated by the
+<code class="docutils literal"><span class="pre">configure</span></code> script and may vary heavily, so the patch could fail. Also, this
+doesn't help upstream at all.
+</p>
+
+<p>
+Another bad idea is to (ab)use <code class="docutils literal"><span class="pre">append-flags</span></code> function from
+<code class="docutils literal"><span class="pre">flag-o-matic.eclass</span></code>. Applying <code class="docutils literal"><span class="pre">-fPIC</span></code> on all objects should not be
+done.  It should only be applied to shared objects.
+</p>
+
+</div>
+
+</div>
+
+<div class="section">
+<h2 id="multilib-on-amd64">Multilib on AMD64</h2>
+
+<p>
+The current AMD64 processors are able to natively run 32bit code on a 64bit
+kernel. Therefore, you can run programs compiled for x86 in an amd64 environment.
+However, 32bit applications need to be linked against 32bit libraries. Mixing
+them won't work. For this reason the libraries are sorted, 32bit libraries normally
+go to <code class="docutils literal"><span class="pre">/lib32</span></code> respectively <code class="docutils literal"><span class="pre">/usr/lib32</span></code>, the 64bit ones normally to <code class="docutils literal"><span class="pre">/lib64</span></code> or
+<code class="docutils literal"><span class="pre">/usr/lib64</span></code>. In a perfect world, you wouldn't have to read on. Unfortunately,
+that's not the case, and so it's a bit more complicated.
+</p>
+
+<div class="section">
+<h3 id="multilib-toolchain">Multilib-Toolchain</h3>
+
+<div class="section">
+<h4 id="gcc">GCC</h4>
+
+<p>
+To generate 32bit code, we need a multilib-capable GCC. On other architectures,
+this functionality is enabled with the USE flag <code class="docutils literal"><span class="pre">multilib</span></code>. This is also true
+for amd64 with the <i>pre</i>-2005.0 profiles. From 2005.0 on, you have to choose
+whether you want multilib support or not by selecting the profile. Choose
+<code class="docutils literal"><span class="pre">2005.0/no-multilib</span></code> if you don't want it, all other profiles have the
+<code class="docutils literal"><span class="pre">multilib</span></code> USE flag masked, you're forced to it. With these profiles, GCC will
+produce x86-code whenever you add <code class="docutils literal"><span class="pre">-m32</span></code> to its command line. Adding <code class="docutils literal"><span class="pre">-m64</span></code>
+or omitting any bit-width option will default to producing 64bit code.
+</p>
+
+</div>
+
+<div class="section">
+<h4 id="glibc">glibc</h4>
+
+<p>
+If you've chosen a multilib profile, glibc will be built twice, once 64bit and
+once 32bit. This is because nearly every application links against glibc. 
+To understand how this is done in the ebuild, read
+<a href="../../archs/amd64/index.html#the-abi-variable">The ABI Variable</a>.
+</p>
+
+</div>
+
+</div>
+
+<div class="section">
+<h3 id="the-emul-linux-x86-*-packages">The <code class="docutils literal"><span class="pre">emul-linux-x86-*</span></code> packages</h3>
+
+<p>
+As you read above, 32bit applications must be linked against 32bit libraries.
+For that, we've put together the most used libraries and stuck them into the
+so-called <code class="docutils literal"><span class="pre">emul-linux-x86</span></code> packages, which are located in the
+<code class="docutils literal"><span class="pre">app-emulation</span></code> category. The current list of all the <code class="docutils literal"><span class="pre">emul-linux-x86</span></code>
+packages, can be found <a href="https://dev.gentoo.org/~pacho/emul.html">here.</a>
+</p>
+
+<p>
+These packages only provide pre-compiled libraries. Currently, the
+archives are assembled manually, which is the main reason to keep the packages
+as tidy as possible. Do not include libraries that aren't commonly used.
+</p>
+
+<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+  The emul-packages might conflict with their native images, but only in
+  uncritical locations like <code class="docutils literal"><span class="pre">/usr/share</span></code> which are arch-independent anyway.
+</div>
+
+</div>
+
+<div class="section">
+<h3 id="libdir-links">
+<code class="docutils literal"><span class="pre">Libdir</span></code> Links</h3>
+
+<p>
+Currently, we provide several profiles, each with its own combination of <code class="docutils literal"><span class="pre">libdir</span></code>
+configurations.
+</p>
+
+<table class="table">
+  <tr>
+    <th>
+      Profile
+    </th>
+    <th>
+      lib32
+    </th>
+    <th>
+      lib
+    </th>
+    <th>
+      lib64
+    </th>
+  </tr>
+  <tr>
+    <td class="devbook">
+      2004.3
+    </td>
+    <td class="devbook">
+      *l-&gt;emul*
+    </td>
+    <td class="devbook">
+      d64
+    </td>
+    <td class="devbook">
+      *l-&gt;lib*
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      2004.3/lib64
+    </td>
+    <td class="devbook">
+      *l-&gt;emul*
+    </td>
+    <td class="devbook">
+      *l-&gt;64*
+    </td>
+    <td class="devbook">
+      d64
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      &gt;=2005.0
+    </td>
+    <td class="devbook">
+      d32
+    </td>
+    <td class="devbook">
+      *l-&gt;64*
+    </td>
+    <td class="devbook">
+      d64
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      &gt;=2005.0/no-multilib
+    </td>
+    <td class="devbook">
+      d32
+    </td>
+    <td class="devbook">
+      *l-&gt;64*
+    </td>
+    <td class="devbook">
+      d64
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      &gt;=2005.0/no-symlink
+    </td>
+    <td class="devbook">
+      d32
+    </td>
+    <td class="devbook">
+      d
+    </td>
+    <td class="devbook">
+      d64
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      &gt;=2005.0/no-symlink/no-lib32
+    </td>
+    <td class="devbook">
+      inexistant
+    </td>
+    <td class="devbook">
+      d32
+    </td>
+    <td class="devbook">
+      d64
+    </td>
+  </tr>
+</table>
+
+<dl>
+  <dt>
+    d
+  </dt>
+  <dd>
+      Directory containing mixed-bit objects
+    </dd>
+  <dt>
+    dXX
+  </dt>
+  <dd>
+      Directory containing XXbit objects
+    </dd>
+  <dt>
+    l-&gt;foo
+  </dt>
+  <dd>
+      Link to foo
+    </dd>
+</dl>
+
+<p>
+To always get the right path, you should use the function <code class="docutils literal"><span class="pre">$(get_libdir)</span></code> from
+<code class="docutils literal"><span class="pre">multilib.eclass</span></code>. It will always return the correct directory, on all arches.
+And of course it also takes care of the <code class="docutils literal"><span class="pre">ABI</span></code> variable.
+</p>
+
+</div>
+
+<div class="section">
+<h3 id="the-multilib-strict-feature">The <code class="docutils literal"><span class="pre">multilib-strict</span></code> Feature</h3>
+
+<p>
+Many Makefiles assume that their libraries should go to <code class="docutils literal"><span class="pre">/usr/lib</span></code>, or
+<code class="docutils literal"><span class="pre">$(prefix)/lib</span></code>. This assumption can cause a serious mess if <code class="docutils literal"><span class="pre">/usr/lib</span></code>
+isn't a symlink to <code class="docutils literal"><span class="pre">/usr/lib64</span></code>. To find the bad packages, we have a portage feature
+called <b>multilib-strict</b>. It will prevent emerge from putting 64bit libraries
+into anything other than <code class="docutils literal"><span class="pre">(/usr)/lib64</span></code>.
+</p>
+
+<p>
+<code class="docutils literal"><span class="pre">multilib-strict</span></code> currently doesn't check perl5, gcc, gcc-lib and eclipse-3,
+this behaviour is controlled by the <code class="docutils literal"><span class="pre">MULTILIB_STRICT_EXEMPT</span></code> variable in
+<code class="docutils literal"><span class="pre">make.profile</span></code>.
+</p>
+
+<div class="section">
+<h4 id="how-to-fix-ebuilds-properly">How to fix ebuilds properly</h4>
+
+<p>
+In most cases, it's sufficient to use the <code class="docutils literal"><span class="pre">$(get_libdir)</span></code> function from
+<code class="docutils literal"><span class="pre">multilib.eclass</span></code>:
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">inherit</span> multilib
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_compile()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">econf</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">\</span>
+        <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">--libdir</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span>/usr/<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">$(</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">get_libdir</span><span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">)</span>
+
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">emake</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">die</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_install()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">emake</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">DESTDIR</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">${D}</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span> install <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">||</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">die</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+</span></pre>
+
+<p>
+Some packages provide really bad Makefiles which hard-code <code class="docutils literal"><span class="pre">/usr/lib</span></code>. Those
+should be <code class="docutils literal"><span class="pre">sed</span></code> -ed or patched. Don't forget to let upstream know about your
+modifications!
+</p>
+
+</div>
+
+</div>
+
+<div class="section">
+<h3 id="headers-and-multilib">Headers and Multilib</h3>
+
+<p>
+Most C/C++ programs need standard header files like <code class="docutils literal"><span class="pre">types.h</span></code>. Some of them
+depend on architecture specific facts, e.g. <code class="docutils literal"><span class="pre">types.h</span></code> on the length
+of machine words. To ensure that we can compile both 32bit and 64bit
+applications and libraries, we treat <code class="docutils literal"><span class="pre">/usr/include/asm</span></code> a bit special.
+</p>
+
+<p>
+This is what <code class="docutils literal"><span class="pre">/usr/include/asm/types.h</span></code> looks like on an AMD64 box:
+</p>
+
+<pre><span class=""><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">/*</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">Common</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">header</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">file</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">autogenerated</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">by</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">create_ml_includes</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">in</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">multilib.eclass</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">*/</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">#ifdef</span><span xmlns="http://www.w3.org/1999/xhtml" class="PreProc"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">__i386__</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">#include</span><span xmlns="http://www.w3.org/1999/xhtml" class="PreProc"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">&lt;</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">asm-i386/types.h</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">&gt;</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">#endif</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">/*</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">__i386__</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">*/</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">#ifdef</span><span xmlns="http://www.w3.org/1999/xhtml" class="PreProc"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">__x86_64__</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">#include</span><span xmlns="http://www.w3.org/1999/xhtml" class="PreProc"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">&lt;</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">asm-x86_64/types.h</span><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">&gt;</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">#endif</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">/*</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">__x86_64__</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"> </span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment">*/</span>
+</span></pre>
+
+<p>
+As you can see, this is just a wrapper that decides which file you need
+depending on the parameter <code class="docutils literal"><span class="pre">-D</span></code> given to gcc. You'll probably run into
+some troubles if you try to compile something by hand and forget to append
+<code class="docutils literal"><span class="pre">-D__x86_64__</span></code> to your <code class="docutils literal"><span class="pre">CFLAGS</span></code>. Of course, this is <b>not necessary</b> when
+using portage. For an explanation, see the <a href="../../archs/amd64/index.html#the-abi-variable">The ABI Variable</a>
+section.
+</p>
+
+</div>
+
+<div class="section">
+<h3 id="the-abi-variable">The ABI Variable</h3>
+
+<p>
+Whenever portage builds something on amd64, it has to decide whether it should
+be 32bit or 64bit. As stated in <a href="../../archs/amd64/index.html#headers-and-multilib">Headers and Multilib</a>
+the <code class="docutils literal"><span class="pre">__i386__</span></code> or <code class="docutils literal"><span class="pre">__x86_64__</span></code> respectively, is needed in <code class="docutils literal"><span class="pre">CDEFINE</span></code>.
+Also, gcc has to know what code it should produce, therefore <code class="docutils literal"><span class="pre">-m32</span></code> or <code class="docutils literal"><span class="pre">-m64</span></code>
+must be appended to CFLAGS. This is done via <code class="docutils literal"><span class="pre">profile.bashrc</span></code>. All you need to do
+if you want to build a package 32bit is to set <code class="docutils literal"><span class="pre">ABI=x86</span></code>.
+</p>
+
+<p>
+The details are shown in <code class="docutils literal"><span class="pre">make.defaults</span></code>:
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">MULTILIB_ABIS</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>x86 amd64<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">DEFAULT_ABI</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>amd64<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">CFLAGS_amd64</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>-m64<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">LDFLAGS_amd64</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>-m elf_x86_64<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">CHOST_amd64</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>x86_64-pc-linux-gnu<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">CDEFINE_amd64</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>__x86_64__<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">LIBDIR_amd64</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>lib64<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">CFLAGS_x86</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>-m32 -L/emul/linux/x86/lib -L/emul/linux/x86/usr/lib<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">LDFLAGS_x86</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>-m elf_i386 -L/emul/linux/x86/lib -L/emul/linux/x86/usr/lib<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">CHOST_x86</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>i686-pc-linux-gnu<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">CDEFINE_x86</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>__i386__<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">LIBDIR_x86</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>lib32<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+</span></pre>
+
+</div>
+
+</div>
+
+<div class="section">
+<h2 id="porting-notes">Porting Notes</h2>
+
+<div class="section">
+<h3 id="machine-word-sizes">Machine Word sizes</h3>
+
+<p>
+On AMD64, some types differ in size from x86:
+</p>
+
+<table class="table">
+  <tr>
+    <th>
+      Type
+    </th>
+    <th>
+      x86 (ILP32)
+    </th>
+    <th>
+      amd64 (LP64)
+    </th>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">char</span></code>
+    </td>
+    <td class="devbook">
+      1 byte
+    </td>
+    <td class="devbook">
+      1 byte
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">short</span></code>
+    </td>
+    <td class="devbook">
+      2 bytes
+    </td>
+    <td class="devbook">
+      2 bytes
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">int</span></code>
+    </td>
+    <td class="devbook">
+      4 bytes
+    </td>
+    <td class="devbook">
+      4 bytes
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">long</span></code>
+    </td>
+    <td class="devbook">
+      <b>4 bytes</b>
+    </td>
+    <td class="devbook">
+      <b>8 bytes</b>
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">long long</span></code>
+    </td>
+    <td class="devbook">
+      8 bytes
+    </td>
+    <td class="devbook">
+      8 bytes
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">pointer</span></code>
+    </td>
+    <td class="devbook">
+      <b>4 bytes</b>
+    </td>
+    <td class="devbook">
+      <b>8 bytes</b>
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">float</span></code>
+    </td>
+    <td class="devbook">
+      4 bytes
+    </td>
+    <td class="devbook">
+      4 bytes
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">double</span></code>
+    </td>
+    <td class="devbook">
+      8 bytes
+    </td>
+    <td class="devbook">
+      8 bytes
+    </td>
+  </tr>
+  <tr>
+    <td class="devbook">
+      <code class="docutils literal"><span class="pre">long double</span></code>
+    </td>
+    <td class="devbook">
+      16 bytes
+    </td>
+    <td class="devbook">
+      16 bytes
+    </td>
+  </tr>
+</table>
+
+<p>
+If you need an exact amount of space, don't use these types but the <code class="docutils literal"><span class="pre">uXX</span></code> and
+<code class="docutils literal"><span class="pre">sXX</span></code> ones provided by <code class="docutils literal"><span class="pre">types.h</span></code>, where XX is the number of bits you need.
+Switching to a type that is the same on both arches is not suggested since it's
+not a clean solution and might cause problems with other arches.
+</p>
+
+</div>
+
+<div class="section">
+<h3 id="casts">Casts</h3>
+
+<p>
+Many upstream developers assume that the length of a pointer is 4 bytes, which
+can cause problems when programs do casts from <code class="docutils literal"><span class="pre">void *</span></code> to <code class="docutils literal"><span class="pre">int</span></code> and vice
+versa. With GCC 3.4, this causes warnings, the compilation won't abort. If
+you're lucky, your package works, but it's likely that you encounter
+segmentation faults or strange behaviour. GCC 4.0 refuses to compile such code.
+</p>
+
+</div>
+
+</div>
+
+<div class="section">
+<h2 id="other-resources">Other Resources</h2>
+
+<ul>
+  <li>
+    <a href="https://amd64.gentoo.org/">Gentoo/AMD64 Project</a>
+  </li>
+  <li>
+    <a href="https://www.gentoo.org/doc/en/gentoo-amd64-faq.xml">Gentoo/Linux AMD64 FAQ</a>
+  </li>
+  <li>
+    <a href="https://forums.gentoo.org/viewforum-f-46.html">Gentoo on AMD64 Forum</a>
+  </li>
+</ul>
+
+</div>
+
+
+</div>
+<footer><div class="container">
+<div class="row">
+<div class="col-xs-12 col-md-offset-2 col-md-7"></div>
+<div class="col-xs-12 col-md-3">
+<h3 class="footerhead">Questions or comments?</h3>
+              Please feel free to <a href="https://www.gentoo.org/inside-gentoo/contact/">contact us</a>.
+            </div>
+</div>
+<div class="row">
+<div class="col-xs-2 col-sm-3 col-md-2"><ul class="footerlinks three-icons">
+<li><a href="http://twitter.com/gentoo" title="@Gentoo on Twitter"><span class="fa fa-twitter fa-fw"></span></a></li>
+<li><a href="https://plus.google.com/+Gentoo" title="+Gentoo on Google+"><span class="fa fa-google-plus fa-fw"></span></a></li>
+<li><a href="https://www.facebook.com/gentoo.org" title="Gentoo on Facebook"><span class="fa fa-facebook fa-fw"></span></a></li>
+</ul></div>
+<div class="col-xs-10 col-sm-9 col-md-10">
+<strong>Copyright (C) 2001-2015 Gentoo Foundation, Inc.</strong><br><small>
+                Gentoo is a trademark of the Gentoo Foundation, Inc.
+                The text of this document is distributed under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Attribution-ShareAlike 2.0 License</a>.
+                The <a href="https://www.gentoo.org/inside-gentoo/foundation/name-logo-guidelines.html">Gentoo Name and Logo Usage Guidelines</a> apply.
+              </small>
+</div>
+</div>
+</div></footer><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/jquery.min.js"></script><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.js"></script>
+</body>
+</html>

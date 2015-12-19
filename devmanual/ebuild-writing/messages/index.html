@@ -1,0 +1,209 @@
+<!DOCTYPE html><html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Gentoo Development Guide: Messages</title>
+<link rel="stylesheet" href="../../devmanual.css" type="text/css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The Gentoo Devmanual is a technical manual which covers topics such as writing ebuilds and eclasses, and policies that developers should be abiding by.">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/tyrian.min.css" rel="stylesheet" media="screen">
+<link rel="icon" href="https://www.gentoo.org/favicon.ico" type="image/x-icon">
+</head>
+<body>
+<header><div class="site-title"><div class="container"><div class="row">
+<div class="site-title-buttons"><div class="btn-group btn-group-sm">
+<a href="https://get.gentoo.org/" role="button" class="btn get-gentoo"><span class="fa fa-fw fa-download"></span><strong> Get Gentoo!</strong></a><div class="btn-group btn-group-sm">
+<a class="btn gentoo-org-sites dropdown-toggle" data-toggle="dropdown" data-target="#" href="#"><span class="fa fa-fw fa-map-o"></span><span class="hidden-xs"> gentoo.org sites </span><span class="caret"></span></a><ul class="dropdown-menu dropdown-menu-right">
+<li><a href="https://www.gentoo.org/" title="Main Gentoo website"><span class="fa fa-home fa-fw"></span> gentoo.org</a></li>
+<li><a href="https://wiki.gentoo.org/" title="Find and contribute documentation"><span class="fa fa-file-text-o fa-fw"></span> Wiki</a></li>
+<li><a href="https://bugs.gentoo.org/" title="Report issues and find common issues"><span class="fa fa-bug fa-fw"></span> Bugs</a></li>
+<li><a href="https://forums.gentoo.org/" title="Discuss with the community"><span class="fa fa-comments-o fa-fw"></span> Forums</a></li>
+<li><a href="https://packages.gentoo.org/" title="Find software for your Gentoo"><span class="fa fa-hdd-o fa-fw"></span> Packages</a></li>
+<li class="divider">
+<li><a href="https://planet.gentoo.org/" title="Find out what's going on in the developer community"><span class="fa fa-rss fa-fw"></span> Planet</a></li>
+<li><a href="https://archives.gentoo.org/" title="Read up on past discussions"><span class="fa fa-archive fa-fw"></span> Archives</a></li>
+<li><a href="https://sources.gentoo.org/" title="Browse our source code"><span class="fa fa-code fa-fw"></span> Sources</a></li>
+<li class="divider">
+<li><a href="https://infra-status.gentoo.org/" title="Get updates on the services provided by Gentoo"><span class="fa fa-server fa-fw"></span> Infra Status</a></li>
+</ul>
+</div>
+</div></div>
+<div class="logo">
+<a href="/" title="Back to the homepage" class="site-logo"><object data="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.svg" type="image/svg+xml"><img src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/site-logo.png" alt="Gentoo Linux Logo"></object></a><span class="site-label">Development Guide</span>
+</div>
+</div></div></div>
+<nav class="tyrian-navbar" role="navigation"><div class="container"><div class="row">
+<div class="navbar-header"><button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button></div>
+<div class="collapse navbar-collapse navbar-main-collapse"><ul class="nav navbar-nav">
+<li><a href="../..//index.html"><span class="glyphicon glyphicon-home"></span>  Home</a></li>
+<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Messages<span class="caret"></span></a></li>
+<li><a href="../users-and-groups/index.html"><span class="glyphicon glyphicon-arrow-left"></span>  Users and Groups</a></li>
+<li><a href="../../ebuild-writing/variables/index.html">Variables  <span class="glyphicon glyphicon-arrow-right"></span></a></li>
+</ul></div>
+</div></div></nav></header><div class="container"><div class="row"><div class="col-md010"><ol class="breadcrumb">
+<li><a href="../../index.html">Master Index</a></li>
+<li><a href="../index.html">Ebuild Writing</a></li>
+</ol></div></div></div>
+<div class="container">
+<h1 class="first-header">Messages</h1>
+<p>
+Sometimes it is necessary to display messages for the user. This can be for
+errors, post-install help messages, pre-install warnings or simply to notify the
+user of what's going on. It is considered good form to display a message
+before any particularly long and silent task is carried out, for example (and it
+also helps cut down on bogus "compiling foo froze!" bugs).
+</p>
+
+<div class="alert alert-success" role="alert">
+<strong>Note:</strong>
+It is a policy violation to use any of these functions to display a line
+of characters (a banner header). The use of colours and special leading
+characters provided by these functions is sufficient to make a message stand
+out.
+</div>
+
+<p>
+In all cases, assume that the user's terminal is no wider than 79 columns, and
+that the <code class="docutils literal"><span class="pre">elog</span></code>,<code class="docutils literal"><span class="pre">einfo</span></code>, <code class="docutils literal"><span class="pre">ewarn</span></code> and <code class="docutils literal"><span class="pre">eerror</span></code> functions will 
+occupy 4 columns with their fancy leading markers.
+</p>
+
+<div class="section">
+<h2 id="information-messages">Information Messages</h2>
+
+<p>
+There are a number of functions available to assist here. The `echo` bash
+internal is the simplest 
+    —
+   it simply displays its parameters as a message.
+</p>
+
+<p>
+The <code class="docutils literal"><span class="pre">elog</span></code> function can be used to display an informational message which is
+meant to 'stand out' and is logged by the elog functionality in Portage 2.1 and
+Paludis 0.6 or newer.  On a colour terminal, the message provided will be prefixed
+with a green asterisk.  On earlier versions, elog behaves just like einfo.
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Special">pkg_postinst()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">elog</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>You will need to set up your /etc/foo/foo.conf file before<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">elog</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>running foo for the first time. For details, please see the<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">elog</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>foo.conf(5) manual page.<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+</span></pre>
+
+
+<p>
+The <code class="docutils literal"><span class="pre">einfo</span></code> function can be used to display an informational message which is
+meant to 'stand out'. On a colour terminal, the message provided will be
+prefixed with a green asterisk. einfo messages go to the INFO elog class which is not
+logged by default.
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Special">src_compile()</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">{</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">einfo</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>Starting a silent compile that takes hours.<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+    ./build
+<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">}</span>
+</span></pre>
+
+</div>
+<div class="section">
+<h2 id="warning-messages">Warning Messages</h2>
+
+<p>
+The <code class="docutils literal"><span class="pre">ewarn</span></code> function is similar, but displays a yellow asterisk. This should be
+used for warning messages rather than information.
+</p>
+
+</div>
+<div class="section">
+<h2 id="error-messages">Error Messages</h2>
+
+<p>
+The <code class="docutils literal"><span class="pre">eerror</span></code> function displays a red star, and is used for displaying error
+messages. It should almost always be followed by a <code class="docutils literal"><span class="pre">die</span></code> call. This function
+is mainly used for displaying additional error details before bailing out.
+</p>
+
+</div>
+<div class="section">
+<h2 id="qa-warnings">QA warnings</h2>
+
+<p>
+	The <code class="docutils literal"><span class="pre">eqawarn</span></code> function can be used by eclass authors to notify ebuild writers about
+	deprecated functionality. eqawarn is defined in eutils. Portage doesn't log the qa message
+	class by default so users don't get annoyed by seeing messages they can't do much about.
+</p>
+
+</div>
+<div class="section">
+<h2 id="message-function-reference">Message function reference</h2>
+
+<p>
+See <a href="../../function-reference/message-functions/index.html">Message Functions Reference</a> for a full list of functions.
+</p>
+
+</div>
+<div class="section">
+<h2 id="good-and-bad-messages">Good and Bad Messages</h2>
+
+<p>
+Here is an example of a bad message:
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Identifier">i</span><span xmlns="http://www.w3.org/1999/xhtml" class="Constant">=</span>10
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">while</span> <span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span><span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">(</span>i<span xmlns="http://www.w3.org/1999/xhtml" class="PreProc">--</span><span xmlns="http://www.w3.org/1999/xhtml" class="Comment"></span>)) <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">;</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">do</span>
+    <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">ewarn</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>PLEASE UPDATE TO YOUR PACKAGE TO USE linux-info.eclass<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">done</span>
+</span></pre>
+
+<ul>
+  <li>Displaying the same message repeatedly is excessive.</li>
+  <li>The uppercase is excessive.</li>
+  <li>The bad English looks unprofessional.</li>
+  <li>
+  The message will only confuse the end user and will not help them work out
+  whether they have a problem and how to solve it if they do.
+  </li>
+</ul>
+
+<p>
+It would be better written as:
+</p>
+
+<pre><span class="Constant"><span xmlns="http://www.w3.org/1999/xhtml" class="Statement">ewarn</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>The 'frozbinate' function provided by eutils.eclass is deprecated<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">ewarn</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>in favour of frozbinate.eclass, but this package has not been<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">ewarn</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>updated yet. If this is a package from the main tree, please check<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">ewarn</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>https://bugs.gentoo.org/ and file a bug if there is not one already.<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">ewarn</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>If this is your own package, please read the comments in the<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">ewarn</span> <span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>frozbinate eclass for instructions on how to convert.<span xmlns="http://www.w3.org/1999/xhtml" class="Statement">"</span>
+</span></pre>
+
+</div>
+</div>
+<footer><div class="container">
+<div class="row">
+<div class="col-xs-12 col-md-offset-2 col-md-7"></div>
+<div class="col-xs-12 col-md-3">
+<h3 class="footerhead">Questions or comments?</h3>
+              Please feel free to <a href="https://www.gentoo.org/inside-gentoo/contact/">contact us</a>.
+            </div>
+</div>
+<div class="row">
+<div class="col-xs-2 col-sm-3 col-md-2"><ul class="footerlinks three-icons">
+<li><a href="http://twitter.com/gentoo" title="@Gentoo on Twitter"><span class="fa fa-twitter fa-fw"></span></a></li>
+<li><a href="https://plus.google.com/+Gentoo" title="+Gentoo on Google+"><span class="fa fa-google-plus fa-fw"></span></a></li>
+<li><a href="https://www.facebook.com/gentoo.org" title="Gentoo on Facebook"><span class="fa fa-facebook fa-fw"></span></a></li>
+</ul></div>
+<div class="col-xs-10 col-sm-9 col-md-10">
+<strong>Copyright (C) 2001-2015 Gentoo Foundation, Inc.</strong><br><small>
+                Gentoo is a trademark of the Gentoo Foundation, Inc.
+                The text of this document is distributed under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Attribution-ShareAlike 2.0 License</a>.
+                The <a href="https://www.gentoo.org/inside-gentoo/foundation/name-logo-guidelines.html">Gentoo Name and Logo Usage Guidelines</a> apply.
+              </small>
+</div>
+</div>
+</div></footer><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/jquery.min.js"></script><script src="https://1b9a50f4f9de4348cd9f-e703bc50ba0aa66772a874f8c7698be7.ssl.cf5.rackcdn.com/bootstrap.min.js"></script>
+</body>
+</html>
