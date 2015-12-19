@@ -9,6 +9,6 @@
 
 The Gentoolkit can be installed using Entropy or Portage. Using Entropy one would install it using the command:
 {% include coder.html line1="equo i app-portage/gentoolkit" %}
-The Gentoolkit also has a toolkit for Gentoo developers: {% include links.html puncr="." program="Gentoolkit-dev" package="app-portage/gentoolkit-dev" %}
+The Gentoolkit also has a toolkit for Gentoo developers: {% include links.html puncr="." program="Gentoolkit-dev" package="app-portage/gentoolkit-dev" %} 
 {% endcapture %}
 {{ my_capture | markdownify }}

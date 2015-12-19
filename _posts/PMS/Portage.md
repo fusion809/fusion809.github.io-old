@@ -30,8 +30,8 @@ What is in square-brackets (`[...]`) are optional parts of the command (that is,
 {% include_relative PMS/table2-actions-for-emerge.html %}
 <br/>
 
-#### Understanding the tbz2 Binary Format
-As previously mentioned `.tbz2` is the binary package format used by Portage. It contains a tarball (in `.tar.bz2` format) that contains the binary package data (that is, the installed files of the package) and a xpak (with `.xpak` file extension) file that contains the package's metadata, including the USE flags used to generate the package. 
+#### The tbz2 Binary Format
+As previously mentioned `.tbz2` is the binary package format used by Portage. It contains a tarball (in `.tar.bz2` format) that contains the binary package data (that is, the installed files of the package) and a xpak (with `.xpak` file extension) file that contains the package's metadata, including the USE flags used to generate the package.
 
 #### Links
 ##### Handbook
