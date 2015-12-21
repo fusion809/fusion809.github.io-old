@@ -19,7 +19,7 @@ I personally learn ebuild writing best by trying it out myself, aided by the doc
 
 {% include codeu.html line1="grep --include='&#42;.ebuild' -R &quot;&lt;PATTERN&gt;&quot; &lt;DIRECTORY&gt;" %}
 
-The most common choice of `<DIRECTORY>` would likely be `/usr/portage` (the Portage Tree), although for ebuilds found in the unofficial overlays managed by Layman the `<DIRECTORY>` variable can be set to `/var/lib/layman`. The `<PATTERN>` field depends on what you want in the ebuild examples you are searching for. For example:
+In most cases the best value for `<DIRECTORY>` would likely be `/usr/portage` (the Portage Tree), although for ebuilds found in all the unofficial overlays managed by Layman that have been locally installed on your system, the `<DIRECTORY>` variable can be set to `/var/lib/layman`. The `<PATTERN>` field depends on what you want in the ebuild examples you are searching for. For example:
 
 {% include codeu.html line1="grep --include='&#42;.ebuild' -R &quot;pkg_config() {&quot; /usr/portage" %}
 
