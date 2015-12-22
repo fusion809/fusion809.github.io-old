@@ -3,6 +3,8 @@ layout: post
 title:  "Package Management on Sabayon Linux"
 date:   2015-12-23
 categories: sabayon, package-management, command-line
+redirect_from:
+  - /2015/12/20/package-management-on-sabayon/
 ---
 {% include draft.html %}
 {% include note.md note1="This post contains links to external resources, which I have little, if any, control over and hence I cannot guarantee their accuracy." note2="Any instruction involving Portage or manual installation from source code, has the capability to break your system and cause other problems, so if you follow them you and you alone assume any and all responsibility for the consequences!" %}
