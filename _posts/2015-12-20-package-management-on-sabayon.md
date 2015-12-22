@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Package Management on Sabayon Linux"
-date:   2015-12-20
+date:   2015-12-23
 categories: sabayon, package-management, command-line
 ---
 {% include draft.html %}
