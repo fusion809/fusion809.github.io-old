@@ -33,24 +33,10 @@ if this command returns errors I go back to the ebuild and look for any errors I
 
 ### Testing ebuilds
 Usually the way I test out ebuilds is I enter a Sabayon chroot on my PC, build a binary package from the ebuild and if the package is usable from the command-line I install it on the chroot and test it out. To create a Sabayon chroot I run:
+{% include_relative PMS/sabayon-chroot.html %}
+while to change directory (`cd`) into this chroot I run:
 ```bash
-# Set the following MIRROR variable to the best one for you
-MIRROR=ftp://mirror.optusnet.com.au/sabayon
-wget -c $MIRROR/iso/daily/Sabayon_Linux_DAILY_amd64_tarball.tar.gz
-sudo mkdir /root2
-sudo cp -a "Sabayon_Linux_DAILY_amd64_tarball.tar.gz" /root2
-cd /root2
-sudo tar xvzpf Sabayon_Linux_DAILY_amd64_tarball.tar.gz
-sudo mount -t proc none /root2/proc
-sudo mount -o bind /dev /root2/dev
-sudo mount -o bind /usr/portage /root2/usr/portage
-sudo mount -o bind /usr/src/linux /root2/usr/src/linux
-sudo mount -o bind /lib/modules /root2/lib/modules
-sudo mount -o bind /sys /root2/sys
-sudo cp /etc/resolv.conf /root2/etc/resolv.conf
-sudo mount -o bind /tmp /root2/tmp
-sudo mount --rbind /dev /root2/dev
-sudo mount --rbind /sys /root2/sys
+sudo chroot /root2 /bin/bash
 ```
 {% endcapture %}
 {{ my_capture1 | markdownify }}
