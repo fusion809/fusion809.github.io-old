@@ -35,9 +35,7 @@ if this command returns errors I go back to the ebuild and look for any errors I
 Usually the way I test out ebuilds is I enter a Sabayon chroot on my PC, build a binary package from the ebuild and if the package is usable from the command-line I install it on the chroot and test it out. To create a Sabayon chroot I run:
 {% include_relative PMS/sabayon-chroot.html %}
 while to change into this chroot I run:
-```bash
-sudo chroot /root2 /bin/bash
-```
+{% include_relative PMS/sabayon-enter-chroot.html %}
 When I reboot after setting up a chroot (regardless of its operating system) I find that it is then broken and will not work. To fix this I run this script:
 {% include_relative PMS/sabayon-chroot-res.html %}
 while if after rebooting I decide I no longer want to use the chroot I run this to free up memory:
