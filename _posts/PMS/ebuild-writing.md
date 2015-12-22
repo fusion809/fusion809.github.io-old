@@ -38,5 +38,9 @@ while to change into this chroot I run:
 ```bash
 sudo chroot /root2 /bin/bash
 ```
+When I reboot after setting up a chroot (regardless of its operating system) I find that it is then broken and will not work. To fix this I run this script:
+{% include_relative PMS/sabayon-chroot-res.html %}
+while if after rebooting I decide I no longer want to use the chroot I run this to free up memory:
+{% include_relative PMS/sabayon-chroot-umount.html %}
 {% endcapture %}
 {{ my_capture1 | markdownify }}
