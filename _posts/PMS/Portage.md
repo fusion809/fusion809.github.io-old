@@ -30,7 +30,7 @@ What is in square-brackets (`[...]`) are optional parts of the command (that is,
 {% include_relative PMS/table2-actions-for-emerge.html %}
 <br/>
 
-#### tbz2 Binary Package Format
+#### tbz2 Binaries
 As previously mentioned `.tbz2` is the binary package format used by Portage. It contains a tarball (in `.tar.bz2` format) that contains the binary package data (that is, the installed files of the package) and a xpak (with `.xpak` file extension) file that contains the package's metadata, including the USE flags used to generate the package. You can split `.tbz2` binaries into these two components by issuing the command (with `app-portage/portage-utils` installed):
 {% include codeu.html line1="qtbz2 -s &lt;PACKAGE&gt;" %}
 
