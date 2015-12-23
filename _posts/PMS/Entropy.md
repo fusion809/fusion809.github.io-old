@@ -31,7 +31,7 @@ where `<REPO>` is the name of an Entropy repository (e.g., `sabayonlinux.org`, `
 It is important to understand the output of Entropy, for example here is some of the output I obtained on 17 December 2015 when running {% include codeus.html line1="sudo equo upgrade" %}:
 {% include_relative PMS/entropy-output.html %}
 {% capture my_capture %}
-The first of these lines, indicates that the package `glibc` in the `sabayonlinux.org` repository is being upgrade from 2.20-r2 to 2.21-r1. Second
+The first of these lines, indicates that the package `glibc` in the `sabayonlinux.org` repository was being upgraded from 2.20-r2 to 2.21-r1. Second, that `kde-cli-tools` in the `sabayon-limbo` repository was being upgraded from 5.5.0 to 5.5.1. Third, that `grep` 2.22 was being installed from the `sabayon-limbo` repository, over the old version 2.21-r1 that was in the `sabayonlinux.org` repository. Forth indicates that `qbittorrent` was going to be upgraded to version 3.2.5 in the `sabayonlinux.org` repository from the present version 3.2.4 that was installed using Portage (which is what `spm-db` indicates).
 {% endcapture %}
 
 {{ my_capture | markdownify }}
