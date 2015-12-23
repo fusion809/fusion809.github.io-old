@@ -34,8 +34,10 @@ Entropy, Layman and Portage are all written in Python, Bash script and to smalle
 
 {% include_relative PMS/ebuild-writing.md %}
 
+{% capture my_capture %}
 ## The Algorithm
 If you come across a program you want to install on your Sabayon machine (and you know it is compatible with Linux systems) the following is an algorithm I would suggest you follow to install it.
+{% endcapture %}{{ my_capture | markdownify }}
 {% include_relative PMS/algorithm.html %}
 
 ### Examples
