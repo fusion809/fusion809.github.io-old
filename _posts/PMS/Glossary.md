@@ -13,6 +13,9 @@ The acronyms used in this post include:
 Angle brackets `<` and `>` with a word between them denotes user-provided variables. For example, `<PACKAGE>` denotes the name of a software package, `<OVERLAY>` denotes the name of a software overlay, `<FILE>` is the name of a file, including its extension (e.g., it may equal `atom-1.3.2.ebuild`, when are referring to ebuild files), *etc.* `This` formatting denotes pieces of code, file paths or file extensions, while [`this`](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) formatting denotes pieces of code/file paths for which I have provided a hyperlink.
 
 ### Terminology
+#### Bandwidth
+This is a term I am using to mean data transferred via a network, such as the Internet. Although this definition may not be strictly correct, see for example its [Wikipedia article](https://en.wikipedia.org/wiki/Bandwidth_(computing)).
+
 #### [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell))
 The **Bourne-Again Shell** that is developed as part of the GNU Project, is the default command shell of Sabayon Linux and most other Linux distributions (including Gentoo Linux). It is covered in greater detail, by the [*Bash Scripting and the Command-Line: an Introduction for Sabayon Users*](../../../11/26/bash-scripting-and-the-command-line-an-introduction-for-sabayon-users) post.
 
