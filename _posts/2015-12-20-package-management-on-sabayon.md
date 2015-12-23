@@ -1,10 +1,11 @@
 ---
 layout: post
 title:  "Package Management on Sabayon Linux"
-date:   2015-12-23
+date:   2015-12-24
 categories: sabayon, package-management, command-line
 redirect_from:
   - /2015/12/20/package-management-on-sabayon/
+  - /2015/12/23/package-management-on-sabayon/
 ---
 {% include draft.html %}
 {% include note.md note1="This post contains links to external resources, which I have little, if any, control over and hence I cannot guarantee their accuracy." note2="Any instruction involving Portage or manual installation from source code, has the capability to break your system and cause other problems, so if you follow them you and you alone assume any and all responsibility for the consequences!" %}
@@ -31,6 +32,8 @@ Entropy, Layman and Portage are all written in Python, Bash script and to smalle
 {% include_relative PMS/q-applets.md %}
 {% include_relative PMS/mixing-entropy-and-portage.md %}
 
+{% include_relative PMS/ebuild-writing.md %}
+
 ## The Algorithm
 If you come across a program you want to install on your Sabayon machine (and you know it is compatible with Linux systems) the following is an algorithm I would suggest you follow to install it.
 {% include_relative PMS/algorithm.html %}
@@ -38,8 +41,7 @@ If you come across a program you want to install on your Sabayon machine (and yo
 ### Examples
 {% include_relative PMS/openra.md %}
 {% include_relative PMS/supertux.md %}
-
-{% include_relative PMS/ebuild-writing.md %}
+{% include_relative PMS/enlightenment-20.md %}
 
 ## Acknowledgements
 I would like to thank pontiki from the {% include irc.html channel="jekyll" %} channel for some help with the formatting of this post and floppym from the {% include irc.html channel="gentoo-dev-help" %} channel for providing the Bash script for use searching the Portage Tree for specific examples.
