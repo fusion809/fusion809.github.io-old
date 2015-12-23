@@ -41,7 +41,7 @@ If you come across a program you want to install on your Sabayon machine (and yo
 ### Examples
 {% include_relative PMS/openra.md %}
 {% include_relative PMS/supertux.md %}
-{% include_relative PMS/enlightenment-20.md %}
+{% include_relative PMS/enlightenment.md %}
 
 ## Acknowledgements
 I would like to thank pontiki from the {% include irc.html channel="jekyll" %} channel for some help with the formatting of this post and floppym from the {% include irc.html channel="gentoo-dev-help" %} channel for providing the Bash script for use searching the Portage Tree for specific examples.
