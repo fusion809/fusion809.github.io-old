@@ -32,13 +32,14 @@ Whenever I feel I am ready to test out an ebuild, to see if it works, what I do 
 if this command returns errors I go back to the ebuild and look for any errors I may have made, whilst simultaneously looking at the error message I received from `ebuild`.
 
 ### Testing ebuilds
-Usually the way I test out ebuilds is I enter a Sabayon chroot on my PC, build a binary package from the ebuild and if the package is usable from the command-line I install it on the chroot and test it out. To create a Sabayon chroot I run:
+Usually the way I test out ebuilds is I enter a Sabayon chroot on my PC, build a binary package from the ebuild and if the package is usable from the command-line I install it on the chroot and test it out. To create a Sabayon chroot at `/root2` I run:
 {% include_relative PMS/sabayon-chroot.html %}
 while to change into this chroot I run:
 {% include_relative PMS/sabayon-enter-chroot.html %}
-When I reboot after setting up a chroot (regardless of its operating system) I find that it is then broken and will not work. To fix this I run this script:
+When I reboot after setting up a chroot (regardless of its operating system, I have created both Gentoo and Sabayon chroots on my Sabayon machine) I find that it is then broken and will not work. To fix this I run this script:
 {% include_relative PMS/sabayon-chroot-res.html %}
-while if after rebooting I decide I no longer want to use the chroot I run this to free up memory:
+while if after rebooting I decide I no longer want to use the chroot I run this to free up memory (as otherwise quite often I will find I do not have enough free RAM to even use Bash or Google Chrome):
 {% include_relative PMS/sabayon-chroot-umount.html %}
+Other methods for testing ebuilds out do exist, but in my experience they are very tedious and can be quite wasteful (in terms of the bandwidth they chew up). One such method I have tried (and do not intend to use again, due to these limitations) is using Docker, for details on this method see [Ettore Di Giacinto (mudler)'s Blog Post](http://blog.mudler.pm/2015/11/part-1-building-gentoo-and-sabayon.html). Another method, that provides one the ability to perform more extensive tests than building and installing in a chroot, is to build and install the package on a Sabayon Linux Virtual Machine (VM). I have used this method a few times, usually when the package in question is graphical, instead of textual (e.g., my Enlightenment 20 and Moksha ebuilds), which means that I cannot test it out properly in a chroot. 
 {% endcapture %}
 {{ my_capture1 | markdownify }}
