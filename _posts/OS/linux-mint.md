@@ -17,4 +17,4 @@ MintInstall is essentially a Linux Mint equivalent to the Ubuntu Software Center
 
 {% include OS-post/os-min.md cpu="i386." ram="512 MB. 1024 MB recommended." HDD="5 GB. 20 GB recommended." ims="1.4 GB." %}
 
-{% include OS-post/os-ratings.md bf="9." cmb="<6." doc="4. Fairly minimal documentation of its own, although the more complete Ubuntu documentation should be applicable to it too." sup="? Never had to use their forums." pm="7." sru="4." sb="&geq;7. Never experienced any bugs myself, but I know from experience on other platforms that Cinnamon can be buggy."  mewi="&leq;4." oa="7-8." %}
+{% include OS-post/os-ratings.md bf="9." cmb="<6." ob="9. More out-of-the-box than Ubuntu." doc="4. Fairly minimal documentation of its own, although the more complete Ubuntu documentation should be applicable to it too." sup="? Never had to use their forums." pm="7." sru="4." sb="&geq;7. Never experienced any bugs myself, but I know from experience on other platforms that Cinnamon can be buggy."  mewi="&leq;4." oa="7-8." %}
