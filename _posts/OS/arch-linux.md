@@ -86,6 +86,12 @@ function yarm {
   yaourt -Rsc $@ --noconfirm
 }
 ```
+By default Arch has the following pacman repositories enabled:
+```bash
+core
+community
+extra
+```
 
 ### Derivatives
 {% include OS-post/derivatives.md os="Arch" %}
