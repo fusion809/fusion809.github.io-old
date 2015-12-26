@@ -1,5 +1,5 @@
 ## PCLinuxOS
-{% include OS-post/os-shot.html image="PCLinuxOS-KDE.png" description="PCLinuxOS using the KDE Plasma 4 desktop." float="none" width="1150px" %}
+{% include OS-post/os-shot.html image="PCLinuxOS-KDE.png" description="PCLinuxOS using the KDE Plasma 4 desktop." float="none" width="1140px" %}
 
 ### Background
 {% include OS-post/os.md os="PCLinuxOS" url="http://www.pclinuxos.com" d="http://www.pclinuxos.com/get-pclinuxos/" dw="pclinuxos" forum="http://www.pclinuxos.com/forum" ircs="pclinuxos-support" docs="http://pclinuxoshelp.com/index.php/Main_Page" wp="PCLinuxOS" %} is a Linux distribution that follows a rolling-release model and uses the APT-RPM package manager. What is unique about PCLinuxOS is that while it follows a RRM it is not bleeding-edge in its system software, in fact its desktop and system software is usually no more (if not less) up-to-date than fixed releases of openSUSE. Currently it is using the 4.1.13 kernel (which is the latest LTS) and KDE Plasma 4.14 desktop (which is from over a year ago). PCLinuxOS is designed to be beginner-friendly, with out-of-the-box support for many popular graphics cards and sound cards and the Synaptic graphical front-end for APT-RPM preinstalled.

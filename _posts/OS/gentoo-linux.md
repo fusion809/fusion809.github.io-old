@@ -1,5 +1,5 @@
 ## Gentoo Linux
-{% include OS-post/os-shot.html image="Gentoo-Linux-12.0.jpg" float="none" description="Gentoo Linux 12.0, taken from Wikimedia Commons" width="1150px" %}
+{% include OS-post/os-shot.html image="Gentoo-Linux-12.0.jpg" float="none" description="Gentoo Linux 12.0, taken from Wikimedia Commons" width="1140px" %}
 
 ### Background
 {% include OS-post/os.md os="Gentoo Linux" dw="gentoo" d="https://www.gentoo.org/downloads/" bugs="https://bugs.gentoo.org/" irc="https://www.gentoo.org/get-involved/irc-channels/all-channels.html" ml="https://www.gentoo.org/get-involved/mailing-lists/all-lists.html" wiki="https://wiki.gentoo.org/wiki/Main_Page" wp="Gentoo Linux" docs="https://wiki.gentoo.org/wiki/Main_Page" url="https://www.gentoo.org/" %} is an independent Linux distribution that was originally known as **Enoch Linux** and founded in 1999 by a Canadian-born American computer programmer and software engineer named [Daniel Robbins](https://en.wikipedia.org/wiki/Daniel_Robbins_(computer_programmer)). As far as Linux distributions go, it is, in my limited experience, the most difficult-to-use and to setup Linux distribution around. This is because its package management system, **Portage**, while incredibly powerful is also slow, difficult-to-learn and difficult-to-use.

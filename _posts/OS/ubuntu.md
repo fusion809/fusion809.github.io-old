@@ -1,5 +1,5 @@
 ## Ubuntu
-{% include OS-post/os-shot.html image="Ubuntu-15.10.png" description="Ubuntu 15.10, the latest release of Ubuntu at the time of this post, showing the Unity user interface." width="1150px" float="none" %}
+{% include OS-post/os-shot.html image="Ubuntu-15.10.png" description="Ubuntu 15.10, the latest release of Ubuntu at the time of this post, showing the Unity user interface." width="1140px" float="none" %}
 
 ### Background
 {% include OS-post/os.md os="Ubuntu" url="http://www.ubuntu.com/" wiki="https://wiki.ubuntu.com/" docs="https://help.ubuntu.com/stable/ubuntu-help/index.html" forum="http://ubuntuforums.org/" ask="http://askubuntu.com" bugs="https://launchpad.net/ubuntu/+bugs" dw="ubuntu" d="http://www.ubuntu.com/download/desktop" gr="Ubuntu" wp="Ubuntu_(operating_system)" ml="https://lists.ubuntu.com/" ircs="ubuntu-desktop" %} is a Debian-based Linux distribution developed by both [Canonical Ltd.](https://en.wikipedia.org/wiki/Canonical_(company)) (a UK-based company owned by South African entrepreneur, Mark Shuttleworth) and its own FOSS community. Most of its development occurs at [launchpad.net](https://en.wikipedia.org/wiki/Launchpad_(website)), a website owned and founded by Canonical. The word &ldquo;[Ubuntu](https://en.wikipedia.org/wiki/Ubuntu_(philosophy))&rdquo; is Zulu for &ldquo;humanity to others&rdquo;.
@@ -18,7 +18,7 @@ Ubuntu 15.10 has a grand total of 58,345 binary packages available in its offici
 Ubiquity is Ubuntu's official installer, that has been borrowed by many of its derivatives both official and unofficial.
 
 ### Package management
-{% include OS-post/os-shot.html image="Ubuntu-15.10-software-center.png" float="none" description="The Ubuntu Software Center running on Ubuntu 15.10" width="1150px" %}
+{% include OS-post/os-shot.html image="Ubuntu-15.10-software-center.png" float="none" description="The Ubuntu Software Center running on Ubuntu 15.10" width="1140px" %}
 As previously mentioned Ubuntu uses the same basic command-line utilities for package management as its parent, Debian, namely APT and dpkg. Although it also features its own official graphical front-end for APT, the Ubuntu Software Center.
 
 ### Derivatives
