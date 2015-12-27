@@ -20,7 +20,7 @@ function kernel {
 }
 ```
 
-Manjaro Linux has the following pacman repositories enabled by default:
+Manjaro Linux has the following pacman repositories enabled by default (note that while their names are the same as their Arch Linux counterparts these repositories are all distinct from their Arch counterparts):
 ```bash
 core
 extra
