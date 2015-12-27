@@ -1,5 +1,5 @@
 ## Arch Linux
-{% include OS-post/os-shot.html image="Arch-Linux-DDE-menu.png" width="1140px" float="none" description="Arch Linux running the Deepin Desktop Environment" %}
+{% include OS-post/os-shot.html image="Arch-Linux-DDE-menu.png" width="1130px" float="none" description="Arch Linux running the Deepin Desktop Environment" %}
 
 ### Background
 {% include OS-post/os.md os="Arch Linux" d="https://www.archlinux.org/download/" dw="arch" wp="Arch Linux" url="https://www.archlinux.org/" wiki="https://wiki.archlinux.org/" forum="https://bbs.archlinux.org/" bugs="https://bugs.archlinux.org/" gr="archlinux" irc="https://wiki.archlinux.org/index.php/IRC_channel" ml="https://lists.archlinux.org//listinfo" %} is an independent Linux distribution that was first founded in 2002 and has since become one of the most popular Linux distributions that is geared towards experienced users. It aims to adhere to the "Keep It Simple, Stupid" principle. Its take on this principle is that no automation should be done and that a fresh install of Arch should have as little software on it as possible. The purpose of this minimalism is that it gives the user as much control over their system as possible. Arch uses its own package management system too, pacman. Due to its minimalism it is also often said to be a "Do It Yourself" (DIY) distribution.

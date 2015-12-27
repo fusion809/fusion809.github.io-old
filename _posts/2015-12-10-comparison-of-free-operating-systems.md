@@ -12,7 +12,7 @@ redirect_from:
   - /comparison-of-free-operating-systems/
 ---
 
-{% include OS-post/os-shot.html image="Oracle-VM-VirtualBox-5.0.10-29-11-2015.png" width="1140px" float="none" description="Oracle VM VirtualBox 5.0.10" %}
+{% include OS-post/os-shot.html image="Oracle-VM-VirtualBox-5.0.10-29-11-2015.png" width="1130px" float="none" description="Oracle VM VirtualBox 5.0.10" %}
 
 {% include OS-post/intro-note.html %}
 
