@@ -21,7 +21,7 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
 {% include OS-post/oslist.html %}
 
 {% include toc.html %}
-
+<br/>
 {% include_relative OS/glossary.md %}
 
 {% include_relative OS/review-format.md %}
