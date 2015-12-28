@@ -16,7 +16,7 @@ redirect_from:
 
 {% include OS-post/intro-note.html %}
 
-As is mentioned in the [About Me](/about-me/) section of this website, I have tried quite a few Linux distributions and BSD derivatives using **Oracle VM VirtualBox**. Some I have only spent less than an hour using, but those I have spent over an hour with and feel fairly confident in my ability to review, include:
+As is mentioned in the [About Me](/about-me/) section of this website, I have tried quite a few Linux distributions and BSD derivatives using **Oracle VM VirtualBox**, **live media** and my **removable hard drive**. Some I have only spent less than an hour using, but those I have spent over an hour with and feel fairly confident in my ability to review, include:
 
 {% include OS-post/oslist.html %}
 
@@ -53,6 +53,8 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
 {% include_relative OS/sabayon-linux.md %}
 
 {% include_relative OS/ubuntu.md %}
+
+{% include_relative OS/appendix-I-comparison-of-fos.md %}
 
 ## Footnotes
 [^1]: Source: [Arch Linux - Packages Search](https://www.archlinux.org/packages/)
