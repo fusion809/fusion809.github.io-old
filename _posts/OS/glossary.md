@@ -71,7 +71,7 @@
 * **Unix**
   * A family of operating systems with several defining characteristics including support for multiple users, the execution of multiple tasks, a modular design with simple tools that perform limited, well-defined functions, a Unix shell, POSIX compliance, compliance to the Single Unix Specification (SUS), *etc.*
 * **Unix-like**
-  * A family of operating systems, that share most, if not all, the features of Unix systems, without necessarily being certified as compliant to any particular version of the SUS.
+  * A family of operating systems, that share the vast majority of the features of Unix systems, without necessarily being certified as compliant to any particular version of the SUS.
 * **Unix shell**
   * A Unix shell is a program that serves as a command-line interpreter (CLI) for &#42;nix systems including the various distributions of Linux. Unix shells are also defined by their POSIX compliance. Notable free examples include Bash, tcsh and Zsh.
 * **VM**
