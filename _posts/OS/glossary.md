@@ -3,13 +3,13 @@
 * **&#42;nix**
   * Unix/Unix-like operating system.
 * **BE**
-  * <b>B</b>leeding <b>e</b>dge: means has the very latest software.
+  * [<b>B</b>leeding <b>e</b>dge](https://en.wikipedia.org/wiki/Bleeding_edge_technology), in the context of operating systems, means that the system has the very latest software.
 * **BSDs**
   * <b>B</b>erkeley <b>S</b>oftware <b>D</b>istribution derivative<b>s</b>.
 * **Calamares**
   * [Calamares](https://calamares.io) is a distribution-independent graphical installer framework written predominantly in C++ (82.0%) and Python (8.0%), according to [GitHub](https://github.com/calamares/calamares).  
 * **CLI**
-  * <b>C</b>ommand-<b>l</b>ine <b>i</b>nterface. Also known as terminal, a way of interacting with one&#39;s OS by issuing a series of textual commands.
+  * [<b>C</b>ommand-<b>l</b>ine <b>i</b>nterface](https://en.wikipedia.org/wiki/Command-line_interface). Also known as terminal, a way of interacting with one&#39;s OS by issuing a series of textual commands.
 * **CLIs**
   * <b>C</b>ommand-<b>l</b>ine <b>i</b>nterface<b>s</b>.
 * **GUIs**
@@ -21,11 +21,11 @@
 * **LTS**
   * <b>L</b>ong-<b>t</b>erm <b>s</b>table/<b>s</b>upport.
 * **OS**
-  * <b>O</b>perating <b>s</b>ystem.
+  * [<b>O</b>perating <b>s</b>ystem](https://en.wikipedia.org/wiki/Operating_system).
 * **OSs**
   * <b>O</b>perating <b>s</b>ystem<b>s</b>.
 * **PMS**
-  * <b>P</b>ackage <b>m</b>agement <b>s</b>ystem.
+  * [<b>P</b>ackage <b>m</b>agement <b>s</b>ystem](https://en.wikipedia.org/wiki/Package_management_system).
 * **PMSs**
   * <b>P</b>ackage <b>m</b>agement <b>s</b>ystem<b>s</b>.
 * **VM**
