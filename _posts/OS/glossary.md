@@ -47,7 +47,7 @@ The <b>B</b>ourne-<b>A</b>gain <b>Sh</b>ell is the most popular Unix shell aroun
 In the field of software development a [**fork**](https://en.wikipedia.org/wiki/Fork_(software_development)) is when software developers take a copy of a project's source code and start working on it independently of its previous developers. Proprietary software licenses do not usually allow for forks except with the expressed permission of the software's previous developer(s). In the FOSS community forks are common due to the fact that FOSS licenses permit the creation of forks without the previous developer(s)'s permission.
 
 #### FOSS
-[<b>F</b>ree and <b>o</b>pen-<b>s</b>ource <b>s</b>oftware](https://en.wikipedia.org/wiki/Free_and_open-source_software). FOSS refers to software that is **freely licensed** to be used, studied, copied, modified in anyway, and the source code is **openly shared** so that anyone with the skill and inclination is free to improve on the software should they choose, provided they conform to the requirements of its respective license. FOSS is licensed under either a copyleft or permissive license or licenses in between (e.g., the [GNU Lesser General Public License](https://en.wikipedia.org/wiki/GNU_Lesser_General_Public_License) and [Mozilla Public License](https://en.wikipedia.org/wiki/Mozilla_Public_License)).
+[**Free and open-source software**](https://en.wikipedia.org/wiki/Free_and_open-source_software) (**FOSS**) refers to software that is **freely licensed** to be used, studied, copied, modified in anyway, and the source code is **openly shared** so that anyone with the skill and inclination is free to improve on the software should they choose, provided they conform to the requirements of its respective license. FOSS is licensed under either a copyleft or permissive license or licenses in between (e.g., the [GNU Lesser General Public License](https://en.wikipedia.org/wiki/GNU_Lesser_General_Public_License) and [Mozilla Public License](https://en.wikipedia.org/wiki/Mozilla_Public_License)).
 
 #### GNU
 **GNU**, which is a recursive acronym for **GNU is Not Unix**, is an extensive collection of software that can be used to build &#42;nix systems. This includes a kernel, GNU Hurd, although most commonly operating systems using GNU software will use the Linux kernel instead.
@@ -87,7 +87,7 @@ The property of an operating system of being &ldquo;**out-of-the-box**&rdquo; me
 [**Permissive licenses**](https://en.wikipedia.org/wiki/Permissive_license) are FOSS licenses that do not require that derivatives of the software licensed under their terms be released under similar FOSS licenses. Popular examples of permissive licenses include the various BSD licenses and the MIT License.
 
 #### POSIX
-<b>P</b>ortable <b>O</b>perating <b>S</b>ystem <b>I</b>nterface. A family of standards for the application programming interface (API), Unix shell, command-line utilities, *etc.* of &#42;nix systems.
+[**Portable Operating System Interface**](https://en.wikipedia.org/wiki/Portable_Operating_System_Interface). A family of standards for the application programming interface (API), Unix shell, command-line utilities, *etc.* of &#42;nix systems.
 
 #### Programming languages
 A **programming language** is a type of computer language that is used to write computer programs. Programming languages can be **implemented** (or executed, that is, run) via one of two methods, although the second usually requires some degree of the first. These two methods are:
