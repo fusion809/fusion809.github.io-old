@@ -35,9 +35,11 @@
       * [Microkernels](https://en.wikipedia.org/wiki/Microkernel) (and more extreme members of this category like nano- and pico-kernels). These are kernels that keep as little of the system software running in the kernel's virtual memory as possible. They are so called because they usually consist of significantly fewer lines of source code than corresponding monolithic kernels. This makes bug-fixing easier, although it may also reduce the performance of operating systems using these kernels. Examples include the GNU Hurd and MINIX kernels.
       * [Monolithic kernels](https://en.wikipedia.org/wiki/Monolithic_kernel), which are kernels that keep all system software in the kernel's virtual memory, and are often reported to be superior, performance-wise than their microkernel counterparts. Examples include the FreeBSD, Linux, NetBSD, OpenBSD and Solaris kernels.
 * **LD**
-  * <b>L</b>inux <b>d</b>istribution. A type of operating system that is built on top of the Linux kernel.
+  * <b>L</b>inux <b>d</b>istribution.
 * **LDs**
   * <b>L</b>inux <b>d</b>istribution<b>s</b>.
+* **Linux distribution**
+  * A Linux distribution is any operating system that is built on top of the Linux or Linux-libre kernel. Most Linux distributions can also be called GNU/Linux distributions because of the fact that most of their userland software come from the GNU Project. This userland software includes the GNU Coreutils package that provide some of the basic POSIX utilities, including `cat`, `chmod`, `cp`, `mv`, *etc.*
 * **Linux kernel**
   * The [Linux kernel](https://en.wikipedia.org/wiki/Linux_kernel) is a monolithic kernel originally created by and named after Finnish computer programmer, [Linus Torvalds](https://en.wikipedia.org/wiki/Linus_Torvalds), whom at the time of its founding in 1991 was a 21-year-old computer science student. It started off as a side project by Torvalds to create an operating system for his own personal use, but has since expanded to become one of the most widely used free (licensed primarily under GPLv2) operating system kernels worldwide.
 * **Linux-libre kernel**
@@ -46,8 +48,10 @@
   * <b>L</b>ong-<b>t</b>erm <b>s</b>table/<b>s</b>upport.
 * **NET**
   * Usually refers to netinstall editions. These are OS editions that contain the barebones required to install an OS using one's network (or internet) connection.
+* **Operating system**
+  * An operating system, is essentially the pieces of system software that manages hardware and software resources and provides common services for computer programs. The most important piece of system software of any operating system is its kernel.
 * **OS**
-  * <b>O</b>perating <b>s</b>ystem, is essentially the pieces of system software that manages hardware and software resources and provides common services for computer programs. The most important piece of system software of any operating system is its kernel.
+  * <b>O</b>perating <b>s</b>ystem.
 * **OSs**
   * <b>O</b>perating <b>s</b>ystem<b>s</b>.
 * **Out-of-the-box**
@@ -58,10 +62,18 @@
   * <b>P</b>ackage <b>m</b>agement <b>s</b>ystem.
 * **PMSs**
   * <b>P</b>ackage <b>m</b>agement <b>s</b>ystem<b>s</b>.
+* **POSIX**
+  * <b>P</b>ortable <b>O</b>perating <b>S</b>ystem <b>I</b>nterface. A family of standards for the application programming interface (API), Unix shell, command-line utilities, *etc.* of &#42;nix systems.
 * **RRM**
   * <b>R</b>olling <b>r</b>elease <b>m</b>odel. A type of operating system development model in which the system is continually developing, this is as opposed to standard release models (SRMs) which uses distinct OS versions that must be reinstalled over the previous version.
 * **Software**
   * Software are the non-physical or tangible components of a computer, specifically data stored on a computer's hard drive, computer programs (e.g., the web browser you are using to view this blog post), software libraries, *etc.*
+* **Unix**
+  * A family of operating systems with several defining characteristics including support for multiple users, the execution of multiple tasks, a modular design with simple tools that perform limited, well-defined functions, a Unix shell, POSIX compliance, compliance to the Single Unix Specification (SUS), *etc.*
+* **Unix-like**
+  * A family of operating systems, that share most, if not all, the features of Unix systems, without necessarily being certified as compliant to any particular version of the SUS.
+* **Unix shell**
+  * A Unix shell is a program that serves as a command-line interpreter (CLI) for &#42;nix systems including the various distributions of Linux. Unix shells are also defined by their POSIX compliance. Notable free examples include Bash, tcsh and Zsh.
 * **VM**
   * <b>V</b>irtual <b>m</b>achine. Host operating systems run within virtualization software such as VirtualBox.
 * **VMs**
