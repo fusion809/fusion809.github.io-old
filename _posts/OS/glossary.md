@@ -94,6 +94,8 @@ A [**programming language**](https://en.wikipedia.org/wiki/Programming_language)
 * **Interpretation**. This method is basically what it sounds like: it is when the program's source code is translated into a series of actions implemented by the computer's hardware.
 * **Compilation**. [**Compilers**](https://en.wikipedia.org/wiki/Compiler) essentially serve as translators between languages &mdash; transforming one programming language into another computer language, which can then be compiled further into another language or fed into an interpreter. Some compilers (**native code compilers**) compile programming languages directly into machine code (which as its name suggests is a set of instructions that can be directly interpreted by a computer's Central Processing Unit). The most popular type of compiler, however, is one that compiles source code into object code (which is readily executed).
 
+Programming languages can be classed according to several different properties, including their level (which refers to how different they are from machine code &mdash; high-level programming languages are more abstract than mid- and low-level programming languages). 
+
 #### RRM
 [**Rolling release model**](https://en.wikipedia.org/wiki/Rolling_release) (**RRM**), a type of operating system development model in which the system is continually developing, this is as opposed to standard release models (SRMs) which uses distinct OS versions that must be reinstalled over the previous version.
 
