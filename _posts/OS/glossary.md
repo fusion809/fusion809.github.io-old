@@ -69,11 +69,11 @@
 * **Software**
   * Software are the non-physical or tangible components of a computer, specifically data stored on a computer's hard drive, computer programs (e.g., the web browser you are using to view this blog post), software libraries, *etc.*
 * **Unix**
-  * A family of operating systems with several defining characteristics including support for multiple users, the execution of multiple tasks, a modular design with simple tools that perform limited, well-defined functions, a Unix shell, POSIX compliance, compliance to the Single Unix Specification (SUS), *etc.*
+  * A family of operating systems with several defining characteristics including support for multiple users and for the execution of multiple tasks simultaneously, a modular design with simple tools that perform limited, well-defined functions, a Unix shell, POSIX compliance, compliance to the Single Unix Specification (SUS), *etc.* Notable examples include BSD, OS X (previously called Mac OS X), Research Unix and Solaris.
 * **Unix-like**
-  * A family of operating systems, that share the vast majority of the features of Unix systems, without necessarily being certified as compliant to any particular version of the SUS. This certification costs money, so many free operating systems do not have the funds or the inclination to get SUS certification.
+  * A family of operating systems, that share the vast majority of the features of Unix systems, without necessarily being certified as compliant to any particular version of the SUS. This certification costs money, so many free operating systems do not have the funds or the inclination to get SUS certification. Examples include FreeBSD, Linux, NetBSD and OpenBSD.
 * **Unix shell**
-  * A Unix shell is a program that serves as a command-line interpreter (CLI) for &#42;nix systems including the various distributions of Linux. Unix shells are also defined by their POSIX compliance. Notable free examples include Bash, tcsh and Zsh.
+  * A Unix shell is a program that serves as a command-line interpreter (CLI) for &#42;nix systems including the various distributions of Linux. Unix shells are also defined by their POSIX compliance. Notable free examples include Bash, tcsh and Zsh. POSIX compliance also means that these Unix shells share some parts of their syntax. Bash and Zsh are probably the most feature-packed free widely-used Unix shells and most shell scripts written for Bash should also work without a hitch in Zsh. Although there are exceptions, for example, tests (indicated by single or double square brackets around a segment of code in Bash) in Zsh need double square brackets.
 * **VM**
   * <b>V</b>irtual <b>m</b>achine. Host operating systems run within virtualization software such as VirtualBox.
 * **VMs**
