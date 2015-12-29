@@ -24,8 +24,7 @@ Portage was inspired by the BSD ports system, the most significant differences a
 
 ebuilds for Portage are stored in the **Portage Tree** and other **Gentoo Portage overlays** (GPOs). The Portage Tree contains the best-tested and most scrutinously-analysed ebuilds, while the GPOs contain user-written ebuilds that may, or may not, be safe to use as they have not been as rigorously tested. The Portage Tree presently contains over 18,750 distinct ebuilds and the GPOs contains approximately 25,450 distinct ebuilds, not including the different versions of the same package. The Gentoo Foundation has created its own tool for maintaining GPOs that is called **Layman** ([`layman`](/man/layman.8.html) from the command-line). This tool has a list of GPOs maintained by the Gentoo Foundation (the Layman remote list), that a new overlay can be added to by requesting its addition at the Gentoo bugzilla. Some (but not all) GPOs are in the Layman remote list and hence can be added using {% include coders.html line1="layman -a &lt;OVERLAY&gt;" %} where `<OVERLAY>` is the overlay's name as it appears in the Layman remote list. For example, to add my GPO, [`sabayon-tools`](https://github.com/fusion809/sabayon-tools), one would run {% include coders.html line1="layman -a sabayon-tools" %}.
 
-Here are some example Bash scripts to simplify using Layman and Portage:
-
+#### Entropy, Layman and Portage Scripts
 ```bash
 ##############################################
               # cd functions #

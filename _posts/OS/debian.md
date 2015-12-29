@@ -32,6 +32,7 @@ liblua5.2-dev
 ```
 this feature can be a blessing and a curse, depending on what you do with your Debian system. I personally do a lot of software compiling on my Debian VMs and having to remember to install all of a program's components individually can be a real nuisance at times.
 
+#### APT Scripts
 ```bash
 # Upgrade installed software. Then remove any software that is no longer needed and clean the
 # APT cache.

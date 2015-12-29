@@ -17,7 +17,7 @@ As previously mentioned Sabayon uses both Entropy and Portage package managers, 
 
 Entropy uses `.tbz2` binary packages compiled using Portage (and converted from Portage to Entropy packages using the command {% include coders.html line1="equo pkg inflate &lt;PACKAGE&gt;" %}) and like Portage it is written in Python and Bash script. The ebuilds used to generate these binary packages are found in the Portage Tree as well as the [`sabayon`](https://github.com/Sabayon/for-gentoo) and `sabayon-distro` overlays maintained by the Sabayon development team. The `sabayon` overlay contains miscellaneous ebuilds that are potentially as useful to Gentoo users as they are for Sabayon users (in other words they are not specific to Sabayon), while `sabayon-distro` contains ebuilds for system software components (e.g., the kernel and the Entropy package manager) that are specific to Sabayon.
 
-Here are some example shell scripts for automating some common actions with `equo`:
+#### equo Scripts
 ```bash
 # Test for missing dependencies and then install them
 function seqd {

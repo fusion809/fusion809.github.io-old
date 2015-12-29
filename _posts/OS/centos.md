@@ -12,6 +12,7 @@ CentOS uses the Anaconda installer, similarly to Fedora. For further details abo
 ### Package Management
 CentOS uses the [**Yellowdog Updater, Modified**](https://en.wikipedia.org/wiki/Yellowdog_Updater,_Modified) (**yum**) package manager that was once used by Fedora. yum's (or [`yum`](/man/yum.8.html) from the command-line) development has since been discontinued, in favour of its successor **Dandified yum** (**DNF**), which resolves package dependencies faster and more efficiently than yum does, by using ZYpp's libsolv library, hence it is likely that in the future CentOS will start using DNF as well. yum is widely considered one of the least efficient widely-used Linux package managers presently available and the cause is likely the fact that unlike APT or ZYpp it is written in Python. Python has its advantages and disadvantages as a language for a PMS to be written in and its slow speed is one such disadvantage. yum and DNF have essentially the same syntax, below is an example `~/.bashrc` for CentOS that shows some of its basic syntax.
 
+#### yum Scripts
 ```bash
 # This should update yum's repositories and perform any required package upgrades
 # without asking for confirmation

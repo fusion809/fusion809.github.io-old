@@ -22,6 +22,8 @@ Arch Linux also follows a bleeding-edge rolling release model (BE-RRM), which me
 pacman and Yaourt both have a very unusual syntax, see most command-line BSD/Linux package managers use the `install` option to install software, `remove` to remove software, `update` to update software repositories and `upgrade` to update all installed software. pacman (and hence also Yaourt, although for upgrades the option is `-Syua` for Yaourt) instead uses `-S`, `-R`, `-Sy` and `-Syu` options, respectively. Further details of its syntax can be found [here](https://wiki.archlinux.org/index.php/Pacman_Rosetta).
 
 Here is an example `~/.bashrc` file one can use on Arch VMs.
+
+#### pacman/Yaourt Scripts
 ```bash
 # A less powerful replacement for Yaourt, I use when Yaourt is somehow inappropriate
 function aurin {
