@@ -12,13 +12,9 @@ One of the major features that distinguishes Manjaro from Arch is an automated i
 
 ### Package Management
 {% include_relative OS/os-shot.html image="Manjaro-Linux-pamac.png" description="Pamac 2.4.3 running on Manjaro Linux" float="none" width="1130px" %}
-Like its parent it uses pacman and Yaourt for command-line package management, although the graphical front-end, [Pamac](https://github.com/manjaro/pamac) (written predominantly in [Vala](https://en.wikipedia.org/wiki/Vala_(programming_language))), which is developed by the Manjaro development team, also comes preinstalled on Manjaro. Manjaro also has the Manjaro Hardware Detection (`mhwd`) tool (which is written predominantly in C++, Bash script and C) which is developed by the Manjaro development team. Here are some example Bash scripts for simplifying the use of `mhwd`:
-```bash
-# Install new kernel. Example use: `kernel 43` should install the 4.3 series kernel
-function kernel {
-  sudo mhwd-kernel -i linux$@
-}
-```
+Like its parent it uses pacman and Yaourt for command-line package management, although the graphical front-end, [Pamac](https://github.com/manjaro/pamac) (written predominantly in [Vala](https://en.wikipedia.org/wiki/Vala_(programming_language))), which is developed by the Manjaro development team, also comes preinstalled on Manjaro. Manjaro also has the Manjaro Hardware Detection (`mhwd`) tool (which is written predominantly in C++, Bash script and C) which is developed by the Manjaro development team.
+
+{% include_relative OS/mhwd-scripts.md %}
 
 Manjaro Linux has the following pacman repositories enabled by default (note that while their names are the same as their Arch Linux counterparts these repositories are all distinct from their Arch counterparts):
 ```bash
