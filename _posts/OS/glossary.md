@@ -56,7 +56,7 @@ In the field of software development a [**fork**](https://en.wikipedia.org/wiki/
 <b>G</b>raphical <b>u</b>ser <b>i</b>nterface. The most notable type of GUI found on many &#42;nix systems is that of a desktop environment like Cinnamon, GNOME, KDE, LXDE, MATE, Xfce, *etc.*
 
 #### Hardware
-**Computer hardware** consists of the physical or tangible components of a computer, including its **hard disk drive** (**HDD**fd), **central processing unit** (**CPU**), **graphics card**, *etc.*
+[**Computer hardware**](https://en.wikipedia.org/wiki/Computer_hardware) consists of the physical or tangible components of a computer, including its [**hard disk drive**](https://en.wikipedia.org/wiki/Hard_disk_drive) (**HDD**, or simply **hard drive**), [**central processing unit**](https://en.wikipedia.org/wiki/Central_processing_unit) (**CPU**), [**graphics card**](https://en.wikipedia.org/wiki/Video_card), *etc.*
 
 #### Kernel
 An [**operating system kernel**](https://en.wikipedia.org/wiki/Kernel_(operating_system)) is a piece of system software that manages all communication between a computer's software and its hardware. It essentially converts all software input/output requests into implementable instructions for the computer's hardware. There are three major categories of kernel, although one of these categories is debatable with the creator of the Linux kernel calling it simple marketing, they are:
@@ -66,7 +66,7 @@ An [**operating system kernel**](https://en.wikipedia.org/wiki/Kernel_(operating
 * [**Monolithic kernels**](https://en.wikipedia.org/wiki/Monolithic_kernel), which are kernels that keep all system software in the kernel's virtual memory, and are often reported to be superior, performance-wise than their microkernel counterparts. Examples include the FreeBSD, Linux, NetBSD, OpenBSD and Solaris kernels.
 
 #### Linux distribution
-A **Linux distribution** is any operating system that is built on top of the Linux or Linux-libre kernel. Most Linux distributions can also be called GNU/Linux distributions because of the fact that most of their userland software come from the GNU Project. This userland software includes the GNU Coreutils package that provide some of the basic POSIX utilities, including `cat`, `chmod`, `cp`, `mv`, *etc.*
+A [**Linux distribution**](https://en.wikipedia.org/wiki/Linux_distribution) is any operating system that is built on top of the Linux or Linux-libre kernel. Most Linux distributions can also be called GNU/Linux distributions because of the fact that most of their userland software come from the GNU Project. This userland software includes the [GNU Coreutils](https://en.wikipedia.org/wiki/GNU_Coreutils) package that provide some of the basic POSIX utilities, including `cat`, `chmod`, `cp`, `mv`, *etc.*
 
 #### Linux kernel
 The [**Linux kernel**](https://en.wikipedia.org/wiki/Linux_kernel) is a monolithic kernel originally created by and named after Finnish computer programmer, [Linus Torvalds](https://en.wikipedia.org/wiki/Linus_Torvalds), whom at the time of its founding in 1991 was a 21-year-old computer science student. It started off as a side project by Torvalds to create an operating system for his own personal use, but has since expanded to become one of the most widely used free (licensed primarily under GPLv2) operating system kernels worldwide.
@@ -78,10 +78,10 @@ The [**Linux-libre kernel**](https://en.wikipedia.org/wiki/Linux-libre) is a ker
 Usually refers to **netinstall** editions. These are OS editions that contain the barebones required to install an OS using one's network (or Internet) connection.
 
 #### Operating system
-An **operating system**, is essentially the pieces of system software that manages hardware and software resources and provides common services for computer programs. The most important piece of system software of any operating system is its kernel.
+An [**operating system**](https://en.wikipedia.org/wiki/Operating_system), is essentially the pieces of system software that manages hardware and software resources and provides common services for computer programs. The most important piece of system software of any operating system is its kernel.
 
 #### Out-of-the-box
-The property of an operating system of being &ldquo;**out-of-the-box**&rdquo; means that as soon as the default installer (if any) has done its job and installed the system, the system should be ready to be used by the user without any further configuration or installation of software onto the system.
+The property of an operating system of being &ldquo;[**out-of-the-box**](https://en.wikipedia.org/wiki/Out_of_the_box_(feature))&rdquo; means that as soon as the default installer (if any) has done its job and installed the system, the system should be ready to be used by the user without any further configuration or installation of software onto the system.
 
 #### Permissive license
 [**Permissive licenses**](https://en.wikipedia.org/wiki/Permissive_license) are FOSS licenses that do not require that derivatives of the software licensed under their terms be released under similar FOSS licenses. Popular examples of permissive licenses include the various BSD licenses and the MIT License.
@@ -90,21 +90,21 @@ The property of an operating system of being &ldquo;**out-of-the-box**&rdquo; me
 [**Portable Operating System Interface**](https://en.wikipedia.org/wiki/Portable_Operating_System_Interface). A family of standards for the application programming interface (API), Unix shell, command-line utilities, *etc.* of &#42;nix systems.
 
 #### Programming languages
-A **programming language** is a type of computer language that is used to write computer programs. Programming languages can be **implemented** (or executed, that is, run) via one of two methods, although the second usually requires some degree of the first. These two methods are:
+A [**programming language**](https://en.wikipedia.org/wiki/Programming_language) is a type of computer language that is used to write computer programs. Programming languages can be [**implemented**](https://en.wikipedia.org/wiki/Programming_language_implementation) (or executed, that is, run) via one of two methods, although the second usually requires some degree of the first. These two methods are:
 * **Interpretation**. This method is basically what it sounds like: it is when the program's source code is translated into a series of actions implemented by the computer's hardware.
 * **Compilation**. Compilers essentially serve as translators between languages &mdash; transforming one programming language into another computer language, which can then be compiled further into another language or fed into an interpreter. Some compilers (**native code compilers**) compile programming languages directly into machine code (which as its name suggests is a set of instructions that can be directly interpreted by a computer's Central Processing Unit).
 
 #### RRM
-<b>R</b>olling <b>r</b>elease <b>m</b>odel. A type of operating system development model in which the system is continually developing, this is as opposed to standard release models (SRMs) which uses distinct OS versions that must be reinstalled over the previous version.
+[**Rolling release model**](https://en.wikipedia.org/wiki/Rolling_release) (**RRM**), a type of operating system development model in which the system is continually developing, this is as opposed to standard release models (SRMs) which uses distinct OS versions that must be reinstalled over the previous version.
 
 #### Software
-**Software** are the non-physical or tangible components of a computer, specifically data stored on a computer's hard drive, computer programs (e.g., the web browser you are using to view this blog post), software libraries, *etc.*
+[**Software**](https://en.wikipedia.org/wiki/Software) are the non-physical or tangible components of a computer, specifically data stored on a computer's hard drive, computer programs (e.g., the web browser you are using to view this blog post), software libraries, *etc.*
 
 #### Unix
-**Unix** is a family of operating systems with several defining characteristics including support for multiple users and for the execution of multiple tasks simultaneously, a modular design with simple tools that perform limited, well-defined functions, a Unix shell, POSIX compliance, compliance to the Single Unix Specification (SUS), *etc.* Notable examples include BSD, OS X (previously called Mac OS X), Research Unix and Solaris.
+[**Unix**](https://en.wikipedia.org/wiki/Unix) is a family of operating systems with several defining characteristics including support for multiple users and for the execution of multiple tasks simultaneously, a modular design with simple tools that perform limited, well-defined functions, a Unix shell, POSIX compliance, compliance to the Single Unix Specification (SUS), *etc.* Notable examples include BSD, OS X (previously called Mac OS X), Research Unix and Solaris.
 
 #### Unix-like
-**Unix-like operating systems** are a family of operating systems, that share the vast majority of the features of Unix systems, without necessarily being certified as compliant to any particular version of the SUS. This certification costs money, so many free operating systems do not have the funds or the inclination to get SUS certification. Examples include FreeBSD, Linux, NetBSD and OpenBSD.
+[**Unix-like operating systems**](https://en.wikipedia.org/wiki/Unix-like) are a family of operating systems, that share the vast majority of the features of Unix systems, without necessarily being certified as compliant to any particular version of the SUS. This certification costs money, so many free operating systems do not have the funds or the inclination to get SUS certification. Examples include FreeBSD, Linux, NetBSD and OpenBSD.
 
 #### Unix shell
-A **Unix shell** is a program that serves as a command-line interpreter (CLI) for &#42;nix systems including the various distributions of Linux. Unix shells are also defined by their POSIX compliance. Notable free examples include Bash, tcsh and Zsh. POSIX compliance also means that these Unix shells share some parts of their syntax. Bash and Zsh are probably the most feature-packed free widely-used Unix shells and most shell scripts written for Bash should also work without a hitch in Zsh. Although there are exceptions, for example, tests (indicated by single or double square brackets around a segment of code in Bash) in Zsh need double square brackets.
+A [**Unix shell**](https://en.wikipedia.org/wiki/Unix_shell) is a program that serves as a command-line interpreter (CLI) for &#42;nix systems including the various distributions of Linux. Unix shells are also defined by their POSIX compliance. Notable free examples include Bash, tcsh and Zsh. POSIX compliance also means that these Unix shells share some parts of their syntax. Bash and Zsh are probably the most feature-packed free widely-used Unix shells and most shell scripts written for Bash should also work without a hitch in Zsh. Although there are exceptions, for example, tests (indicated by single or double square brackets around a segment of code in Bash) in Zsh need double square brackets.
