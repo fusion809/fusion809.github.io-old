@@ -64,6 +64,10 @@
   * <b>P</b>ackage <b>m</b>agement <b>s</b>ystem<b>s</b>.
 * **POSIX**
   * <b>P</b>ortable <b>O</b>perating <b>S</b>ystem <b>I</b>nterface. A family of standards for the application programming interface (API), Unix shell, command-line utilities, *etc.* of &#42;nix systems.
+* **Programming languages**
+  * A programming language is a type of computer language that is used to write computer programs. Programming languages can be **implemented** (or executed, that is, run) via one of two methods, although the second usually requires some degree of the first. These two methods are:
+    * **Interpretation**. This method is basically what it sounds like: it is when the program's source code is translated into a series of actions implemented by the computer's hardware.
+    * **Compilation**. Compilers essentially serve as translators between languages &mdash; transforming one programming language into another computer language, which can then be compiled further into another language or fed into an interpreter. Some compilers (**native code compilers**) compile programming languages directly into machine code (which as its name suggests is a set of instructions that can be directly interpreted by a computer's Central Processing Unit).
 * **RRM**
   * <b>R</b>olling <b>r</b>elease <b>m</b>odel. A type of operating system development model in which the system is continually developing, this is as opposed to standard release models (SRMs) which uses distinct OS versions that must be reinstalled over the previous version.
 * **Software**
