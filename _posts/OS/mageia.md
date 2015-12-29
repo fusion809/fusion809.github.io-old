@@ -13,23 +13,7 @@ Mageia uses the graphical DrakX installer, which I have fairly limited experienc
 {% include_relative OS/os-shot.html image="Mageia-5-rpmdrake-6.20.png" width="1130px" float="none" description="rpmdrake 6.20 running on Mageia 5" %}
 As previously mentioned Mageia uses the command-line urpmi ([`urpmi`](/man/urpmi.8.html) from the command-line) package manager, which installs software using RPM binary packages and the RPM package manager. urpmi is written in Perl. Other commands included in the `urpmi` package includes a command for uninstalling software ([`urpme`](/man/urpme.8.html)), another command for querying installed software and software repositories ([`urpmq`](/man/urpmq.8.html)) and one for querying the files installed by software packages ([`urpmf`](/man/urpmf.8.html)), amongst others. Mageia also uses Mandriva's graphical front-end for urpmi, rpmdrake. Below is a Bash script showing some useful commands involving urpmi. My experience with Mageia is just barely at the point where I am comfortable reviewing it, so I cannot really add much beyond this about it. I have noticed, however, that Mageia is one Linux distribution wherein I have had great difficulty installing the [Atom](https://atom.io) text editor (which is the text editor I am using to write this post). I have managed to by using the official [RPM binary package](https://atom.io/download/rpm) provided by the Atom development team, by running {% include coders.html line1="urpmi https://atom-installer.github.com/v1.2.4/atom.x86_64.rpm?s=1448042930" %}, although I did have to uninstall the `apmd` package first due to a file conflict (as both packages provide a `/usr/bin/apm` file).
 
-#### urpmi Scripts
-```bash
-# Update all installed software
-function update {
-	sudo urpmi.update -a && sudo urpmi --auto-select
-}
-
-# Remove program arguments provided to it
-function urm {
-  sudo urpme $@
-}
-
-# Install program arguments provided to it. URLs (to RPM packages) can also be given to it
-function uin {
-  sudo urpmi $@
-}
-```
+{% include_relative OS/urpmi-scripts.md %}
 
 {% include_relative OS/specs.md arch="i586, x86_64." origin="France." date="2011." shell="Bash." ui="GNOME, KDE." im="Graphical, using live media." type="Linux." pm="urpmi." rm="Fixed." base="Mandriva Linux." tm="Users that favour stability over having the latest software." %}
 
