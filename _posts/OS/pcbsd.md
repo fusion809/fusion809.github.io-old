@@ -11,7 +11,7 @@ You may have noticed this is the only BSD derivative compared in this post, this
 PC-BSD, like its parent FreeBSD, uses **pkg** ([`pkg`](/man/pkg.7.html) from the command-line) and the **ports system** ([here](/man/ports.7.html) is its manpage) for command-line package management, although unlike FreeBSD a graphical front-end for pkg called **AppCafe** is also included in a default installation of PC-BSD. `pkg` is FreeBSD's binary package manager, while the ports system is an installation method that involves installing software from source code contained in subdirectories of `/usr/ports`. One does this by changing into the subdirectory of the package you want and running {% include coder.html line1="make install" %} Just like with Gentoo's Portage package manager (which is inspired by FreeBSD's ports) one will need to occasionally update the contents of the ports system, to ensure that the software is up-to-date. One does this by running: {% include coder.html line1="portsnap fetch && portsnap extract" %} Unlike Portage, however, the ports system does not perform dependency resolution for you, rather you have to manually install all the dependencies for the package you want using either ports or pkg.
 
 I have personally found pkg and its graphical front-end **very** prone to unresolvable errors, for example, at the time of writing this post I have booted my PC-BSD VM and used AppCafe to upgrade my VM's packages and it gave out the fatal error:
-{% gist 77536cea7b2914a158f1 %}
+<script src="/js/77536cea7b2914a158f1.js" type="text/javascript"></script>
 
 Likewise using `pkg` for upgrades gives the error documented in this [forum post](https://forums.pcbsd.org/thread-20354.html) I started.
 
