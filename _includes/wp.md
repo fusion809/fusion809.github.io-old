@@ -1,2 +1,2 @@
 {% assign namesplit = include.name | split:' ' %}
-[{{ include.name }}](https://en.wikipedia.org/wiki/{% for namepart in namesplit %}{{ namepart }}{% unless forloop.last %}_{% endunless %}{% endfor %}{% if include.cat %}_({{ include.cat }}){% endif %})
+[{% if include.form="b" %}**{{ include.name }}**{% elsif include.form="i" %}*{{ include.name }}*{% else %}{{ include.name }}{% endif %}](https://en.wikipedia.org/wiki/{% for namepart in namesplit %}{{ namepart }}{% unless forloop.last %}_{% endunless %}{% endfor %}{% if include.cat %}_({{ include.cat }}){% endif %})
