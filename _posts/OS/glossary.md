@@ -100,7 +100,7 @@ A **programming paradigm** is a difficult concept for me to explain, but I will 
 
 Another feature of programming languages that can be used to categorize them, that is also distinct from those previously mentioned, is that of **dynamic vs. static programming languages**. Dynamic programming languages are those that execute many of the tasks that static programming languages perform during compilation, during interpretation. Dynamic programming languages usually (but not always) also support scripts, which are special programs (that are usually fairly short) written for special interpreters that can automate the execution of tasks that would otherwise have to be performed manually by a human operator. Languages that support scripts are also called [**scripting languages**](https://en.wikipedia.org/wiki/Scripting_language).
 
-{% include_relative OS/table1-common-programming-languages.html %}
+{% include_relative OS/table1-comparison-of-common-programming-languages.html %}
 
 #### RRM
 [**Rolling release model**](https://en.wikipedia.org/wiki/Rolling_release) (**RRM**), a type of operating system development model in which the system is continually developing, this is as opposed to standard release models (SRMs) which uses distinct OS versions that must be reinstalled over the previous version.
