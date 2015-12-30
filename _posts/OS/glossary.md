@@ -89,8 +89,6 @@ The property of an operating system of being &ldquo;[**out-of-the-box**](https:/
 #### POSIX
 [**Portable Operating System Interface**](https://en.wikipedia.org/wiki/Portable_Operating_System_Interface). A family of standards for the application programming interface (API), Unix shell, command-line utilities, *etc.* of &#42;nix systems.
 
-{% include_relative OS/programming_language.md %}
-
 #### RRM
 [**Rolling release model**](https://en.wikipedia.org/wiki/Rolling_release) (**RRM**), a type of operating system development model in which the system is continually developing, this is as opposed to standard release models (SRMs) which uses distinct OS versions that must be reinstalled over the previous version.
 

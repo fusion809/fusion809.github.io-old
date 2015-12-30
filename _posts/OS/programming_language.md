@@ -1,4 +1,4 @@
-#### Programming languages
+### Programming languages
 A [**programming language**](https://en.wikipedia.org/wiki/Programming_language) is a type of computer language that is used to write computer programs. Programming languages can be [**implemented**](https://en.wikipedia.org/wiki/Programming_language_implementation) (or executed, that is, run) via one of two methods, although the second usually requires some degree of the first. These two methods are:
 * **Interpretation**. This method is basically what it sounds like: it is when the program's source code is translated into a series of actions implemented by the computer's hardware.
 * **Compilation**. [**Compilers**](https://en.wikipedia.org/wiki/Compiler) essentially serve as translators between languages &mdash; transforming one programming language into another computer language, which can then be compiled further into another language or fed into an interpreter. Some compilers (**native code compilers**) compile programming languages directly into machine code (which as its name suggests is a set of instructions that can be directly interpreted by a computer's Central Processing Unit). The most popular type of compiler, however, is one that compiles source code into object code (which is readily executed).
@@ -11,7 +11,7 @@ Another feature of programming languages that can be used to categorize them, th
 
 {% include_relative OS/table1-comparison-of-common-programming-languages.html %}
 
-##### Python
+#### Python
 **Python** is a high-level general-purpose multi-paradigm programming language with scripting-compatibility. It is probably the most flexible programming language I have seen and it is used for numerical computations, scientific computing, writing and working with web applications, application software and package management systems. It is cross-platform and its syntax is far more human-readable
 than C. It is worthwhile noting that its speed is significantly dependent on how it is implemented. The standard, official
 implementation of Python is [CPython](https://en.wikipedia.org/wiki/CPython) which is more efficient than most implementations,
@@ -21,6 +21,7 @@ There are also two main versions of Python presently in widespread use. Python 2
 greater support for Python 2 than for Python 3. Python also has its own command-line package manager called
 {% include wp.md name="pip" cat="software" %} (`pip`). Some programs I am particularly familiar with that are written
 predominantly (if not exclusively) in Python that are compatible with Linux systems include:
+
 * {% include wp.md name="Anaconda" cat="installer" %} &mdash; an operating system installer used by Fedora and most of its derivatives, see the [Fedora](#fedora) section for details.
 * {% include wp.md name="PyMOL" %} &mdash; an application for viewing and performing calculations relating to molecules, especially macromolecules like proteins, DNA double helices and RNA helices.
 * {% include wp.md name="SageMath" %} &mdash; a mathematics program that uses a Python-like syntax and integrates several free pieces of
