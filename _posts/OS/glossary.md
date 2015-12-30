@@ -1,5 +1,5 @@
 ## Glossary
-{% include OS/short-definitions.md %}
+{% include_relative OS/short-definitions.md %}
 
 ### Basic Technological Definitions
 #### Fork
