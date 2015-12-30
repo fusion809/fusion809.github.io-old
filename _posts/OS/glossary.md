@@ -102,6 +102,21 @@ Another feature of programming languages that can be used to categorize them, th
 
 {% include_relative OS/table1-comparison-of-common-programming-languages.html %}
 
+#### Python
+
+<br/>
+There are also two main versions of Python presently in widespread use. Python 2 and Python 3. Most programs I have come across have
+superior support for Python 2 than for Python 3. Python also has its own command-line package manager called
+[pip](https://en.wikipedia.org/wiki/Pip_(software)) (`pip`). Some programs I am particularly familiar with that are written
+predominantly (if not exclusively) in Python that are compatible with Linux systems include:<br/>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/PyMOL" link="_blank">PyMOL</a> &mdash; an application for viewing and performing calculations
+relating to molecules, especially macromolecules like proteins, DNA double helices and RNA helices.</li>
+<li><code>youtube-dl</code> &mdash; a command-line program for downloading YouTube videos as media files. It is managed by pip (so
+running `sudo pip install youtube-dl` should install it)</li>
+<li>
+</ul>
+
 #### RRM
 [**Rolling release model**](https://en.wikipedia.org/wiki/Rolling_release) (**RRM**), a type of operating system development model in which the system is continually developing, this is as opposed to standard release models (SRMs) which uses distinct OS versions that must be reinstalled over the previous version.
 
