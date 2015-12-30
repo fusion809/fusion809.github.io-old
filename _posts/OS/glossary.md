@@ -109,7 +109,7 @@ superior support for Python 2 than for Python 3. Python also has its own command
 predominantly (if not exclusively) in Python that are compatible with Linux systems include:
 * {% include wp.md name="PyMOL" %} &mdash; an application for viewing and performing calculations
 relating to molecules, especially macromolecules like proteins, DNA double helices and RNA helices.
-* `youtube-dl` &mdash; a command-line program for downloading YouTube videos as media files. It is managed by pip (so
+* [youtube-dl](https://rg3.github.io/youtube-dl/) ([`youtube-dl`](/man/youtube-dl.1.html)) &mdash; a command-line program for downloading YouTube videos as media files. It is managed by pip (so
 running {% include codeus.html line1="sudo pip install youtube-dl" %} should install it)
 
 #### RRM
