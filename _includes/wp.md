@@ -1,2 +1,2 @@
 {% assign sortedcats = categories | split:' ' | sort %}
-[sortedcats[1] sortedcats[2] sortedcats[3]](https://en.wikipedia.org/wiki/sortedcats[1]_sortedcats[2]_sortedcats[3])
+[{% for cats in sortedcats %}{{ cats | markdownify }}{% endfor %}](https://en.wikipedia.org/wiki/{% for cats in sortedcats %}{{ cats }}_{% endfor %})
