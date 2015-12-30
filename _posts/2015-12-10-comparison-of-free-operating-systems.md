@@ -23,7 +23,6 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
 {% include toc.html %}
 <br/>
 {% include_relative OS/glossary.md %}
-<br/>
 {% include_relative OS/programming_language.md %}
 
 {% include_relative OS/review-format.md %}
