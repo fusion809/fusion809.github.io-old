@@ -1,7 +1,10 @@
 ## Glossary
 {% include_relative OS/short-definitions.md %}
 
-### Basic Technological Definitions
+### Basic Definitions
+#### Command-Line Interface
+A [**command-line interface**](https://en.wikipedia.org/wiki/Command-line_interface) (**CLI**) or **command-line interpreter** is a type of user interface that allows users to interact with their computer by issuing a series of commands. On &#42;nix systems the most common type of CLI are Unix shells.
+
 #### Fork
 In the field of software development a [**fork**](https://en.wikipedia.org/wiki/Fork_(software_development)) is when software developers take a copy of a project's source code and start working on it independently of its previous developers. Proprietary software licenses do not usually allow for forks except with the expressed permission of the software's previous developer(s). In the FOSS community forks are common due to the fact that FOSS licenses permit the creation of forks without the previous developer(s)'s permission.
 
