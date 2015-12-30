@@ -107,8 +107,9 @@ There are also two main versions of Python presently in widespread use. Python 2
 superior support for Python 2 than for Python 3. Python also has its own command-line package manager called
 {% include wp.md name="pip" cat="software" %} (`pip`). Some programs I am particularly familiar with that are written
 predominantly (if not exclusively) in Python that are compatible with Linux systems include:
-* {% include wp.md name="PyMOL" %} &mdash; an application for viewing and performing calculations
-relating to molecules, especially macromolecules like proteins, DNA double helices and RNA helices.
+* {% include wp.md name="PyMOL" %} &mdash; an application for viewing and performing calculations relating to molecules, especially macromolecules like proteins, DNA double helices and RNA helices.
+* {% include wp.md name="SageMath" %} &mdash; a mathematics program that uses a Python-like syntax and integrates several free pieces of
+mathematics software, with interfaces available for several proprietary mathematics programs.
 * [youtube-dl](https://rg3.github.io/youtube-dl/) ([`youtube-dl`](/man/youtube-dl.1.html)) &mdash; a command-line program for downloading YouTube videos as media files. It is managed by pip (so
 running {% include codeus.html line1="sudo pip install youtube-dl" %} should install it)
 
