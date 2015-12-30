@@ -211,4 +211,12 @@ $(document).ready(function() {
           return $heading[0].tagName.toLowerCase();
       }
   });
+  var counter = 0;
+
+  $('caption').each(
+    function() {
+      ++counter;
+      this.id = 'table-' + counter;
+    }
+  );
 });
