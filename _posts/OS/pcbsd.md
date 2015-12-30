@@ -15,7 +15,7 @@ I have personally found pkg and its graphical front-end **very** prone to unreso
 
 Likewise using `pkg` for upgrades gives the error documented in this [forum post](https://forums.pcbsd.org/thread-20354.html) I started.
 
-{% include_relative OS/specs.md arch="x86_64." shell="tcsh." type="BSD." origin="U.S.A." date="2006." ui="KDE Plasma 4." base="FreeBSD." im="Graphical using a live medium." pm="pkg and ports system." rm="Fixed." tm="People interested in using FreeBSD that may not be too comfortable with the FreeBSD command-line." %}
+{% include_relative OS/specs.md arch="x86_64." shell="sh (user), tcsh (root)." type="BSD." origin="U.S.A." date="2006." ui="KDE Plasma 4." base="FreeBSD." im="Graphical using a live medium." pm="pkg and ports system." rm="Fixed." tm="People interested in using FreeBSD that may not be too comfortable with the FreeBSD command-line." %}
 
 {% include_relative OS/os-min.md cpu="x86_64." ram="2048 MB." hdd="10 GB (server), 20 GB (desktop)." ims="4.4 GB" %}
 
