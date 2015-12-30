@@ -103,6 +103,11 @@ Another feature of programming languages that can be used to categorize them, th
 {% include_relative OS/table1-comparison-of-common-programming-languages.html %}
 
 #### Python
+Python is a high-level general-purpose multi-paradigm programming language with scripting-compatibility. It is probably the most flexible programming language I have seen and it is used for numerical computations, scientific computing, writing and working with web apps, application software and package management systems. It is cross-platform and its syntax is far more human-readable
+than C. It is worthwhile noting that its speed is significantly dependent on how it is implemented. The standard, official
+implementation of Python is [CPython](https://en.wikipedia.org/wiki/CPython) which is more efficient than most implementations,
+but less efficient than the [PyPy](https://en.wikipedia.org/wiki/PyPy) implementation.
+
 There are also two main versions of Python presently in widespread use. Python 2 and Python 3. Most programs I have come across have
 superior support for Python 2 than for Python 3. Python also has its own command-line package manager called
 {% include wp.md name="pip" cat="software" %} (`pip`). Some programs I am particularly familiar with that are written
