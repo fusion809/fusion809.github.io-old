@@ -10,6 +10,9 @@ The [**Bourne Shell**](https://en.wikipedia.org/wiki/Bourne_Shell) (**sh**) is t
 #### C Shell
 The [**C Shell**](https://en.wikipedia.org/wiki/C_Shell) is an extinct (no longer under active development) Unix shell originally developed in the late 1970s by [Bill Joy](https://en.wikipedia.org/wiki/Bill_Joy) (whom also developed the vi text editor) for use by the Berkeley Software Distribution. It is so named because its command-line syntax is very similar to that of the C programming language.
 
+#### friendly interactive shell
+The [**friendly interactive shell**](https://en.wikipedia.org/wiki/Friendly_interactive_shell), or **fish** for short, is a Unix shell that is designed to be more user-friendly than other shells. It features syntax highlighting, auto-completions, *etc.*
+
 #### KornShell
 The [**KornShell**](https://en.wikipedia.org/wiki/KornShell) (**ksh**, several descendents of the KornShell also exist, they usually have ksh somewhere in their abbreviated name) is a Unix shell that was first developed at Bell Labs in the early 1980s and while it is not the most popular of Unix shells, it is still under active development and used by a small handful of &#42;nix systems such as OpenBSD, as their default shell.
 
