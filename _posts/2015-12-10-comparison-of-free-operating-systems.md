@@ -9,6 +9,7 @@ redirect_from:
   - /2015/11/30/comparison-of-free-operating-systems/
   - /2015/12/02/comparison-of-free-operating-systems/
   - /2015/12/10/comparison-of-free-operating-systems/
+  - /2015/12/27/comparison-of-free-operating-systems/
   - /comparison-of-free-operating-systems/
 ---
 
