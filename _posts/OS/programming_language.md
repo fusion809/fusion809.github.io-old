@@ -11,6 +11,46 @@ Another feature of programming languages that can be used to categorize them, th
 
 {% include_relative OS/table1-comparison-of-common-programming-languages.html %}
 
+#### MATLAB
+**MATLAB** is a proprietary programming language primarily intended for numerical computations and scientific computing, with scripting-compatability. These free clones include [FreeMat](https://en.wikipedia.org/wiki/FreeMat) and [GNU Octave](https://en.wikipedia.org/wiki/GNU_Octave), another free programming language/IDE duo that is similar to MATLAB, but not necessarily a clone is [Scilab](https://en.wikipedia.org/wiki/Scilab), which while similar to MATLAB has several key differences too. Most tests have found that MATLAB and its clones/related programming languages are fairly slow compared to lower-level and less purpose-specific programming languages like C and Python. MATLAB is the most popular numerically-oriented programming language, according to [TIOBE](http://www.tiobe.com/index.php/content/paperinfo/tpci/index.html), although because of GNU Octave's similarity (so much similarity that it even uses the same file extension for its scripts &mdash; `.m`) to MATLAB it is possible that TIOBE could not distinguish the popularity of GNU Octave from that of MATLAB. MATLAB/GNU Octave are probably the programming languages I have the second-greatest experience with, after Bash.
+
+Below is an example pair of scripts I have written in it, for the purpose of plotting a Lorenz attractor. Note, in order to execute these yourself, you need to have GNU Octave (because of the use of the `lsode` function in the second of these two scripts, it is not compatible with MATLAB) installed and these two m files need to be stored in the SAME directory.
+
+```matlab
+#### lorenz.m ####
+function dy = lorenz(y,t)
+dy = zeros(3,1);
+P = 10;
+r = 28;
+b = 8/3;
+dy(1) = P*(y(2) - y(1));
+dy(2) = -y(1)*y(3) + r*y(1) - y(2);
+dy(3) = y(1)*y(2) - b*y(3);
+
+#### lorenz-ex.m ####
+clear all
+t=linspace(0,350,100001);
+lsode_options("relative tolerance", 1e-15);
+y = lsode("lorenz",[ 1.0; 1.0; 1.0]',t);
+
+figure(1)
+
+subplot(221)
+plot(y(:,1),y(:,2),'-');
+xlabel('x(t)','FontSize',16);
+ylabel('y(t)','FontSize',16);
+
+subplot(222)
+plot(y(:,1),y(:,3),'-');
+xlabel('x(t)','FontSize',16);
+ylabel('z(t)','FontSize',16);
+
+subplot(223)
+plot(y(:,2),y(:,3),'-');
+xlabel('y(t)','FontSize',16);
+ylabel('z(t)','FontSize',16);
+```
+
 #### Python
 **Python** is a high-level general-purpose multi-paradigm programming language with scripting-compatibility. It is probably the most flexible programming language I have seen and it is used for numerical computations, scientific computing, writing and working with web applications, application software and package management systems. It is cross-platform and its syntax is far more human-readable
 than C. It also automatically performs some tasks that users would have to perform manually if they were working with lower-level languages like C. Its major caveat is its speed, however, it is worthwhile noting that its speed is significantly dependent on how it is implemented. The standard, official implementation of Python is [CPython](https://en.wikipedia.org/wiki/CPython) which while it is more efficient than most implementations (like Jython), is less efficient than the [PyPy](https://en.wikipedia.org/wiki/PyPy) implementation. Regardless of the implementation used, however, usually you will find that Python is slower than lower-level languages like C, C++ or Java.
