@@ -24,12 +24,12 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
 {% include toc.html %}
 <br/>
 {% include_relative OS/glossary.md %}
+{% capture post %}
 {% include_relative OS/programming_language.md %}
 
 {% include_relative OS/review-format.md %}
-
+{% endcapture %}{{ post | markdownify }}
 {% include_relative OS/antix.md %}
-
 {% include_relative OS/arch-linux.md %}
 
 {% include_relative OS/centos.md %}

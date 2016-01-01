@@ -1,4 +1,4 @@
-## antiX
+{% capture heading %}## antiX{% endcapture %}{{ heading | markdownify }}
 {% include_relative OS/os-shot.html image="antiX-15.png" width = "768px" float="none" description="antiX 15 running in VirtualBox, with its default desktop" %}
 
 ### Background

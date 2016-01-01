@@ -16,40 +16,7 @@ Another feature of programming languages that can be used to categorize them, th
 
 Below is an example pair of scripts I have written in it, for the purpose of plotting a Lorenz attractor. Note, in order to execute these yourself, you need to have GNU Octave (because of the use of the `lsode` function in the second of these two scripts, it is not compatible with MATLAB) installed and these two m files need to be stored in the SAME directory.
 
-```matlab
-#### lorenz.m ####
-function dy = lorenz(y,t)
-dy = zeros(3,1);
-P = 10;
-r = 28;
-b = 8/3;
-dy(1) = P*(y(2) - y(1));
-dy(2) = -y(1)*y(3) + r*y(1) - y(2);
-dy(3) = y(1)*y(2) - b*y(3);
-
-#### lorenz-ex.m ####
-clear all
-t=linspace(0,350,100001);
-lsode_options("relative tolerance", 1e-15);
-y = lsode("lorenz",[ 1.0; 1.0; 1.0]',t);
-
-figure(1)
-
-subplot(221)
-plot(y(:,1),y(:,2),'-');
-xlabel('x(t)','FontSize',16);
-ylabel('y(t)','FontSize',16);
-
-subplot(222)
-plot(y(:,1),y(:,3),'-');
-xlabel('x(t)','FontSize',16);
-ylabel('z(t)','FontSize',16);
-
-subplot(223)
-plot(y(:,2),y(:,3),'-');
-xlabel('y(t)','FontSize',16);
-ylabel('z(t)','FontSize',16);
-```
+{% include_relative OS/lorenz-script.html %}
 
 #### Python
 **Python** is a high-level general-purpose multi-paradigm programming language with scripting-compatibility. It is probably the most flexible programming language I have seen and it is used for numerical computations, scientific computing, writing and working with web applications, application software and package management systems. It is cross-platform and its syntax is far more human-readable
