@@ -13,19 +13,18 @@ Another feature of programming languages that can be used to categorize them, th
 
 #### Python
 **Python** is a high-level general-purpose multi-paradigm programming language with scripting-compatibility. It is probably the most flexible programming language I have seen and it is used for numerical computations, scientific computing, writing and working with web applications, application software and package management systems. It is cross-platform and its syntax is far more human-readable
-than C. It is worthwhile noting that its speed is significantly dependent on how it is implemented. The standard, official
-implementation of Python is [CPython](https://en.wikipedia.org/wiki/CPython) which is more efficient than most implementations,
-but less efficient than the [PyPy](https://en.wikipedia.org/wiki/PyPy) implementation.
+than C. It also automatically performs some tasks that users would have to perform manually if they were working with lower-level languages like C. Its major caveat is its speed, however, it is worthwhile noting that its speed is significantly dependent on how it is implemented. The standard, official implementation of Python is [CPython](https://en.wikipedia.org/wiki/CPython) which while it is more efficient than most implementations (like Jython), is less efficient than the [PyPy](https://en.wikipedia.org/wiki/PyPy) implementation. Regardless of the implementation used, however, usually you will find that Python is slower than lower-level languages like C, C++ or Java.
 
-There are also two main versions of Python presently in widespread use. Python 2 and Python 3. Most programs I have come across have
+There are also two main versions of Python presently in widespread use: Python 2 and Python 3. Most programs I have come across have
 greater support for Python 2 than for Python 3. Python also has its own command-line package manager called
 {% include wp.md name="pip" cat="software" %} (`pip`). Some programs I am particularly familiar with that are written
 predominantly (if not exclusively) in Python that are compatible with Linux systems include:
 
 * {% include wp.md name="Anaconda" cat="installer" %} &mdash; an operating system installer used by Fedora and most of its derivatives, see the [Fedora](#fedora) section for details.
-* {% include wp.md name="DNF" cat="software" %} &mdash; the default package manager of Fedora &geq; 22.
+* {% include wp.md name="DNF" cat="software" %} &mdash; the default package manager of Fedora &geq;22.
+* {% include gr.md owner="Sabayon" repo="entropy" name="Entropy" %} &mdash; the default binary package manager of Sabayon Linux.
+* {% include wp.md name="Portage" cat="software" %} &mdash; the default package manager of Gentoo Linux, and the default source code package manager of its derivatives such as Sabayon Linux.
 * {% include wp.md name="PyMOL" %} &mdash; an application for viewing and performing calculations relating to molecules, especially macromolecules like proteins, DNA double helices and RNA helices.
 * {% include wp.md name="SageMath" %} &mdash; a mathematics program that uses a Python-like syntax and integrates several free pieces of
 mathematics software in a single command-line and notebook interface, with interfaces available for several proprietary mathematics programs too.
-* [youtube-dl](https://rg3.github.io/youtube-dl/) ([`youtube-dl`](/man/youtube-dl.1.html)) &mdash; a command-line program for downloading YouTube videos as media files. It is managed by pip (so
-running {% include codeus.html line1="sudo pip install youtube-dl" %} should install it)
+* [youtube-dl](https://rg3.github.io/youtube-dl/) ([`youtube-dl`](/man/youtube-dl.1.html)) &mdash; a command-line program for downloading YouTube videos as media files. It is managed by pip (so running {% include codeus.html line1="sudo pip install youtube-dl" %} should install it)
