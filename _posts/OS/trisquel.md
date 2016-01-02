@@ -7,3 +7,5 @@
 I find it aesthetically unique (afterall it does not use Ubuntu's Unity shell) from Ubuntu, although personally I do not find it anymore appealing than Ubuntu, but from the point of view of the user with regard to everything else it is pretty much identical to the Ubuntu LTS releases it is built on, except it does not have the Ubuntu Software Center, rather it has the Synaptic package manager for graphical package management.
 
 It is presently ranked 95th for popularity according to the *DistroWatch* website.
+
+{% include_relative OS/specs.md arch="i686, x86_64." country="Spain." date="2007." shell="Bash." desktop="GNOME (modified), LXDE." base="Ubuntu (LTS)." im="Graphical, live medium." type="Linux." pm="APT, dpkg." rm="Standard, once every one to two years." tm="Varied, including home and office users." %}
