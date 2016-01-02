@@ -54,6 +54,8 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
 
 {% include_relative OS/sabayon-linux.md %}
 
+{% include_relative OS/trisquel.md %}
+
 {% include_relative OS/ubuntu.md %}
 
 {% include_relative OS/appendix-I-comparison-of-fos.md %}
