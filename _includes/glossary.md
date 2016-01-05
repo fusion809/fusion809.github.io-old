@@ -72,4 +72,4 @@ The property of an operating system of being &ldquo;[**out-of-the-box**](https:/
 #### Unix-like
 [**Unix-like operating systems**](https://en.wikipedia.org/wiki/Unix-like) are a family of operating systems, that share the vast majority of the features of Unix systems, without necessarily being certified as compliant to any particular version of the SUS. This certification costs money, so many free operating systems do not have the funds or the inclination to get SUS certification. Examples include FreeBSD, Linux, NetBSD and OpenBSD.
 
-{% include_relative OS/unix-shells.md %}
+{% include unix-shells.md %}
