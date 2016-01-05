@@ -20,7 +20,11 @@ Another feature of programming languages that can be used to categorize them, th
 languages, hence I cannot provide an average for it. Despite this I know that for most things it is considered slower than Python. Most code written for Bash should also be compatible with Zsh, although whether it is compatible with the syntax of other Unix shells is something I cannot comment on. The programming language of Unix shells is usually called shell script. For an introduction to the Bash syntax, see [*An Introduction to Bash Scripting for Sabayon Users*](/bash-scripting-and-the-command-line-an-introduction-for-sabayon-users/). Due to the fact it is a Unix shell, it is not considered cross-platform.
 
 ### C
-**C** was originally developed for use by Research Unix, by Dennis Ritchie (1941-2011), while he was working at Bell Labs. Since then it has become one of the most widely-used programming languages in the world. The reason for this is several fold, *firstly*, it is cross-platform and able to run on most, if not all, computing platforms, *secondly*, it is fast and *thirdly*, it is powerful, giving developers almost complete control over their program. It was originally considered high-level, but it has since become considered low-level, and its low-level nature is best illustrated by the fact that users have to allocate memory to their program manually.
+**C** was originally developed for use by Research Unix, by Dennis Ritchie (1941-2011), while he was working at Bell Labs. Since then it has become one of the most widely-used programming languages in the world. The reason for this is several fold, *firstly*, it is cross-platform and able to run on most, if not all, computing platforms, *secondly*, it is fast and *thirdly*, it is powerful, giving developers complete control over their program. It was originally considered high-level, but it has since become considered low-level, and its low-level nature is best illustrated by the fact that developers have to allocate memory to their program manually.
+
+Programs written, predominantly, in it, that I have experience with, include:
+* {% include wp.md name="Linux kernel" %}
+* {% include wp.md name="VLC media player" %} (71.2% C, 17.7% C++, 6.7% Objective-C, 1.3% Lua, *etc.* according to GitHub[^1])
 
 ### C++
 **C++** (pronounced *See-plus-plus*) is a programming language that was originally developed by Bjarne Stroustrup (1950-) while he was working at Bell Labs. Stroustrup wanted a programming language with similar features and speed to C, except with greater support for additional programming paradigms and it has some extra high-level features.
@@ -99,3 +103,4 @@ mathematics software in a single command-line and notebook interface, with inter
 **Visual Basic** and its descendents [Visual Basic for Applications](https://en.wikipedia.org/wiki/Visual_Basic for_Applications) (VBA) and [Visual Basic .NET](https://en.wikipedia.org/wiki/Visual_Basic_.NET), are programming languages that are usually used for developing GUIs.
 
 [1]: http://www.tiobe.com/index.php/content/paperinfo/tpci/index.html
+[^1]: [videolan/vlc](https://github.com/videolan/vlc) (5 Jan 2015).
