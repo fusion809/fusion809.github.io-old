@@ -8,6 +8,7 @@ redirect_from:
   - /2015/10/31/an-introduction-to-bash-scripting/
   - /2015/11/24/an-introduction-to-the-command-line-and-bash-scripting-for-sabayon-users/
   - /2015/11/24/bash-scripting-and-the-command-line-an-introduction-for-sabayon-users/
+  - /bash-scripting-and-the-command-line-an-introduction-for-sabayon-users/
 ---
 
 {% include image.html image="optipng2.png" description="OptiPNG 0.7.5 running under Bash 4.3.39 in LXTerminal 0.2.0" width = "1150px" float = "none" %}
