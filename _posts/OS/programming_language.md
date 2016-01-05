@@ -21,14 +21,14 @@ languages, hence I cannot provide an average for it. Most code written for Bash 
 it is compatible with the syntax of other Unix shells is something I cannot comment on. The programming language of Unix shells is usually called shell script.
 
 #### C
-**C** was originally developed for use by Research Unix, by Dennis Ritchie (1941-2011). Since then it has become one of the most widely-used programming languages in the world today. The reason for this is several fold, *firstly*, it is cross-platform and able to run on most, if not all, computing platforms, *secondly*, it is fast and *thirdly*, it is powerful, giving developers almost complete control over their program. It was originally considered high-level, but it has since become considered low-level, with users having to allocate memory manually.
+**C** was originally developed for use by Research Unix, by Dennis Ritchie (1941-2011), while he was working at Bell Labs. Since then it has become one of the most widely-used programming languages in the world today. The reason for this is several fold, *firstly*, it is cross-platform and able to run on most, if not all, computing platforms, *secondly*, it is fast and *thirdly*, it is powerful, giving developers almost complete control over their program. It was originally considered high-level, but it has since become considered low-level, and its low-level nature is best illustrated by the fact that users have to allocate memory to their program manually.
 
 #### C++
-**C++** (pronounced *See-plus-plus*) is a programming language
+**C++** (pronounced *See-plus-plus*) is a programming language that was originally developed by Bjarne Stroustrup (1950-) while he was working at Bell Labs. Stroustrup wanted a programming language with similar features and speed to C, except with greater support for additional programming paradigms and it has some extra high-level features.
 
 #### C Sharp
-{% include note.md note1="The use of the name **C Sharp**, is because of technical restrictions, the correct name is C#" %}
-Some C# compilers are proprietary, others are not. It is very popular, according to [TIOBE](http://www.tiobe.com/index.php/content/paperinfo/tpci/index.html).
+{% include note.md note1="The use of the name <b>C Sharp</b>, is because of technical restrictions, the correct name is C#" %}
+**C#** is a programming language that is developed by the Microsoft Corporation. Some C# compilers are proprietary, others are not. It is very popular, according to [TIOBE](http://www.tiobe.com/index.php/content/paperinfo/tpci/index.html).
 
 #### Fortran
 **Fortran** is a programming language first developed in 1957 by [John Backus](https://en.wikipedia.org/wiki/John_Backus)
