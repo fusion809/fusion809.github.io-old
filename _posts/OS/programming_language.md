@@ -53,8 +53,8 @@ programming language. While MATLAB itself is proprietary, there are several free
 language and an IDE) available that are licensed under FOSS Licenses like the GNU GPL. These free clones include [FreeMat](https://en.wikipedia.org/wiki/FreeMat) and [GNU Octave](https://en.wikipedia.org/wiki/GNU_Octave), another free programming language/IDE duo that is similar to MATLAB, but not necessarily a clone is [Scilab](https://en.wikipedia.org/wiki/Scilab), which while similar to MATLAB has several key differences too. Most tests have found that MATLAB and its clones/related programming languages are fairly slow compared to lower-level and less purpose-specific programming languages like C and Python. MATLAB is the most popular numerically-oriented programming language, according to [TIOBE][1], although because of GNU Octave's similarity (so much similarity that it even uses the same file extension for its scripts &mdash; `.m`) to MATLAB it is possible that TIOBE could not distinguish the popularity of GNU Octave from that of MATLAB. MATLAB/GNU Octave are probably the programming languages I have the second-greatest experience with, after Bash.
 
 Below is an example pair of scripts I have written in it, for the purpose of plotting a Lorenz attractor. Note, in order to execute these yourself, you need to have GNU Octave (because of the use of the `lsode` function in the second of these two scripts, it is not compatible with MATLAB) installed and these two m files need to be stored in the SAME directory.
-
-{% include_relative OS/lorenz-script.html %}
+<script src="/js/21a43c7199d64d86255f.js"></script>
+<script src="/js/458fb365ea109af5a201.js"></script>
 
 #### Objective-C
 **Objective-C** is a programming language that is primarily object-oriented in its paradigm. It is one of the main languages that OS X is written in.
