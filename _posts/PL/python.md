@@ -10,9 +10,9 @@ greater support for Python 2 than for Python 3. Python also has its own command-
 * {% include gr.md owner="Sabayon" repo="entropy" name="Entropy" %} &mdash; the default binary package manager of Sabayon Linux.
 * {% include wp.md name="GNU Bazaar" %} &mdash; the distributed version control system developed by Canonical Ltd.
 * {% include wp.md name="Portage" cat="software" %} &mdash; the default package manager of Gentoo Linux, and the default source code package manager of its derivatives such as Sabayon Linux.
-* {% include wp.md name="PyMOL" %} &mdash; an application for viewing and performing calculations relating to molecules, especially macromolecules like proteins, DNA double helices and RNA helices.
+* {% include wp.md name="PyMOL" %} &mdash; an application for viewing and performing calculations relating to molecules, especially macromolecules like proteins, DNA double helices and RNA helices. Which is managed by pip, so running {% include codeus.html line1="sudo pip install pymol" %} should install it.
 * {% include wp.md name="SageMath" %} &mdash; a mathematics program that uses a Python-like syntax and integrates several free pieces of
 mathematics software in a single command-line and notebook interface, with interfaces available for several proprietary mathematics programs too.
-* {% include wp.md name="Spyder" cat="software" %} &mdash; a cross-platform free and open-source IDE for scientific computing in Python.
+* {% include wp.md name="Spyder" cat="software" %} &mdash; a cross-platform free and open-source IDE for scientific computing in Python. It is managed by pip, so running {% include codeus.html line1="sudo pip install spyder" %} should install it. 
 * [youtube-dl](https://rg3.github.io/youtube-dl/) ([`youtube-dl`](/man/youtube-dl.1.html)) &mdash; a command-line program for downloading YouTube videos as media files. It is managed by pip (so running {% include codeus.html line1="sudo pip install youtube-dl" %} should install it)
 * [yum](http://yum.baseurl.org/) &mdash; the default command-line package manager of CentOS, Fedora &lt;22, Oracle Linux, Red Hat Enterprise Linux (RHEL), *etc.* It is written almost entirely in Python and this likely contributes to its relatively slow speed.
