@@ -27,15 +27,18 @@ Programs written, predominantly, in it, that I have experience with, include:
 * {% include wp.md name="FreeBSD" %} &mdash; the Unix-like operating system, is predominantly written in C.
 * {% include wp.md name="GNU Coreutils" %} &mdash; the command-line utilities package for &#43;nix systems is written predominantly in C.
 * {% include wp.md name="GTK+" %} or **GIMP Toolkit** &mdash; is a free widget toolkit developed for use by the GNOME desktop environment.
-* {% include wp.md name="Linux kernel" %} &mdash; the kernel of Linux operating systems. 
+* {% include wp.md name="Linux kernel" %} &mdash; the kernel of Linux operating systems.
 * {% include wp.md name="VLC media player" %} (71.2% C, 17.7% C++, 6.7% Objective-C, 1.3% Lua, *etc.* according to GitHub[^1])
 
 ### C++
-**C++** (pronounced *See-plus-plus*) is a programming language that was originally developed by Bjarne Stroustrup (1950-) while he was working at Bell Labs. Stroustrup wanted a programming language with similar features and speed to C, except with greater support for additional programming paradigms and it has some extra high-level features.
+**C++** (pronounced *See-plus-plus*) is a programming language that was originally developed by Bjarne Stroustrup (1950-) while he was working at Bell Labs. Stroustrup wanted a programming language with similar features and speed to C, except with greater support for additional programming paradigms as well as some extra high-level features.
 
 ### C Sharp
 {% include note.md note1="The use of the name <b>C Sharp</b>, is because of technical restrictions, the correct name is C#" %}
 **C#** is a proprietary programming language that is developed by the Microsoft Corporation. Some C# compilers are proprietary, others are not. It is very popular, according to [TIOBE][1]. Microsoft employees started its development in the late 1990s, for the purpose of it being used in their .NET framework. In its early days it was said to be very similar to Java, although since then the two have become increasingly different to one another.
+
+### D
+**D**, a member of the C programming language family, is a free and open-source programming language, that is essentially like a more feature-packed, modern version of C++, with support for extra paradigms, automatic memory management and syntactic sugar (to make the language more human-readable).
 
 ### Fortran
 **Fortran** is a programming language first developed in 1957 by [John Backus](https://en.wikipedia.org/wiki/John_Backus)
@@ -44,11 +47,14 @@ Programs written, predominantly, in it, that I have experience with, include:
 ### Go
 **Go**, or **golang**, is a programming language, initially developed by [Google](https://en.wikipedia.org/wiki/Google) employees, [Robert Griesemer](https://en.wikipedia.org/wiki/Robert_Griesemer), [Rob Pike](https://en.wikipedia.org/wiki/Rob_Pike) and [Ken Thompson](https://en.wikipedia.org/wiki/Ken_Thompson) (one of the original developers of Research Unix at Bell Labs).
 
+### Groovy
+**Groovy** is a programming language that is specifically designed to work on the Java platform, wherein it serves predominantly as a scripting language, that interfaces with Java to modify program behaviour, extract data, *etc.*
+
 ### Java
-**Java** is a cross-platform programming language, in its early days it was proprietary-licensed, until it was later released under the GNU GPL license. Java is one of the most popular programming languages in the world today.
+**Java** is a cross-platform programming language, in its early days it was proprietary-licensed, until it was later released under the GNU GPL license. Java is one of the most popular programming languages in the world today, in fact, the TIOBE is currently ranking it number 1 for popularity, in the programming world. Java applications are usually compiled into its own instruction set called Java bytecode, that can then be run in a Java Virtual Machine  (JVM) regardless of the computer's architecture or operating system. This is what makes it cross-platform and this is key to its success.
 
 ### JavaScript
-**JavaScript** (**JS**) is a cross-platform web-oriented programming language that is used primarily for the purpose of controlling the behaviour of web pages.
+**JavaScript** (**JS**) is a cross-platform web-oriented programming language that is used primarily for the purpose of controlling the behaviour of web pages. Despite this it can be used for non-web applications. For example, the text editor I am using to write this blog post, [Atom](https://atom.io), is written predominantly in JavaScript and its close relative, CoffeeScript. JavaScript was also used to write extensions for the Deepin Desktop Environment.
 
 ### Lua
 **Lua** is a lightweight programming language that is primarily used for scripting in web development applications. The two examples of its use that I have come across, personally (out of the hundreds out there), are its use to improve the efficiency of MediaWiki templates using the [Scribunto extension](https://www.mediawiki.org/wiki/Extension:Scribunto) and its use by the [Awesome Window Manager](https://en.wikipedia.org/wiki/Awesome_(window_manager)).
@@ -73,7 +79,9 @@ Programs written, predominantly, in it, that I have experience with, include:
 **R** is an interpreted programming language designed for statistical computing, that was first developed in 1993 by two New Zealand programmers and statisticians and is now developed as part of the GNU Project. It is licensed under the GNU GPL.
 
 ### Ruby
-**Ruby** is a general-purpose, interpreted, programming language that is not as widely-used as C, C++, Java or Python, in my experience. The programs that are written in it, that I have experience with are two in number: [Jekyll](https://en.wikipedia.org/wiki/Jekyll_(software)) (the static site generator that powers this website) and [YaST2](https://en.wikipedia.org/wiki/YaST2) (the graphical package manager used by openSUSE). It is licensed under the permissive MIT License.
+**Ruby** is a general-purpose, interpreted, programming language that is not as widely-used as C, C++, Java or Python, in my experience. The programs that are written in it, that I have experience with are two in number: [Jekyll](https://en.wikipedia.org/wiki/Jekyll_(software)) (the static site generator that powers this website) and [YaST2](https://en.wikipedia.org/wiki/YaST2) (the graphical package manager used by openSUSE). Ruby like Python has its own package manager too, [rubygems](https://rubygems.org/) that is invoked by the command `gem`. For example, to install Jekyll one may run:
+{% include coder.html line1="gem install jekyll" %}
+It is licensed under the permissive MIT License.
 
 ### Swift
 **Swift** is a general-purpose compiled programming language that is proprietary, although plans to make it open-source in the near future are apparently underway. Swift has features that are most similar to Objective-C, although it is considered faster, hence its name. The speed estimate is based on limited comparisons with Objective-C.
