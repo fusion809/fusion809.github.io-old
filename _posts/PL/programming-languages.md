@@ -47,7 +47,7 @@ it is compatible with the syntax of other Unix shells is something I cannot comm
 **Lua** is a lightweight programming language that is primarily used for scripting in web development applications. The two examples of its use that I have come across, personally (out of the hundreds out there), are its use to improve the efficiency of MediaWiki templates using the [Scribunto extension](https://www.mediawiki.org/wiki/Extension:Scribunto) and its use by the [Awesome Window Manager](https://en.wikipedia.org/wiki/Awesome_(window_manager)).
 
 ### MATLAB
-**MATLAB** is a proprietary programming language primarily intended for numerical computations and scientific computing, with scripting-compatability. MATLAB is also the name of an
+**MATLAB** is a proprietary programming language that is primarily intended for numerical computations and scientific computing, with scripting-compatability. MATLAB is also the name of an
 [integrated development environment](https://en.wikipedia.org/wiki/Integrated_development_environment) (IDE) for the MATLAB
 programming language. While MATLAB itself is proprietary, there are several free clones of MATLAB (including both a programming
 language and an IDE) available that are licensed under FOSS Licenses like the GNU GPL. These free clones include [FreeMat](https://en.wikipedia.org/wiki/FreeMat) and [GNU Octave](https://en.wikipedia.org/wiki/GNU_Octave), another free programming language/IDE duo that is similar to MATLAB, but not necessarily a clone is [Scilab](https://en.wikipedia.org/wiki/Scilab), which while similar to MATLAB has several key differences too. Most tests have found that MATLAB and its clones/related programming languages are fairly slow compared to lower-level and less purpose-specific programming languages like C and Python. MATLAB is the most popular numerically-oriented programming language, according to [TIOBE][1], although because of GNU Octave's similarity (so much similarity that it even uses the same file extension for its scripts &mdash; `.m`) to MATLAB it is possible that TIOBE could not distinguish the popularity of GNU Octave from that of MATLAB. MATLAB/GNU Octave are probably the programming languages I have the second-greatest experience with, after Bash.
@@ -57,7 +57,7 @@ Below is an example pair of scripts I have written in it, for the purpose of plo
 <script src="/js/458fb365ea109af5a201.js"></script>
 
 ### Objective-C
-**Objective-C** is a programming language that is primarily object-oriented in its paradigm. It is one of the main languages that OS X is written in.
+**Objective-C** is a programming language that is primarily object-oriented in its paradigm. It is one of the main languages that Apple's OS X is written in.
 
 ### Pascal
 **Pascal** is a fairly old programming language, it and its derivatives (like [Object Pascal](https://en.wikipedia.org/wiki/Object_Pascal)) are still widely used today.
