@@ -3,16 +3,16 @@
 emphasizes code readability and concision. It also automatically performs some tasks that users would have to perform manually if they were working with lower-level languages like C. For these reasons it is usually the programming language that people interested in programming, are recommended to learn first, before they learn lower-level and more complicated programming languages like C, C++ and Java. Its major caveat is its speed, however, it is worthwhile noting that its speed is significantly dependent on how it is implemented. The standard, official implementation of Python is [CPython](https://en.wikipedia.org/wiki/CPython) which while it is more efficient than most implementations (like Jython), is less efficient than the [PyPy](https://en.wikipedia.org/wiki/PyPy) implementation. Regardless of the implementation used, however, it is usually significantly slower than compiled languages like C, C++ and Java.
 
 There are also two main versions of Python presently in widespread use: Python 2 and Python 3. Most programs I have come across have
-greater support for Python 2 than for Python 3. Python also has its own command-line package manager called
-{% include wp.md name="pip" cat="software" %} (`pip`). Some programs I am particularly familiar with that are written
-predominantly (if not exclusively) in Python that are compatible with Linux systems include:
+greater support for Python 2 than for Python 3. Python also has its own command-line package manager called {% include wp.md name="pip" cat="software" %} (`pip`). Some programs I am particularly familiar with that are written predominantly (if not exclusively) in Python that are compatible with Linux systems include:
 
 * {% include wp.md name="Anaconda" cat="installer" %} &mdash; an operating system installer used by Fedora and most of its derivatives, see the [Fedora](#fedora) section for details.
 * {% include wp.md name="DNF" cat="software" %} &mdash; the default package manager of Fedora &geq;22.
 * {% include gr.md owner="Sabayon" repo="entropy" name="Entropy" %} &mdash; the default binary package manager of Sabayon Linux.
+* {% include wp.md name="GNU Bazaar" %} &mdash; the distributed version control system developed by Canonical Ltd.
 * {% include wp.md name="Portage" cat="software" %} &mdash; the default package manager of Gentoo Linux, and the default source code package manager of its derivatives such as Sabayon Linux.
 * {% include wp.md name="PyMOL" %} &mdash; an application for viewing and performing calculations relating to molecules, especially macromolecules like proteins, DNA double helices and RNA helices.
 * {% include wp.md name="SageMath" %} &mdash; a mathematics program that uses a Python-like syntax and integrates several free pieces of
 mathematics software in a single command-line and notebook interface, with interfaces available for several proprietary mathematics programs too.
+* {% include wp.md name="Spyder" cat="software" %} &mdash; a cross-platform free and open-source IDE for scientific computing in Python.
 * [youtube-dl](https://rg3.github.io/youtube-dl/) ([`youtube-dl`](/man/youtube-dl.1.html)) &mdash; a command-line program for downloading YouTube videos as media files. It is managed by pip (so running {% include codeus.html line1="sudo pip install youtube-dl" %} should install it)
 * [yum](http://yum.baseurl.org/) &mdash; the default command-line package manager of CentOS, Fedora &lt;22, Oracle Linux, Red Hat Enterprise Linux (RHEL), *etc.* It is written almost entirely in Python and this likely contributes to its relatively slow speed.
