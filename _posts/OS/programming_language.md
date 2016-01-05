@@ -63,10 +63,10 @@ Below is an example pair of scripts I have written in it, for the purpose of plo
 **Pascal** is a fairly old programming language, it and its derivatives (like [Object Pascal](https://en.wikipedia.org/wiki/Object_Pascal)) are still widely used today.
 
 #### Perl
-**Perl** is a family of scripting languages, the most notable members are Perl 5 and Perl 6. It was originally developed for the purpose of automating reporting tasks on &#42;nix systems in 1987.
+**Perl** is a family of scripting languages, the most notable members are Perl 5 and Perl 6. It was originally developed for the purpose of automating reporting tasks on &#42;nix systems in 1987. It is licensed under GNU GPL.
 
 #### PHP
-**PHP** is a server-side scripting language that is primarily intended for web development. Most web applications will use PHP to some extent, prominent examples of such applications include: [MediaWiki](https://www.mediawiki.org), the software that powers several Wiki websites including all the Wikimedia Foundation websites (such as Wikipedia, for example) and [WordPress](https://wordpress.org), the software that powers many blogs and personal websites on the web.
+**PHP** is a server-side scripting language that is primarily intended for web development. Most web applications will use PHP to some extent, prominent examples of such applications include: [MediaWiki](https://www.mediawiki.org), the software that powers several Wiki websites including all the Wikimedia Foundation websites (such as Wikipedia, for example) and [WordPress](https://wordpress.org), the software that powers many blogs and personal websites on the web. It is a copyleft licensed under the PHP License.
 
 #### Python
 **Python** is a widely and extensively-used high-level general-purpose multi-paradigm programming language that is particularly invaluable as a cross-platform scripting language. It is named after the BBC TV series [*Monty Python's Flying Circus*](https://en.wikipedia.org/wiki/Monty_Python's_Flying_Circus). Python is licensed under its own free, permissive (BSD-like) license called the [Python Software Foundation License](https://en.wikipedia.org/wiki/Python_Software_Foundation_License). Its design philosophy
@@ -88,10 +88,10 @@ mathematics software in a single command-line and notebook interface, with inter
 * [yum](http://yum.baseurl.org/) &mdash; the default command-line package manager of CentOS, Fedora &lt;22, Oracle Linux, Red Hat Enterprise Linux (RHEL), *etc.* It is written almost entirely in Python and this likely contributes to its relatively slow speed.
 
 #### R
-**R** is a programming language designed for statistical computing, that was first developed in 1993 and is now developed as part of the GNU Project.
+**R** is an interpreted programming language designed for statistical computing, that was first developed in 1993 by two New Zealand programmers and statisticians and is now developed as part of the GNU Project. It is licensed under the GNU GPL.
 
 #### Ruby
-**Ruby** is a general programming language that is not as widely-used as C, C++, Java or Python, in my experience and the programs that are written in it, that I have experience with are two in number: [Jekyll](https://en.wikipedia.org/wiki/Jekyll_(software)) (the static site generator that powers this website) and [YaST2](https://en.wikipedia.org/wiki/YaST2) (the graphical package manager used by openSUSE). It is licensed under the permissive MIT License.
+**Ruby** is a general-purpose, interpreted, programming language that is not as widely-used as C, C++, Java or Python, in my experience. The programs that are written in it, that I have experience with are two in number: [Jekyll](https://en.wikipedia.org/wiki/Jekyll_(software)) (the static site generator that powers this website) and [YaST2](https://en.wikipedia.org/wiki/YaST2) (the graphical package manager used by openSUSE). It is licensed under the permissive MIT License.
 
 #### Swift
 **Swift** is a general-purpose compiled programming language that is proprietary, although plans to make it open-source in the near future are apparently underway. Swift has features that are most similar to Objective-C, although it is considered faster, hence its name. The speed estimate is based on limited comparisons with Objective-C.
