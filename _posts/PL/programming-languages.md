@@ -13,7 +13,7 @@ Another feature of programming languages that can be used to categorize them, th
 {% include_relative PL/table1-comparison-of-common-programming-languages.html %}
 
 ### Assembly Language
-**Assembly language** is a low-level programming language that has a very strong correspondence to machine code. Due to this, it is very hardware-specific &mdash; an assembly language for one processor may not work for another. The only  program that I am aware of that is written, even partly, in assembly language is the Linux kernel. Although, I know other programs written in Assembly do exist, after all it is listed in the [TIOBE top 20 programming language (by popularity) list][1].
+**Assembly language** is a low-level programming language that has a very strong correspondence to machine code. Due to this, it is very hardware-specific &mdash; an assembly language for one processor may not work for another. The only  program that I am aware of that is written, even partly, in assembly language is the Linux kernel. Although, I know other programs written in Assembly do exist, after all it is listed in the [TIOBE top 20 programming language (by popularity) list][1], I just cannot personally name them.
 
 ### Bash
 **Bash** is the most commonly-encountered Unix shell and command language. Few have compared its speed to other programming
@@ -28,17 +28,17 @@ it is compatible with the syntax of other Unix shells is something I cannot comm
 
 ### C Sharp
 {% include note.md note1="The use of the name <b>C Sharp</b>, is because of technical restrictions, the correct name is C#" %}
-**C#** is a programming language that is developed by the Microsoft Corporation. Some C# compilers are proprietary, others are not. It is very popular, according to [TIOBE](http://www.tiobe.com/index.php/content/paperinfo/tpci/index.html).
+**C#** is a proprietary programming language that is developed by the Microsoft Corporation. Some C# compilers are proprietary, others are not. It is very popular, according to [TIOBE][1]. Microsoft employees started its development in the late 1990s, for the purpose of it being used in their .NET framework. 
 
 ### Fortran
 **Fortran** is a programming language first developed in 1957 by [John Backus](https://en.wikipedia.org/wiki/John_Backus)
 (1924-2007), specifically suited for the purpose of numerical calculations and scientific computing.
 
 ### Go
-**Go**, or **golang**, is a programming language, initially developed by [Google](https://en.wikipedia.org/wiki/Google) employees, [Robert Griesemer](https://en.wikipedia.org/wiki/Robert_Griesemer), [Rob Pike](https://en.wikipedia.org/wiki/Rob_Pike) and [Ken Thompson](https://en.wikipedia.org/wiki/Ken_Thompson).
+**Go**, or **golang**, is a programming language, initially developed by [Google](https://en.wikipedia.org/wiki/Google) employees, [Robert Griesemer](https://en.wikipedia.org/wiki/Robert_Griesemer), [Rob Pike](https://en.wikipedia.org/wiki/Rob_Pike) and [Ken Thompson](https://en.wikipedia.org/wiki/Ken_Thompson). Ken Thompson was one of the original developers of Research Unix at Bell Labs.
 
 ### Java
-**Java** is a cross-platform programming language, in its early days it was proprietary licensed, until it was later released under the GNU GPL license. Java is one of the most popular programming languages in the world today.
+**Java** is a cross-platform programming language, in its early days it was proprietary-licensed, until it was later released under the GNU GPL license. Java is one of the most popular programming languages in the world today.
 
 ### JavaScript
 **JavaScript** (**JS**) is a cross-platform web-oriented programming language that is used primarily for the purpose of controlling the behaviour of web pages.
