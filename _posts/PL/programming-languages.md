@@ -23,6 +23,7 @@ languages, hence I cannot provide an average for it. Despite this I know that fo
 **C** was originally developed for use by Research Unix, by Dennis Ritchie (1941-2011), while he was working at Bell Labs. Since then it has become one of the most widely-used programming languages in the world. The reason for this is several fold, *firstly*, it is cross-platform and able to run on most, if not all, computing platforms, *secondly*, it is fast and *thirdly*, it is powerful, giving developers complete control over their program. It was originally considered high-level, but it has since become considered low-level, and its low-level nature is best illustrated by the fact that developers have to allocate memory to their program manually.
 
 Programs written, predominantly, in it, that I have experience with, include:
+* {% include wp.md name="GTK+" %}
 * {% include wp.md name="Linux kernel" %}
 * {% include wp.md name="VLC media player" %} (71.2% C, 17.7% C++, 6.7% Objective-C, 1.3% Lua, *etc.* according to GitHub[^1])
 
@@ -49,15 +50,7 @@ Programs written, predominantly, in it, that I have experience with, include:
 ### Lua
 **Lua** is a lightweight programming language that is primarily used for scripting in web development applications. The two examples of its use that I have come across, personally (out of the hundreds out there), are its use to improve the efficiency of MediaWiki templates using the [Scribunto extension](https://www.mediawiki.org/wiki/Extension:Scribunto) and its use by the [Awesome Window Manager](https://en.wikipedia.org/wiki/Awesome_(window_manager)).
 
-### MATLAB
-**MATLAB** is a proprietary programming language that is primarily intended for numerical computations and scientific computing, with scripting-compatability. MATLAB is also the name of an
-[integrated development environment](https://en.wikipedia.org/wiki/Integrated_development_environment) (IDE) for the MATLAB
-programming language. While MATLAB itself is proprietary, there are several free clones of MATLAB (including both a programming
-language and an IDE) available that are licensed under FOSS Licenses like the GNU GPL. These free clones include [FreeMat](https://en.wikipedia.org/wiki/FreeMat) and [GNU Octave](https://en.wikipedia.org/wiki/GNU_Octave), another free programming language/IDE duo that is similar to MATLAB, but not necessarily a clone is [Scilab](https://en.wikipedia.org/wiki/Scilab), which while similar to MATLAB has several key differences too. Most tests have found that MATLAB and its clones/related programming languages are fairly slow compared to lower-level and less purpose-specific programming languages like C and Python. MATLAB is the most popular numerically-oriented programming language, according to [TIOBE][1], although because of GNU Octave's similarity (so much similarity that it even uses the same file extension for its scripts &mdash; `.m`) to MATLAB it is possible that TIOBE could not distinguish the popularity of GNU Octave from that of MATLAB. MATLAB/GNU Octave are probably the programming languages I have the second-greatest experience with, after Bash.
-
-Below is an example pair of scripts I have written in it, for the purpose of plotting a Lorenz attractor. Note, in order to execute these yourself, you need to have GNU Octave (because of the use of the `lsode` function in the second of these two scripts, it is not compatible with MATLAB) installed and these two m files need to be stored in the SAME directory.
-<script src="/js/21a43c7199d64d86255f.js"></script>
-<script src="/js/458fb365ea109af5a201.js"></script>
+{% include_relative PL/matlab.md %}
 
 ### Objective-C
 **Objective-C** is a programming language that is primarily object-oriented in its paradigm. It is one of the main languages that Apple's OS X is written in.
@@ -71,24 +64,7 @@ Below is an example pair of scripts I have written in it, for the purpose of plo
 ### PHP
 **PHP** is a server-side scripting language that is primarily intended for web development. Most web applications will use PHP to some extent, prominent examples of such applications include: [MediaWiki](https://www.mediawiki.org), the software that powers several Wiki websites including all the Wikimedia Foundation websites (such as Wikipedia, for example) and [WordPress](https://wordpress.org), the software that powers many blogs and personal websites on the web. It is a copyleft licensed under the PHP License.
 
-### Python
-**Python** is a widely and extensively-used high-level general-purpose multi-paradigm programming language that is particularly invaluable as a cross-platform scripting language. It is named after the BBC TV series [*Monty Python's Flying Circus*](https://en.wikipedia.org/wiki/Monty_Python's_Flying_Circus). Python is licensed under its own free, permissive (BSD-like) license called the [Python Software Foundation License](https://en.wikipedia.org/wiki/Python_Software_Foundation_License). It is probably the most flexible programming language I have seen and it is used for numerical computations, scientific computing, writing and working with web applications, application software and package management systems. Its design philosophy
-emphasizes code readability and concision. It also automatically performs some tasks that users would have to perform manually if they were working with lower-level languages like C. For these reasons it is usually the programming language that people interested in programming, are recommended to learn first, before they learn lower-level and more complicated programming languages like C, C++ and Java. Its major caveat is its speed, however, it is worthwhile noting that its speed is significantly dependent on how it is implemented. The standard, official implementation of Python is [CPython](https://en.wikipedia.org/wiki/CPython) which while it is more efficient than most implementations (like Jython), is less efficient than the [PyPy](https://en.wikipedia.org/wiki/PyPy) implementation. Regardless of the implementation used, however, it is usually significantly slower than compiled languages like C, C++ and Java.
-
-There are also two main versions of Python presently in widespread use: Python 2 and Python 3. Most programs I have come across have
-greater support for Python 2 than for Python 3. Python also has its own command-line package manager called
-{% include wp.md name="pip" cat="software" %} (`pip`). Some programs I am particularly familiar with that are written
-predominantly (if not exclusively) in Python that are compatible with Linux systems include:
-
-* {% include wp.md name="Anaconda" cat="installer" %} &mdash; an operating system installer used by Fedora and most of its derivatives, see the [Fedora](#fedora) section for details.
-* {% include wp.md name="DNF" cat="software" %} &mdash; the default package manager of Fedora &geq;22.
-* {% include gr.md owner="Sabayon" repo="entropy" name="Entropy" %} &mdash; the default binary package manager of Sabayon Linux.
-* {% include wp.md name="Portage" cat="software" %} &mdash; the default package manager of Gentoo Linux, and the default source code package manager of its derivatives such as Sabayon Linux.
-* {% include wp.md name="PyMOL" %} &mdash; an application for viewing and performing calculations relating to molecules, especially macromolecules like proteins, DNA double helices and RNA helices.
-* {% include wp.md name="SageMath" %} &mdash; a mathematics program that uses a Python-like syntax and integrates several free pieces of
-mathematics software in a single command-line and notebook interface, with interfaces available for several proprietary mathematics programs too.
-* [youtube-dl](https://rg3.github.io/youtube-dl/) ([`youtube-dl`](/man/youtube-dl.1.html)) &mdash; a command-line program for downloading YouTube videos as media files. It is managed by pip (so running {% include codeus.html line1="sudo pip install youtube-dl" %} should install it)
-* [yum](http://yum.baseurl.org/) &mdash; the default command-line package manager of CentOS, Fedora &lt;22, Oracle Linux, Red Hat Enterprise Linux (RHEL), *etc.* It is written almost entirely in Python and this likely contributes to its relatively slow speed.
+{% include_relative PL/python.md %}
 
 ### R
 **R** is an interpreted programming language designed for statistical computing, that was first developed in 1993 by two New Zealand programmers and statisticians and is now developed as part of the GNU Project. It is licensed under the GNU GPL.
