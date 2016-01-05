@@ -1,5 +1,5 @@
 ## Glossary
-{% include_relative OS/short-definitions.md %}
+{% include short-definitions.md %}
 
 ### Basic Definitions
 #### Command-Line Interface
