@@ -26,7 +26,7 @@ Programs written, predominantly, in it, that I have experience with, include:
 * {% include wp.md name="Bash" %} &mdash; the Unix shell is predominantly written in C.
 * {% include wp.md name="FreeBSD" %} &mdash; the Unix-like operating system, is predominantly written in C.
 * {% include wp.md name="GNU Coreutils" %} &mdash; the command-line utilities package for &#43;nix systems is written predominantly in C.
-* {% include wp.md name="GTK+" %} or **GIMP Toolkit** &mdash; is a free widget toolkit developed for use by the GNOME desktop environment.
+* {% include wp.md name="GTK+" %} or the GIMP Toolkit &mdash; is a free widget toolkit developed for use by the GNOME desktop environment.
 * {% include wp.md name="Linux kernel" %} &mdash; the kernel of Linux operating systems.
 * {% include wp.md name="VLC media player" %} (71.2% C, 17.7% C++, 6.7% Objective-C, 1.3% Lua, *etc.* according to GitHub[^1])
 
@@ -38,11 +38,10 @@ Programs written, predominantly, in it, that I have experience with, include:
 **C#** is a proprietary programming language that is developed by the Microsoft Corporation. Some C# compilers are proprietary, others are not. It is very popular, according to [TIOBE][1]. Microsoft employees started its development in the late 1990s, for the purpose of it being used in their .NET framework. In its early days it was said to be very similar to Java, although since then the two have become increasingly different to one another.
 
 ### D
-**D**, a member of the C programming language family, is a free and open-source programming language, that is essentially like a more feature-packed, modern version of C++, with support for extra paradigms, automatic memory management and syntactic sugar (to make the language more human-readable).
+**D**, a member of the C programming language family, is a free and open-source programming language, that is essentially like a more feature-packed, modern version of C++, with support for extra programming paradigms, automatic memory management and syntactic sugar (to make the language more human-readable).
 
 ### Fortran
-**Fortran** is a programming language first developed in 1957 by [John Backus](https://en.wikipedia.org/wiki/John_Backus)
-(1924-2007), specifically suited for the purpose of numerical calculations and scientific computing. A program written in Fortran is used to test the performance of computers for the TOP500 list.
+**Fortran** is the eldest high-level programming language and was first developed in 1957 by [John Backus](https://en.wikipedia.org/wiki/John_Backus) (1924-2007), specifically suited for the purpose of numerical calculations and scientific computing. A program written in Fortran is used to test the performance of computers for the TOP500 list.
 
 ### Go
 **Go**, or **golang**, is a programming language, initially developed by [Google](https://en.wikipedia.org/wiki/Google) employees, [Robert Griesemer](https://en.wikipedia.org/wiki/Robert_Griesemer), [Rob Pike](https://en.wikipedia.org/wiki/Rob_Pike) and [Ken Thompson](https://en.wikipedia.org/wiki/Ken_Thompson) (one of the original developers of Research Unix at Bell Labs).
@@ -51,18 +50,21 @@ Programs written, predominantly, in it, that I have experience with, include:
 **Groovy** is a programming language that is specifically designed to work on the Java platform, wherein it serves predominantly as a scripting language, that interfaces with Java to modify program behaviour, extract data, *etc.*
 
 ### Java
-**Java** is a cross-platform programming language, in its early days it was proprietary-licensed, until it was later released under the GNU GPL license. Java is one of the most popular programming languages in the world today, in fact, the TIOBE is currently ranking it number 1 for popularity, in the programming world. Java applications are usually compiled into its own instruction set called Java bytecode, that can then be run in a Java Virtual Machine  (JVM) regardless of the computer's architecture or operating system. This is what makes it cross-platform and this is key to its success.
+**Java** is a cross-platform programming language, in its early days it was proprietary-licensed, until it was later released under the GNU GPL license. Java is one of the most popular programming languages in the world today, in fact, the TIOBE is currently ranking it number 1 for popularity, in the programming world. Java applications are usually compiled into its own instruction set called {% include wp.md name="Java bytecode" puncr="," %} that can then be run in a {% include wp.md name="Java Virtual Machine" %}  (JVM) regardless of the computer's architecture or operating system. This is what makes it cross-platform and this is key to its success.
 
 ### JavaScript
-**JavaScript** (**JS**) is a cross-platform web-oriented programming language that is used primarily for the purpose of controlling the behaviour of web pages. Despite this it can be used for non-web applications. For example, the text editor I am using to write this blog post, [Atom](https://atom.io), is written predominantly in JavaScript and its close relative, CoffeeScript. JavaScript was also used to write extensions for the Deepin Desktop Environment.
+**JavaScript** (**JS**) is a cross-platform web-oriented programming language that is used primarily for the purpose of controlling the behaviour of web pages. Despite this it can be used for non-web applications. For example, the text editor I am using to write this blog post, [Atom](https://atom.io), is written predominantly in JavaScript and its close lesser-used relative, CoffeeScript. JavaScript was also used to write extensions for the Deepin Desktop Environment.
+
+### Lisp
+**Lisp** is a family of programming languages that are second only to Fortran for the title of being the eldest high-level programming languages. Notable members include the {% include wp.md name="Common Lisp" %} and {% include wp.md name="Emacs Lisp" puncr="," %} the latter of which is used by {% include wp.md name="GNU Emacs" %} and other Emacs text editors.
 
 ### Lua
-**Lua** is a lightweight programming language that is primarily used for scripting in web development applications. The two examples of its use that I have come across, personally (out of the hundreds out there), are its use to improve the efficiency of MediaWiki templates using the [Scribunto extension](https://www.mediawiki.org/wiki/Extension:Scribunto) and its use by the [Awesome Window Manager](https://en.wikipedia.org/wiki/Awesome_(window_manager)).
+**Lua** is a lightweight programming language that is primarily used for scripting in web development applications. The two examples of its use that I have come across, personally (out of the hundreds out there), are its use to improve the efficiency of MediaWiki templates using the [Scribunto extension](https://www.mediawiki.org/wiki/Extension:Scribunto) and its use by the [Awesome Window Manager](https://en.wikipedia.org/wiki/Awesome_(window_manager)) (where it is used to extend functionality).
 
 {% include_relative PL/matlab.md %}
 
 ### Objective-C
-**Objective-C** is a programming language that is primarily object-oriented in its paradigm. It is one of the main languages that Apple's OS X is written in.
+**Objective-C** is a programming language that belongs to the C family of programming language and is primarily object-oriented in its paradigm. It is one of the main languages that Apple's OS X is written in.
 
 ### Pascal
 **Pascal** is a fairly old programming language, it and its derivatives (like [Object Pascal](https://en.wikipedia.org/wiki/Object_Pascal)) are still widely used today.
