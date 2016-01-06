@@ -12,12 +12,14 @@ Another feature of programming languages that can be used to categorize them, th
 
 {% include_relative PL/table1-comparison-of-common-programming-languages.html %}
 
+### Ada
+{% include links.html program="Ada" category="dev-ada" %} is a high-level programming language that supports multiple paradigms and is descended from Pascal. The most popular free compiler for Ada is {% include links.html program="GNAT" package="dev-lang/gnat-gcc" wp="GNAT" puncr="." %}
+
 ### Assembly Language
 **Assembly language** is a low-level programming language that has a very strong correspondence to machine code. Due to this, it is very hardware-specific &mdash; an assembly language for one processor may not work for another. The only  program that I am aware of that is written, even partly, in assembly language is the Linux kernel. Although, I know other programs written in Assembly do exist, after all it is listed in the [TIOBE top 20 programming language (by popularity) list][1], I just cannot personally name them.
 
 ### Bash
-{% include links.html package="app-shells/bash" program="Bash" %} is the most commonly-encountered Unix shell and command language. Few have compared its speed to other programming
-languages, hence I cannot provide an average for it. Despite this I know that for most things it is considered slower than Python. Most code written for Bash should also be compatible with Zsh, although whether it is compatible with the syntax of other Unix shells is something I cannot comment on. The programming language of Unix shells is usually called shell script. For an introduction to the Bash syntax, see [*An Introduction to Bash Scripting for Sabayon Users*](/bash-scripting-and-the-command-line-an-introduction-for-sabayon-users/). Due to the fact it is a Unix shell, it is not considered cross-platform.
+{% include links.html package="app-shells/bash" program="Bash" category="dev-bash" %} is the most commonly-encountered Unix shell and command language. Few have compared its speed to other programming languages, hence I cannot provide an average for it. Despite this I know that for most things it is considered slower than Python. Most code written for Bash should also be compatible with Zsh, although whether it is compatible with the syntax of other Unix shells is something I cannot comment on. The programming language of Unix shells is usually called shell script. For an introduction to the Bash syntax, see [*An Introduction to Bash Scripting for Sabayon Users*](/bash-scripting-and-the-command-line-an-introduction-for-sabayon-users/). Due to the fact it is a Unix shell, it is not considered cross-platform.
 
 ### C
 **C** was originally developed for use by Research Unix, by Dennis Ritchie (1941-2011), while he was working at Bell Labs. Since then it has become one of the most widely-used programming languages in the world. The reason for this is several fold, *firstly*, it is cross-platform and able to run on most, if not all, computing platforms, *secondly*, it is fast and *thirdly*, it is powerful, giving developers complete control over their program. It was originally considered high-level, but it has since become considered low-level, and its low-level nature is best illustrated by the fact that developers have to allocate memory to their program manually.
