@@ -63,7 +63,7 @@ Programs written, predominantly, in it, that I have experience with, include:
 {% include_relative PL/matlab.md %}
 
 ### Objective-C
-**Objective-C** is a programming language that belongs to the C family of programming language and is primarily object-oriented in its paradigm. It is one of the main languages that Apple's OS X is written in.
+{% include links.html program="Objective-C" wp="Objective-C" link="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ProgrammingWithObjectiveC/Introduction/Introduction.html" %} is a programming language that belongs to the C family of programming language and is primarily object-oriented in its paradigm. It is one of the main languages that Apple's OS X is written in.
 
 ### Pascal
 **Pascal** is a fairly old programming language, it and its derivatives (like [Object Pascal](https://en.wikipedia.org/wiki/Object_Pascal)) are still widely used today.
