@@ -16,7 +16,7 @@ Another feature of programming languages that can be used to categorize them, th
 **Assembly language** is a low-level programming language that has a very strong correspondence to machine code. Due to this, it is very hardware-specific &mdash; an assembly language for one processor may not work for another. The only  program that I am aware of that is written, even partly, in assembly language is the Linux kernel. Although, I know other programs written in Assembly do exist, after all it is listed in the [TIOBE top 20 programming language (by popularity) list][1], I just cannot personally name them.
 
 ### Bash
-**Bash** is the most commonly-encountered Unix shell and command language. Few have compared its speed to other programming
+{% include links.html package="app-shells/bash" program="Bash" %} is the most commonly-encountered Unix shell and command language. Few have compared its speed to other programming
 languages, hence I cannot provide an average for it. Despite this I know that for most things it is considered slower than Python. Most code written for Bash should also be compatible with Zsh, although whether it is compatible with the syntax of other Unix shells is something I cannot comment on. The programming language of Unix shells is usually called shell script. For an introduction to the Bash syntax, see [*An Introduction to Bash Scripting for Sabayon Users*](/bash-scripting-and-the-command-line-an-introduction-for-sabayon-users/). Due to the fact it is a Unix shell, it is not considered cross-platform.
 
 ### C
@@ -44,30 +44,21 @@ Programs written, predominantly, in it, that I have experience with, include:
 **Fortran** is the eldest high-level programming language and was first developed in 1957 by [John Backus](https://en.wikipedia.org/wiki/John_Backus) (1924-2007), specifically suited for the purpose of numerical calculations and scientific computing. A program written in Fortran is used to test the performance of computers for the TOP500 list.
 
 ### Go
-**Go**, or **golang**, is a programming language, initially developed by [Google](https://en.wikipedia.org/wiki/Google) employees, [Robert Griesemer](https://en.wikipedia.org/wiki/Robert_Griesemer), [Rob Pike](https://en.wikipedia.org/wiki/Rob_Pike) and [Ken Thompson](https://en.wikipedia.org/wiki/Ken_Thompson) (one of the original developers of Research Unix at Bell Labs).
+{% include links.html program="Go" package="dev-lang/go" puncr="," %} or **golang**, is a programming language, initially developed by [Google](https://en.wikipedia.org/wiki/Google) employees, [Robert Griesemer](https://en.wikipedia.org/wiki/Robert_Griesemer), [Rob Pike](https://en.wikipedia.org/wiki/Rob_Pike) and [Ken Thompson](https://en.wikipedia.org/wiki/Ken_Thompson) (one of the original developers of Research Unix at Bell Labs).
 
 ### Groovy
-**Groovy** is a programming language that is specifically designed to work on the Java platform, wherein it serves predominantly as a scripting language, that interfaces with Java to modify program behaviour, extract data, *etc.*
+{% include links.html program="Groovy" package="dev-java/groovy" %} is a programming language that is specifically designed to work on the Java platform, wherein it serves predominantly as a scripting language, that interfaces with Java to modify program behaviour, extract data, *etc.*
 
-### Java
-**Java** is a cross-platform programming language, in its early days it was proprietary-licensed, until it was later released under the GNU GPL license. Java is one of the most popular programming languages in the world today, in fact, the TIOBE is currently ranking it number 1 for popularity, in the programming world. Java applications are usually compiled into its own instruction set called {% include wp.md name="Java bytecode" puncr="," %} that can then be run in a {% include wp.md name="Java Virtual Machine" %}  (JVM) regardless of the computer's architecture or operating system. This is what makes it cross-platform and this is key to its success.
-
-There are quite a few programs I have used that are written, mostly, in Java, they include:
-* {% include wp.md name="jEdit" %} &mdash; a free (GPL-licensed) text editor with support for several computer languages.
-* {% include wp.md name="Jmol" %} &mdash; a free 3D molecule viewer, that can import the molecule formats `.cif`, `.mol`, `.pdb`, `.sdf`, *etc.*
-* {% include wp.md name="NetBeans" %} &mdash; a once proprietary Java IDE, now it is free licensed under GPL-compatible licenses.
-* {% include wp.md name="RuneScape" %} &mdash; a proprietary massively-multiplayer online role-playing game (MMORPG).
-* {% include wp.md name="SPSS" %} &mdash; a proprietary program used for statistical analysis.
-* {% include wp.md name="Vuze" %} &mdash; a BitTorrent client.
+{% include_relative PL/java.md %}
 
 ### JavaScript
 **JavaScript** (**JS**) is a cross-platform web-oriented programming language that is used primarily for the purpose of controlling the behaviour of web pages. Despite this it can be used for non-web applications. For example, the text editor I am using to write this blog post, [Atom](https://atom.io), is written predominantly in JavaScript and its close lesser-used relative, CoffeeScript. JavaScript was also used to write extensions for the Deepin Desktop Environment.
 
 ### Lisp
-**Lisp** is a family of programming languages that are second only to Fortran for the title of being the eldest high-level programming languages. Notable members include the {% include wp.md name="Common Lisp" %} and {% include wp.md name="Emacs Lisp" puncr="," %} the latter of which is used by {% include wp.md name="GNU Emacs" %} and other Emacs text editors.
+{% include links.html program="Lisp" category="dev-lisp" %} is a family of programming languages that are second only to Fortran for the title of being the eldest high-level programming languages. Notable members include the {% include wp.md name="Common Lisp" %} and {% include wp.md name="Emacs Lisp" puncr="," %} the latter of which is used by {% include wp.md name="GNU Emacs" %} and other Emacs text editors.
 
 ### Lua
-{% include links.html program="Lua" package="dev-lang/lua" %} is a lightweight programming language that is primarily used for scripting in web development applications. The two examples of its use that I have come across, personally (out of the hundreds out there), are its use to improve the efficiency of MediaWiki templates using the [Scribunto extension](https://www.mediawiki.org/wiki/Extension:Scribunto) and its use by the [Awesome Window Manager](https://en.wikipedia.org/wiki/Awesome_(window_manager)) (where it is used to extend functionality).
+{% include links.html program="Lua" package="dev-lang/lua" category="dev-lua" %} is a lightweight programming language that is primarily used for scripting in web development applications. The two examples of its use that I have come across, personally (out of the hundreds out there), are its use to improve the efficiency of MediaWiki templates using the [Scribunto extension](https://www.mediawiki.org/wiki/Extension:Scribunto) and its use by the [Awesome Window Manager](https://en.wikipedia.org/wiki/Awesome_(window_manager)) (where it is used to extend functionality).
 
 {% include_relative PL/matlab.md %}
 
@@ -78,10 +69,10 @@ There are quite a few programs I have used that are written, mostly, in Java, th
 **Pascal** is a fairly old programming language, it and its derivatives (like [Object Pascal](https://en.wikipedia.org/wiki/Object_Pascal)) are still widely used today.
 
 ### Perl
-{% include links.html program="Perl" package="dev-lang/perl" %} is a family of scripting languages, the most notable members are Perl 5 and Perl 6. It was originally developed for the purpose of automating reporting tasks on &#42;nix systems in 1987. It is licensed under GNU GPL. The only program I have personal experience with that is written mostly in Perl is the [RuneScape Unix Client](https://github.com/HikariKnight/rsu-client) (RSU).
+{% include links.html program="Perl" package="dev-lang/perl" category="dev-perl" %} is a family of scripting languages, the most notable members are Perl 5 and Perl 6. It was originally developed for the purpose of automating reporting tasks on &#42;nix systems in 1987. It is licensed under GNU GPL. The only program I have personal experience with that is written mostly in Perl is the [RuneScape Unix Client](https://github.com/HikariKnight/rsu-client) (RSU).
 
 ### PHP
-{% include links.html program="PHP" package="dev-lang/php" %} is a server-side scripting language that is primarily intended for web development. Most web applications will use PHP to some extent, prominent examples of such applications include: [MediaWiki](https://www.mediawiki.org), the software that powers several Wiki websites including all the Wikimedia Foundation websites (such as Wikipedia, for example) and [WordPress](https://wordpress.org), the software that powers many blogs and personal websites on the web. It is a copyleft licensed under the PHP License.
+{% include links.html program="PHP" package="dev-lang/php" category="dev-php" %} is a server-side scripting language that is primarily intended for web development. Most web applications will use PHP to some extent, prominent examples of such applications include: [MediaWiki](https://www.mediawiki.org), the software that powers several Wiki websites including all the Wikimedia Foundation websites (such as Wikipedia, for example) and [WordPress](https://wordpress.org), the software that powers many blogs and personal websites on the web. It is a copyleft licensed under the PHP License.
 
 {% include_relative PL/python.md %}
 
@@ -89,7 +80,7 @@ There are quite a few programs I have used that are written, mostly, in Java, th
 {% include links.html program="R" package="dev-lang/R" %} is an interpreted programming language designed for statistical computing, that was first developed in 1993 by two New Zealand programmers and statisticians and is now developed as part of the GNU Project. It is licensed under the GNU GPL.
 
 ### Ruby
-{% include links.html program="Ruby" package="dev-lang/ruby" %} is a general-purpose, interpreted, programming language that is not as widely-used as C, C++, Java or Python, in my experience. The programs that are written in it, that I have experience with are two in number: {% include wp.md name="Jekyll" cat="software" %} (the static site generator that powers this website) and {% include wp.md name="YaST2" %} (the graphical package manager used by openSUSE). A program that I have never used, but I have heard of, that is used as a package management system for OS X, {% include wp.md name="Homebrew" puncr="," %} is written in Ruby too. Ruby like Python has its own package manager too, [RubyGems](https://rubygems.org/) that is invoked by the command `gem`. For example, to install Jekyll one may run:
+{% include links.html program="Ruby" package="dev-lang/ruby" category="dev-ruby" %} is a general-purpose, interpreted, programming language that is not as widely-used as C, C++, Java or Python, in my experience. The programs that are written in it, that I have experience with are two in number: {% include wp.md name="Jekyll" cat="software" %} (the static site generator that powers this website) and {% include wp.md name="YaST2" %} (the graphical package manager used by openSUSE). A program that I have never used, but I have heard of, that is used as a package management system for OS X, {% include wp.md name="Homebrew" puncr="," %} is written in Ruby too. Ruby like Python has its own package manager too, [RubyGems](https://rubygems.org/) that is invoked by the command `gem`. For example, to install Jekyll one may run:
 {% include coder.html line1="gem install jekyll" %}
 [Bundler](http://bundler.io) is a Ruby package manager that has better dependency-resolution than RubyGems that is also popular. I personally use Bundler to install Jekyll, because installing it with RubyGems can be a nightmare. Ruby, Bundler and RubyGems are all licensed under the permissive MIT License.
 
