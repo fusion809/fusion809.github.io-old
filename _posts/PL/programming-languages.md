@@ -55,7 +55,7 @@ Programs written, predominantly, in it, that I have experience with, include:
 There are quite a few programs I have used that are written, mostly, in Java, they include:
 * {% include wp.md name="jEdit" %} &mdash; a free (GPL-licensed) text editor with support for several computer languages.
 * {% include wp.md name="Jmol" %} &mdash; a free 3D molecule viewer, that can import the molecule formats `.cif`, `.mol`, `.pdb`, `.sdf`, *etc.*
-* {% include wp.md name="NetBeans" %} &mdash; a once proprietary Java IDE, now it is free licensed under GPL-compatible licenses. 
+* {% include wp.md name="NetBeans" %} &mdash; a once proprietary Java IDE, now it is free licensed under GPL-compatible licenses.
 * {% include wp.md name="RuneScape" %} &mdash; a proprietary massively-multiplayer online role-playing game (MMORPG).
 * {% include wp.md name="SPSS" %} &mdash; a proprietary program used for statistical analysis.
 * {% include wp.md name="Vuze" %} &mdash; a BitTorrent client.
@@ -67,7 +67,7 @@ There are quite a few programs I have used that are written, mostly, in Java, th
 **Lisp** is a family of programming languages that are second only to Fortran for the title of being the eldest high-level programming languages. Notable members include the {% include wp.md name="Common Lisp" %} and {% include wp.md name="Emacs Lisp" puncr="," %} the latter of which is used by {% include wp.md name="GNU Emacs" %} and other Emacs text editors.
 
 ### Lua
-**Lua** is a lightweight programming language that is primarily used for scripting in web development applications. The two examples of its use that I have come across, personally (out of the hundreds out there), are its use to improve the efficiency of MediaWiki templates using the [Scribunto extension](https://www.mediawiki.org/wiki/Extension:Scribunto) and its use by the [Awesome Window Manager](https://en.wikipedia.org/wiki/Awesome_(window_manager)) (where it is used to extend functionality).
+{% include links.html program="Lua" package="dev-lang/lua" %} is a lightweight programming language that is primarily used for scripting in web development applications. The two examples of its use that I have come across, personally (out of the hundreds out there), are its use to improve the efficiency of MediaWiki templates using the [Scribunto extension](https://www.mediawiki.org/wiki/Extension:Scribunto) and its use by the [Awesome Window Manager](https://en.wikipedia.org/wiki/Awesome_(window_manager)) (where it is used to extend functionality).
 
 {% include_relative PL/matlab.md %}
 
@@ -78,18 +78,18 @@ There are quite a few programs I have used that are written, mostly, in Java, th
 **Pascal** is a fairly old programming language, it and its derivatives (like [Object Pascal](https://en.wikipedia.org/wiki/Object_Pascal)) are still widely used today.
 
 ### Perl
-**Perl** is a family of scripting languages, the most notable members are Perl 5 and Perl 6. It was originally developed for the purpose of automating reporting tasks on &#42;nix systems in 1987. It is licensed under GNU GPL.
+{% include links.html program="Perl" package="dev-lang/perl" %} is a family of scripting languages, the most notable members are Perl 5 and Perl 6. It was originally developed for the purpose of automating reporting tasks on &#42;nix systems in 1987. It is licensed under GNU GPL. The only program I have personal experience with that is written mostly in Perl is the [RuneScape Unix Client](https://github.com/HikariKnight/rsu-client) (RSU).
 
 ### PHP
-**PHP** is a server-side scripting language that is primarily intended for web development. Most web applications will use PHP to some extent, prominent examples of such applications include: [MediaWiki](https://www.mediawiki.org), the software that powers several Wiki websites including all the Wikimedia Foundation websites (such as Wikipedia, for example) and [WordPress](https://wordpress.org), the software that powers many blogs and personal websites on the web. It is a copyleft licensed under the PHP License.
+{% include links.html program="PHP" package="dev-lang/php" %} is a server-side scripting language that is primarily intended for web development. Most web applications will use PHP to some extent, prominent examples of such applications include: [MediaWiki](https://www.mediawiki.org), the software that powers several Wiki websites including all the Wikimedia Foundation websites (such as Wikipedia, for example) and [WordPress](https://wordpress.org), the software that powers many blogs and personal websites on the web. It is a copyleft licensed under the PHP License.
 
 {% include_relative PL/python.md %}
 
 ### R
-**R** is an interpreted programming language designed for statistical computing, that was first developed in 1993 by two New Zealand programmers and statisticians and is now developed as part of the GNU Project. It is licensed under the GNU GPL.
+{% include links.html program="R" package="dev-lang/R" %} is an interpreted programming language designed for statistical computing, that was first developed in 1993 by two New Zealand programmers and statisticians and is now developed as part of the GNU Project. It is licensed under the GNU GPL.
 
 ### Ruby
-**Ruby** is a general-purpose, interpreted, programming language that is not as widely-used as C, C++, Java or Python, in my experience. The programs that are written in it, that I have experience with are two in number: {% include wp.md name="Jekyll" cat="software" %} (the static site generator that powers this website) and {% include wp.md name="YaST2" %} (the graphical package manager used by openSUSE). A program I have never used that is used as a package management system for OS X, {% include wp.md name="Homebrew" puncr="," %} is written in Ruby too. Ruby like Python has its own package manager too, [RubyGems](https://rubygems.org/) that is invoked by the command `gem`. For example, to install Jekyll one may run:
+{% include links.html program="Ruby" package="dev-lang/ruby" %} is a general-purpose, interpreted, programming language that is not as widely-used as C, C++, Java or Python, in my experience. The programs that are written in it, that I have experience with are two in number: {% include wp.md name="Jekyll" cat="software" %} (the static site generator that powers this website) and {% include wp.md name="YaST2" %} (the graphical package manager used by openSUSE). A program that I have never used, but I have heard of, that is used as a package management system for OS X, {% include wp.md name="Homebrew" puncr="," %} is written in Ruby too. Ruby like Python has its own package manager too, [RubyGems](https://rubygems.org/) that is invoked by the command `gem`. For example, to install Jekyll one may run:
 {% include coder.html line1="gem install jekyll" %}
 [Bundler](http://bundler.io) is a Ruby package manager that has better dependency-resolution than RubyGems that is also popular. I personally use Bundler to install Jekyll, because installing it with RubyGems can be a nightmare. Ruby, Bundler and RubyGems are all licensed under the permissive MIT License.
 

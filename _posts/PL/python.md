@@ -5,16 +5,50 @@ emphasizes code readability and concision. It also automatically performs some t
 There are also two main versions of Python presently in widespread use: Python 2 and Python 3. Most programs I have come across have
 greater support for Python 2 than for Python 3. Python also has its own command-line package manager called {% include wp.md name="pip" cat="software" %} (`pip`). Some programs I am particularly familiar with that are written predominantly (if not exclusively) in Python that are compatible with Linux systems include:
 
-* {% include wp.md name="Anaconda" cat="installer" %} &mdash; an operating system installer used by Fedora and most of its derivatives, see the [Fedora](#fedora) section for details.
-* {% include wp.md name="DNF" cat="software" %} &mdash; the default package manager of Fedora &geq;22.
-* {% include gr.md owner="Sabayon" repo="entropy" name="Entropy" %} &mdash; the default binary package manager of Sabayon Linux.
-* {% include wp.md name="GNU Bazaar" %} &mdash; the distributed version control system developed by Canonical Ltd.
-* {% include wp.md name="Portage" cat="software" %} &mdash; the default package manager of Gentoo Linux, and the default source code package manager of its derivatives such as Sabayon Linux.
-* {% include wp.md name="PyMOL" %} &mdash; an application for viewing and performing calculations relating to molecules, especially macromolecules like proteins, DNA double helices and RNA helices. Which is managed by pip, so running {% include codeus.html line1="sudo pip install pymol" %} should install it.
-* {% include wp.md name="SageMath" %} &mdash; a mathematics program that uses a Python-like syntax and integrates several free pieces of
+{% capture point1 %}
+{% include wp.md name="Anaconda" cat="installer" %} &mdash; an operating system installer used by Fedora and most of its derivatives, see the [Fedora](#fedora) section for details.
+{% endcapture %}
+{% capture point2 %}
+{% include wp.md name="DNF" cat="software" %} &mdash; the default package manager of Fedora &geq;22.
+{% endcapture %}
+{% capture point3 %}
+{% include gr.md owner="Sabayon" repo="entropy" name="Entropy" %} &mdash; the default binary package manager of Sabayon Linux.
+{% endcapture %}
+{% capture point4 %}
+{% include wp.md name="GNU Bazaar" %} &mdash; the distributed version control system developed by Canonical Ltd.
+{% endcapture %}
+{% capture point5 %}
+{% include wp.md name="Portage" cat="software" %} &mdash; the default package manager of Gentoo Linux, and the default source code package manager of its derivatives such as Sabayon Linux.
+{% endcapture %}
+{% capture point6 %}
+{% include wp.md name="PyMOL" %} &mdash; an application for viewing and performing calculations relating to molecules, especially macromolecules like proteins, DNA double helices and RNA helices. Which is managed by pip, so running {% include codeus.html line1="sudo pip install pymol" %} should install it.
+{% include image.html image="PyMOL-1.7.6.0-3EIG.png" float="none" %}
+{% endcapture %}
+{% capture point7 %}
+{% include wp.md name="SageMath" %} &mdash; a mathematics program that uses a Python-like syntax and integrates several free pieces of
 mathematics software in a single command-line and notebook interface, with interfaces available for several proprietary mathematics programs too.
 {% include image.html image="SageMath-6.10.png" float="none" %}
-* {% include wp.md name="Spyder" cat="software" %} &mdash; a cross-platform free and open-source IDE for scientific computing in Python. It is managed by pip, so running {% include codeus.html line1="sudo pip install spyder" %} should install it, provided its dependency PyQt4/PyQt5 is already installed.
+{% endcapture %}
+{% capture point8 %}
+{% include wp.md name="Spyder" cat="software" %} &mdash; a cross-platform free and open-source IDE for scientific computing in Python. It is managed by pip, so running {% include codeus.html line1="sudo pip install spyder" %} should install it, provided its dependency PyQt4/PyQt5 is already installed.
 {% include image.html image="Spyder-2.3.8.png" float="none" %}
-* [youtube-dl](https://rg3.github.io/youtube-dl/) ([`youtube-dl`](/man/youtube-dl.1.html)) &mdash; a command-line program for downloading YouTube videos as media files. It is managed by pip (so running {% include codeus.html line1="sudo pip install youtube-dl" %} should install it)
-* [yum](http://yum.baseurl.org/) &mdash; the default command-line package manager of CentOS, Fedora &lt;22, Oracle Linux, Red Hat Enterprise Linux (RHEL), *etc.* It is written almost entirely in Python and this likely contributes to its relatively slow speed.
+{% endcapture %}
+{% capture point9 %}
+[youtube-dl](https://rg3.github.io/youtube-dl/) ([`youtube-dl`](/man/youtube-dl.1.html)) &mdash; a command-line program for downloading YouTube videos as media files. It is managed by pip (so running {% include codeus.html line1="sudo pip install youtube-dl" %} should install it)
+{% endcapture %}
+{% capture point10 %}
+[yum](http://yum.baseurl.org/) &mdash; the default command-line package manager of CentOS, Fedora &lt;22, Oracle Linux, Red Hat Enterprise Linux (RHEL), *etc.* It is written almost entirely in Python and this likely contributes to its relatively slow speed.
+{% endcapture %}
+
+<ul>
+<li>{{ point1 | markdownify }}</li>
+<li>{{ point2 | markdownify }}</li>
+<li>{{ point3 | markdownify }}</li>
+<li>{{ point4 | markdownify }}</li>
+<li>{{ point5 | markdownify }}</li>
+<li>{{ point6 | markdownify }}</li>
+<li>{{ point7 | markdownify }}</li>
+<li>{{ point8 | markdownify }}</li>
+<li>{{ point9 | markdownify }}</li>
+<li>{{ point10 | markdownify }}</li>
+</ul>
