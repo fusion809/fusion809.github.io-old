@@ -13,7 +13,7 @@ Another feature of programming languages that can be used to categorize them, th
 {% include_relative PL/table1-comparison-of-common-programming-languages.html %}
 
 ### Ada
-{% include links.html program="Ada" category="dev-ada" %} is a high-level programming language that supports multiple paradigms and is descended from Pascal. The most popular free compiler for Ada is {% include links.html program="GNAT" package="dev-lang/gnat-gcc" wp="GNAT" puncr="." %}
+{% include links.html program="Ada" category="dev-ada" %} is a high-level programming language that supports multiple paradigms and is descended from Pascal. The most popular free compiler for Ada is {% include links.html program="GNAT" package="dev-lang/gnat-gcc" wp="GNAT" puncr="," %} a front-end of the **GNU Compiler Collection** (**GCC**).
 
 ### Assembly Language
 **Assembly language** is a low-level programming language that has a very strong correspondence to machine code. Due to this, it is very hardware-specific &mdash; an assembly language for one processor may not work for another. The only  program that I am aware of that is written, even partly, in assembly language is the Linux kernel. Although, I know other programs written in Assembly do exist, after all it is listed in the [TIOBE top 20 programming language (by popularity) list][1], I just cannot personally name them.
@@ -22,7 +22,7 @@ Another feature of programming languages that can be used to categorize them, th
 {% include links.html package="app-shells/bash" program="Bash" category="dev-bash" %} is the most commonly-encountered Unix shell and command language. Few have compared its speed to other programming languages, hence I cannot provide an average for it. Despite this I know that for most things it is considered slower than Python. Most code written for Bash should also be compatible with Zsh, although whether it is compatible with the syntax of other Unix shells is something I cannot comment on. The programming language of Unix shells is usually called shell script. For an introduction to the Bash syntax, see [*An Introduction to Bash Scripting for Sabayon Users*](/bash-scripting-and-the-command-line-an-introduction-for-sabayon-users/). Due to the fact it is a Unix shell, it is not considered cross-platform.
 
 ### C
-**C** was originally developed for use by Research Unix, by Dennis Ritchie (1941-2011), while he was working at Bell Labs. Since then it has become one of the most widely-used programming languages in the world. The reason for this is several fold, *firstly*, it is cross-platform and able to run on most, if not all, computing platforms, *secondly*, it is fast and *thirdly*, it is powerful, giving developers complete control over their program. It was originally considered high-level, but it has since become considered low-level, and its low-level nature is best illustrated by the fact that developers have to allocate memory to their program manually.
+**C** was originally developed for use by Research Unix, by Dennis Ritchie (1941-2011), while he was working at Bell Labs. Since then it has become one of the most widely-used programming languages in the world. The reason for this is several fold, *firstly*, it is cross-platform and able to run on most, if not all, computing platforms, *secondly*, it is fast and *thirdly*, it is powerful, giving developers complete control over their program. It was originally considered high-level, but it has since become considered low-level, and its low-level nature is best illustrated by the fact that developers have to allocate memory to their program manually. The most popular free compiler of C is the GCC.
 
 Programs written, predominantly, in it, that I have experience with, include:
 * {% include wp.md name="Bash" %} &mdash; the Unix shell is predominantly written in C.
@@ -33,7 +33,7 @@ Programs written, predominantly, in it, that I have experience with, include:
 * {% include wp.md name="VLC media player" %} (71.2% C, 17.7% C++, 6.7% Objective-C, 1.3% Lua, *etc.* according to GitHub[^1])
 
 ### C++
-**C++** (pronounced *See-plus-plus*) is a programming language that was originally developed by Bjarne Stroustrup (1950-) while he was working at Bell Labs. Stroustrup wanted a programming language with similar features and speed to C, except with greater support for additional programming paradigms as well as some extra high-level features.
+**C++** (pronounced *See-plus-plus*) is a programming language that was originally developed by Bjarne Stroustrup (1950-) while he was working at Bell Labs. Stroustrup wanted a programming language with similar features and speed to C, except with greater support for additional programming paradigms as well as some extra high-level features. Its most popular free compiler is probably the GCC too.
 
 ### C Sharp
 {% include note.md note1="The use of the name <b>C Sharp</b>, is because of technical restrictions, the correct name is C#" %}
@@ -43,10 +43,10 @@ Programs written, predominantly, in it, that I have experience with, include:
 **D**, a member of the C programming language family, is a free and open-source programming language, that is essentially like a more feature-packed, modern version of C++, with support for extra programming paradigms, automatic memory management and syntactic sugar (to make the language more human-readable).
 
 ### Fortran
-**Fortran** is the eldest high-level programming language and was first developed in 1957 by [John Backus](https://en.wikipedia.org/wiki/John_Backus) (1924-2007), specifically suited for the purpose of numerical calculations and scientific computing. A program written in Fortran is used to test the performance of computers for the TOP500 list.
+**Fortran** is the eldest high-level programming language and was first developed in 1957 by [John Backus](https://en.wikipedia.org/wiki/John_Backus) (1924-2007), specifically suited for the purpose of numerical calculations and scientific computing. A program written in Fortran is used to test the performance of computers for the TOP500 list. The GCC includes a Fortran compiler.
 
 ### Go
-{% include links.html program="Go" package="dev-lang/go" puncr="," %} or **golang**, is a programming language, initially developed by [Google](https://en.wikipedia.org/wiki/Google) employees, [Robert Griesemer](https://en.wikipedia.org/wiki/Robert_Griesemer), [Rob Pike](https://en.wikipedia.org/wiki/Rob_Pike) and [Ken Thompson](https://en.wikipedia.org/wiki/Ken_Thompson) (one of the original developers of Research Unix at Bell Labs).
+{% include links.html program="Go" package="dev-lang/go" puncr="," %} or **golang**, is a programming language, initially developed by [Google](https://en.wikipedia.org/wiki/Google) employees, [Robert Griesemer](https://en.wikipedia.org/wiki/Robert_Griesemer), [Rob Pike](https://en.wikipedia.org/wiki/Rob_Pike) and [Ken Thompson](https://en.wikipedia.org/wiki/Ken_Thompson) (one of the original developers of Research Unix at Bell Labs). The GCC has a front-end for compiling Go.
 
 ### Groovy
 {% include links.html program="Groovy" package="dev-java/groovy" %} is a programming language that is specifically designed to work on the Java platform, wherein it serves predominantly as a scripting language, that interfaces with Java to modify program behaviour, extract data, *etc.*
@@ -65,7 +65,7 @@ Programs written, predominantly, in it, that I have experience with, include:
 {% include_relative PL/matlab.md %}
 
 ### Objective-C
-{% include links.html program="Objective-C" wp="Objective-C" link="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ProgrammingWithObjectiveC/Introduction/Introduction.html" %} is a programming language that belongs to the C family of programming language and is primarily object-oriented in its paradigm. It is one of the main languages that Apple's OS X is written in.
+{% include links.html program="Objective-C" wp="Objective-C" link="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ProgrammingWithObjectiveC/Introduction/Introduction.html" %} is a programming language that belongs to the C family of programming language and is primarily object-oriented in its paradigm. It is one of the main languages that Apple's OS X is written in. The most popular free Objective-C compiler is probably GCC.
 
 ### Pascal
 **Pascal** is a fairly old programming language, it and its derivatives (like [Object Pascal](https://en.wikipedia.org/wiki/Object_Pascal)) are still widely used today.
