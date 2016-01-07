@@ -21,60 +21,7 @@ This post will compare several different text editors that are available for Sab
 {% include_relative TE/comparisons.md %}
 {% include_relative TE/atom.md %}
 {% include_relative TE/bluefish.md %}
-## Geany
-[caption id="attachment_689" align="alignnone" width="1366"]<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/Geany-1.24.1.png"><img class="size-full wp-image-689" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/Geany-1.24.1.png" alt="Geany 1.24.1 running under Moksha" width="1366" height="740" /></a> <strong>Geany 1.24.1 running under Moksha</strong>[/caption]
-<h2>Background</h2>
-<strong>Geany</strong> is a lightweight GTK+ and Scintilla-based text editor with basic IDE-type features that was originally developed by Enrico Tröger in 2005. It is licensed under GNU GPLv2.
-<h2>Customizability</h2>
-The <code>~/.geany</code> directory is where customizations are kept. This customization can be made with code <a href="http://www.geany.org/Download/Extras">snippets</a> (written in HTML, LaTeX, PHP and Python), <a href="http://www.geany.org/Support/Plugins">plugins</a>, <a href="https://github.com/geany/geany-themes/">themes</a>, <em>etc</em>.
-<h2>Features</h2>
-Geany provides auto-indentation and syntax-highlighting for over a dozen different computer languages. Geany has an embedded terminal emulator. Several extra features can be added to Geany, using plugins.
-<h2>Obtaining it</h2>
-Geany can be easily installed using Entropy or Portage. Using Entropy run:
-<div class="code"><span class="coder">root #</span>  equo i geany</div>
-while to install it using Portage run:
-<div class="code"><span class="coder">root #</span>  emerge -av geany</div>
-The latest version of Geany in the <a href="https://packages.sabayon.org/show/geany,126394,sabayon-weekly,amd64,5,standard" target="_blank">Entropy Store</a> is 1.24.1, while the latest version of Geany as of 24 October 2015 is 1.25 (released July 2015) which is available from the <a href="https://packages.gentoo.org/packages/dev-util/geany" target="_blank">Portage Tree</a>.
-<h2>Disadvantages (Cons)</h2>
-<ul>
-<ul>
-	<li>The list of supported computer languages, for syntax-highlighting and other features is fairly small, compared to Atom, Gedit, GNU Emacs and Vim. See for example, the screenshot below, showing allowed file types.</li>
-</ul>
-</ul>
-<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/Geany-Document-File-Type-Programming-Languages.png"><img class="alignnone size-full wp-image-692" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/Geany-Document-File-Type-Programming-Languages.png" alt="Geany Document-&gt;File Type-&gt;Programming Languages" width="1366" height="740" /></a>
-<ul>
-	<li>The version of Geany in the Entropy Store is not the latest available</li>
-</ul>
-<h2>Advantages (Pros)</h2>
-<ul>
-	<li>It has a few IDE-type features.</li>
-	<li>It is fairly lightweight.</li>
-	<li>It is cross-platform, hence if you switch from Sabayon to another OS fairly frequently, it should not be too difficult to get Geany on said OS.</li>
-	<li>Keyboard shortcuts are fairly intuitive.</li>
-</ul>
-<h2>Ratings</h2>
-<ul>
-	<li><strong>Availability</strong>: 7-8. I am rating it a little lower than 8, as the latest version in the Entropy Store is not the latest, even though the latest has been available for three months, thus far.</li>
-	<li><strong>Beginner-friendliness</strong>: 8. It seems fairly user-friendly, as its keyboard shortcuts are fairly intuitive.</li>
-	<li><strong>Customizability</strong>: 7? My experience with this TE is too limited for me to be confident with this rating.</li>
-	<li><strong>Features</strong>: 8.</li>
-	<li><strong>Popularity</strong>: 5-7.</li>
-	<li><strong>SRU</strong>: 8. <a href="https://packages.sabayon.org/show/geany,126394,sabayon-weekly,amd64,5,standard" target="_blank">Geany 1.24.1</a> is a 3.4 MB download and takes up 9.8 MB HDD space when installed. Here is my <code>ps mem</code> table (remember I have neglected to include the RAM used by the embedded terminal emulator):
-<pre>Private  +   Shared  =  RAM used	Program
-
- 18.5 MiB +   3.1 MiB =  21.6 MiB	geany
----------------------------------
-                         21.6 MiB
-=================================
-</pre>
-</li>
-	<li><strong>Overall</strong>: 8. Seems fairly good.</li>
-</ul>
-<h2>Website(s)</h2>
-<ul>
-	<li><a href="http://geany.org/">Official Website</a></li>
-	<li><a href="http://wiki.geany.org/">Official Wiki</a></li>
-</ul>
+{% include_relative TE/geany.md %}
 ## gedit
 [caption id="attachment_611" align="alignnone" width="1366"]<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/gedit-screenshot-under-Moksha.png"><img class="size-full wp-image-611" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/gedit-screenshot-under-Moksha.png" alt="gedit running under Moksha" width="1366" height="735" /></a> <strong>gedit running under Moksha</strong>[/caption]
 <h2>Background</h2>
