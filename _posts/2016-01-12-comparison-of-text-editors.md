@@ -20,15 +20,15 @@ To search all overlays run:
 This post will compare several different text editors that are available for Sabayon (I know as I have installed them all myself), with respect to several aspects.
 {% include_relative TE/comparisons.md %}
 {% include_relative TE/atom.md %}
-<h1>Bluefish</h1>
-[caption id="attachment_603" align="alignnone" width="1366"]<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/2015-10-19-204920_1366x768_scrot.png"><img class="size-full wp-image-603" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/2015-10-19-204920_1366x768_scrot.png" alt="Figure 2: Bluefish running under LXDE" width="1366" height="741" /></a> <strong>Bluefish running under LXDE</strong>[/caption]
-<h2>Background</h2>
-<strong>Bluefish</strong> is a text editor, primarily intended for web development and programming, as it provides syntax highlighting support and other features mostly for web markup, programming and style sheet languages.
-<h2>Customizability</h2>
+## Bluefish
+{% include image.html image="Bluefish.png" description="Bluefish running under LXDE" width="1130px" float="none" %}
+### Background
+**Bluefish** is a text editor, primarily intended for web development and programming, as it provides syntax highlighting support and other features mostly for web markup, programming and style sheet languages.
+### Customizability
 I have limited experience with Bluefish but from what I can gather, it is customizable, although I cannot comment on how extensive this customizability is.
-<h2>Features</h2>
+### Features
 Syntax highlighting is available for almost (if not all) all computer languages used in web development.
-<h2>Obtaining it</h2>
+### Obtaining it
 It can be installed with Entropy or Portage (and is available in the Portage Tree). With Entropy run:
 <div class="code"><span class="coder">root #</span>  equo i -av app-editors/bluefish</div>
 While to install it with Portage run:
@@ -69,7 +69,7 @@ While to install it with Portage run:
 </ul>
 </li>
 </ul>
-<h1>Geany</h1>
+## Geany
 [caption id="attachment_689" align="alignnone" width="1366"]<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/Geany-1.24.1.png"><img class="size-full wp-image-689" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/Geany-1.24.1.png" alt="Geany 1.24.1 running under Moksha" width="1366" height="740" /></a> <strong>Geany 1.24.1 running under Moksha</strong>[/caption]
 <h2>Background</h2>
 <strong>Geany</strong> is a lightweight GTK+ and Scintilla-based text editor with basic IDE-type features that was originally developed by Enrico Tröger in 2005. It is licensed under GNU GPLv2.
@@ -123,7 +123,7 @@ The latest version of Geany in the <a href="https://packages.sabayon.org/show/ge
 	<li><a href="http://geany.org/">Official Website</a></li>
 	<li><a href="http://wiki.geany.org/">Official Wiki</a></li>
 </ul>
-<h1>gedit</h1>
+## gedit
 [caption id="attachment_611" align="alignnone" width="1366"]<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/gedit-screenshot-under-Moksha.png"><img class="size-full wp-image-611" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/gedit-screenshot-under-Moksha.png" alt="gedit running under Moksha" width="1366" height="735" /></a> <strong>gedit running under Moksha</strong>[/caption]
 <h2>Background</h2>
 <strong>gedit</strong> is a GTK+ based text editor that is one of the core applications of GNOME. In my opinion, it is the second most advanced text editor (after Kate) that is part of a desktop environment's core application suite. It is also more advanced than Windows' Notepad and Wordpad text editors.
@@ -169,7 +169,7 @@ Alternatively to install it using Portage run:
 	<li><a href="https://wiki.gnome.org/Apps/Gedit">gedit article at the GNOME Wiki</a></li>
 	<li><a href="https://help.gnome.org/users/gedit/">gedit User Manual</a></li>
 </ul>
-<h1>GNU Emacs</h1>
+## GNU Emacs
 [caption id="attachment_619" align="alignnone" width="1366"]<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/GNU-Emacs.png"><img class="size-full wp-image-619" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/GNU-Emacs.png" alt="GNU Emacs running under Moksha" width="1366" height="740" /></a> <strong>GNU Emacs running under Moksha</strong>[/caption]
 <h2>Background</h2>
 <strong>GNU Emacs</strong> (<strong>GE</strong>) is an extensively-customizable text editor that is developed by the GNU Project. Its original developer was Richard Stallman, the founder of the GNU Project and its first release was in 1985. It belongs to a family of text editors called Emacs, which are text editors that are extensively customizable for users with sufficient programming knowledge. Emacs is abbreviated from <strong>E</strong>ditor <strong>Mac</strong>ro<b>s</b>, which refers to its origin as editor macros for the TECO text editor, that were developed, in part, by Richard Stallman. GE is written in C and Emacs Lisp (ELisp), a dialect of the Lisp programming language devised just for GE. ELisp is used to write extensions and provide extra functionalities for GE and related text editors like XEmacs.
@@ -220,7 +220,7 @@ Private  +   Shared  =  RAM used	Program
 	<li><a href="http://www.emacswiki.org/emacs/EmacsWiki">Oddmuse-powered Emacs Wiki</a></li>
 	<li><a href="https://www.gnu.org/software/emacs/" target="_blank">Official Webpage</a></li>
 </ul>
-<h1>GNU nano</h1>
+## GNU nano
 [caption id="attachment_642" align="alignnone" width="1366"]<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/GNU-nano-under-LXTerminal.png"><img class="size-full wp-image-642" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/GNU-nano-under-LXTerminal.png" alt="GNU nano running within LXTerminal under Moksha" width="1366" height="740" /></a> <strong>GNU nano 2.4.2 running within LXTerminal under Moksha</strong>[/caption]
 <h2>Background</h2>
 <strong>GNU nano</strong> is a command-line text editor that is developed as part of the GNU Project. Its development began in 1999 by Chris Allegretta, as a free alternative to the proprietary Pico text editor. Later, in 2001, it officially became part of the GNU Project. Several features (like search, search and replace, save, exit, <em>etc.</em>) are accessed using keyboard shortcuts. It can be invoked by running the command "nano" from the command-line. nano can be passed several different options from the command-line, to see a full list see its man page (invoked by running <code>man nano</code> or, if you would prefer to view it in your browser, go <a href="http://www.nano-editor.org/dist/v2.2/nano.1.html">here</a>). Usually when I want to edit a file with nano I simply run <code>nano &lt;FILE&gt;</code> where <code>&lt;FILE&gt;</code> is the file's name (potentially also with its path if it is not in my current directory).
@@ -261,7 +261,7 @@ Private  +   Shared  =  RAM used	Program
 	<li><a href="http://www.nano-editor.org/dist/v2.2/nanorc.5.html" target="_blank">nanorc.5 Man Page (HTML)</a></li>
 	<li><a href="http://www.nano-editor.org/" target="_blank">Official Website</a></li>
 </ul>
-<h1>jEdit</h1>
+## jEdit
 [caption id="attachment_627" align="alignnone" width="1366"]<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/jEdit-screenshot.png"><img class="size-full wp-image-627" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/jEdit-screenshot.png" alt="jEdit 5.2.0 running under Moksha" width="1366" height="740" /></a> <strong>jEdit 5.2.0 running under Moksha</strong>[/caption]
 <h2>Background</h2>
 <strong>jEdit </strong>is a Java-based text editor that began life in 1998, when Slava Pestov started developing it. Pestov later left the project in 2006, when he handed the reigns to the free software community. jEdit provides syntax highlighting for dozens of computer languages so far, and can be customized using scripts written in a variety of different programming languages such as JavaScript and Jython. As it is written in Java it can run on any Java-capable platform, including Sabayon.
@@ -311,7 +311,7 @@ Private  +   Shared  =  RAM used	Program
 	<li><a href="http://sourceforge.net/projects/jedit/" target="_blank">SourceForge Page</a></li>
 	<li><a href="http://www.jedit.org/users-guide/" target="_blank">User's Guide</a></li>
 </ul>
-<h1>Kate/KWrite</h1>
+## Kate/KWrite
 [caption id="attachment_633" align="alignnone" width="1366"]<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/Kate-under-Moksha.png"><img class="size-full wp-image-633" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/Kate-under-Moksha.png" alt="Kate 15.08.1 running under Moksha" width="1366" height="740" /></a> <strong>Kate 15.08.1 running under Moksha</strong>[/caption]
 
 [caption id="attachment_647" align="alignnone" width="1366"]<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/KWrite-15.08.0-under-Moksha.png"><img class="size-full wp-image-647" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/KWrite-15.08.0-under-Moksha.png" alt="KWrite 15.08.0 running under Moksha" width="1366" height="740" /></a> <strong>KWrite 15.08.0 running under Moksha</strong>[/caption]
@@ -375,7 +375,7 @@ Private  +   Shared  =  RAM used	Program
 	<li><a href="http://kate-editor.org/support/">Kate Support</a></li>
 	<li><a href="http://kate-editor.org">Kate/KWrite's Website</a></li>
 </ul>
-<h1>Leafpad</h1>
+## Leafpad
 [caption id="attachment_636" align="alignnone" width="1366"]<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/Leafpad-running-under-Moksha.png"><img class="wp-image-636 size-full" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/Leafpad-running-under-Moksha.png" alt="" width="1366" height="740" /></a> <strong>Leafpad 0.8.18.1 running under Moksha</strong>[/caption]
 <h2>Background</h2>
 <strong>Leafpad</strong> is a lightweight and basic GTK+ based text editor. Its capabilities (or rather lack thereof) are very similar to those of Windows' Notepad.
@@ -420,7 +420,7 @@ Private  +   Shared  =  RAM used	Program
 <ul>
 	<li><a href="http://tarot.freeshell.org/leafpad/">Official Webpage</a></li>
 </ul>
-<h1>Mousepad</h1>
+## Mousepad
 [caption id="attachment_639" align="alignnone" width="1366"]<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/Mousepad-under-Moksha.png"><img class="size-full wp-image-639" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/Mousepad-under-Moksha.png" alt="Mousepad 0.4.0 running under Moksha" width="1366" height="740" /></a> <strong>Mousepad 0.4.0 running under Moksha</strong>[/caption]
 <h2>Background</h2>
 <strong>Mousepad</strong> is a core application of the Xfce desktop environment, that was originally forked from Leafpad. Like Leafpad it is fairly lightweight, but unlike Leafpad, Mousepad can be customized and has a few basic features that are absent from Leafpad, such as syntax highlighting support for a few computer languages.
@@ -467,7 +467,7 @@ Private  +   Shared  =  RAM used	Program
 <ul>
 	<li><a href="http://git.xfce.org/apps/mousepad/">Mousepad's git repository</a> (closest thing it has to an official website)</li>
 </ul>
-<h1>Pluma</h1>
+## Pluma
 [caption id="attachment_649" align="alignnone" width="1366"]<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/Pluma-1.8.1-running-under-Mokhsa.png"><img class="size-full wp-image-649" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/Pluma-1.8.1-running-under-Mokhsa.png" alt="Pluma 1.8.1 running under Moksha" width="1366" height="740" /></a> <strong>Pluma 1.8.1 running under Moksha</strong>[/caption]
 <h2>Background</h2>
 <strong>Pluma</strong> is a fork of gedit 2 created for the MATE desktop environment. It has many of the same features as gedit.
@@ -514,7 +514,7 @@ Private  +   Shared  =  RAM used	Program
 <ul>
 	<li><a href="https://github.com/mate-desktop/pluma">Pluma's GitHub Repository</a></li>
 </ul>
-<h1>SciTE</h1>
+## SciTE
 [caption id="attachment_651" align="alignnone" width="1366"]<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/SciTE-3.6.1-running-under-Moksha.png"><img class="size-full wp-image-651" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/SciTE-3.6.1-running-under-Moksha.png" alt="SciTE 3.6.1 running under Moksha" width="1366" height="740" /></a> <strong>SciTE 3.6.1 running under Moksha</strong>[/caption]
 <h2>Background</h2>
 <strong>SciTE</strong> (abbreviated from <strong>SCi</strong>ntilla based <strong>T</strong>ext <strong>E</strong>ditor) is a Scintilla-based text editor originally developed by Neil Hodgson, that is licensed under a GPL-compatible license. It is a fairly user-friendly text editor, that can be customized and scripted with using Lua. Its syntax-highlighting is based on the contents of the <code>.properties</code> files it loads. SciTE is cross-platform, available on Microsoft Windows and most Linux distributions for free, although for OS X users it is only available for a fee of 41.99 USD.
@@ -561,7 +561,7 @@ To install it with Portage, run:
 <ul>
 	<li><a href="http://www.scintilla.org/SciTE.html" target="_blank">Official Website</a></li>
 </ul>
-<h1>Vim</h1>
+## Vim
 [caption id="attachment_656" align="alignnone" width="1366"]<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/gVim-7.4.827-running-under-Moksha.png"><img class="size-full wp-image-656" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/gVim-7.4.827-running-under-Moksha.png" alt="gVim 7.4.827 running under Moksha" width="1366" height="740" /></a> <strong>gVim 7.4.827 running under Moksha</strong>[/caption]
 <h2>Background</h2>
 <strong>Vim</strong> (short for <strong>Vi</strong>-<strong>IM</strong>proved) is a text editor that was first released in 1991 by Bram Moolenaar, as a clone of Bill Joy's Vi text editor. It and GNU Emacs are seen as the most powerful free text editors available for experienced programmers. Vim is available as a command-line text editor, where users can edit text files from the command-line, or as a graphical text editor (which is called <strong>gVim</strong>). There is also a Qt-based GUI for Vim called Vim-Qt that is available via the Entropy Store. Compared to most text editors, Vim is far less intuitive and has a steep learning curve. For one, its keyboard shortcuts are far from conventional, with <kbd>Ctrl</kbd>+<kbd>C</kbd> for copy, <kbd>Ctrl</kbd>+<kbd>V</kbd> for paste, <em>etc.</em> not being available. Vim also has its own scripting language (Vim script) for adding functionalities to it.
@@ -622,7 +622,7 @@ Private  +   Shared  =  RAM used	Program
 	<li><a href="https://wiki.gentoo.org/wiki/Vim" target="_blank">Gentoo Wiki Article</a></li>
 	<li><a href="http://www.vim.org/">Vim Home Page</a></li>
 </ul>
-<h1>Poll</h1>
+## Poll
 [socialpoll id="2300580"]
-<h1>Comparison of SRU of the various Text Editors</h1>
+## Comparison of SRU of the various Text Editors
 <a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/TextEditors.png"><img class="alignnone size-full wp-image-694" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/TextEditors.png" alt="TextEditors" width="1287" height="508" /></a>
