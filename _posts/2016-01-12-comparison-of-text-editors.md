@@ -30,19 +30,15 @@ I have limited experience with Bluefish but from what I can gather, it is custom
 Syntax highlighting is available for almost (if not all) all computer languages used in web development.
 ### Obtaining it
 It can be installed with Entropy or Portage (and is available in the Portage Tree). With Entropy run:
-<div class="code"><span class="coder">root #</span>  equo i -av app-editors/bluefish</div>
+{% include coder.html line1="equo i -av app-editors/bluefish" %}
 While to install it with Portage run:
-<div class="code"><span class="coder">root #</span>  emerge -av app-editors/bluefish</div>
-<h2>Advantages (Pros)</h2>
-<ul>
-	<li>Customizable</li>
-	<li>Has features that would appeal to a web developer</li>
-</ul>
-<h2>Disadvantages (Cons)</h2>
-<ul>
-	<li>?</li>
-</ul>
-<h2>Ratings</h2>
+{% include coder.html line1="emerge -av app-editors/bluefish" %}
+### Advantages (Pros)
+* Customizable
+* Has features that would appeal to a web developer
+### Disadvantages (Cons)
+* ?
+### Ratings
 <ul>
 	<li><strong>Availability</strong>: &gt;8. Available in the Entropy Store and from Portage</li>
 	<li><strong>Beginner-friendliness</strong>: &gt;4. Its keyboard shortcuts are intuitive (e.g., <kbd>Ctrl</kbd>+<kbd>C</kbd> to copy), behind this my experience with it is not extensive enough for me to comment.</li>
