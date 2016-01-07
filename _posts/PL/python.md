@@ -51,3 +51,6 @@ mathematics software in a single command-line and notebook interface, with inter
 <li>{{ point9 | markdownify }}</li>
 <li>{{ point10 | markdownify }}</li>
 </ul>
+
+Bash, MATLAB/GNU Octave and Python, in order from most to least experience, are the languages I have the most experience with. Here is an example Python script I have written, with some help from the work of others, to solve and plot the solution to the Lorenz equations. If you would like to see the Python scripts I have written see [this repository](https://github.com/fusion809/python-scripts).
+{% include_relative PL/python-scripts.html %}
