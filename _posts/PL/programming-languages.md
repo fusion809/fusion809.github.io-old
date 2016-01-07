@@ -59,7 +59,10 @@ Another feature of programming languages that can be used to categorize them, th
 {% include links.html program="Objective-C" wp="Objective-C" link="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ProgrammingWithObjectiveC/Introduction/Introduction.html" %} is a programming language that belongs to the C family of programming language and is primarily object-oriented in its paradigm. It is one of the main languages that Apple's OS X is written in. The most popular free Objective-C compiler is probably GCC.
 
 ### Pascal
-**Pascal** is a fairly old programming language, it and its derivatives (like [Object Pascal](https://en.wikipedia.org/wiki/Object_Pascal)) are still widely used today.
+**Pascal** is a fairly old programming language, it and its derivatives (like {% include wp.md name="Delphi" cat="programming_language" %} and {% include wp.md name="Object Pascal" puncr=")" %} are still widely used today. Programs written, predominantly, in Pascal and its simple descendants include (in brackets is the specific programming language each are written in):
+* {% include wp.md name="Dev-C++" %} (Delphi)
+* {% include wp.md name="Dev-Pascal" %} (Delphi)
+Very few are written, predominantly, in Pascal itself, the only program I recognize that I have been able to find that is written, even in part, in Pascal is {% include wp.md name="MiKTeX" %} (a Windows program for writing LaTeX documents) and C, C++ make up most of its source code. 
 
 ### Perl
 {% include links.html program="Perl" package="dev-lang/perl" category="dev-perl" %} is a family of interpreted scripting languages, the most notable members are Perl 5 and Perl 6. It was originally developed for the purpose of automating reporting tasks on &#42;nix systems in 1987. It is licensed under GNU GPL. The only program I have personal experience with that is written mostly in Perl is the [RuneScape Unix Client](https://github.com/HikariKnight/rsu-client) (RSU).
