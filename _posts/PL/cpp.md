@@ -4,11 +4,12 @@
 * {% include wp.md name="Advanced Packaging Tool" %} (APT)[^4], the default package manager of Debian and its derivatives like Ubuntu.
 * {% include wp.md name="Avidemux" %}, a free and open-source video-editing program.
 * {% include wp.md name="Avogadro" cat="software" %}, a free and open-source molecule editor and cheminformatics program.
-* {% include wp.md name="Chromium" cat="web browser" %}, a free and open-source web browser that's source code is used as the basis for the proprietary Google Chrome web browser.
+* {% include wp.md name="Chromium" cat="web browser" %}, a free and open-source web browser that's source code is used as the basis for the proprietary-licensed Google Chrome web browser.
 * {% include wp.md name="FBReader" %}, a free and open-source document viewer.
 * {% include wp.md name="FileZilla" %}, a free and open-source FTP client.
 * {% include wp.md name="Firefox" %}, a free and open-source web browser created by the Mozilla Foundation, that is amongst the most popular on the market.
 * {% include wp.md name="Fluxbox" %}, a free and open-source window manager for the X windowing system.
+* {% include wp.md name="Google Chrome" %}, a freeware web browser, based on Chromium.
 * {% include wp.md name="Inkscape" %}, a free and open-source vector graphics editing program.
 * {% include wp.md name="MariaDB" %}, a free and open-source fork of MySQL, developed due to fears that MySQL may not be forever free.[^5]
 * {% include wp.md name="MySQL" %}, a free and open-source relational database management system (RDBMS).[^6]
