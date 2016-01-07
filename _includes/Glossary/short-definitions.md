@@ -15,8 +15,6 @@
   * <b>C</b>ommand-<b>l</b>ine <b>i</b>nterface<b>s</b>.
 * **GUIs**
   * <b>G</b>raphical <b>u</b>ser <b>i</b>nterface<b>s</b>.
-* **IDE**
-  * <b>I</b>ntegrated <b>D</b>evelopment <b>E</b>nvironment.
 * **IDEs**
   * <b>I</b>ntegrated <b>D</b>evelopment <b>E</b>nvironment<b>s</b>.
 * **LD**

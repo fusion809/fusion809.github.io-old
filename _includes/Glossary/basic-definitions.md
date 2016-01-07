@@ -11,5 +11,8 @@ A [**graphical user interface**](https://en.wikipedia.org/wiki/Graphical_user_in
 #### Hardware
 [**Computer hardware**](https://en.wikipedia.org/wiki/Computer_hardware) consists of the physical or tangible components of a computer, including its [**hard disk drive**](https://en.wikipedia.org/wiki/Hard_disk_drive) (**HDD**, or simply **hard drive**), [**central processing unit**](https://en.wikipedia.org/wiki/Central_processing_unit) (**CPU**), [**graphics card**](https://en.wikipedia.org/wiki/Video_card), *etc.*
 
+#### Integrated Development Environment
+An <b>{% include wp.md name="Integrated Development Environment" %}</b> is a program that provides users, supposedly comprehensive, facilities for software development. I used the word "<i>supposedly</i>", to draw attention to the fact that the definition of comprehensive does vary quite substantially from IDE to IDE. 
+
 #### Software
 [**Software**](https://en.wikipedia.org/wiki/Software) are the non-physical or tangible components of a computer, specifically data stored on a computer's hard drive, computer programs (e.g., the web browser you are using to view this blog post), software libraries, *etc.*
