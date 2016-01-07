@@ -22,7 +22,7 @@ As is mentioned in the [About Me](/about-me/) section of this website, I have tr
 
 {% include_relative OS/oslist.html %}
 
-{% include glossary.md %}
+{% include Glossary/glossary.md %}
 {% capture post %}
 {% include_relative OS/programming_language.md %}
 
