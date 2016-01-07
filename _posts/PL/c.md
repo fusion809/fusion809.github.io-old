@@ -5,6 +5,8 @@ Programs written, predominantly, in it, that I have experience with, include:
 * {% include wp.md name="Bash" %} &mdash; the Unix shell is predominantly written in C.
 * {% include wp.md name="dpkg" %} (dpkg)[^1], the default package manager of Debian and its derivatives like Ubuntu.
 * {% include wp.md name="FreeBSD" %} &mdash; the Unix-like operating system, is predominantly written in C.
+* {% include wp.md name="GIMP" %} &mdash; a free and open-source photo-editing program, with similar features to Adobe Photoshop.
+{% include image.html image="GIMP-2.8-editing.png" width="1100px" float="none" %}
 * {% include wp.md name="GNU Coreutils" %} &mdash; the command-line utilities package for &#43;nix systems is written predominantly in C.
 * {% include wp.md name="GTK+" %} or the GIMP Toolkit &mdash; is a free widget toolkit developed for use by the GNOME desktop environment.
 * {% include wp.md name="Linux kernel" %} &mdash; the kernel of Linux operating systems.
