@@ -52,12 +52,11 @@ Atom has plugins for syntax highlighting and auto-indentation of most major comp
 * R
 * SageMath
 * Scilab
-* Shell script, including Bash and Zsh.
+* Shell script
 * XML
 and several others. It also has packages that provide other features, including previews for markup languages such as HTML and markdown, an in-built terminal, *etc.*
 ### Obtaining it
-<div style="padding: 1px; border: 2px solid #ffa0a0; background-color: #ffa0a0;"><strong><em>Main Post</em></strong>: <a href="http://linux.x10host.com/blog/index.php/2015/09/14/installing-atom-on-sabayon-linux/">Installing Atom on Sabayon</a>.</div>
-Atom can be installed via two major methods: either adding an overlay with Layman that contains an Atom ebuild and then installing this package with Portage or manually building the program from source code. I usually prefer the manual route as any momentary glitch in your internet connection can easily stuff up an Portage build, while with a manual build it is no big deal if it does as you can just re-run <code>script/build</code> and then proceed with the installation as usual. If you would rather install Atom from a binary package (experimental) go to <a href="https://github.com/fusion809/sabayon-tools" target="_blank">this GitHub repository</a> and see the instructions there.
+Atom can be installed via three major methods on Sabayon: adding an overlay with Layman that contains an Atom ebuild and then installing this package with Portage or manually building the program from source code or via installing it using Entropy. I usually prefer the manual route as any momentary glitch in your internet connection can easily stuff up an Portage build, while with a manual build it is no big deal if it does as you can just re-run <code>script/build</code> and then proceed with the installation as usual. If you would rather install Atom from a binary package (experimental) go to <a href="https://github.com/fusion809/sabayon-tools" target="_blank">this GitHub repository</a> and see the instructions there.
 <h2>Disadvantages (Cons)</h2>
 <ul>
 	<li>Slow to start</li>
