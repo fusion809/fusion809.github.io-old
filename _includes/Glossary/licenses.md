@@ -9,7 +9,7 @@
 [**Freeware**](https://en.wikipedia.org/wiki/Freeware), refers to software that is licensed under a proprietary license (hence meaning it is **not** open-source), but available free of charge. Notable examples include Google Chrome and Spotify, as while they are free, you are not free to access, modify and redistribute their source code.
 
 #### Open-Source Software
-[**Open-source software**](https://en.wikipedia.org/wiki/Open-source_software) (OSS) refers to any piece of software that's source code is freely shared and licensed, so that anyone with the inclination and/or the skill can look at, modify, redistribute, *etc.* the source code without fear of being justly called or even charged as a pirate, provided they abide by the terms of the source code's license.
+[**Open-source software**](https://en.wikipedia.org/wiki/Open-source_software) (**OSS**) refers to any piece of software that's source code is freely shared and licensed, so that anyone with the inclination and/or the skill can look at, modify, redistribute, *etc.* the source code without fear of being justly called or even charged as a pirate, provided they abide by the terms of the source code's license.
 
 #### Permissive License
 [**Permissive licenses**](https://en.wikipedia.org/wiki/Permissive_license) are FOSS licenses that do not require that derivatives of the software licensed under their terms be released under similar FOSS licenses. Popular examples of permissive licenses include the various BSD licenses and the MIT License.
