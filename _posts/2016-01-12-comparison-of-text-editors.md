@@ -60,6 +60,14 @@ Alternatively to install it using Portage run:
                          26.7 MiB
 =================================
 </pre>
+on Manjaro Linux version 3.18.2 of gedit gave this <code>ps_mem</code> table:
+<pre> Private  +   Shared  =  RAM used	Program
+
+ 14.6 MiB +   1.7 MiB =  16.3 MiB	gedit
+---------------------------------
+                         16.3 MiB
+=================================
+</pre>
 </li>
 	<li><strong>Overall</strong>: 8.</li>
 </ul>
