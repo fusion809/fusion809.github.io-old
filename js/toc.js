@@ -219,4 +219,11 @@ $(document).ready(function() {
       this.id = 'table-' + counter;
     }
   );
+
+  $('div.gist').each(
+    function() {
+      ++counter;
+      this.id = 'gist-' + counter;
+    }
+  );
 });

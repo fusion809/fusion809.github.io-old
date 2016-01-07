@@ -21,19 +21,9 @@ Another feature of programming languages that can be used to categorize them, th
 ### Bash
 {% include links.html package="app-shells/bash" program="Bash" category="dev-bash" %} is the most commonly-encountered Unix shell and command language. Few have compared its speed to other programming languages, hence I cannot provide an average for it. Despite this I know that for most things it is considered slower than Python. Most code written for Bash should also be compatible with Zsh, although whether it is compatible with the syntax of other Unix shells is something I cannot comment on. The programming language of Unix shells is usually called shell script. For an introduction to the Bash syntax, see [*An Introduction to Bash Scripting for Sabayon Users*](/bash-scripting-and-the-command-line-an-introduction-for-sabayon-users/). Due to the fact it is a Unix shell, it is not considered cross-platform.
 
-### C
-**C** was originally developed for use by Research Unix, by Dennis Ritchie (1941-2011), while he was working at Bell Labs. Since then it has become one of the most widely-used programming languages in the world. The reason for this is several fold, *firstly*, it is cross-platform and able to run on most, if not all, computing platforms, *secondly*, it is fast and *thirdly*, it is powerful, giving developers complete control over their program. It was originally considered high-level, but it has since become considered low-level, and its low-level nature is best illustrated by the fact that developers have to allocate memory to their program manually. The most popular free compiler of C is the GCC.
+{% include_relative PL/c.md %}
 
-Programs written, predominantly, in it, that I have experience with, include:
-* {% include wp.md name="Bash" %} &mdash; the Unix shell is predominantly written in C.
-* {% include wp.md name="FreeBSD" %} &mdash; the Unix-like operating system, is predominantly written in C.
-* {% include wp.md name="GNU Coreutils" %} &mdash; the command-line utilities package for &#43;nix systems is written predominantly in C.
-* {% include wp.md name="GTK+" %} or the GIMP Toolkit &mdash; is a free widget toolkit developed for use by the GNOME desktop environment.
-* {% include wp.md name="Linux kernel" %} &mdash; the kernel of Linux operating systems.
-* {% include wp.md name="VLC media player" %} (71.2% C, 17.7% C++, 6.7% Objective-C, 1.3% Lua, *etc.* according to GitHub[^1])
-
-### C++
-**C++** (pronounced *See-plus-plus*) is a programming language that was originally developed by Bjarne Stroustrup (1950-) while he was working at Bell Labs. Stroustrup wanted a programming language with similar features and speed to C, except with greater support for additional programming paradigms as well as some extra high-level features. Its most popular free compiler is probably the GCC too.
+{% include_relative PL/cpp.md %}
 
 ### C Sharp
 {% include note.md note1="The use of the name <b>C Sharp</b>, is because of technical restrictions, the correct name is C#" %}
@@ -95,3 +85,5 @@ Programs written, predominantly, in it, that I have experience with, include:
 [1]: http://www.tiobe.com/index.php/content/paperinfo/tpci/index.html
 [^1]: [videolan/vlc](https://github.com/videolan/vlc) (5 Jan 2015).
 [^2]: [fusion809/octave-src](https://github.com/fusion809/octave-src) (6 Jan 2015)
+[^3]: [Debian/apt](https://github.com/Debian/apt) (7 Jan 2015)
+[^4]: [endlessm/dpkg](https://github.com/endlessm/dpkg) (7 Jan 2015)
