@@ -83,7 +83,8 @@ Another feature of programming languages that can be used to categorize them, th
 **Visual Basic** and its descendents [Visual Basic for Applications](https://en.wikipedia.org/wiki/Visual_Basic for_Applications) (VBA) and [Visual Basic .NET](https://en.wikipedia.org/wiki/Visual_Basic_.NET), are programming languages that are usually used for developing GUIs.
 
 [1]: http://www.tiobe.com/index.php/content/paperinfo/tpci/index.html
-[^1]: [videolan/vlc](https://github.com/videolan/vlc) (5 Jan 2015).
-[^2]: [fusion809/octave-src](https://github.com/fusion809/octave-src) (6 Jan 2015)
-[^3]: [Debian/apt](https://github.com/Debian/apt) (7 Jan 2015)
-[^4]: [endlessm/dpkg](https://github.com/endlessm/dpkg) (7 Jan 2015)
+[^1]: [endlessm/dpkg](https://github.com/endlessm/dpkg) (7 Jan 2016)
+[^2]: [videolan/vlc](https://github.com/videolan/vlc) (5 Jan 2016).
+[^3]: [fusion809/octave-src](https://github.com/fusion809/octave-src) (6 Jan 2016)
+[^4]: [Debian/apt](https://github.com/Debian/apt) (7 Jan 2016)
+[^5]: [openSUSE/zypper](https://github.com/openSUSE/zypper) (7 Jan 2016)
