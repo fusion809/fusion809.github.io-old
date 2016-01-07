@@ -12,6 +12,7 @@ Another feature of programming languages that can be used to categorize them, th
 
 {% include_relative PL/table1-comparison-of-common-programming-languages.html %}
 
+## Specifics on Common Languages
 ### Ada
 {% include links.html program="Ada" category="dev-ada" %} is a high-level programming language that supports multiple paradigms and is descended from Pascal. The most popular free compiler for Ada is {% include links.html program="GNAT" package="dev-lang/gnat-gcc" wp="GNAT" puncr="," %} a front-end of the **GNU Compiler Collection** (**GCC**).
 
@@ -47,7 +48,7 @@ Another feature of programming languages that can be used to categorize them, th
 **JavaScript** (**JS**) is a cross-platform web-oriented programming language that is used primarily for the purpose of controlling the behaviour of web pages. Despite this it can be used for non-web applications. For example, the text editor I am using to write this blog post, [Atom](https://atom.io), is written predominantly in JavaScript and its close lesser-used relative, CoffeeScript. JavaScript was also used to write extensions for the Deepin Desktop Environment. Despite being an interpreted language it is usually rated as one of the fastest high-level programming languages around.
 
 ### Lisp
-{% include links.html program="Lisp" category="dev-lisp" %} is a family of programming languages that are second only to Fortran for the title of being the eldest high-level programming languages. Notable members include the {% include wp.md name="Common Lisp" %} and {% include wp.md name="Emacs Lisp" puncr="," %} the latter of which is used by {% include wp.md name="GNU Emacs" %} and other Emacs text editors. GNU Emacs is written predominantly in Emacs Lisp, with most of the remainder being written in C. Maxima is also written mostly in Common Lisp.
+{% include links.html program="Lisp" category="dev-lisp" %} is a family of programming languages that are second only to Fortran for the title of being the eldest high-level programming languages. Notable members include the {% include wp.md name="Common Lisp" %} and {% include wp.md name="Emacs Lisp" puncr="," %} the latter of which is used by {% include wp.md name="GNU Emacs" %} and other Emacs text editors. GNU Emacs is written predominantly in Emacs Lisp, with most of the remainder of its source code being written in C. Maxima is also written mostly in Common Lisp.
 
 ### Lua
 {% include links.html program="Lua" package="dev-lang/lua" category="dev-lua" %} is a lightweight programming language that is primarily used for scripting in web development applications. The two examples of its use that I have come across, personally (out of the hundreds out there), are its use to improve the efficiency of MediaWiki templates using the [Scribunto extension](https://www.mediawiki.org/wiki/Extension:Scribunto) and its use by the [Awesome Window Manager](https://en.wikipedia.org/wiki/Awesome_(window_manager)) (where it is used to extend functionality).
@@ -87,4 +88,5 @@ Another feature of programming languages that can be used to categorize them, th
 [^2]: [videolan/vlc](https://github.com/videolan/vlc) (5 Jan 2016).
 [^3]: [fusion809/octave-src](https://github.com/fusion809/octave-src) (6 Jan 2016)
 [^4]: [Debian/apt](https://github.com/Debian/apt) (7 Jan 2016)
-[^5]: [openSUSE/zypper](https://github.com/openSUSE/zypper) (7 Jan 2016)
+[^5]: [mysql/mysql-server](https://github.com/mysql/mysql-server) (7 Jan 2016)
+[^6]: [openSUSE/zypper](https://github.com/openSUSE/zypper) (7 Jan 2016)
