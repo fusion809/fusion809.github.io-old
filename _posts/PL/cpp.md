@@ -10,8 +10,9 @@
 * {% include wp.md name="Firefox" %}, a free and open-source web browser created by the Mozilla Foundation, that is amongst the most popular on the market.
 * {% include wp.md name="Fluxbox" %}, a free and open-source window manager for the X windowing system.
 * {% include wp.md name="Inkscape" %}, a free and open-source vector graphics editing program.
-* {% include wp.md name="MySQL" %}, a free and open-source relational database management system (RDBMS).[^5]
+* {% include wp.md name="MariaDB" %}, a free and open-source fork of MySQL, developed due to fears that MySQL may not be forever free.[^5]
+* {% include wp.md name="MySQL" %}, a free and open-source relational database management system (RDBMS).[^6]
 * {% include wp.md name="Opera" cat="software" %}, a free and open-source web browser.
 * {% include wp.md name="Qt" cat="software" %} (Qt), a widget toolkit that has both a freely- (LGPL/GPL-licensed) and a proprietary-licensed version available. Its free version is used as the default widget toolkit of Deepin Desktop Environment, Hawaii, KDE, LXQt, *etc.* and several other free desktop environments for &#42;nix systems including FreeBSD and Linux.
 * {% include wp.md name="UNetbootin" %}, a free and open-source cross-platform program used to create live USBs.
-* {% include wp.md name="ZYpp" %} (`zypper` from the command-line)[^6], the default command-line package manager of openSUSE and derivatives.
+* {% include wp.md name="ZYpp" %} (`zypper` from the command-line)[^7], the default command-line package manager of openSUSE and derivatives.

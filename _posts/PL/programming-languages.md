@@ -88,5 +88,6 @@ Another feature of programming languages that can be used to categorize them, th
 [^2]: [videolan/vlc](https://github.com/videolan/vlc) (5 Jan 2016).
 [^3]: [fusion809/octave-src](https://github.com/fusion809/octave-src) (6 Jan 2016)
 [^4]: [Debian/apt](https://github.com/Debian/apt) (7 Jan 2016)
-[^5]: [mysql/mysql-server](https://github.com/mysql/mysql-server) (7 Jan 2016)
-[^6]: [openSUSE/zypper](https://github.com/openSUSE/zypper) (7 Jan 2016)
+[^5]: [MariaDB/server](https://github.com/mariadb/server) (7 Jan 2016)
+[^6]: [mysql/mysql-server](https://github.com/mysql/mysql-server) (7 Jan 2016)
+[^7]: [openSUSE/zypper](https://github.com/openSUSE/zypper) (7 Jan 2016)
