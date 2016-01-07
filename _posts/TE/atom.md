@@ -31,7 +31,9 @@ Atom has plugins for syntax highlighting and auto-indentation of most major comp
 * XML
 and several others. It also has packages that provide other features, including previews for markup languages such as HTML and markdown, an in-built terminal, *etc.*
 ### Obtaining it
-Atom can be installed via three major methods on Sabayon: adding an overlay with Layman that contains an Atom ebuild and then installing this package with Portage or manually building the program from source code or via installing it using Entropy. I usually prefer the manual route as any momentary glitch in your internet connection can easily stuff up an Portage build, while with a manual build it is no big deal if it does as you can just re-run `script/build` and then proceed with the installation as usual. If you would rather install Atom from a binary package (experimental) go to [this GitHub repository](https://github.com/fusion809/sabayon-tools) and see the instructions there.
+Atom can be installed via three major methods on Sabayon: adding an overlay with Layman that contains an Atom ebuild and then installing this package with Portage or manually building the program from source code or via installing it using Entropy. I usually prefer to install using Entropy, via issuing the command:
+{% include coder.html line1="equo i app-editors/atom" %}
+If, the version of Atom in the Entropy repositories are vastly out-of-date I usually use the ebuild in my overlay, `sabayon-tools` to install it. The advantage of my ebuild over other ebuilds (including the one in the `sabayon` overlay, which I too help mantain) is that if you experience any momentary disruption of your Internet connection the other ebuilds may fail and you will have to start the build from the beginning again, while my ebuild will keep will not. This is unless the glitches in your Internet connection are so great in number or length that it overwhelms my ebuild. 
 ### Disadvantages (Cons)
 * Slow to start
 * Must be installed via one of two fairly error-prone methods, or a third experimental method.
