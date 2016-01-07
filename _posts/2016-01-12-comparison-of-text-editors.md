@@ -20,35 +20,9 @@ To search all overlays run:
 This post will compare several different text editors that are available for Sabayon (I know as I have installed them all myself), with respect to several aspects.
 ## Comparisons
 An ideal or perfect text editor would be one with the following features:
-<ul>
-	<li><strong>Syntax highlighting</strong> for every computer language available (computer language includes programming languages (such as C, C++, JavaScript, Lua, Python, <em>etc.</em>), markup languages (such as HTML), style sheet languages (like CSS), <em>etc.</em>)</li>
-	<li>Be <strong>extensively customizable</strong> (or some would say "hackable"), with user-supplied scripts and style sheets.</li>
-	<li>Be <strong>accessible</strong> to <strong>inexperienced users</strong> and <strong>experienced users </strong>alike.</li>
-	<li>Be <strong>free and open-source</strong> (licensed under either a permissive (e.g., MIT) or copyleft (e.g., GNU GPL) license).</li>
-	<li>Be able to run on any <strong>operating system platform</strong>.</li>
-	<li>Has <strong>keyboard shortcuts</strong> (such as <kbd>Ctrl</kbd>+<kbd>C</kbd> for copy or <kbd>Ctrl</kbd>+<kbd>V</kbd> for paste) that are intuitive and easily editable.</li>
-	<li>Be <strong>fast</strong> to <strong>start </strong>and use minimal system resources to run.</li>
-	<li>Be <strong>stable</strong>, not likely to <strong>crash</strong> or experience other bugs. As part of this, the text editor should also have a community of developers to help with rapid and effective troubleshooting whenever an issue arises.</li>
-</ul>
+{% include_relative TE/features.html %}
 In line with this, each section in which I discuss a particular text editor (TE) will have the following sections:
-<ul>
-	<li><strong>Background</strong>: relevant history and technical details of the TE.</li>
-	<li><strong>Customizability</strong>: How customizable is the TE. Are there themes, plugins, extensions, <em>etc.</em> available for the TE?  Is it possible to customize the TE with user-supplied scripts.</li>
-	<li><strong>Features</strong>: What other features does the TE have? Like how many different computer languages does it offer syntax highlighting and auto-indentation for.</li>
-	<li><strong>Obtaining it</strong>: how can one get the TE on Sabayon?</li>
-	<li><strong>Advantages (Pros)</strong>/<strong>Disadvantages (Cons)</strong>: this is where I will summarize the positive and negative points of the previous sections as well as discuss how easy it is to use the TE.</li>
-	<li><strong>Ratings</strong>: this is where I provide a numerical rating for each of the following points (from 0 to 10, 0 being awful/non-existent, 10 being perfect):
-<ul>
-	<li><strong>Availability</strong>: how easy it is to get the TE on Sabayon. A score of 10 would mean that the text editor is pre-installed on a default Sabayon installation. While a score of 8 would mean that it is possible to install the package quite easily with Entropy.</li>
-	<li><strong>Beginner-friendliness</strong>: how steep is the learning curve of using this TE? That is, how difficult would it be for me, a non-programmer, to get to know this TE enough to write scripts in it, within an hour of first trying it?</li>
-	<li><strong>Customizability</strong>: how easily and extensively customizable the TE is.</li>
-	<li><strong>Features</strong>: how extensive is the TE's syntax-highlighting cover of computer languages (that is, what proportion of computer languages can the TE do syntax highlighting for?). Does the TE also have IDE-type features such as in-built Python terminal, or shell terminal, <em>etc?</em></li>
-	<li><strong>Popularity</strong>: how popular is this TE amongst Sabayon users? According to <a href="https://www.opinionstage.com/polls/2300580" target="_blank">this poll</a>. I will use just a numerical rating, as I expect this poll will likely get a few extra votes while I am writing this post.</li>
-	<li><strong>System resource usage</strong> (<strong>SRU</strong>): how much CPU/RAM does this TE use? How much disk space does it take up? How much brandwidth is taken up downloading it? Yet again I will be using ps mem to assess RAM usage.</li>
-	<li><strong>Overall</strong>: overall how satisfied am I with this TE?</li>
-</ul>
-</li>
-</ul>
+{% include_relative TE/structure.html %}
 <h1>Atom</h1>
 [caption id="attachment_557" align="alignnone" width="1366"]<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/Atom-functions.php-running-under-Moksha.png"><img class="wp-image-557 size-full" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/Atom-functions.php-running-under-Moksha.png" alt="Atom on Sabayon Linux, showing syntax highlighting of a PHP script" width="1366" height="734" /></a> <strong>Atom on Sabayon Linux, showing syntax highlighting of a PHP script</strong>[/caption]
 <h2>Background</h2>
