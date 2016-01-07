@@ -7,7 +7,7 @@ redirect_from:
       - /comparison-of-text-editors/
 ---
 {% include draft.html %}
-{% include image.html image="Atom-1.3.2.png" width="1130px" float="none" description="Atom 1.3.2 running under the Deepin Desktop Environment" %}
+{% include image.html image="Atom-1.3.2.png" width="1130px" float="none" description="Atom 1.3.2 running under the Deepin Desktop Environment (DDE)" %}
 
 **Text editors** are essential programs for software developers and programmers in general, as they enable users to write and edit source code files. They are popular tools used by both experienced and novice Linux users. In this post I will compare the various text editors available for Sabayon, with regard to several features and properties of each. It is important to note that I am not a programmer, my experience with programming is limited to mostly MATLAB/GNU Octave scripts, a small handful of Python scripts I wrote for technical computing (that is, numerical analysis) and a few bash scripts I have written to make my life easier, when I use Linux systems.
 
@@ -23,43 +23,39 @@ An ideal or perfect text editor would be one with the following features:
 {% include_relative TE/features.html %}
 In line with this, each section in which I discuss a particular text editor (TE) will have the following sections:
 {% include_relative TE/structure.html %}
-<h1>Atom</h1>
-[caption id="attachment_557" align="alignnone" width="1366"]<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/Atom-functions.php-running-under-Moksha.png"><img class="wp-image-557 size-full" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/Atom-functions.php-running-under-Moksha.png" alt="Atom on Sabayon Linux, showing syntax highlighting of a PHP script" width="1366" height="734" /></a> <strong>Atom on Sabayon Linux, showing syntax highlighting of a PHP script</strong>[/caption]
-<h2>Background</h2>
-<strong>Atom</strong> is a free and open-source (licensed under MIT) text editor developed by GitHub, Inc. Its first public release was in 2014, although its first stable release (1.0 release) was not until June 2015. It is unique amongst the text editors listed here in a few different ways, firstly, its target audience is very wide with it being designed to be usable for inexperienced programmers as well as seasoned programmers and software developers. Secondly, it is written in CoffeeScript, HTML, JavaScript and Less — computer languages usually used to write web pages.
-<h2>Customizability</h2>
-Atom is very customizable, via several themes and plugins that can be installed from the command-line, using the command
-<div class="code"><span class="codeu">user $</span>  apm install &lt;PACKAGE&gt;</div>
-or from within Atom itself. I personally prefer the command-line, as I have had some bad experiences with the built-in installer. From the command-line the command for installing new themes or plugins is:
-<div class="code"><span class="codeu">user $</span>  apm install &lt;PACKAGE&gt;</div>
-where &lt;PACKAGE&gt; is the plugin/theme's name. Customizations, including plugins and themes are stored in <code>~/.atom. </code>Advanced customization (for example, of keyboard shortcuts) must be done by directly editing files in this directory. For example, in order to edit your keyboard shortcuts you need to edit <code>~/.atom/keymap.cson</code>.
-<h2>Features</h2>
+## Atom
+{% include image.html image="Atom-1.3.2.png" width="1130px" float="none" description="Atom 1.3.2 running under DDE" %}
+### Background
+**Atom** is a free and open-source (licensed under MIT) text editor developed by GitHub, Inc. Its first public release was in 2014, although its first stable release (1.0 release) was not until June 2015. It is unique amongst the text editors listed here in a few different ways, firstly, its target audience is very wide with it being designed to be usable for inexperienced programmers as well as seasoned programmers and software developers. Secondly, it is written in CoffeeScript, HTML, JavaScript and Less — computer languages usually used to write web pages.
+### Customizability
+Atom is very customizable, via several themes and plugins that can be installed from the command-line, using the `apm` command, or from within Atom itself. I personally prefer the command-line, as I have had some bad experiences with the built-in installer. From the command-line the command for installing new themes or plugins is:
+{% include codeu.html line1="apm install &lt;PACKAGE&gt;" %}
+where &lt;PACKAGE&gt; is the plugin/theme's name. Customizations, including plugins and themes are stored in `~/.atom`. Advanced customization (for example, of keyboard shortcuts) must be done by directly editing files in this directory. For example, in order to edit your keyboard shortcuts you need to edit `~/.atom/keymap.cson`.
+### Features
 Atom has plugins for syntax highlighting and auto-indentation of most major computer languages including:
-<ul>
-	<li>Ada</li>
-	<li>C</li>
-	<li>C#</li>
-	<li>C++</li>
-	<li>CoffeeScript</li>
-	<li>CSS</li>
-	<li>Fortran</li>
-	<li>GNU Octave/MATLAB</li>
-	<li>HTML</li>
-	<li>Java</li>
-	<li>JavaScript</li>
-	<li>Less</li>
-	<li>Lua</li>
-	<li>MediaWiki</li>
-	<li>PyMOL</li>
-	<li>Python</li>
-	<li>R</li>
-	<li>SageMath</li>
-	<li>Scilab</li>
-	<li>Shell script, including Bash and Zsh.</li>
-	<li>XML</li>
-</ul>
-and several others. It also has packages that provide other features, including previews for markup languages such as HTML and markdown, an in-built terminal, <em>etc.</em>
-<h2>Obtaining it</h2>
+* Ada
+* C
+* C#
+* C++
+* CoffeeScript
+* CSS
+* Fortran
+* GNU Octave/MATLAB
+* HTML
+* Java
+* JavaScript
+* Less
+* Lua
+* MediaWiki markup
+* PyMOL
+* Python
+* R
+* SageMath
+* Scilab
+* Shell script, including Bash and Zsh.
+* XML
+and several others. It also has packages that provide other features, including previews for markup languages such as HTML and markdown, an in-built terminal, *etc.*
+### Obtaining it
 <div style="padding: 1px; border: 2px solid #ffa0a0; background-color: #ffa0a0;"><strong><em>Main Post</em></strong>: <a href="http://linux.x10host.com/blog/index.php/2015/09/14/installing-atom-on-sabayon-linux/">Installing Atom on Sabayon</a>.</div>
 Atom can be installed via two major methods: either adding an overlay with Layman that contains an Atom ebuild and then installing this package with Portage or manually building the program from source code. I usually prefer the manual route as any momentary glitch in your internet connection can easily stuff up an Portage build, while with a manual build it is no big deal if it does as you can just re-run <code>script/build</code> and then proceed with the installation as usual. If you would rather install Atom from a binary package (experimental) go to <a href="https://github.com/fusion809/sabayon-tools" target="_blank">this GitHub repository</a> and see the instructions there.
 <h2>Disadvantages (Cons)</h2>
