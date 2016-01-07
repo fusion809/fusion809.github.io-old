@@ -20,51 +20,7 @@ To search all overlays run:
 This post will compare several different text editors that are available for Sabayon (I know as I have installed them all myself), with respect to several aspects.
 {% include_relative TE/comparisons.md %}
 {% include_relative TE/atom.md %}
-## Bluefish
-{% include image.html image="Bluefish.png" description="Bluefish running under LXDE" width="1130px" float="none" %}
-### Background
-**Bluefish** is a text editor, primarily intended for web development and programming, as it provides syntax highlighting support and other features mostly for web markup, programming and style sheet languages.
-### Customizability
-I have limited experience with Bluefish but from what I can gather, it is customizable, although I cannot comment on how extensive this customizability is.
-### Features
-Syntax highlighting is available for almost (if not all) all computer languages used in web development.
-### Obtaining it
-It can be installed with Entropy or Portage (and is available in the Portage Tree). With Entropy run:
-{% include coder.html line1="equo i -av app-editors/bluefish" %}
-While to install it with Portage run:
-{% include coder.html line1="emerge -av app-editors/bluefish" %}
-### Advantages (Pros)
-* Customizable
-* Has features that would appeal to a web developer
-### Disadvantages (Cons)
-* ?
-### Ratings
-<ul>
-	<li><strong>Availability</strong>: &gt;8. Available in the Entropy Store and from Portage</li>
-	<li><strong>Beginner-friendliness</strong>: &gt;4. Its keyboard shortcuts are intuitive (e.g., <kbd>Ctrl</kbd>+<kbd>C</kbd> to copy), behind this my experience with it is not extensive enough for me to comment.</li>
-	<li><strong>Customizability</strong>: &gt;4. It is customizable, but as I do not have much experience with this text editor, I do not know just how customizable it is.</li>
-	<li><strong>Features</strong>: &gt;7. It is possible to do compiling and use integrated development environment (IDE)-type features.</li>
-	<li><strong>Popularity</strong>: 2. It has received one vote on my poll, thus far.</li>
-	<li><strong>SRU</strong>: 5. Bluefish (<a href="https://packages.sabayon.org/show/bluefish,155845,sabayon-weekly,amd64,5,standard" target="_blank">2.2.7</a>) is a 3.1 MB download with Entropy and takes up 9.5 MB HDD space when installed. This is my <code>ps mem</code> table:
-<pre>Private  +   Shared  =  RAM used	Program
-
- 53.1 MiB +   4.3 MiB =  57.4 MiB	bluefish
----------------------------------
-                         57.4 MiB
-=================================
-</pre>
-</li>
-	<li><strong>Overall</strong>: ~7. Cannot be too confident as to this rating without using this text editor more.</li>
-</ul>
-<h2>Website(s)</h2>
-<ul>
-	<li><a href="http://bluefish.openoffice.nl/index.html">Official Website</a></li>
-	<li><a href="http://bfwiki.tellefsen.net/index.php/Main_Page">Official Wiki</a>
-<ul>
-	<li><a href="http://bfwiki.tellefsen.net/index.php/Manual_2_ToC">Official Manual</a></li>
-</ul>
-</li>
-</ul>
+{% include_relative TE/bluefish.md %}
 ## Geany
 [caption id="attachment_689" align="alignnone" width="1366"]<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/Geany-1.24.1.png"><img class="size-full wp-image-689" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/Geany-1.24.1.png" alt="Geany 1.24.1 running under Moksha" width="1366" height="740" /></a> <strong>Geany 1.24.1 running under Moksha</strong>[/caption]
 <h2>Background</h2>
