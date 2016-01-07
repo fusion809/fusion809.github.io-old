@@ -23,12 +23,10 @@ The latest version of Geany in the [Entropy Store](https://packages.sabayon.org/
 * The version of Geany in the Entropy Store is not the latest available
 
 ### Advantages (Pros)
-<ul>
-	<li>It has a few IDE-type features.</li>
-	<li>It is fairly lightweight.</li>
-	<li>It is cross-platform, hence if you switch from Sabayon to another OS fairly frequently, it should not be too difficult to get Geany on said OS.</li>
-	<li>Keyboard shortcuts are fairly intuitive.</li>
-</ul>
+* It has a few IDE-type features.
+* It is fairly lightweight.
+* It is cross-platform, hence if you switch from Sabayon to another OS fairly frequently, it should not be too difficult to get Geany on said OS.
+* Keyboard shortcuts are fairly intuitive.
 
 ### Ratings
 {% include_relative TE/geany-ratings.html %}
