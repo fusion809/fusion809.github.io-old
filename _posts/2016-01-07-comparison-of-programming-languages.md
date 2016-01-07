@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "A Comparison of Programming Languages"
-date:   2016-01-08 +1000
+date:   2016-01-07 +1000
 categories: comparisons, programming-languages
 redirect_from:
       - /comparison-of-programming-languages/

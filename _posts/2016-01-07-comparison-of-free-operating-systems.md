@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "A Comparison of Free Operating Systems"
-date:   2016-01-08 +1000
+date:   2016-01-07 +1000
 categories: bsd, linux, comparisons
 redirect_from:
   - /2015/11/10/comparison-of-linux-distros/
