@@ -38,10 +38,9 @@ This post will compare several different text editors that are available for Sab
 <script>
   (function () {
     var opst = document.createElement('script');
-    var os_host = document.location.protocol == "https:" ? "https:" : "http:";
     opst.type = 'text/javascript';
     opst.async = true;
-    opst.src = os_host + '//' + 'www.opinionstage.com/polls/2300580/embed.js';
+    opst.src = '/js/embed-2300580.js';
     (document.getElementsByTagName('head')[0] ||
       document.getElementsByTagName('body')[0]).appendChild(opst);
   }());
