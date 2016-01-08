@@ -53,6 +53,23 @@ Private  +   Shared  =  RAM used	Program
                          40.1 MiB
 =================================
 </pre>
+while under Manjaro Linux Kate 15.12 and KWrite 15.12, respectively, gave these <code>ps_mem</code> tables:
+<pre>
+Private  +   Shared  =  RAM used       Program
+
+19.7 MiB +   4.6 MiB =  24.2 MiB       kate
+---------------------------------
+												24.2 MiB
+=================================
+</pre>
+<pre>
+Private  +   Shared  =  RAM used	Program
+
+14.8 MiB +   4.2 MiB =  19.1 MiB	kwrite
+---------------------------------
+												19.1 MiB
+=================================
+</pre>
 </li>
 	<li><strong>Overall</strong>: 8-9. User-friendly and fairly customizable.</li>
 </ul>
