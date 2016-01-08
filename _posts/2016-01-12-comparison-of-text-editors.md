@@ -18,6 +18,8 @@ While to list ebuilds in installed overlays, plus the Portage tree, within the c
 To search all overlays run:
 {% include codeu.html line1="eix-update &amp;&amp; eix-remote update &amp;&amp; eix -RCc &quot;app-editors&quot;" %}
 This post will compare several different text editors that are available for Sabayon (I know as I have installed them all myself), with respect to several aspects.
+
+On Manjaro Linux many, if not all of these text editors, are also available from the [**Arch User Repository**](https://aur.archlinux.org) (**AUR**) and the Manjaro repositories.
 {% include_relative TE/comparisons.md %}
 {% include_relative TE/atom.md %}
 {% include_relative TE/bluefish.md %}
@@ -47,6 +49,7 @@ This post will compare several different text editors that are available for Sab
 </script>
 
 ## SRU Comparison
-{% include image.html image="TextEditors.png" width="1130px" float="none" description="A comparison of the RAM usage of the various text editors compared here" %}
+{% include image.html image="TextEditors.png" width="1130px" float="none" description="A comparison of the RAM usage of the various text editors compared here on Sabayon" %}
+{% include image.html image="TextEditors-manjaro.png" width="1130px" float="none" description="A comparison of the RAM usage of the various text editors compared here on Manjaro" %}
 
 [^1]: Ben Ogle (11 November 2015). [*Atom 1.3*](http://blog.atom.io/2015/12/11/atom-1-3.html). *blog.atom.io*: Atom.
