@@ -1,20 +1,26 @@
 ## Pluma
-[caption id="attachment_649" align="alignnone" width="1366"]<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/Pluma-1.8.1-running-under-Mokhsa.png"><img class="size-full wp-image-649" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/Pluma-1.8.1-running-under-Mokhsa.png" alt="Pluma 1.8.1 running under Moksha" width="1366" height="740" /></a> <strong>Pluma 1.8.1 running under Moksha</strong>[/caption]
+{% include image.html image="Pluma-1.8.1-running-under-Mokhsa.png" description="Pluma 1.8.1 running under Moksha" float="none" width="1130px" %}
+
 ### Background
 <strong>Pluma</strong> is a fork of gedit 2 created for the MATE desktop environment. It has many of the same features as gedit.
+
 ### Customizability
 Some customization (to the theme or adding some plugins) can be done by going to Edit→Preferences.
+
 ### Features
 Pluma has a few plugins that can be used to add features (mostly IDE-like features) to the text editor. It also has syntax-highlighting and auto-indenting support for several computer languages.
+
 ### Obtaining it
 It can be installed with Entropy by running:
 <div class="code"><span class="coder">root #</span>  equo i -av app-editors/pluma</div>
 or with Portage by running:
 <div class="code"><span class="coder">root #</span>  emerge -av app-editors/pluma</div>
+
 ### Disadvantages (Cons)
 <ul>
 	<li>Customization options are fairly limited</li>
 </ul>
+
 ### Advantages (Pros)
 <ul>
 	<li>Customization is done graphically, making it easier for beginners.</li>
@@ -22,6 +28,7 @@ or with Portage by running:
 	<li>Has several IDE-like features like a Python terminal.</li>
 	<li>Has syntax-highlighting and auto-indenting suport for several computer languages</li>
 </ul>
+
 ### Ratings
 <ul>
 	<li><strong>Availability</strong>: 8. Easy to get on Sabayon.</li>
@@ -50,6 +57,7 @@ Private  +   Shared  =  RAM used       Program
 </li>
 	<li><strong>Overall</strong>: 8.</li>
 </ul>
+
 ### Website(s)
 <ul>
 	<li><a href="https://github.com/mate-desktop/pluma">Pluma's GitHub Repository</a></li>

@@ -1,28 +1,35 @@
 ## SciTE
-[caption id="attachment_651" align="alignnone" width="1366"]<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/SciTE-3.6.1-running-under-Moksha.png"><img class="size-full wp-image-651" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/SciTE-3.6.1-running-under-Moksha.png" alt="SciTE 3.6.1 running under Moksha" width="1366" height="740" /></a> <strong>SciTE 3.6.1 running under Moksha</strong>[/caption]
+{% include image.html image="SciTE-3.6.1-running-under-Moksha.png" description="SciTE 3.6.1 running under Moksha" width="1130px" float="none" %}
+
 ### Background
 <strong>SciTE</strong> (abbreviated from <strong>SCi</strong>ntilla based <strong>T</strong>ext <strong>E</strong>ditor) is a Scintilla-based text editor originally developed by Neil Hodgson, that is licensed under a GPL-compatible license. It is a fairly user-friendly text editor, that can be customized and scripted with using Lua. Its syntax-highlighting is based on the contents of the <code>.properties</code> files it loads. SciTE is cross-platform, available on Microsoft Windows and most Linux distributions for free, although for OS X users it is only available for a fee of 41.99 USD.
 
 I first tried it when it was the default text editor used by GNU Octave to edit m files.
+
 ### Customizability
 SciTE can be customized by editing <code>.properties</code> files or via scripting with Lua. There are no major graphical tools for customizing SciTE.
+
 ### Features
 It provides syntax-highlighting for dozens of computer languages. Support for extra languages can be added by creating <code>.properties</code> files for them.
+
 ### Obtaining it
 It is easy to install it with Entropy or Portage. To install it with Entropy, run:
 <div class="code"><span class="coder">root #</span>  equo i -av app-editors/scite</div>
 To install it with Portage, run:
 <div class="code"><span class="coder">root #</span>  emerge -av app-editors/scite</div>
+
 ### Disadvantages (Cons)
 <ul>
 	<li>The list of languages it automatically supports is &lt;30.</li>
 </ul>
+
 ### Advantages (Pros)
 <ul>
 	<li>Fairly lightweight</li>
 	<li>Extensively customizable</li>
 	<li>Easy to get on Sabayon and other Linux distributions</li>
 </ul>
+
 ### Ratings
 <ul>
 	<li><strong>Availability</strong>: 8.</li>
@@ -50,6 +57,7 @@ Private  +   Shared  =  RAM used       Program
 </li>
 	<li><b>Overall</b>: 8.</li>
 </ul>
+
 ### Website(s)
 <ul>
 	<li><a href="http://www.scintilla.org/SciTE.html" target="_blank">Official Website</a></li>

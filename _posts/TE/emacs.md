@@ -1,21 +1,27 @@
 ## GNU Emacs
-[caption id="attachment_619" align="alignnone" width="1366"]<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/GNU-Emacs.png"><img class="size-full wp-image-619" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/GNU-Emacs.png" alt="GNU Emacs running under Moksha" width="1366" height="740" /></a> <strong>GNU Emacs running under Moksha</strong>[/caption]
+{% include image.html image="GNU-Emacs.png" description="GNU Emacs running under Moksha" float="none" width="1130px" %}
+
 ### Background
 <strong>GNU Emacs</strong> (<strong>GE</strong>) is an extensively-customizable text editor that is developed by the GNU Project. Its original developer was Richard Stallman, the founder of the GNU Project and its first release was in 1985. It belongs to a family of text editors called Emacs, which are text editors that are extensively customizable for users with sufficient programming knowledge. Emacs is abbreviated from <strong>E</strong>ditor <strong>Mac</strong>ro<b>s</b>, which refers to its origin as editor macros for the TECO text editor, that were developed, in part, by Richard Stallman. GE is written in C and Emacs Lisp (ELisp), a dialect of the Lisp programming language devised just for GE. ELisp is used to write extensions and provide extra functionalities for GE and related text editors like XEmacs.
+
 ### Customizability
 GE is one of the most customizable text editors available, but much of this customization must be done via writing code in ELisp, which limits much of this customization to advanced users only.
+
 ### Features
 GNU Emacs provides syntax highlighting for dozens of different computer languages, along with several features of IDEs like shell access, compiling code, using git from within GE, <em>etc. </em>The <a href="http://gpo.zugaina.org/app-emacs/" target="_blank">app-emacs</a> Portage category contains several plugins for GNU Emacs.
+
 ### Obtaining it
 GNU Emacs is available from the Entropy Store and the Portage Tree. To install it with Entropy run:
 <div class="code"><span class="coder">root #</span>  equo i -av app-editors/emacs</div>
 while to install it with Portage run:
 <div class="code"><span class="coder">root #</span>  emerge -av app-editors/emacs</div>
+
 ### Disadvantages (Cons)
 <ul>
 	<li>Has a steep learning curve for newcomers, hence making it inaccessible to newcomers to Linux and programming, in general.</li>
 	<li>Has an unconventional keymap, which can take some time to learn. For example, to cut text you use <kbd>Ctrl+W</kbd>, as opposed to the usual <kbd>Ctrl+X</kbd>, while to paste text you use <kbd>Ctrl+Y</kbd>.</li>
 </ul>
+
 ### Advantages (Pros)
 <ul>
 	<li>Extensively customizable</li>
@@ -23,6 +29,7 @@ while to install it with Portage run:
 	<li>Provides syntax highlighting for dozens, if not hundreds, of computer languages</li>
 	<li>Has its own Wiki, manual and other documentation.</li>
 </ul>
+
 ### Ratings
 <ul>
 	<li><strong>Availability</strong>: &gt;8. Readily available for installation on Sabayon.</li>
@@ -42,6 +49,7 @@ Private  +   Shared  =  RAM used	Program
 </li>
 	<li><strong>Overall</strong>: 8. It is a very powerful text editor, but to me, its lack of customizability by those that do not understand ELisp is a significant disadvantage.</li>
 </ul>
+
 ### Website(s)
 <ul>
 	<li><a href="https://wiki.gentoo.org/wiki/GNU_Emacs" target="_blank">Gentoo Wiki Article</a></li>
