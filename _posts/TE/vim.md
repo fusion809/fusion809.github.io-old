@@ -20,7 +20,7 @@ whereas to install it with Portage run:
 * Steep learning curve, making it difficult to learn. If you run `vimtutor` from the command-line after installing it, you will be taken through a tutorial of how to use it, which can be helpful.
 
 ### Advantages (Pros)
-* Easy to obtain it on Manjaro and Sabayon
+* Easy to obtain it on Manjaro, Sabayon and virtually every &#42;nix system.
 * Extremely customizable
 * Fairly light on system resources
 
