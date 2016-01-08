@@ -2,7 +2,7 @@
 {% include image.html image="Pluma-1.8.1-running-under-Mokhsa.png" description="Pluma 1.8.1 running under Moksha" float="none" width="1130px" %}
 
 ### Background
-<strong>Pluma</strong> is a fork of gedit 2 created for the MATE desktop environment. It has many of the same features as gedit.
+**Pluma** is a fork of gedit 2 created for the MATE desktop environment. It has many of the same features as gedit.
 
 ### Customizability
 Some customization (to the theme or adding some plugins) can be done by going to Edit→Preferences.
@@ -12,53 +12,21 @@ Pluma has a few plugins that can be used to add features (mostly IDE-like featur
 
 ### Obtaining it
 It can be installed with Entropy by running:
-<div class="code"><span class="coder">root #</span>  equo i -av app-editors/pluma</div>
+{% include coder.html line1="equo i -av app-editors/pluma" %}
 or with Portage by running:
-<div class="code"><span class="coder">root #</span>  emerge -av app-editors/pluma</div>
+{% include coder.html line1="emerge -av app-editors/pluma" %}
 
 ### Disadvantages (Cons)
-<ul>
-	<li>Customization options are fairly limited</li>
-</ul>
+* Customization options are fairly limited
 
 ### Advantages (Pros)
-<ul>
-	<li>Customization is done graphically, making it easier for beginners.</li>
-	<li>Has intuitive keyboard shortcuts</li>
-	<li>Has several IDE-like features like a Python terminal.</li>
-	<li>Has syntax-highlighting and auto-indenting suport for several computer languages</li>
-</ul>
+* Customization is done graphically, making it easier for beginners.
+* Has intuitive keyboard shortcuts.
+* Has several IDE-like features like a Python terminal.
+* Has syntax-highlighting and auto-indenting suport for several computer languages
 
 ### Ratings
-<ul>
-	<li><strong>Availability</strong>: 8. Easy to get on Sabayon.</li>
-	<li><strong>Beginner-friendliness</strong> 9. Customization is done graphically, making it more user-friendly.</li>
-	<li><strong>Customizability</strong>: 6. Fairly limited customization options, but they can be done graphically at least.</li>
-	<li><strong>Features</strong>: 8.</li>
-	<li><strong>Popularity</strong>: &lt;3. No one has voted for it yet.</li>
-	<li><strong>SRU</strong>: 8. <a href="https://packages.sabayon.org/show/pluma,130458,sabayon-weekly,amd64,5,standard" target="_blank">Pluma 1.8.1</a> is a 3.4 MB download and 12.7 MB package when installed. Fairly lightweight. Here is my <code>ps mem</code> table:
-<pre>
-Private  +   Shared  =  RAM used	Program
-
- 17.2 MiB +   3.2 MiB =  20.3 MiB	pluma
----------------------------------
-                         20.3 MiB
-=================================
-</pre>
-while under Manjaro Pluma 1.12.1 gave the following <code>ps_mem</code> table:
-<pre>
-Private  +   Shared  =  RAM used       Program
-
-11.8 MiB +   2.6 MiB =  14.4 MiB       pluma
----------------------------------
-												14.4 MiB
-=================================
-</pre>
-</li>
-	<li><strong>Overall</strong>: 8.</li>
-</ul>
+{% include_relative TE/pluma-ratings.html %}
 
 ### Website(s)
-<ul>
-	<li><a href="https://github.com/mate-desktop/pluma">Pluma's GitHub Repository</a></li>
-</ul>
+* [Pluma's GitHub Repository](https://github.com/mate-desktop/pluma)
