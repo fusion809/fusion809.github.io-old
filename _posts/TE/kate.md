@@ -4,9 +4,9 @@
 {% include image.html image="KWrite-15.08.0-under-Moksha.png" float="none" description="KWrite 15.08.0 running under Moksha" width="1130px" %}
 
 ### Background
-**Kate**, which is abbreviated from <b>K</b>DE <b>A</b>dvanced <b>T</b>ext <b>E</b>ditor, is a text editor that is a KDE Core Application (a part of the KDE Software Compilation or KDE SC) and combines features of an advanced text editor (that is, one geared towards software developers and experienced programmers) such as customizability, extensive syntax-highlighting, code-indentation, *etc.* support with sufficient user-friendliness for it to be suitable for inexperienced Linux users. Its development began in 2001 and has been a central part of KDE SC ever since.
+{% include_relative TE/links.md program="Kate" package="kde-apps/kate" wp="Kate_(text_editor)" pacman="extra/x86_64/kate/" link="http://kate-editor.org" forum="http://kate-editor.org/support/" %} which is abbreviated from <b>K</b>DE <b>A</b>dvanced <b>T</b>ext <b>E</b>ditor, is a text editor that is a KDE Core Application (a part of the KDE Software Compilation or KDE SC) and combines features of an advanced text editor (that is, one geared towards software developers and experienced programmers) such as customizability, extensive syntax-highlighting, code-indentation, *etc.* support with sufficient user-friendliness for it to be suitable for inexperienced Linux users. Its development began in 2001 and has been a central part of KDE SC ever since.
 
-**KWrite**, as I understand it (but I must admit I am a little confused by the degree of overlap between Kate and KWrite) is designed to be a lightweight derivative of Kate.
+{% include_relative TE/links.md program="KWrite" package="kde-apps/kwrite" pacman="extra/x86_64/kwrite" wp="KWrite" %} as I understand it (but I must admit I am a little confused by the degree of overlap between Kate and KWrite) is designed to be a lightweight derivative of Kate.
 
 ### Customizability
 Some customization (such as of keyboard shortcuts, the toolbar and a few other features) can be done graphically via going to the "Settings" menu and selecting an option from the menu. From what I can gather, however, limited customization can be done textually via user-supplied scripts.
@@ -35,8 +35,3 @@ while to install KWrite with Portage run (no need to add any overlays, it is in 
 
 ### Ratings
 {% include_relative TE/kate-ratings.html %}
-
-### Website(s)
-* [About Kate](http://kate-editor.org/about-kate/)
-* [Kate Support](http://kate-editor.org/support/)
-* [Kate/KWrite's Website](http://kate-editor.org)
