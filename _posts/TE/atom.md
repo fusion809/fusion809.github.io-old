@@ -7,7 +7,28 @@
 ### Customizability
 Atom is very customizable, via several themes and plugins that can be installed from the command-line, using the `apm` command, or from within Atom itself. I personally prefer the command-line, as I have had some bad experiences with the built-in installer. From the command-line the command for installing new themes or plugins is:
 {% include codeu.html line1="apm install &lt;PACKAGE&gt;" %}
-where &lt;PACKAGE&gt; is the plugin/theme's name. Customizations, including plugins and themes are stored in `~/.atom`. Advanced customization (for example, of keyboard shortcuts) must be done by directly editing files in this directory. For example, in order to edit your keyboard shortcuts you need to edit `~/.atom/keymap.cson`.
+where `<PACKAGE>` is the plugin/theme's name. Customizations, including plugins and themes are stored in `~/.atom`. Advanced customization (for example, of keyboard shortcuts) must be done by directly editing files in this directory. For example, in order to edit your keyboard shortcuts you need to edit `~/.atom/keymap.cson`. For example, to help me write this blog I have been using the following `~/.atom/keymap.cson`:
+```coffeescript
+# Default Keymaps for Markdown Writer
+# https://atom.io/packages/markdown-writer
+#
+# Wiki: https://github.com/zhuochun/md-writer/wiki/Settings-for-Keymaps
+#
+".platform-linux atom-text-editor:not([mini])":
+  "shift-ctrl-K": "markdown-writer:insert-link"
+  "shift-ctrl-I": "markdown-writer:insert-image"
+  "ctrl-i":       "markdown-writer:toggle-italic-text"
+  "ctrl-b":       "markdown-writer:toggle-bold-text"
+  "ctrl-'":       "markdown-writer:toggle-code-text"
+  "ctrl-h":       "markdown-writer:toggle-strikethrough-text"
+  "ctrl-1":       "markdown-writer:toggle-h1"
+  "ctrl-2":       "markdown-writer:toggle-h2"
+  "ctrl-3":       "markdown-writer:toggle-h3"
+  "ctrl-4":       "markdown-writer:toggle-h4"
+  "ctrl-5":       "markdown-writer:toggle-h5"
+'.editor':
+  "ctrl-alt-s": "editor:toggle-soft-wrap"
+```
 
 ### Features
 Atom has plugins for syntax highlighting and auto-indentation of most major computer languages including:

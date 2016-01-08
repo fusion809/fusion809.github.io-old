@@ -19,7 +19,7 @@ The latest version of Geany in the [Entropy Store](https://packages.sabayon.org/
 
 ### Disadvantages (Cons)
 * The list of supported computer languages, for syntax-highlighting and other features is fairly small, compared to Atom, Gedit, GNU Emacs and Vim. See for example, the screenshot below, showing allowed file types.
-{% include image.html image="Geany-Document-File-Type-Programming-Languages.png" float="none" width="1130px" %}
+{% include image.html image="Geany-Document-File-Type-Programming-Languages.png" float="none" width="1100px" %}
 * The version of Geany in the Entropy Store is not the latest available
 
 ### Advantages (Pros)
