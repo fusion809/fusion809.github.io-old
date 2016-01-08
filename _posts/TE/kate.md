@@ -4,9 +4,9 @@
 {% include image.html image="KWrite-15.08.0-under-Moksha.png" float="none" description="KWrite 15.08.0 running under Moksha" width="1130px" %}
 
 ### Background
-<strong>Kate</strong>, which is abbreviated from <strong>K</strong>DE <strong>A</strong>dvanced <strong>T</strong>ext <strong>E</strong>ditor, is a text editor that is a KDE Core Application (a part of the KDE Software Compilation or KDE SC) and combines features of an advanced text editor (that is, one geared towards software developers and experienced programmers) such as customizability, extensive syntax-highlighting, code-indentation, <em>etc.<strong> </strong></em>support with sufficient user-friendliness for it to be suitable for inexperienced Linux users. Its development began in 2001 and has been a central part of KDE SC ever since.
+**Kate**, which is abbreviated from <b>K</b>DE <b>A</b>dvanced <b>T</b>ext <b>E</b>ditor, is a text editor that is a KDE Core Application (a part of the KDE Software Compilation or KDE SC) and combines features of an advanced text editor (that is, one geared towards software developers and experienced programmers) such as customizability, extensive syntax-highlighting, code-indentation, *etc.* support with sufficient user-friendliness for it to be suitable for inexperienced Linux users. Its development began in 2001 and has been a central part of KDE SC ever since.
 
-<strong>KWrite</strong>, as I understand it (but I must admit I am a little confused by the degree of overlap between Kate and KWrite) is designed to be a lightweight derivative of Kate.
+**KWrite**, as I understand it (but I must admit I am a little confused by the degree of overlap between Kate and KWrite) is designed to be a lightweight derivative of Kate.
 
 ### Customizability
 Some customization (such as of keyboard shortcuts, the toolbar and a few other features) can be done graphically via going to the "Settings" menu and selecting an option from the menu. From what I can gather, however, limited customization can be done textually via user-supplied scripts.
@@ -16,74 +16,27 @@ It has syntax-highlighting and auto-indentation support for over 180 different c
 
 ### Obtaining it
 Kate can be quite easily obtained from Entropy or Portage. To install it from Entropy run:
-<div class="code"><span class="coder">root #</span>  equo i -av kde-apps/kate</div>
+{% include coder.html line1="equo i -av kde-apps/kate" %}
 while to install it with Portage run:
-<div class="code"><span class="coder">root #</span>  emerge -av kde-apps/kate</div>
+{% include coder.html line1="emerge -av kde-apps/kate" %}
 Getting KWrite is similarly easy, just use (for installation with Entropy):
-<div class="code"><span class="coder">root #</span>  equo i -av kde-apps/kwrite</div>
+{% include coder.html line1="equo i -av kde-apps/kwrite" %}
 while to install KWrite with Portage run (no need to add any overlays, it is in the Portage Tree):
-<div class="code"><span class="coder">root #</span>  emerge -av kde-apps/kwrite</div>
+{% include coder.html line1="emerge -av kde-apps/kwrite" %}
 
 ### Disadvantages (Cons)
-<ul>
-	<li>Minimal customization can be made to Kate/KWrite, via user-supplied scripts.</li>
-	<li>Due to it being part of KDE SC it cannot be too easily ported to Microsoft Windows or OS X, although it is readily available on most Linux distributions.</li>
-</ul>
+* Minimal customization can be made to Kate/KWrite, via user-supplied scripts.
+* Due to it being part of KDE SC it cannot be too easily ported to Microsoft Windows or OS X, although it is readily available on most Linux distributions.
 
 ### Advantages (Pros)
-<ul>
-	<li>Easily customizable via graphical tools</li>
-	<li>Intuitive keyboard shortcuts by default</li>
-	<li>Extensive support for a wide range of computer languages</li>
-</ul>
+* Easily customizable via graphical tools
+* Intuitive keyboard shortcuts by default
+* Extensive support for a wide range of computer languages
 
 ### Ratings
-<ul>
-	<li><strong>Availability</strong>: 8. Easy to get on Sabayon.</li>
-	<li><strong>Beginner-friendliness</strong>: 8. Easy for beginners to use.</li>
-	<li><strong>Customizability</strong>: 7-8. Fairly customizable, but unlike Atom say where advanced users have the option of extending the TE further using their own scripts, Kate does not seem to have this capability</li>
-	<li><strong>Features</strong>: 8. Extensive support for computer languages and has some IDE-like features.</li>
-	<li><strong>Popularity</strong>: 8. Fairly popular according to my poll.</li>
-	<li><strong>SRU</strong>: 7. <a href="https://packages.sabayon.org/show/kate,113072,sabayon-limbo,amd64,5,standard" target="_blank">Kate 15.08.2</a> is a 2.4 MB download and 9.2 MB package when installed, while <a href="https://packages.sabayon.org/show/kwrite,113128,sabayon-limbo,amd64,5,standard" target="_blank">KWrite 15.08.2</a> is a 0.1 MB download and 177 kB package when installed. Fairly lightweight for a graphical TE. Here are my <code>ps mem</code> tables (for Kate 15.08.1 and KWrite 15.08.0, respectively):
-<pre>
-Private  +   Shared  =  RAM used	Program
-
- 28.6 MiB +   8.4 MiB =  37.0 MiB	kate
----------------------------------
-                         37.0 MiB
-=================================
-</pre>
-<pre>Private  +   Shared  =  RAM used	Program
-
- 36.4 MiB +   3.7 MiB =  40.1 MiB	kwrite
----------------------------------
-                         40.1 MiB
-=================================
-</pre>
-while under Manjaro Linux Kate 15.12 and KWrite 15.12, respectively, gave these <code>ps_mem</code> tables:
-<pre>
-Private  +   Shared  =  RAM used       Program
-
-19.7 MiB +   4.6 MiB =  24.2 MiB       kate
----------------------------------
-												24.2 MiB
-=================================
-</pre>
-<pre>
-Private  +   Shared  =  RAM used	Program
-
-14.8 MiB +   4.2 MiB =  19.1 MiB	kwrite
----------------------------------
-												19.1 MiB
-=================================
-</pre>
-</li>
-	<li><strong>Overall</strong>: 8-9. User-friendly and fairly customizable.</li>
-</ul>
+{% include_relative TE/kate-ratings.html %}
 
 ### Website(s)
-<ul>
-	<li><a href="http://kate-editor.org/about-kate/">About Kate</a></li>
-	<li><a href="http://kate-editor.org/support/">Kate Support</a></li>
-	<li><a href="http://kate-editor.org">Kate/KWrite's Website</a></li>
-</ul>
+* [About Kate](http://kate-editor.org/about-kate/)
+* [Kate Support](http://kate-editor.org/support/)
+* [Kate/KWrite's Website](http://kate-editor.org)
