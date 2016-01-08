@@ -38,6 +38,15 @@ Private  +   Shared  =  RAM used	Program
                          20.3 MiB
 =================================
 </pre>
+while under Manjaro Pluma 1.12.1 gave the following <code>ps_mem</code> table:
+<pre>
+Private  +   Shared  =  RAM used       Program
+
+11.8 MiB +   2.6 MiB =  14.4 MiB       pluma
+---------------------------------
+												14.4 MiB
+=================================
+</pre>
 </li>
 	<li><strong>Overall</strong>: 8.</li>
 </ul>

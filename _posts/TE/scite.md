@@ -38,6 +38,15 @@ To install it with Portage, run:
                          21.3 MiB
 =================================
 </pre>
+while under Manjaro SciTE 3.6.2 gave the <code>ps_mem</code> table:
+<pre>
+Private  +   Shared  =  RAM used       Program
+
+ 7.2 MiB +   1.3 MiB =   8.5 MiB       SciTE
+---------------------------------
+												 8.5 MiB
+=================================
+</pre>
 </li>
 	<li><b>Overall</b>: 8.</li>
 </ul>
