@@ -48,4 +48,6 @@ This post will compare several different text editors that are available for Sab
 </script>
 
 ## SRU Comparison
-<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/TextEditors.png"><img class="alignnone size-full wp-image-694" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/TextEditors.png" alt="TextEditors" width="1287" height="508" /></a>
+{% include image.html image="TextEditors.png" width="1130px" float="none" description="A comparison of the RAM usage of the various text editors compared here" %}
+
+[^1]: Ben Ogle (11 November 2015). [*Atom 1.3*](http://blog.atom.io/2015/12/11/atom-1-3.html). *blog.atom.io*: Atom.
