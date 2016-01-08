@@ -2,7 +2,7 @@
 {% include image.html image="Geany-1.24.1.png" float="none" width="1130px" description="Geany 1.24.1 running under Moksha" %}
 
 ### Background
-{% include_relative TE/links.md program="Geany" package="dev-util/geany" link="http://geany.org/" wiki="http://wiki.geany.org/" pacman="community/x86_64/geany/" wp="Geany" %} is a lightweight GTK+ and Scintilla-based text editor with basic IDE-type features that was originally developed by Enrico Tröger in 2005. It is licensed under GNU GPLv2.
+{% include_relative TE/links.md program="Geany" package="dev-util/geany" link="http://geany.org/" wiki="http://wiki.geany.org/" pacman="community/x86_64/geany/" wp="Geany" %} is a lightweight GTK+ and Scintilla-based text editor with basic IDE-type features that was originally developed by Enrico Tr&ouml;ger in 2005. It is licensed under GNU GPLv2.
 
 ### Customizability
 The `~/.geany` directory is where customizations are kept. This customization can be made with code [snippets](http://www.geany.org/Download/Extras) (written in HTML, LaTeX, PHP and Python), [plugins](http://www.geany.org/Support/Plugins), [themes](https://github.com/geany/geany-themes/), *etc*.

@@ -5,7 +5,8 @@
 {% include_relative TE/links.md link="https://atom.io" gr="https://github.com/atom/atom" forum="https://discuss.atom.io" program="Atom" package="app-editors/atom" aw="Atom" wp="Atom_(text_editor)" irc="#atom" aurs="atom-editor" sw="Atom" %} is a free and open-source (licensed under MIT) text editor developed by GitHub, Inc. Its first public release was in 2014, although its first stable release (1.0 release) was not until June 2015. It is unique amongst the text editors listed here in a few different ways, firstly, its target audience is very wide with it being designed to be usable for inexperienced programmers as well as seasoned programmers and software developers. Secondly, it is written in CoffeeScript, HTML, JavaScript and Less &mdash; computer languages usually used to write web pages.
 
 ### Customizability
-Atom is very customizable, via a grand total of over 3,000 themes and plugins that can be installed from the command-line, using the `apm` command, or from within Atom itself. I personally prefer the command-line, as I have had some bad experiences with the built-in installer. From the command-line the command for installing new themes or plugins is:
+{% include image.html image="atom-packages-homepage-20160108.png" width="1130px" float="none" description="[Atom Packages Repository Homepage](https://atom.io/packages), note the current count of packages (themes and plugins included) is 3,433." %}
+Atom is very customizable, via a grand total of over 3,400 themes and plugins that can be installed from the command-line, using the `apm` command, or from within Atom itself. I personally prefer the command-line, as I have had some bad experiences with the built-in installer. From the command-line the command for installing new themes or plugins is:
 {% include codeu.html line1="apm install &lt;PACKAGE&gt;" %}
 where `<PACKAGE>` is the plugin/theme's name. Customizations, including plugins and themes are stored in `~/.atom`. Advanced customization (for example, of keyboard shortcuts) must be done by directly editing files in this directory. For example, in order to edit your keyboard shortcuts you need to edit `~/.atom/keymap.cson`. For example, to help me write this blog I have been using the following `~/.atom/keymap.cson`:
 ```coffeescript
@@ -29,7 +30,7 @@ where `<PACKAGE>` is the plugin/theme's name. Customizations, including plugins 
 '.editor':
   "ctrl-alt-s": "editor:toggle-soft-wrap"
 ```
-this is helpful because in order to bold text in a markdown file I merely need to select the text and press <kbd>Ctrl</kbd>+<kbd>B</b>. It also means that when I am editing HTML files, in order to wrap the code to make it easier to read, I merely press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>S</kbd>.
+this is helpful because in order to bold text in a markdown file I merely need to select the text and press <kbd>Ctrl</kbd>+<kbd>B</kbd>. It also means that when I am editing HTML files, in order to wrap the code to make it easier to read, I merely press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>S</kbd>.
 
 ### Features
 Atom has plugins for syntax highlighting and auto-indentation of most major computer languages including:
