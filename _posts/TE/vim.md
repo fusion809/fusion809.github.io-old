@@ -51,6 +51,21 @@ Private  +   Shared  =  RAM used	Program
                          14.0 MiB
 =================================
 </pre>
+while under Manjaro for Vim 7.4.944 (installed via the gvim package) I received the following <code>ps_mem</code> tables (note Vim-Qt is not available from the official Manjaro repositories):
+<pre>Private  +   Shared  =  RAM used       Program
+
+ 8.9 MiB +   1.9 MiB =  10.8 MiB       gvim
+---------------------------------
+												10.8 MiB
+=================================
+</pre>
+<pre>Private  +   Shared  =  RAM used       Program
+
+ 4.9 MiB + 601.0 KiB =   5.4 MiB       vim
+---------------------------------
+												 5.4 MiB
+=================================
+</pre>
 </li>
 	<li><strong>Overall</strong>: 8-9.</li>
 </ul>
