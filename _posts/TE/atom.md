@@ -2,7 +2,7 @@
 {% include image.html image="Atom-1.3.2.png" width="1130px" float="none" description="Atom 1.3.2 running under DDE" %}
 
 ### Background
-{% include_relative TE/links.md link="https://atom.io" program="Atom" package="app-editors/atom" aw="Atom" wp="Atom_(text_editor)" aurs="atom-editor" sw="Atom" %} is a free and open-source (licensed under MIT) text editor developed by GitHub, Inc. Its first public release was in 2014, although its first stable release (1.0 release) was not until June 2015. It is unique amongst the text editors listed here in a few different ways, firstly, its target audience is very wide with it being designed to be usable for inexperienced programmers as well as seasoned programmers and software developers. Secondly, it is written in CoffeeScript, HTML, JavaScript and Less &mdash; computer languages usually used to write web pages.
+{% include_relative TE/links.md link="https://atom.io" gr="https://github.com/atom/atom" forum="https://discuss.atom.io" program="Atom" package="app-editors/atom" aw="Atom" wp="Atom_(text_editor)" aurs="atom-editor" sw="Atom" %} is a free and open-source (licensed under MIT) text editor developed by GitHub, Inc. Its first public release was in 2014, although its first stable release (1.0 release) was not until June 2015. It is unique amongst the text editors listed here in a few different ways, firstly, its target audience is very wide with it being designed to be usable for inexperienced programmers as well as seasoned programmers and software developers. Secondly, it is written in CoffeeScript, HTML, JavaScript and Less &mdash; computer languages usually used to write web pages.
 
 ### Customizability
 Atom is very customizable, via several themes and plugins that can be installed from the command-line, using the `apm` command, or from within Atom itself. I personally prefer the command-line, as I have had some bad experiences with the built-in installer. From the command-line the command for installing new themes or plugins is:
@@ -74,6 +74,4 @@ Atom can be installed via three major methods on Sabayon: adding an overlay with
 {% include_relative TE/atom-ratings.html %}
 
 ### Website(s)
-* [GitHub Repository](https://github.com/atom/atom)
 * [Linux Build Instructions](https://github.com/atom/atom/blob/master/docs/build-instructions/linux.md)
-* [Official Website](https://atom.io)

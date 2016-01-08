@@ -2,7 +2,7 @@
 {% include image.html image="Bluefish.png" description="Bluefish running under LXDE" width="1130px" float="none" %}
 
 ### Background
-{% include_relative TE/links.md program="Bluefish" package="app-editors/bluefish" pacman="extra/x86_64/bluefish/" link="http://bluefish.openoffice.nl/index.html" wiki="http://bfwiki.tellefsen.net/index.php/Main_Page" wp="Bluefish_(software)" %} is a text editor, primarily intended for web development and programming, as it provides syntax highlighting support and other features mostly for web markup, programming and style sheet languages.
+{% include_relative TE/links.md program="Bluefish" package="app-editors/bluefish" pacman="extra/x86_64/bluefish/" link="http://bluefish.openoffice.nl/index.html" wiki="http://bfwiki.tellefsen.net/index.php/Main_Page" wp="Bluefish_(software)" ml="http://bfwiki.tellefsen.net/index.php/Manual_2_ToC" %} is a text editor, primarily intended for web development and programming, as it provides syntax highlighting support and other features mostly for web markup, programming and style sheet languages.
 
 ### Customizability
 I have limited experience with Bluefish but from what I can gather, it is customizable, although I cannot comment on how extensive this customizability is.
@@ -25,8 +25,3 @@ While to install it with Portage run:
 
 ### Ratings
 {% include_relative TE/bluefish-ratings.html %}
-
-### Website(s)
-* [Official Website](http://bluefish.openoffice.nl/index.html)
-* [Official Wiki](http://bfwiki.tellefsen.net/index.php/Main_Page)
-* [Official Manual](http://bfwiki.tellefsen.net/index.php/Manual_2_ToC)

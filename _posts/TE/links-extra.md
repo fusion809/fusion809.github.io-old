@@ -1,0 +1,1 @@
+{% if include.forum %};&nbsp;[<abbr title="Official Forum">FM</abbr>]({{ include.forum }}), {% endif %}{% if include.gr %}[<abbr title="GitHub Repository">GR</abbr>]({{ include.gr }}), {% endif %}{% if include.gr %}[<abbr title="Internet Relay Chat">IRC</abbr>](irc://irc.freenode.net/#{{ include.irc }}){% endif %}
