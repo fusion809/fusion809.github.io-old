@@ -2,7 +2,7 @@
 {% include image.html image="gVim-7.4.827-running-under-Moksha.png" description="gVim 7.4.827 running under Moksha" width="1130px" float="none" %}
 
 ### Background
-**Vim** (short for **Vi**-<b>IM</b>proved) is a text editor that was first released in 1991 by Bram Moolenaar, as a clone of Bill Joy's Vi text editor. It and GNU Emacs are seen as the most powerful free text editors available for experienced programmers. Vim is available as a command-line text editor, where users can edit text files from the command-line, or as a graphical text editor (which is called <b>gVim</b>). There is also a Qt-based GUI for Vim called Vim-Qt that is available via the Entropy Store. Compared to most text editors, Vim is far less intuitive and has a steep learning curve. For one, its keyboard shortcuts are far from conventional, with <kbd>Ctrl</kbd>+<kbd>C</kbd> for copy, <kbd>Ctrl</kbd>+<kbd>V</kbd> for paste, *etc.* not being available. Vim also has its own scripting language (Vim script) for adding functionalities to it.
+{% include_relative TE/links.md program="Vim" package="app-editors/vim" link="http://www.vim.org/" pacman="extra/x86_64/vim" gw="Vim" wp="Vim" aw="Vim" %} (short for **Vi**-<b>IM</b>proved) is a text editor that was first released in 1991 by Bram Moolenaar, as a clone of Bill Joy's Vi text editor. It and GNU Emacs are seen as the most powerful free text editors available for experienced programmers. Vim is available as a command-line text editor, where users can edit text files from the command-line, or as a graphical text editor (which is called <b>gVim</b>). There is also a Qt-based GUI for Vim called Vim-Qt that is available via the Entropy Store. Compared to most text editors, Vim is far less intuitive and has a steep learning curve. For one, its keyboard shortcuts are far from conventional, with <kbd>Ctrl</kbd>+<kbd>C</kbd> for copy, <kbd>Ctrl</kbd>+<kbd>V</kbd> for paste, *etc.* not being available. Vim also has its own scripting language (Vim script) for adding functionalities to it.
 
 ### Customizability
 Vim is extensively customizable, for people with the required level of finesse in programming. There are also several extensions and other plugins available for it, from the Internet.
@@ -26,7 +26,3 @@ whereas to install it with Portage run:
 
 ### Ratings
 {% include_relative TE/vim-ratings.html %}
-
-### Website(s)
-* [Gentoo Wiki Article](https://wiki.gentoo.org/wiki/Vim)
-* [Vim Home Page](http://www.vim.org/)
