@@ -1,0 +1,1 @@
+{% if include.link %}[**{{ include.program }}**]({{ include.link }}){% else %}**{{ include.program }}**{% endif %} ({{ include links-gentoo.md %}; {% include links-arch.md %}; {% include links-wiki.md %})
