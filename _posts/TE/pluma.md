@@ -23,7 +23,7 @@ or with Portage by running:
 * Customization is done graphically, making it easier for beginners.
 * Has intuitive keyboard shortcuts.
 * Has several IDE-like features like a Python terminal.
-* Has syntax-highlighting and auto-indenting suport for several computer languages
+* Has syntax-highlighting and auto-indenting support for several computer languages
 
 ### Ratings
 {% include_relative TE/pluma-ratings.html %}
