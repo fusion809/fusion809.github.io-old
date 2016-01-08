@@ -2,7 +2,7 @@
 {% include image.html image="Leafpad-running-under-Moksha.png" description="Leafpad 0.8.18.1 running under Moksha" float="none" width="1130px" %}
 
 ### Background
-**Leafpad** is a lightweight and basic GTK+ based text editor. Its capabilities (or rather lack thereof) are very similar to those of Windows' Notepad.
+{% include_relative TE/links.md program="Leafpad" package="app-editors/leafpad" pacman="extra/x86_64/leafpad/" wp="Leafpad" link="http://tarot.freeshell.org/leafpad/" %} is a lightweight and basic GTK+ based text editor. Its capabilities (or rather lack thereof) are very similar to those of Windows' Notepad.
 
 ### Customizability
 There is little, if any, customizability for Leafpad.
@@ -25,6 +25,3 @@ while to install it with Portage run:
 
 ### Ratings
 {% include_relative TE/leafpad-ratings.html %}
-
-### Website(s)
-* [Official Webpage](http://tarot.freeshell.org/leafpad/)

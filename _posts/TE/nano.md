@@ -2,7 +2,7 @@
 {% include image.html image="GNU-nano-under-LXTerminal.png" description="GNU nano 2.4.2 running within LXTerminal under Moksha" width="1130px" float="none" %}
 
 ### Background
-**GNU nano** is a command-line text editor that is developed as part of the GNU Project. Its development began in 1999 by Chris Allegretta, as a free alternative to the proprietary Pico text editor. Later, in 2001, it officially became part of the GNU Project. Several features (like search, search and replace, save, exit, *etc.*) are accessed using keyboard shortcuts. It can be invoked by running the command "nano" from the command-line. nano can be passed several different options from the command-line, to see a full list see its man page (invoked by running `man nano` or, if you would prefer to view it in your browser, go [here](/man/nano.1.html)). Usually when I want to edit a file with nano I simply run `nano <FILE>` where `<FILE>` is the file's name (potentially also with its path if it is not in my current directory).
+{% include_relative TE/links.md program="GNU nano" package="app-editors/nano" pacman="core/x86_64/nano/" gw="Nano" aw="Nano" link="http://www.nano-editor.org/" ml="http://www.nano-editor.org/docs.php" %} is a command-line text editor that is developed as part of the GNU Project. Its development began in 1999 by Chris Allegretta, as a free alternative to the proprietary Pico text editor. Later, in 2001, it officially became part of the GNU Project. Several features (like search, search and replace, save, exit, *etc.*) are accessed using keyboard shortcuts. It can be invoked by running the command "nano" from the command-line. nano can be passed several different options from the command-line, to see a full list see its man page (invoked by running `man nano` or, if you would prefer to view it in your browser, go [here](/man/nano.1.html)). Usually when I want to edit a file with nano I simply run `nano <FILE>` where `<FILE>` is the file's name (potentially also with its path if it is not in my current directory).
 
 ### Customizability
 I am unaware of any possible customization of nano, if you know some please do tell me in the comments of this post.
@@ -18,10 +18,3 @@ alternatively, to install it with Portage, run:
 
 ### Ratings
 {% include_relative TE/nano-ratings.html %}
-
-### Website(s)
-* [Gentoo Wiki Article](https://wiki.gentoo.org/wiki/Nano)
-* [GNU nano Documentation](http://www.nano-editor.org/docs.php)
-* [nano Command Manual (HTML)](http://www.nano-editor.org/dist/v2.2/nano.html)
-* [nanorc.5 Man Page (HTML)](/man/nanorc.5.html)
-* [Official Website](http://www.nano-editor.org/)

@@ -2,7 +2,7 @@
 {% include image.html image="Mousepad-under-Moksha.png" description="Mousepad 0.4.0 running under Moksha" float="none" width="1130px" %}
 
 ### Background
-**Mousepad** is a core application of the Xfce desktop environment, that was originally forked from Leafpad. Like Leafpad it is fairly lightweight, but unlike Leafpad, Mousepad can be customized and has a few basic features that are absent from Leafpad, such as syntax highlighting support for a few computer languages.
+{% include_relative TE/links.md program="Mousepad" package="app-editors/mousepad" pacman="extra/x86_64/mousepad/" gr="http://git.xfce.org/apps/mousepad/" %} is a core application of the Xfce desktop environment, that was originally forked from Leafpad. Like Leafpad it is fairly lightweight, but unlike Leafpad, Mousepad can be customized and has a few basic features that are absent from Leafpad, such as syntax highlighting support for a few computer languages.
 
 ### Customizability
 Some basic customization can be done, graphically, by going to Edit←Preferences in the toolbar. Some customization of its appearance can be done by going to the View menu. Beyond this, to my knowledge, it cannot be customized.
@@ -27,6 +27,3 @@ while to install it with Portage (and yes it is available in the Portage Tree):
 
 ### Ratings
 {% include_relative TE/mousepad-ratings.html %}
-
-### Website(s)
-[Mousepad's git repository](http://git.xfce.org/apps/mousepad/) (closest thing it has to an official website)
