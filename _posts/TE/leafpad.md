@@ -36,6 +36,15 @@ Private  +   Shared  =  RAM used	Program
                          12.8 MiB
 =================================
 </pre>
+while under Manjaro Linux Leafpad 0.8.18 gave the following <code>ps_mem</code> table:
+<pre>
+Private  +   Shared  =  RAM used       Program
+
+ 4.4 MiB +   1.5 MiB =   6.0 MiB       leafpad
+---------------------------------
+												 6.0 MiB
+=================================
+</pre>
 </li>
 	<li><strong>Overall</strong>: 7. Fairly basic, but at least it is stable and easy to use.</li>
 </ul>

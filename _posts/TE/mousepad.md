@@ -38,6 +38,15 @@ Private  +   Shared  =  RAM used	Program
                          17.6 MiB
 =================================
 </pre>
+while under Manjaro Linux Mousepad 0.4.0 gave the <code>ps_mem</code> table:
+<pre>
+Private  +   Shared  =  RAM used       Program
+
+ 6.8 MiB +   1.7 MiB =   8.5 MiB       mousepad
+---------------------------------
+												 8.5 MiB
+=================================
+</pre>
 </li>
 	<li><strong>Overall</strong>: 7. The next step up from Leafpad, in complexity it is.</li>
 </ul>

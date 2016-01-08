@@ -27,6 +27,15 @@ Private  +   Shared  =  RAM used	Program
                           1.4 MiB
 =================================
 </pre>
+while under Manjaro Linux GNU nano 2.5.0 gave the <code>ps_mem</code> table:
+<pre>
+Private  +   Shared  =  RAM used       Program
+
+812.0 KiB + 106.5 KiB = 918.5 KiB       nano
+---------------------------------
+											 918.5 KiB
+=================================
+</pre>
 </li>
 	<li><strong>Overall</strong>: 8. I rather like it for basic editing, but whenever I want to edit a several dozen-line file, or bigger, I usually switch to Atom as it is easier to navigate in Atom, in my experience.</li>
 </ul>
