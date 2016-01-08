@@ -1,0 +1,1 @@
+{% if include.pacman %};[<abbr title="Arch Linux Package">AP</abbr>](https://www.archlinux.org/packages/{{ include.pacman }}){% elsif include.aur %}[<abbr title="Arch User Repository Package">AU</abbr>](https://aur.archlinux.org/packages/{{ include.aur }}){% endif %}
