@@ -1,27 +1,27 @@
 ## Vim
 [caption id="attachment_656" align="alignnone" width="1366"]<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/gVim-7.4.827-running-under-Moksha.png"><img class="size-full wp-image-656" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/gVim-7.4.827-running-under-Moksha.png" alt="gVim 7.4.827 running under Moksha" width="1366" height="740" /></a> <strong>gVim 7.4.827 running under Moksha</strong>[/caption]
-<h2>Background</h2>
+### Background
 <strong>Vim</strong> (short for <strong>Vi</strong>-<strong>IM</strong>proved) is a text editor that was first released in 1991 by Bram Moolenaar, as a clone of Bill Joy's Vi text editor. It and GNU Emacs are seen as the most powerful free text editors available for experienced programmers. Vim is available as a command-line text editor, where users can edit text files from the command-line, or as a graphical text editor (which is called <strong>gVim</strong>). There is also a Qt-based GUI for Vim called Vim-Qt that is available via the Entropy Store. Compared to most text editors, Vim is far less intuitive and has a steep learning curve. For one, its keyboard shortcuts are far from conventional, with <kbd>Ctrl</kbd>+<kbd>C</kbd> for copy, <kbd>Ctrl</kbd>+<kbd>V</kbd> for paste, <em>etc.</em> not being available. Vim also has its own scripting language (Vim script) for adding functionalities to it.
-<h2>Customizability</h2>
+### Customizability
 Vim is extensively customizable, for people with the required level of finesse in programming. There are also several extensions and other plugins available for it, from the internet.
-<h2>Features</h2>
+### Features
 It has syntax-highlighting support for almost (if not every) every computer language. It also has several IDE-type features, like compiling source code from within it. Several other features can be added to it, for example, I wrote some of this post in Vim, using the <a href="https://github.com/PotHix/Vimpress">Vimpress plugin</a>. Several plugins are available in the <a href="http://gpo.zugaina.org/app-vim/" target="_blank">app-vim</a> Portage category.
-<h2>Obtaining it</h2>
+### Obtaining it
 It is easy to obtain Vim (and gVim) on Sabayon using Entropy or Portage. To install Vim and gVim using Entropy, run:
 <div class="code"><span class="coder">root #</span>  equo i -av app-editors/vim app-editors/gvim</div>
 whereas to install it with Portage run:
 <div class="code"><span class="coder">root #</span>  emerge -av app-editors/vim app-editors/gvim</div>
-<h2>Disadvantages (Cons)</h2>
+### Disadvantages (Cons)
 <ul>
 	<li>Steep learning curve, making it difficult to learn. If you run <code>vimtutor</code> from the command-line after installing it, you will be taken through a tutorial of how to use it, which can be helpful.</li>
 </ul>
-<h2>Advantages (Pros)</h2>
+### Advantages (Pros)
 <ul>
 	<li>Easy to obtain it on Sabayon</li>
 	<li>Extremely customizable</li>
 	<li>Fairly light on system resources</li>
 </ul>
-<h2>Ratings</h2>
+### Ratings
 <ul>
 	<li><strong>Availability</strong>: 8.</li>
 	<li><strong>Beginner-friendliness</strong>: 2.</li>
@@ -54,7 +54,7 @@ Private  +   Shared  =  RAM used	Program
 </li>
 	<li><strong>Overall</strong>: 8-9.</li>
 </ul>
-<h2>Website(s)</h2>
+### Website(s)
 <ul>
 	<li><a href="https://wiki.gentoo.org/wiki/Vim" target="_blank">Gentoo Wiki Article</a></li>
 	<li><a href="http://www.vim.org/">Vim Home Page</a></li>

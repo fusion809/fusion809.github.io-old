@@ -1,26 +1,26 @@
 ## Leafpad
 [caption id="attachment_636" align="alignnone" width="1366"]<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/Leafpad-running-under-Moksha.png"><img class="wp-image-636 size-full" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/Leafpad-running-under-Moksha.png" alt="" width="1366" height="740" /></a> <strong>Leafpad 0.8.18.1 running under Moksha</strong>[/caption]
-<h2>Background</h2>
+### Background
 <strong>Leafpad</strong> is a lightweight and basic GTK+ based text editor. Its capabilities (or rather lack thereof) are very similar to those of Windows' Notepad.
-<h2>Customizability</h2>
+### Customizability
 There is little, if any, customizability for Leafpad.
-<h2>Features</h2>
+### Features
 It offers no syntax highlighting support or auto-indentation support that I am aware of.
-<h2>Obtaining it</h2>
+### Obtaining it
 To install it on Sabayon with Entropy run:
 <div class="code"><span class="coder">root #</span>  equo i -av app-editors/leafpad</div>
 while to install it with Portage run:
 <div class="code"><span class="coder">root #</span>  emerge -av app-editors/leafpad</div>
-<h2>Disadvantages (Cons)</h2>
+### Disadvantages (Cons)
 <ul>
 	<li>It is very basic, has minimal customizability or features</li>
 </ul>
-<h2>Advantages (Pros)</h2>
+### Advantages (Pros)
 <ul>
 	<li>Its chief advantage is its low system resource usage</li>
 	<li>Easy to install on Sabayon</li>
 </ul>
-<h2>Ratings</h2>
+### Ratings
 <ul>
 	<li><strong>Availability</strong>: 8.</li>
 	<li><strong>Beginner-friendliness</strong>: 10.</li>
@@ -39,7 +39,7 @@ Private  +   Shared  =  RAM used	Program
 </li>
 	<li><strong>Overall</strong>: 7. Fairly basic, but at least it is stable and easy to use.</li>
 </ul>
-<h2>Website(s)</h2>
+### Website(s)
 <ul>
 	<li><a href="http://tarot.freeshell.org/leafpad/">Official Webpage</a></li>
 </ul>
