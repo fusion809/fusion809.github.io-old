@@ -32,7 +32,5 @@ The latest version of Geany in the [Entropy Store](https://packages.sabayon.org/
 {% include_relative TE/geany-ratings.html %}
 
 ### Website(s)
-<ul>
-	<li><a href="http://geany.org/">Official Website</a></li>
-	<li><a href="http://wiki.geany.org/">Official Wiki</a></li>
-</ul>
+* [Official Website](http://geany.org/)
+* [Official Wiki](http://wiki.geany.org/)
