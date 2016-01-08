@@ -32,7 +32,20 @@ This post will compare several different text editors that are available for Sab
 {% include_relative TE/pluma.md %}
 {% include_relative TE/scite.md %}
 {% include_relative TE/vim.md %}
+
 ## Poll
-[socialpoll id="2300580"]
-## Comparison of SRU of the various Text Editors
+<div id="debate_1_2300580"></div>
+<script>
+  (function () {
+    var opst = document.createElement('script');
+    var os_host = document.location.protocol == "https:" ? "https:" : "http:";
+    opst.type = 'text/javascript';
+    opst.async = true;
+    opst.src = os_host + '//' + 'www.opinionstage.com/polls/2300580/embed.js';
+    (document.getElementsByTagName('head')[0] ||
+      document.getElementsByTagName('body')[0]).appendChild(opst);
+  }());
+</script>
+
+## SRU Comparison
 <a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/TextEditors.png"><img class="alignnone size-full wp-image-694" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/TextEditors.png" alt="TextEditors" width="1287" height="508" /></a>
