@@ -22,60 +22,7 @@ This post will compare several different text editors that are available for Sab
 {% include_relative TE/atom.md %}
 {% include_relative TE/bluefish.md %}
 {% include_relative TE/geany.md %}
-## gedit
-[caption id="attachment_611" align="alignnone" width="1366"]<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/gedit-screenshot-under-Moksha.png"><img class="size-full wp-image-611" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/gedit-screenshot-under-Moksha.png" alt="gedit running under Moksha" width="1366" height="735" /></a> <strong>gedit running under Moksha</strong>[/caption]
-<h2>Background</h2>
-<strong>gedit</strong> is a GTK+ based text editor that is one of the core applications of GNOME. In my opinion, it is the second most advanced text editor (after Kate) that is part of a desktop environment's core application suite. It is also more advanced than Windows' Notepad and Wordpad text editors.
-<h2>Customizability</h2>
-gedit is able to be customized, although from what I have gathered from reading its Wiki, customization options are limited as it does not seem to support advanced customization (via editing configure files, for example), rather there are some themes and plugins available but the plugins seem fairly limited.
-<h2>Features</h2>
-It supports syntax highlighting of several computer languages, including Desktop Configuration files (<code>.desktop</code> or <code>.directory</code>), MATLAB, MediaWiki, GNU Octave, Scilab and shell script, just to name a few I know are absent in a few basic text editors. Although it does not support syntax highlighting for PyMOL or SageMath, so I would not say its syntax highlighting is as extensive as Atom's or Vim's.
-<h2>Obtaining it</h2>
-It is easy to obtain gedit on Sabayon, via either Entropy or Portage (and yes it is available in the Portage Tree). If I am not mistaken, gedit comes with a default installation of Sabayon GNOME edition. To install it using Entropy on an existing Sabayon machine, simply run (you can omit the <code>-av</code> options, if you are sure gedit is not already installed on your system, I am using these options in case it is and you are not aware of it):
-<div class="code"><span class="coder">root #</span>  equo i -av app-editors/gedit</div>
-Alternatively to install it using Portage run:
-<div class="code"><span class="coder">root #</span>  emerge -av app-editors/gedit</div>
-<h2>Disadvantages (Cons)</h2>
-<ul>
-	<li>Customization options, beyond with a limited set of available themes and plugins, are limited.</li>
-	<li>Fairly light on features, beyond syntax highlighting</li>
-</ul>
-<h2>Advantages (Pros)</h2>
-<ul>
-	<li>Light on resources</li>
-	<li>Easy to obtain on Sabayon</li>
-</ul>
-<h2>Ratings</h2>
-<ul>
-	<li><strong>Availability</strong>: &gt;8.</li>
-	<li><strong>Beginner-friendliness</strong>: &gt;8.</li>
-	<li><strong>Customizability</strong>: 6.</li>
-	<li><strong>Features</strong>: 8.</li>
-	<li><strong>Popularity</strong>: ~7.</li>
-	<li><strong>SRU</strong>: 7. Its Entropy package (<a href="https://packages.sabayon.org/show/gedit,158117,sabayon-weekly,amd64,5,standard" target="_blank">3.16.3</a>) size is 2.4 MB, while when installed it takes up 11.5 MB HDD space. Here is my <code>ps mem</code> table:
-<pre>Private  +   Shared  =  RAM used	Program
-
- 23.3 MiB +   3.5 MiB =  26.7 MiB	gedit
----------------------------------
-                         26.7 MiB
-=================================
-</pre>
-on Manjaro Linux version 3.18.2 of gedit gave this <code>ps_mem</code> table:
-<pre> Private  +   Shared  =  RAM used	Program
-
- 14.6 MiB +   1.7 MiB =  16.3 MiB	gedit
----------------------------------
-                         16.3 MiB
-=================================
-</pre>
-</li>
-	<li><strong>Overall</strong>: 8.</li>
-</ul>
-<h2>Website(s)</h2>
-<ul>
-	<li><a href="https://wiki.gnome.org/Apps/Gedit">gedit article at the GNOME Wiki</a></li>
-	<li><a href="https://help.gnome.org/users/gedit/">gedit User Manual</a></li>
-</ul>
+{% include_relative TE/gedit.md %}
 ## GNU Emacs
 [caption id="attachment_619" align="alignnone" width="1366"]<a href="http://linux.x10host.com/blog/wp-content/uploads/2015/10/GNU-Emacs.png"><img class="size-full wp-image-619" src="http://linux.x10host.com/blog/wp-content/uploads/2015/10/GNU-Emacs.png" alt="GNU Emacs running under Moksha" width="1366" height="740" /></a> <strong>GNU Emacs running under Moksha</strong>[/caption]
 <h2>Background</h2>

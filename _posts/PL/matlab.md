@@ -1,4 +1,5 @@
 ### MATLAB
+{% include image.html image="GNU-Octave-4.0.0-Menda-Theme.png" float="none" width="1130px" description="GNU Octave 4.0.0 running under Xfce on Sabayon." %}
 **MATLAB** is a proprietary programming language that is primarily intended for numerical computations and scientific computing, with scripting-compatability. MATLAB is also the name of an
 [integrated development environment](https://en.wikipedia.org/wiki/Integrated_development_environment) (IDE) for the MATLAB
 programming language. While MATLAB itself is proprietary, there are several free clones of MATLAB (including both a programming
