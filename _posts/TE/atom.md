@@ -61,8 +61,14 @@ Atom has plugins for syntax highlighting and auto-indentation of most major comp
 and several others. It also has packages that provide other features, including previews for markup languages such as HTML and markdown, an in-built terminal, *etc.*
 
 ### Obtaining it
+#### Manjaro
+Manjaro users must install Atom via the Arch User Repository (AUR), or via using my own [PKGBUILD](https://github.com/fusion809/PKGBUILDs/blob/master/atom-editor/PKGBUILD). At the time of writing the AUR contains five Atom packages, you can check to see if this statement has become outdated by going to [here](https://aur.archlinux.org/packages/?O=0&SeB=nd&K=atom-editor&outdated=&SB=n&SO=a&PP=50&do_Search=Go). These Atom packages:
+* {% include aur.md package="atom-editor" %}
+
+#### Sabayon
+Atom is in the Entropy repositories now, presently as of {{ page.date | %d %B Y }} the version therein is the latest (1.3.2), so to install it from the command-line one would merely run:
 {% include coder.html line1="equo i -av app-editors/atom" %}
-If, the version of Atom in the Entropy repositories are vastly out-of-date I usually use the ebuild in my overlay, {% include sabayon-tools.md %} to install it. The advantage of my ebuild over other ebuilds (including the one in the `sabayon` overlay, which I too help mantain) is that if you experience any momentary disruption of your Internet connection the other ebuilds may fail and you will have to start the build from the beginning again, while my ebuild will keep soldering on. This is unless the glitches in your Internet connection are so great in number or length that it overwhelms my ebuild.
+If, the version of Atom in the Entropy repositories are vastly out-of-date I usually use the ebuild in my overlay, {% include sabayon-tools.md %} to install it. The advantage of my ebuild over other ebuilds (including the one in the `sabayon` overlay, which I too help mantain) is that if you experience any momentary disruption of your Internet connection the other ebuilds may fail and you will have to start the build from the beginning again, while my ebuild will keep soldering on. This is unless the glitches in your Internet connection are so great in number and/or length that it overwhelms my ebuild.
 
 ### Disadvantages (Cons)
 * Slow to start, although with the release of version 1.3.0 the start time has been supposedly cut by 20-30%.[^1]
