@@ -19,7 +19,9 @@ To search all overlays run:
 {% include codeu.html line1="eix-update &amp;&amp; eix-remote update &amp;&amp; eix -RCc &quot;app-editors&quot;" %}
 This post will compare several different text editors that are available for Sabayon (I know as I have installed them all myself), with respect to several aspects.
 
-On Manjaro Linux many, if not all of these text editors, are also available from the [**Arch User Repository**](https://aur.archlinux.org) (**AUR**) and the Manjaro repositories.
+On Manjaro Linux many, if not all of these text editors, are also available from the [**Arch User Repository**](https://aur.archlinux.org) (**AUR**) or the Manjaro repositories.
+
+{% include_relative TE/glossary.md %}
 {% include_relative TE/comparisons.md %}
 {% include_relative TE/atom.md %}
 {% include_relative TE/bluefish.md %}
