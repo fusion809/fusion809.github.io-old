@@ -62,8 +62,10 @@ and several others. It also has packages that provide other features, including 
 
 ### Obtaining it
 #### Manjaro
-Manjaro users must install Atom via the Arch User Repository (AUR), or via using my own [PKGBUILD](https://github.com/fusion809/PKGBUILDs/blob/master/atom-editor/PKGBUILD). At the time of writing the AUR contains five Atom packages, you can check to see if this statement has become outdated by going to [here](https://aur.archlinux.org/packages/?O=0&SeB=nd&K=atom-editor&outdated=&SB=n&SO=a&PP=50&do_Search=Go). These Atom packages:
-* {% include aur.md package="atom-editor" %}
+Manjaro users must install Atom via the Arch User Repository (AUR), or via using my own [PKGBUILD](https://github.com/fusion809/PKGBUILDs/blob/master/atom-editor/PKGBUILD). At the time of writing the AUR contains five Atom packages, you can check to see if this statement has become outdated by going to [here](https://aur.archlinux.org/packages/?O=0&SeB=nd&K=atom-editor&outdated=&SB=n&SO=a&PP=50&do_Search=Go). These Atom packages are (**bold** is used to highlight keywords or points):
+* {% include aur.md package="atom-editor" %}, which builds a package for the **latest stable release** of Atom from **source code**. As it builds Atom from source code any momentary glitches in Internet connectivity can cause the build to fail, which would require one to start building the package again from scratch. My PKGBUILD is a more resilient version of this one, it will not fail due to momentary Internet connectivity issues. 
+* {% include aur.md package="atom-editor-bin" %}, which builds a package for the **latest stable release** of Atom from a **precompiled Debian binary**. This PKGBUILD tends to lag behind its source code counterpart.
+* {% include aur.md package="atom-editor-beta" %}, which builds a package for the latest beta release of Atom from source code.
 
 #### Sabayon
 Atom is in the Entropy repositories now, presently as of {{ page.date | %d %B Y }} the version therein is the latest (1.3.2), so to install it from the command-line one would merely run:
